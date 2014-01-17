@@ -1,14 +1,14 @@
 /*------------------------------------------------------------------
 [Table of contents]
 
-1. First div
+1. First div and Nav Bar
 2. Chapter title centering style
 3. Custom spacings
 4. Icon custom styles
 5. Shadow effects
 6. Code example formatting
 7. Morph
-8. Sticky div
+8. Sticky
 9. Documentation title background color
 10. Custom Fonts
 11. Custom background
@@ -18,8 +18,61 @@
 -------------------------------------------------------------------*/
 
 /*###################################
-##  1. $First div presentation style ##
+##  1. $First div and Nav Bar       ##
 ##################################### */
+
+.contain-to-grid {
+	background: #262b37;
+}
+
+/** Changes background color, height and margin of the border **/
+.top-bar {
+    background: none;
+    height: 58px;
+    line-height: 58px;
+    margin-bottom: 0;
+}
+/** Removes black background on menu bar **/
+.top-bar-section ul {
+    background: none;
+    text-transform: uppercase;
+}
+/** Removes black background on menu item **/
+.top-bar-section li a:not(.button) {
+    background: none;
+    line-height: 58px;
+    padding: 0 27px;
+}
+
+/** Changes the active menu item from default black to a gradient **/
+.top-bar-section ul li.active > a {
+    background:  rgb(0, 0, 0);
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.7) 100%) repeat scroll 0 0 transparent;
+    color: #fff;
+}
+/** Changes the hover state of non active menu items **/
+.top-bar-section li:hover a {
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.7) 100%) repeat scroll 0 0 transparent;
+    color: #fff;
+}
+/** Changes non active menu items text color to black **/
+.top-bar-section ul li > a {
+    color: #c3c8d6;
+}
+/** Changes the hover state of dropdown menu items **/
+.top-bar-section ul.dropdown li a:hover:not(.button) {
+    background: none repeat scroll 0 0 rgba(0, 0, 0, 0.9);
+}
+/** IMPORTANT fill for the ul dropdown container **/
+.top-bar-section ul.dropdown {
+    background: #333;
+    color: #fff;
+}
+/** This fixes the position and the color of the dropdown arrow **/
+.top-bar-section .has-dropdown > a:after {
+    border-color: rgba(0, 0, 0, 1) transparent transparent;
+    margin-top: 2.5px;
+}
 
 .bgwidth {
 	width: 100%;
@@ -560,7 +613,17 @@ body {
 } /* max-width 640px, mobile-only styles, use when QAing mobile issues */
 
 /* // Medium screens */
-@media only screen and (min-width: 40.063em) { } /* min-width 641px, medium screens */
+@media only screen and (min-width: 40.063em) { 
+	.top-bar-section li:not(.has-form) a:not(.button) {
+		padding: 0 15px;
+		line-height: 58px;
+		background: #262b37;
+	}
+	
+	.top-bar-section li:not(.has-form) a:not(.button):hover {
+		background: transparent;
+	}
+} /* min-width 641px, medium screens */
 
 @media only screen and (min-width: 40.063em) and (max-width: 64em) { 
 
