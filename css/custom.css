@@ -15,6 +15,8 @@
 12. Footer div
 13. Back to top
 14. Custom Media Queries
+15. Top Bar Spy
+
 -------------------------------------------------------------------*/
 
 /*###################################
@@ -28,7 +30,7 @@
 /** Changes background color, height and margin of the border **/
 .top-bar {
     background: none;
-    height: 58px;
+    height: 61px;
     line-height: 58px;
     margin-bottom: 0;
 }
@@ -668,6 +670,43 @@ body {
 
 /* // XXLarge screens */
 @media only screen and (min-width: 120.063em) { } /* min-width 1921px, xlarge screens */
+
+/*###################################
+##  15 Top Bar Spy                 ##
+##################################### */
+
+#top-menu {
+    position: inherit;
+    z-index: 1;
+    background: transparent;
+    left: 0;
+    right: 0;
+    top: 0;
+}
+
+#top-menu li {
+    float: left;
+}
+
+#top-menu a {
+    display: block;
+    -webkit-transition: 1s all ease;
+    -moz-transition: 1s all ease;
+    transition: 1s all ease;
+    border-top: 3px solid transparent;
+    color: #727070;
+    text-decoration: none;
+}
+
+#top-menu a:hover {
+    color: #454e64;
+}
+
+#top-menu li.active a {
+    border-top: 3px solid #454e64;
+    color: #454e64;
+    font-weight: bold;
+}
 
 /* ===============
  Appendix:   ALL: IE Fixes
