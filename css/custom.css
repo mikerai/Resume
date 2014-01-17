@@ -1,0 +1,615 @@
+/*------------------------------------------------------------------
+[Table of contents]
+
+1. First div
+2. Chapter title centering style
+3. Custom spacings
+4. Icon custom styles
+5. Shadow effects
+6. Code example formatting
+7. Morph
+8. Sticky div
+9. Documentation title background color
+10. Custom Fonts
+11. Custom background
+12. Footer div
+13. Back to top
+14. Custom Media Queries
+-------------------------------------------------------------------*/
+
+/*###################################
+##  1. $First div presentation style ##
+##################################### */
+
+.bgwidth {
+	width: 100%;
+}
+
+.firstWrapper {
+	height:80%; 
+	text-align:center; 
+	vertical-align:middle;
+	margin: 0 auto;
+}
+
+.firstDiv {
+	background-color: transparent;
+	background-color: transparent;
+	width: 100%;
+	height: 90%;
+	/*margin-left: auto;*/
+	/*margin-right: auto;*/
+	margin-top: 0;
+	margin-bottom: 0;
+	/*max-width: 70em;*/
+	text-align:center;
+}
+
+.firstDivUnder {
+	height: 100%;
+	overflow: hidden;	
+	vertical-align: middle;
+	text-align: center;
+	background: #1b1f2b;
+}
+
+	.firstDivUnder img {
+		opacity: 0.2;
+	}
+	
+.bannerText {
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 10%;
+	text-align: center;
+	padding: 30px 0 30px;
+	max-width: 960px;
+	border: 1px solid #fff;
+	background: rgba(0, 0, 0, 0.2);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#b2000000, endColorstr=#b2000000);
+	zoom: 1;
+}
+
+.container {
+	width: 80%;
+	margin-right: auto;
+	margin-left: auto;
+	vertical-align: middle !important;
+}
+
+/*###################################
+##  2. Chapter title centering style ##
+##################################### */
+
+	.header img {
+  		float: left;
+  		width: auto;
+  		height: auto;
+  		vertical-align: middle;
+}
+
+	.header h2 {
+ 		position: relative; 
+  		height:140px; 
+  		text-align: center;	
+		top: 40px; left: 0; bottom: 0; right: 0;
+}
+
+/*###################################
+##  3. Custom spacings ##
+##################################### */
+
+.customSpacing {	
+	padding: 20px; 
+}
+
+.customHeadTitlesSpacing {
+	padding-top: 20px;
+}
+
+.customElementLeftPadding {
+	padding-left: 20px;
+}
+
+.row {
+	max-width: 70em;
+}
+
+.h-titles-to-margin {
+	padding: 0 2px;
+}
+
+/*###################################
+##  4. Icon custom styles ##
+##################################### */
+
+.intro .icon {
+	border-radius: 100px;
+	-moz-border-radius: 100px;
+	-webkit-border-radius: 100px;
+	-o-border-radius: 100px;
+	height: 100px;
+	width: 100px;
+	background: #2ba6cb;
+	float: left;
+	display: inline;
+	margin: 0 20px 20px 0;
+}
+
+	.icon:hover {
+		background-color:#F74902;
+}
+
+/*###################################
+##  5. Shadow effects              ##
+##################################### */
+
+.shadow {
+	box-shadow: 10px 10px 5px #888888;
+}
+
+.bearlyShadow {
+	box-shadow: 3px 3px 2px #888888;
+}
+
+.thumbIcon:hover, .thumbIcon:focus {
+	-webkit-box-shadow: 0 0 6px 1px rgba(254, 250, 188, 0.5);
+	box-shadow: 0 0 6px 1px rgba(254, 250, 188, 0.5);
+}
+
+/*###################################
+##  6. Code example formatting      ##
+##################################### */
+
+.divCodeImportant {
+	background-color:rgb(255,103,103);
+	background-color:rgba(215,103,103,0.9);
+	padding:15px;
+	font-family: 'Noto Sans', "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-style: normal;
+	font-weight:700;
+	text-rendering: optimizeLegibility;
+	color: #7f0a0c;
+	border-radius: 15px;
+}
+.veryImportant {
+	color:red;
+}
+
+.stringText {
+	color: rgb(120,185,0) !important;
+}
+
+.charSetText {
+	color: rgb(142,51,0) !important;
+}
+
+.metaTextColor {
+	color: rgb(157,36,110) !important;
+}
+
+.codeExample {
+	background-color:rgba(205,205,205,0.5);
+	padding: 1px;
+}
+
+/*###################################
+##  7. Morph                       ##
+##################################### */
+
+.morph {
+  -webkit-transition: all 0.5s ease;
+     -moz-transition: all 0.5s ease;
+       -o-transition: all 0.5s ease;
+      -ms-transition: all 0.5s ease;
+          transition: all 0.5s ease;
+}
+ 
+	.morph:hover {
+  
+  	-webkit-transform: rotate(360deg);
+    	 -moz-transform: rotate(360deg);
+       	-o-transform: rotate(360deg);
+      	-ms-transform: rotate(360deg);
+        	  transform: rotate(360deg);
+}
+
+/*###################################
+##  8. Sticky div ##
+##################################### */
+
+.stickyPadding {
+	padding-top:45px;
+}
+
+/*###################################
+##  9. Documentation background color ##
+##################################### */
+
+.documentationBackgroundColor {
+	background-color:#2BA6CB;
+}
+
+	.documentationBackgroundColor h3 {
+		color:white;
+		text-align:center;
+}
+
+/*###################################
+##  10. Custom fonts ##
+##################################### */
+
+@font-face {
+    font-family: 'aaarghnormal';
+    src: url('../aaargh_normal_macroman/Aaargh-webfont.eot');
+    src: url('../aaargh_normal_macroman/Aaargh-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../aaargh_normal_macroman/Aaargh-webfont.woff') format('woff'),
+         url('../aaargh_normal_macroman/Aaargh-webfont.ttf') format('truetype'),
+         url('../aaargh_normal_macroman/Aaargh-webfont.svg#aaarghnormal') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+@font-face {
+    font-family: 'bebasregular';
+    src: url('../bebas_regular_macroman/BEBAS___-webfont.eot');
+    src: url('../bebas_regular_macroman/BEBAS___-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../bebas_regular_macroman/BEBAS___-webfont.woff') format('woff'),
+         url('../bebas_regular_macroman/BEBAS___-webfont.ttf') format('truetype'),
+         url('../bebas_regular_macroman/BEBAS___-webfont.svg#bebasregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+@font-face {
+  font-family: 'Sintony';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Sintony'), url(http://themes.googleusercontent.com/static/fonts/sintony/v1/cu1c4tOdDXpghDFFDdv7MgLUuEpTyoUstqEm5AMlJo4.woff) format('woff');
+}
+@font-face {
+  font-family: 'Sintony';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Sintony Bold'), local('Sintony-Bold'), url(http://themes.googleusercontent.com/static/fonts/sintony/v1/TiXPkS2VjL9yF_daQZv9Ir3hpw3pgy2gAi-Ip7WPMi0.woff) format('woff');
+}
+
+@font-face {
+  font-family: 'Average Sans';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Average Sans'), local('AverageSans-Regular'), url(http://themes.googleusercontent.com/static/fonts/averagesans/v1/dnU3R-5A_43y5bIyLztPsaRDOzjiPcYnFooOUGCOsRk.woff) format('woff');
+}
+
+@font-face {
+  font-family: 'Droid Sans';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Droid Sans'), local('DroidSans'), url(http://themes.googleusercontent.com/static/fonts/droidsans/v3/s-BiyweUPV0v-yRb-cjciL3hpw3pgy2gAi-Ip7WPMi0.woff) format('woff');
+}
+@font-face {
+  font-family: 'Droid Sans';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Droid Sans Bold'), local('DroidSans-Bold'), url(http://themes.googleusercontent.com/static/fonts/droidsans/v3/EFpQQyG9GqCrobXxL-KRMXbFhgvWbfSbdVg11QabG8w.woff) format('woff');
+}
+
+@font-face {
+  font-family: 'Noto Sans';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Noto Sans'), local('NotoSans'), url(http://themes.googleusercontent.com/static/fonts/notosans/v1/LeFlHvsZjXu2c3ZRgBq9nLO3LdcAZYWl9Si6vvxL-qU.woff) format('woff');
+}
+@font-face {
+  font-family: 'Noto Sans';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Noto Sans Bold'), local('NotoSans-Bold'), url(http://themes.googleusercontent.com/static/fonts/notosans/v1/PIbvSEyHEdL91QLOQRnZ16RDOzjiPcYnFooOUGCOsRk.woff) format('woff');
+}
+@font-face {
+  font-family: 'Noto Sans';
+  font-style: italic;
+  font-weight: 400;
+  src: local('Noto Sans Italic'), local('NotoSans-Italic'), url(http://themes.googleusercontent.com/static/fonts/notosans/v1/ByLA_FLEa-16SpQuTcQn4LrIa-7acMAeDBVuclsi6Gc.woff) format('woff');
+}
+@font-face {
+  font-family: 'Noto Sans';
+  font-style: italic;
+  font-weight: 700;
+  src: local('Noto Sans Bold Italic'), local('NotoSans-BoldItalic'), url(http://themes.googleusercontent.com/static/fonts/notosans/v1/9Z3uUWMRR7crzm1TjRicDhbnBKKEOwRKgsHDreGcocg.woff) format('woff');
+}
+
+h1, h2, h3, h4, h5, h6 {
+	font-family: 'Droid Sans', "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-style: normal;
+	font-weight:400;
+	text-rendering: optimizeLegibility;
+}
+
+body {
+	font-family: 'Noto Sans', "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-style: normal;
+	font-weight:400;
+	text-rendering: optimizeLegibility;
+}
+
+.whiteTextColor {
+	color: white;
+}
+
+.orangeTextColor {
+	color: #ff675f;
+}
+
+/*###################################
+##  11. Custom background          ##
+##################################### */
+
+body {
+	background: url("../img/bgl2.png") repeat scroll 0% 0% transparent;
+}
+
+.panelSpecialColor {
+	background: none repeat scroll 0% 0% rgb(254, 250, 188);
+	
+}
+
+.panelPunch {
+	background: #f2f2f2;
+	background: rgba(242,242,242,0.5);
+}
+
+.divCodeBackground {
+	/*background: url("../img/debut_light_@2X.png") repeat scroll 0% 0% transparent; */
+	background-color: white;
+	padding-left:21px;
+}
+
+/*###################################
+##  12. $Footer div                 ##
+##################################### */
+
+.footerDiv {
+	padding:37px;
+	background-color: rgb(71,77,93);
+	background-color: rgba(71,77,93,0.8);
+	width: 100%;
+	/*margin-left: auto;*/
+	/*margin-right: auto;*/
+	margin-top: 0;
+	margin-bottom: 0;
+	/*max-width: 70em;*/
+	text-align:center;
+	
+	/* Experiment with border-color rgb color is for IE */
+	border-color: rgb(71,77,93);
+	border-color: rgba(71,77,93,0.1);
+	border-width: 4px;
+	border-style:solid;
+	
+}
+
+.footerDivUnder {
+	background: url("../img/white_carbon.png") repeat scroll 0% 0% transparent;	
+}
+
+	.footerDiv p.colorWhite {
+		color:rgb(255, 255, 255);
+	}
+	
+		.footerDiv a {
+			color:rgb(255, 255, 255);
+		}
+		
+			.footerDiv a:hover{
+				color: rgb(119, 119, 119);
+			}
+
+.bottomFooter {
+	
+	background: none repeat scroll 0% 0% rgb(13,13,13);
+	background: none repeat scroll 0% 0% rgba(13,13,13, 0.9);
+	padding: 24px 0px 10px;
+	width: 100%;
+}
+
+	.bottomFooter p.copyright {
+		margin: 6px 0px 0px;
+		font-size: 12px;
+		color: rgb(102, 102, 102);
+	}
+	
+	.bottomFooter li a {
+		padding: 3px 6px;
+		color: rgb(102, 102, 102);
+	}
+	
+		.bottomFooter li a:hover{
+			color: rgb(119, 119, 119);
+		}
+
+/*###################################
+##  13.  $Back to top               ##
+##################################### */
+
+.backtotop {
+	position: fixed;
+	bottom: 10px;
+	right: 15px;
+}
+
+	.backtotop a {
+		width: 40px;
+		display: block;
+		text-align: center;
+		font: 11px/30% 'Noto Sans', "Helvetica Neue", Helvetica, Arial, sans-serif;
+		text-transform: uppercase;
+		text-decoration: none;
+		color: #bbb;
+
+		/* transition */
+		-webkit-transition: 1s;
+		-moz-transition: 1s;
+		transition: 1s;
+	}
+
+	/* arrow icon (span tag) */
+	.backtotop span {
+		width: 40px;
+		height: 40px;
+		display: block;
+		margin-bottom: 7px;
+		background: rgb(65,146,75) url("../img/up-arrow2.png") no-repeat center center;
+		background: rgba(65,146,75,0.3) url("../img/up-arrow2.png") no-repeat center center;
+
+		/* rounded corners */
+		-webkit-border-radius: 15px;
+		-moz-border-radius: 15px;
+		border-radius: 15px;
+
+		/* transition */
+		-webkit-transition: 1s;
+		-moz-transition: 1s;
+		transition: 1s;
+	}
+		.backtotop span:hover {
+			background-color: rgb(65,146,75);
+			background-color: rgba(65,146,75,1);
+		}
+
+/*###################################
+##  14 Custom =media queries       ##
+##################################### */
+		
+/* // Small screens */
+@media only screen and (min-width: 20em) and (max-width: 35.500em) { 
+	
+	html { 
+		font-size: 70%; 
+	} 
+	
+	.firstDivUnder {
+		height: auto;
+		width: 100%;
+		overflow: hidden;	
+		vertical-align: middle;
+		text-align: center;
+		background: #1b1f2b;
+	}	
+	
+	.firstDiv {
+		margin:0;
+		height: auto;
+	}
+	
+	.image-adjuster {
+		padding: 5% 0;
+	}
+	
+	.transparent-div {
+		width: 100%;
+		height: 100%;
+		background-size: 100% 100%;
+	}
+		
+	.bannerText {
+		top: 2%;
+		padding: 3px 0 3px;
+	}
+	
+} /* Define mobile styles */
+
+@media only screen and (min-width: 35.563em) and (max-width: 40em) { 
+	
+	html { 
+		font-size: 70%; 
+	} 
+	
+	.firstDivUnder {
+		height: auto;
+		width: 100%;
+		overflow: hidden;	
+		vertical-align: middle;
+		text-align: center;
+		background: #1b1f2b;
+	}	
+	
+	.firstDiv {
+		margin:0;
+		height: auto;
+	}
+	
+	.image-adjuster {
+		padding: 5% 0;
+	}
+	
+	.transparent-div {
+		width: 100%;
+		height: 100%;
+		background-size: 100% 100%;
+	}
+		
+	.bannerText {
+		/*top: 8%;*/
+		padding: 3px 0 3px;
+	}
+	
+} /* max-width 640px, mobile-only styles, use when QAing mobile issues */
+
+/* // Medium screens */
+@media only screen and (min-width: 40.063em) { } /* min-width 641px, medium screens */
+
+@media only screen and (min-width: 40.063em) and (max-width: 64em) { 
+
+	html { 
+		font-size: 85%; 
+	}	
+	
+	.image-adjuster {
+		padding: 5% 0;
+	}
+	
+	.transparent-div {
+		width: 100%;
+		height: 100%;
+		background-size: 100% 100%;
+	}
+	
+	.firstDivUnder {
+		height: 80%;
+		overflow: hidden;	
+		vertical-align: middle;
+		text-align: center;
+		background: #1b1f2b;
+	}
+	
+	.bannerText {
+		/*top: 5%;*/
+		padding: 15px 0 15px;
+	}
+
+} /* min-width 641px and max-width 1024px, use when QAing tablet-only issues */
+
+/* // Large screens */
+@media only screen and (min-width: 64.063em) { } /* min-width 1025px, large screens */
+
+@media only screen and (min-width: 64.063em) and (max-width: 90em) { } /* min-width 1024px and max-width 1440px, use when QAing large screen-only issues */
+
+/* // XLarge screens */
+@media only screen and (min-width: 90.063em) { } /* min-width 1441px, xlarge screens */
+
+@media only screen and (min-width: 90.063em) and (max-width: 120em) { } /* min-width 1441px and max-width 1920px, use when QAing xlarge screen-only issues */
+
+/* // XXLarge screens */
+@media only screen and (min-width: 120.063em) { } /* min-width 1921px, xlarge screens */
+
+/* ===============
+ Appendix:   ALL: IE Fixes
+   =============== */
+
+.ie7 .title {
+    padding-top: 20px;
+}
