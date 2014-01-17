@@ -684,29 +684,29 @@ body {
     top: 0;
 }
 
-#top-menu li {
-    float: left;
-}
+	#top-menu li {
+    	float: left;
+	}
+	
+		#top-menu li.active a {
+			border-top: 3px solid #454e64;
+			color: #454e64;
+			font-weight: bold;
+		}
 
-#top-menu a {
-    display: block;
-    -webkit-transition: 1s all ease;
-    -moz-transition: 1s all ease;
-    transition: 1s all ease;
-    border-top: 3px solid transparent;
-    color: #727070;
-    text-decoration: none;
-}
+	#top-menu a {
+    	display: block;
+		-webkit-transition: 1s all ease;
+		-moz-transition: 1s all ease;
+		transition: 1s all ease;
+		border-top: 3px solid transparent;
+		color: #727070;
+		text-decoration: none;
+	}
 
-#top-menu a:hover {
-    color: #454e64;
-}
-
-#top-menu li.active a {
-    border-top: 3px solid #454e64;
-    color: #454e64;
-    font-weight: bold;
-}
+		#top-menu a:hover {
+			color: #454e64;
+		}
 
 /* ===============
  Appendix:   ALL: IE Fixes
