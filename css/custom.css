@@ -76,6 +76,27 @@
     margin-top: 2.5px;
 }
 
+.top-bar.expanded .title-area {
+	background: transparent;
+}
+
+.top-bar-section ul li.active {
+	background: #454e64;
+	border-top: 3px solid white;
+}
+		
+.top-bar-section ul li.active>a:hover {
+	background: #454e64;
+	border-top: 0px solid #454e64;
+}
+
+.top-bar-section ul li:hover>a {
+	background: #454e64;
+	border-top: 3px solid #454e64;
+	color: #fff;
+	font-weight: bold;
+}
+
 .bgwidth {
 	width: 100%;
 }
@@ -579,6 +600,11 @@ body {
 		padding-top: 5px;
 	}
 	
+	.top-bar-section ul li.active {
+		background: #454e64;
+		border-top: 3px solid transparent;
+	}
+	
 } /* Define mobile styles */
 
 @media only screen and (min-width: 35.563em) and (max-width: 40em) { 
@@ -715,27 +741,6 @@ body {
 		#top-menu a:hover {
 			color: #454e64;
 		} */
-
-.top-bar.expanded .title-area {
-	background: transparent;
-}
-
-.top-bar-section ul li.active {
-	background: #454e64;
-	border-top: 3px solid white;
-}
-		
-.top-bar-section ul li.active>a:hover {
-	background: #454e64;
-	border-top: 0px solid #454e64;
-}
-
-.top-bar-section ul li:hover>a {
-	background: #454e64;
-	border-top: 3px solid #454e64;
-	color: #fff;
-	font-weight: bold;
-}
 
 /* ===============
  Appendix:   ALL: IE Fixes
