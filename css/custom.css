@@ -6,16 +6,13 @@
 3. Custom spacings
 4. Icon custom styles
 5. Shadow effects
-6. Code example formatting
-7. Morph
-8. Sticky
-9. Documentation title background color
-10. Custom Fonts
-11. Custom background
-12. Footer div
-13. Back to top
-14. Custom Media Queries
-15. Top Bar Spy
+6. Sticky
+7. Custom Fonts
+8. Custom background
+9. Footer div
+10. Back to top
+11. Custom Media Queries
+12. Top Bar Spy
 
 -------------------------------------------------------------------*/
 
@@ -154,17 +151,25 @@
 	vertical-align: middle !important;
 }
 
-.skillsDiv {
+.darkBlueDiv {
 	/*background: url("../img/bg11.jpg") no-repeat center top transparent;*/
-	background-color: rgb(54,125,125);
-	background-color: rgba(54,125,125,0.8);
+	background-color: rgb(0,61,125);
+	background-color: rgba(0,61,125,0.8);
 	width: 100%;
-	/*height:945px;*/
+	/*height:945px;
 	background-attachment: fixed;
-	background-size: 1920px 666px;
+	background-size: 1920px 666px;*/
 	padding-top: 3%;
 	padding-bottom: 3%;
 	margin-bottom: 10px;
+}
+
+.lightBlueDiv {
+	background-color: rgb(1,193,255);
+	background-color: rgba(1,193,255,0.8);
+	width: 100%;
+	padding-top: 3%;
+	padding-bottom: 3%;
 }
 
 /*###################################
@@ -189,12 +194,25 @@
 ##  3. Custom spacings ##
 ##################################### */
 
+.center {
+	text-align: center;
+}
+
 .customSpacing {	
 	padding: 20px; 
 }
 
+.noPadding {
+	padding: 0px;
+}
+
+.customFirstHeadTitlesSpacing {
+	padding-top: 49px;
+}
+
 .customHeadTitlesSpacing {
-	padding-top: 20px;
+	padding-top: 24px;
+	padding-bottom: 24px;
 }
 
 .customElementLeftPadding {
@@ -207,6 +225,11 @@
 
 .h-titles-to-margin {
 	padding: 0 2px;
+}
+
+.imgCircle {
+	border-radius: 50%;
+	padding-top: 32%;
 }
 
 /*###################################
@@ -248,85 +271,16 @@
 }
 
 /*###################################
-##  6. Code example formatting      ##
-##################################### */
-
-.divCodeImportant {
-	background-color:rgb(255,103,103);
-	background-color:rgba(215,103,103,0.9);
-	padding:15px;
-	font-family: 'Noto Sans', "Helvetica Neue", Helvetica, Arial, sans-serif;
-	font-style: normal;
-	font-weight:700;
-	text-rendering: optimizeLegibility;
-	color: #7f0a0c;
-	border-radius: 15px;
-}
-.veryImportant {
-	color:red;
-}
-
-.stringText {
-	color: rgb(120,185,0) !important;
-}
-
-.charSetText {
-	color: rgb(142,51,0) !important;
-}
-
-.metaTextColor {
-	color: rgb(157,36,110) !important;
-}
-
-.codeExample {
-	background-color:rgba(205,205,205,0.5);
-	padding: 1px;
-}
-
-/*###################################
-##  7. Morph                       ##
-##################################### */
-
-.morph {
-  -webkit-transition: all 0.5s ease;
-     -moz-transition: all 0.5s ease;
-       -o-transition: all 0.5s ease;
-      -ms-transition: all 0.5s ease;
-          transition: all 0.5s ease;
-}
- 
-	.morph:hover {
-  
-  	-webkit-transform: rotate(360deg);
-    	 -moz-transform: rotate(360deg);
-       	-o-transform: rotate(360deg);
-      	-ms-transform: rotate(360deg);
-        	  transform: rotate(360deg);
-}
-
-/*###################################
-##  8. Sticky div ##
+##  6. Sticky div ##
 ##################################### */
 
 .stickyPadding {
 	padding-top:45px;
 }
 
-/*###################################
-##  9. Documentation background color ##
-##################################### */
-
-.documentationBackgroundColor {
-	background-color:#2BA6CB;
-}
-
-	.documentationBackgroundColor h3 {
-		color:white;
-		text-align:center;
-}
 
 /*###################################
-##  10. Custom fonts ##
+##  7. Custom fonts ##
 ##################################### */
 
 @font-face {
@@ -434,12 +388,16 @@ body {
 	font-style: italic;
 }
 
+.niceBlueTextColor {
+	color: #262b37;
+}
+
 /*###################################
-##  11. Custom background          ##
+##  8. Custom background & colors    ##
 ##################################### */
 
 body {
-	background: url("../img/bgl2.png") repeat scroll 0% 0% transparent;
+	background: url("../img/white_carbon.png") repeat scroll 0% 0% transparent;
 }
 
 .panelSpecialColor {
@@ -452,18 +410,12 @@ body {
 	background: rgba(242,242,242,0.5);
 }
 
-.divCodeBackground {
-	/*background: url("../img/debut_light_@2X.png") repeat scroll 0% 0% transparent; */
-	background-color: white;
-	padding-left:21px;
-}
-
 .panel {
 	border-style: none;
 }
 
 /*###################################
-##  12. $Footer div                 ##
+##  9. $Footer div                 ##
 ##################################### */
 
 .footerDiv {
@@ -526,7 +478,7 @@ body {
 		}
 
 /*###################################
-##  13.  $Back to top               ##
+##  10.  $Back to top               ##
 ##################################### */
 
 .backtotop {
@@ -575,15 +527,12 @@ body {
 		}
 
 /*###################################
-##  14 Custom =media queries       ##
+##  11 Custom =media queries       ##
 ##################################### */
 		
 /* // Small screens */
 @media only screen and (min-width: 20em) and (max-width: 35.500em) { 
 	
-	html { 
-		font-size: 70%; 
-	} 
 	
 	.firstDivUnder {
 		height: auto;
@@ -625,11 +574,7 @@ body {
 	
 } /* Define mobile styles */
 
-@media only screen and (min-width: 35.563em) and (max-width: 40em) { 
-	
-	html { 
-		font-size: 70%; 
-	} 
+@media only screen and (min-width: 35.563em) and (max-width: 40em) {  
 	
 	.firstDivUnder {
 		height: auto;
@@ -684,11 +629,7 @@ body {
 	
 } /* min-width 641px, medium screens */
 
-@media only screen and (min-width: 40.063em) and (max-width: 64em) { 
-
-	html { 
-		font-size: 85%; 
-	}	
+@media only screen and (min-width: 40.063em) and (max-width: 64em) { 	
 	
 	.image-adjuster {
 		padding: 5% 0;
@@ -734,7 +675,7 @@ body {
 @media only screen and (min-width: 120.063em) { } /* min-width 1921px, xlarge screens */
 
 /*###################################
-##  15 Top Bar Spy                 ##
+##  12 Top Bar Spy                 ##
 ##################################### 
 
 #top-menu {
@@ -773,6 +714,137 @@ body {
 /* ===============
  Appendix:   ALL: IE Fixes
    =============== */
+  
+/*###################################
+##  13 Box hover                   ##
+#####################################*/  
+  
+.box{
+  width: 250px;
+  height: 200px;
+  background: url('http://placekitten.com/250/200');
+  overflow: hidden;
+  margin: 0 auto;
+  border: 1px solid #000;
+  box-shadow: 0px 0px 15px 0px #666,
+              0px 5px 15px 0px #000;
+}
+.cover{
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.45);
+  position: relative;
+  -webkit-transition: all 0.4s cubic-bezier(.99,.99,0,.61);
+  padding: 1em;
+  color: #fff;
+  overflow: hidden;
+  text-shadow: 1px 1px 0px #000;
+}
+.cover .title{
+  font-size: 16pt;
+  font-style: italic;
+}
+.box .cover .intro{
+  line-height: 1.2em;
+  height: 4.8em;
+  width: 100%;
+  position: relative;
+  font-size: 10pt;
+  overflow: hidden;
+}
+.cover .btn{
+  padding: 0.5em 1em;
+  margin: 0.5em;
+  background: #0099cc;
+  float: right;
+  border-radius: 0.25em;
+}
+.btn a{
+  color: #fff;
+  text-decoration: none;
+}
+.cover .date{
+  position: absolute;
+  bottom: 1em;
+  right: 1em;
+  font-size: 10pt;
+}
+div.cover p{
+  margin-bottom: 0;
+}
+.box:hover .left{
+  -webkit-transition: all 0.4s cubic-bezier(.99,.99,0,.61);
+   left: 0px;
+}
+.box:hover .right{
+  -webkit-transition: all 0.4s cubic-bezier(.99,.99,0,.61);
+   right: 0px;
+}
+.box:hover .top{
+  -webkit-transition: all 0.4s cubic-bezier(.99,.99,0,.61);
+   top: 0px;
+}
+.box:hover .bottom{
+  -webkit-transition: all 0.4s cubic-bezier(.99,.99,0,.61);
+    bottom: 0px;
+}
+.box:hover .top-left{
+  -webkit-transition: all 0.4s cubic-bezier(.99,.99,0,.61);
+    top: 0px;
+    left: 0px;
+}
+.box:hover .top-right{
+  -webkit-transition: all 0.4s cubic-bezier(.99,.99,0,.61);
+    top: 0px;
+    right: 0px;
+}
+.box:hover .bottom-left{
+  -webkit-transition: all 0.4s cubic-bezier(.99,.99,0,.61);
+    bottom: 0px;
+    left: 0px;
+}
+.box:hover .bottom-right{
+  -webkit-transition: all 0.4s cubic-bezier(.99,.99,0,.61);
+    bottom: 0px;
+    right: 0px;
+}
+.left{
+  left: -250px;
+}
+.right{
+  right: -250px;
+}
+.top{
+  top: -200px;
+}
+.bottom{
+  bottom: -200px;
+}
+.top-left{
+  top: -200px;
+  left: -250px;
+}
+.top-right{
+  top: -200px;
+  right: -250px;
+}
+.bottom-left{
+  bottom: -200px;
+  left: -250px;
+}
+.bottom-right{
+  bottom: -200px;
+  right: -250px;
+}
+/* Ordering */
+  .left{order:1;}
+  .right{order:2;}
+  .top{order:3;}
+  .bottom{order:4;}
+  .top-left{order:5;}
+  .top-right{order:6;}
+  .bottom-left{order:7;}
+  .bottom-right{order:8;}
 
 .ie7 .title {
     padding-top: 20px;
