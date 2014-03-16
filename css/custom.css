@@ -92,7 +92,7 @@
 	background: #454e64;
 	border-top: 3px solid #454e64;
 	color: #fff;
-	font-weight: bold;
+	/*font-weight: bold; removed bold to avoid css jitter*/
 }
 
 .bgwidth {
@@ -123,7 +123,7 @@
 	overflow: hidden;	
 	vertical-align: middle;
 	text-align: center;
-	background: #1b1f2b;
+	background: #6f6f6f; /* original #1b1f2b*/
 }
 
 	.firstDivUnder img {
@@ -139,7 +139,7 @@
 	padding: 30px 0 30px;
 	max-width: 960px;
 	border: 1px solid #fff;
-	background: rgba(0, 0, 0, 0.2);
+	background: rgba(0, 0, 0, 0.3);
 	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#b2000000, endColorstr=#b2000000);
 	zoom: 1;
 }
@@ -173,6 +173,20 @@
 	width: 100%;
 	padding-bottom: 3%;
 }
+
+.expDiv {
+	background-color: white;
+	width: 100%;
+	padding-bottom: 3%;
+}
+
+	.expDiv ul {
+		text-align: center;
+		list-style: none;
+		font-size: large;
+		color: #ff675f;
+		margin: 0 auto;
+	}
 
 /*###################################
 ##  2. Chapter title centering style ##
@@ -403,6 +417,10 @@ body {
 	color: #262b37;
 }
 
+.blackTextColor {
+	color: black;
+}
+
 /*###################################
 ##  8. Custom background & colors    ##
 ##################################### */
@@ -467,8 +485,7 @@ body {
 
 .bottomFooter {
 	
-	background: none repeat scroll 0% 0% rgb(13,13,13);
-	background: none repeat scroll 0% 0% rgba(13,13,13, 0.9);
+	background: none repeat scroll 0% 0% rgb(38,43,55);
 	padding: 24px 0px 10px;
 	width: 100%;
 }
@@ -519,8 +536,8 @@ body {
 		height: 40px;
 		display: block;
 		margin-bottom: 7px;
-		background: rgb(65,146,75) url("../img/up-arrow2.png") no-repeat center center;
-		background: rgba(65,146,75,0.3) url("../img/up-arrow2.png") no-repeat center center;
+		background: rgb(221,70,74) url("../img/up-arrow2.png") no-repeat center center;
+		background: rgba(221,70,74,0.3) url("../img/up-arrow2.png") no-repeat center center;
 
 		/* rounded corners */
 		-webkit-border-radius: 15px;
@@ -533,8 +550,8 @@ body {
 		transition: 1s;
 	}
 		.backtotop span:hover {
-			background-color: rgb(65,146,75);
-			background-color: rgba(65,146,75,1);
+			background-color: rgb(221,70,74);
+			background-color: rgba(221,70,74,1);
 		}
 
 
@@ -573,6 +590,7 @@ body {
 	.bannerText {
 		top: 1%;
 		padding: 3px 0 3px;
+		zoom: 0.9;
 	}
 	
 	.stickyPadding {
@@ -631,7 +649,7 @@ body {
 @media only screen and (min-width: 40.063em) { 
 
 	.top-bar-section li:not(.has-form) a:not(.button) {
-		padding: 0 15px;
+		padding: 0 10px;
 		line-height: 58px;
 		background: #262b37;
 	}
@@ -764,142 +782,39 @@ body {
 		#top-menu a:hover {
 			color: #454e64;
 		} */
-
-/* ===============
- Appendix:   ALL: IE Fixes
-   =============== */
   
 /*###################################
-##  13 Box hover                   ##
+##  13.                   ##
 #####################################*/  
-  
-.box{
-  width: 250px;
-  height: 200px;
-  background: url('http://placekitten.com/250/200');
-  overflow: hidden;
-  margin: 0 auto;
-  border: 1px solid #000;
-  box-shadow: 0px 0px 15px 0px #666,
-              0px 5px 15px 0px #000;
+ 
+nav.top-bar {
+	text-align:center;
 }
-.cover{
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.45);
-  position: relative;
-  -webkit-transition: all 0.4s cubic-bezier(.99,.99,0,.61);
-  padding: 1em;
-  color: #fff;
-  overflow: hidden;
-  text-shadow: 1px 1px 0px #000;
-}
-.cover .title{
-  font-size: 16pt;
-  font-style: italic;
-}
-.box .cover .intro{
-  line-height: 1.2em;
-  height: 4.8em;
-  width: 100%;
-  position: relative;
-  font-size: 10pt;
-  overflow: hidden;
-}
-.cover .btn{
-  padding: 0.5em 1em;
-  margin: 0.5em;
-  background: #0099cc;
-  float: right;
-  border-radius: 0.25em;
-}
-.btn a{
-  color: #fff;
-  text-decoration: none;
-}
-.cover .date{
-  position: absolute;
-  bottom: 1em;
-  right: 1em;
-  font-size: 10pt;
-}
-div.cover p{
-  margin-bottom: 0;
-}
-.box:hover .left{
-  -webkit-transition: all 0.4s cubic-bezier(.99,.99,0,.61);
-   left: 0px;
-}
-.box:hover .right{
-  -webkit-transition: all 0.4s cubic-bezier(.99,.99,0,.61);
-   right: 0px;
-}
-.box:hover .top{
-  -webkit-transition: all 0.4s cubic-bezier(.99,.99,0,.61);
-   top: 0px;
-}
-.box:hover .bottom{
-  -webkit-transition: all 0.4s cubic-bezier(.99,.99,0,.61);
-    bottom: 0px;
-}
-.box:hover .top-left{
-  -webkit-transition: all 0.4s cubic-bezier(.99,.99,0,.61);
-    top: 0px;
-    left: 0px;
-}
-.box:hover .top-right{
-  -webkit-transition: all 0.4s cubic-bezier(.99,.99,0,.61);
-    top: 0px;
-    right: 0px;
-}
-.box:hover .bottom-left{
-  -webkit-transition: all 0.4s cubic-bezier(.99,.99,0,.61);
-    bottom: 0px;
-    left: 0px;
-}
-.box:hover .bottom-right{
-  -webkit-transition: all 0.4s cubic-bezier(.99,.99,0,.61);
-    bottom: 0px;
-    right: 0px;
-}
-.left{
-  left: -250px;
-}
-.right{
-  right: -250px;
-}
-.top{
-  top: -200px;
-}
-.bottom{
-  bottom: -200px;
-}
-.top-left{
-  top: -200px;
-  left: -250px;
-}
-.top-right{
-  top: -200px;
-  right: -250px;
-}
-.bottom-left{
-  bottom: -200px;
-  left: -250px;
-}
-.bottom-right{
-  bottom: -200px;
-  right: -250px;
-}
-/* Ordering */
-  .left{order:1;}
-  .right{order:2;}
-  .top{order:3;}
-  .bottom{order:4;}
-  .top-left{order:5;}
-  .top-right{order:6;}
-  .bottom-left{order:7;}
-  .bottom-right{order:8;}
 
-.ie7 .title {
-    padding-top: 20px;
+section.top-bar-section {
+	display: inline-block;
 }
+
+.top-bar-section ul li {
+	margin: 0 8px;
+}
+
+	.top-bar-section ul li>a {
+		font-size: 16px;
+		font-family: 'Droid Sans', "Helvetica Neue", Helvetica, Arial, sans-serif;
+		font-style: normal;
+		font-weight: lighter;
+	}
+
+.inline-list {
+	text-align: center;
+}
+	
+	.inline-list>li {
+		float: none;
+		display: inline-block;
+	}
+ 
+ /* ===============
+ Appendix:   ALL: IE Fixes
+   =============== */
