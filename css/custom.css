@@ -12,7 +12,9 @@
 9. Footer div
 10. Back to top
 11. Custom Media Queries
-12. Top Bar Spy
+12. Skills diagram
+13. Fixes and customizations
+14. Contact form
 
 -------------------------------------------------------------------*/
 
@@ -22,6 +24,15 @@
 
 .contain-to-grid {
 	background: #262b37;
+}
+
+nav.tab-bar {
+	background: rgb(38,43,55);
+}
+
+.desktop-hidden {
+	visibility: hidden;
+	display: none;
 }
 
 /** Changes background color, height and margin of the border **/
@@ -134,7 +145,7 @@
 	position: absolute;
 	left: 0;
 	right: 0;
-	top: 10%;
+	top: 7%;
 	text-align: center;
 	padding: 30px 0 30px;
 	max-width: 960px;
@@ -163,8 +174,8 @@
 	width: 100%;
 	/*height:945px;
 	background-attachment: fixed;
-	background-size: 1920px 666px;*/
-	padding-bottom: 3%;
+	background-size: 1920px 666px;
+	padding-bottom: 3%;*/
 }
 
 .lightBlueDiv {
@@ -174,6 +185,12 @@
 	padding-bottom: 3%;
 }
 
+.contactBorderDiv {
+	width: 100%;
+	height: 4px;
+	background: url('../img/contactBorder.png') repeat-x 0 100%;
+}
+
 .expDiv {
 	background-color: white;
 	width: 100%;
@@ -181,11 +198,24 @@
 }
 
 	.expDiv ul {
-		text-align: center;
+		/*text-align: center;*/
 		list-style: none;
 		font-size: large;
-		color: #ff675f;
+		color: #474d5d;
 		margin: 0 auto;
+	}
+	
+.bigBorder {
+	border-left: 8px solid #ff675f;
+}
+
+.skills h4, .skills p {
+	color: #474d5d;
+}
+
+	.skills h4 {
+		text-transform: capitalize;
+		font-weight: 700;
 	}
 
 /*###################################
@@ -235,8 +265,12 @@
 }
 
 .extra-padding {
-	padding-top: 2%;
-	padding-bottom: 3%;
+	padding-top: 1%;
+	padding-bottom: 1%;
+}
+
+.nice-padding {
+	padding: 4% 0;
 }
 
 .row {
@@ -250,6 +284,11 @@
 .imgCircle {
 	border-radius: 50%;
 	padding-top: 32%;
+}
+
+.skillsRP {
+	padding-top: 0.9375rem;
+	padding-bottom: 0.9375rem;
 }
 
 /*###################################
@@ -536,8 +575,8 @@ body {
 		height: 40px;
 		display: block;
 		margin-bottom: 7px;
-		background: rgb(221,70,74) url("../img/up-arrow2.png") no-repeat center center;
-		background: rgba(221,70,74,0.3) url("../img/up-arrow2.png") no-repeat center center;
+		background: rgb(255,103,95) url("../img/up-arrow2.png") no-repeat center center;
+		background: rgba(255,103,95,0.3) url("../img/up-arrow2.png") no-repeat center center;
 
 		/* rounded corners */
 		-webkit-border-radius: 15px;
@@ -550,8 +589,8 @@ body {
 		transition: 1s;
 	}
 		.backtotop span:hover {
-			background-color: rgb(221,70,74);
-			background-color: rgba(221,70,74,1);
+			background-color: rgb(255,103,95);
+			background-color: rgba(255,103,95,0.9);
 		}
 
 
@@ -569,7 +608,7 @@ body {
 		overflow: hidden;	
 		vertical-align: middle;
 		text-align: center;
-		background: #1b1f2b;
+		background: #6f6f6f;
 	}	
 	
 	.firstDiv {
@@ -588,7 +627,7 @@ body {
 	}
 		
 	.bannerText {
-		top: 1%;
+		top: 0.5%;
 		padding: 3px 0 3px;
 		zoom: 0.9;
 	}
@@ -609,10 +648,11 @@ body {
 	.firstDivUnder {
 		height: auto;
 		width: 100%;
+		height: 70%;
 		overflow: hidden;	
 		vertical-align: middle;
 		text-align: center;
-		background: #1b1f2b;
+		background: #6f6f6f;
 	}	
 	
 	.firstDiv {
@@ -631,7 +671,7 @@ body {
 	}
 		
 	.bannerText {
-		top: 5%;
+		top: 3%;
 		padding: 3px 0 3px;
 	}
 	
@@ -673,15 +713,15 @@ body {
 	}
 	
 	.firstDivUnder {
-		height: 80%;
+		height: 100%;
 		overflow: hidden;	
 		vertical-align: middle;
 		text-align: center;
-		background: #1b1f2b;
+		background: #6f6f6f;
 	}
 	
 	.bannerText {
-		top: 5%;
+		top: 3%;
 		padding: 15px 0 15px;
 	}
 	
@@ -724,9 +764,15 @@ body {
 	.f-topbar-fixed {
 		padding-top: 0 !important;
 	}
+	
+	.desktop-hidden {
+		visibility: visible;
+		display: block;
+	}
 }
 
 @media only screen and (min-width:641px) {
+	
 	.desktop-hidden {
 		visibility: hidden;
 		display: none;
@@ -747,44 +793,55 @@ body {
 @media only screen and (min-width: 120.063em) { } /* min-width 1921px, xlarge screens */
 
 /*###################################
-##  12 Top Bar Spy                 ##
-##################################### 
+##  12 Skills diagram                ##
+##################################### */
 
-#top-menu {
-    position: inherit;
-    z-index: 1;
-    background: transparent;
-    left: 0;
-    right: 0;
-    top: 0;
+.chart {
+  position: relative;
+  display: inline-block;
+  width: 152px;
+  height: 152px;
+  margin-bottom: 26px;
+  text-align: center;
+}
+.chart canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 152px;
+  height: 152px;
 }
 
-	#top-menu li {
-    	float: left;
-	}
-	
-		#top-menu li.active a {
-			border-top: 3px solid #454e64;
-			color: #454e64;
-			font-weight: bold;
-		}
+.skillBg {
+	background: url('../img/skills.png') no-repeat 0 0;
+}
 
-	#top-menu a {
-    	display: block;
-		-webkit-transition: 1s all ease;
-		-moz-transition: 1s all ease;
-		transition: 1s all ease;
-		border-top: 3px solid transparent;
-		color: #727070;
-		text-decoration: none;
-	}
-
-		#top-menu a:hover {
-			color: #454e64;
-		} */
+.percent {
+	display: inline-block;
+	font-size: 21px;
+	color: #474d5d;
+	line-height: 152px;
+	z-index: 2;
+}
+.percent:after {
+  content: '%';
+  margin-left: 0.1em;
+  font-size: .8em;
+}
+.angular {
+  margin-top: 100px;
+}
+.angular .chart {
+  margin-top: 0;
+}
+input {
+  display: block;
+  margin: auto;
+  margin-bottom: 3em;
+}
   
 /*###################################
-##  13.                   ##
+##  13. Fixes and customizations    ##
 #####################################*/  
  
 nav.top-bar {
@@ -814,7 +871,57 @@ section.top-bar-section {
 		float: none;
 		display: inline-block;
 	}
+
+.vco-slider .slider-item .content .content-container .media .media-wrapper .media-container .media-frame, .vco-slider .slider-item .content .content-container .media .media-wrapper .media-container .media-image img {
+	border: 0 !important;
+}
+	
+.vco-storyjs img {
+	border: none !important;
+}
  
- /* ===============
- Appendix:   ALL: IE Fixes
-   =============== */
+img {
+	border: none !important;
+}
+
+/*###################################
+##  14. $Contact Form              ##
+##################################### */
+
+.button {
+	font-family: 'Droid Sans', "Helvetica Neue", Helvetica, Arial, sans-serif;
+	background-color: rgb(1,193,255);
+	border-color: rgb(1,193,255);
+	font-size: 1.5rem;
+}
+
+	.button:hover, .button:focus {
+		background-color: rgb(0,61,125);
+		background-color: rgba(0,61,125,0.8);
+	}
+
+textarea {
+	min-height: 109px;
+}
+
+fieldset {
+	border: none;
+}
+
+span.success, small.success {
+	display: block;
+	padding: 0.375rem 0.5625rem 0.5625rem;
+	margin-top: -1px;
+	margin-bottom: 1rem;
+	font-size: 1.25rem;
+	font-weight: normal;
+	font-style: italic;
+	background: #61B329;
+	color: #fff;
+	font-family: 'Droid Sans', "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+span.error, small.error {
+	font-size: 1.25rem;
+	font-family: 'Droid Sans', "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
