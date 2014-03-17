@@ -5,7 +5,7 @@ var index=0;
 $(document).scroll(function(){
 	var top = $('.skills').height()-$(window).scrollTop();
 	console.log(top)
-	if(top<-1200){
+	if(top<-1204){
 		if(index==0){	
 			
 			$('.chart').easyPieChart({

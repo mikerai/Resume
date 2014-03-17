@@ -283,7 +283,7 @@ nav.tab-bar {
 
 .imgCircle {
 	border-radius: 50%;
-	padding-top: 32%;
+	padding-top: 5.5%;
 }
 
 .skillsRP {
@@ -896,12 +896,11 @@ img {
 }
 
 	.button:hover, .button:focus {
-		background-color: rgb(0,61,125);
-		background-color: rgba(0,61,125,0.8);
+		background: #61B329;
 	}
 
 textarea {
-	min-height: 109px;
+	min-height: 169px;
 }
 
 fieldset {
