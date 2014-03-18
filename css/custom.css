@@ -769,6 +769,11 @@ body {
 		visibility: visible;
 		display: block;
 	}
+	
+	.mobile-hidden {
+		visibility: hidden;
+		display: none;
+	}
 }
 
 @media only screen and (min-width:641px) {
