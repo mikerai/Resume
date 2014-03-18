@@ -194,7 +194,7 @@ nav.tab-bar {
 .expDiv {
 	background-color: white;
 	width: 100%;
-	padding-bottom: 3%;
+	padding-bottom: 2%;
 }
 
 	.expDiv ul {
@@ -629,7 +629,7 @@ body {
 	.bannerText {
 		top: 0.5%;
 		padding: 3px 0 3px;
-		zoom: 0.9;
+		zoom: 0.6;
 	}
 	
 	.stickyPadding {
@@ -671,7 +671,7 @@ body {
 	}
 		
 	.bannerText {
-		top: 3%;
+		top: 1%;
 		padding: 3px 0 3px;
 	}
 	
@@ -721,7 +721,7 @@ body {
 	}
 	
 	.bannerText {
-		top: 3%;
+		top: 2%;
 		padding: 15px 0 15px;
 	}
 	
@@ -883,6 +883,17 @@ section.top-bar-section {
 img {
 	border: none !important;
 }
+
+.orbit-container .orbit-slide-number {
+	color: #6f6f6f;
+	font-family: 'Droid Sans', "Helvetica Neue", Helvetica, Arial, sans-serif;
+	background: rgba(0,0,0,0);
+}
+
+	.orbit-container .orbit-slides-container>* .orbit-caption {
+		background-color: rgba(51,51,51,0.5);
+		font-family: 'Droid Sans', "Helvetica Neue", Helvetica, Arial, sans-serif;
+	}
 
 /*###################################
 ##  14. $Contact Form              ##
