@@ -15,6 +15,7 @@
 12. Skills diagram
 13. Fixes and customizations
 14. Contact form
+15. Timeline
 
 -------------------------------------------------------------------*/
 
@@ -164,6 +165,11 @@ nav.tab-bar {
 
 .smallSpace {
 	padding-left: 25px;
+	vertical-align: middle;
+}
+
+.microSpace {
+	padding-left: 5px;
 	vertical-align: middle;
 }
 
@@ -593,9 +599,297 @@ body {
 			background-color: rgba(255,103,95,0.9);
 		}
 
+/*###################################
+##  11 Skills diagram                ##
+##################################### */
+
+.chart {
+  position: relative;
+  display: inline-block;
+  width: 152px;
+  height: 152px;
+  margin-bottom: 26px;
+  text-align: center;
+}
+.chart canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 152px;
+  height: 152px;
+}
+
+.skillBg {
+	background: url('../img/skills.png') no-repeat 0 0;
+}
+
+.percent {
+	display: inline-block;
+	font-size: 21px;
+	color: #474d5d;
+	line-height: 152px;
+	z-index: 2;
+}
+.percent:after {
+  content: '%';
+  margin-left: 0.1em;
+  font-size: .8em;
+}
+.angular {
+  margin-top: 100px;
+}
+.angular .chart {
+  margin-top: 0;
+}
+input {
+  display: block;
+  margin: auto;
+  margin-bottom: 3em;
+}
+  
+/*###################################
+##  12. Fixes and customizations    ##
+#####################################*/  
+ 
+nav.top-bar {
+	text-align:center;
+}
+
+section.top-bar-section {
+	display: inline-block;
+}
+
+.top-bar-section ul li {
+	margin: 0 8px;
+}
+
+	.top-bar-section ul li>a {
+		font-size: 16px;
+		font-family: 'Droid Sans', "Helvetica Neue", Helvetica, Arial, sans-serif;
+		font-style: normal;
+		font-weight: lighter;
+	}
+
+.inline-list {
+	text-align: center;
+}
+	
+	.inline-list>li {
+		float: none;
+		display: inline-block;
+	}
+
+.vco-slider .slider-item .content .content-container .media .media-wrapper .media-container .media-frame, .vco-slider .slider-item .content .content-container .media .media-wrapper .media-container .media-image img {
+	border: 0 !important;
+}
+	
+.vco-storyjs img {
+	border: none !important;
+}
+ 
+img {
+	border: none !important;
+}
+
+.orbit-container .orbit-slide-number {
+	color: #6f6f6f;
+	font-family: 'Droid Sans', "Helvetica Neue", Helvetica, Arial, sans-serif;
+	background: rgba(0,0,0,0);
+}
+
+	.orbit-container .orbit-slides-container>* .orbit-caption {
+		background-color: rgba(51,51,51,0.5);
+		font-family: 'Droid Sans', "Helvetica Neue", Helvetica, Arial, sans-serif;
+	}
 
 /*###################################
-##  11 Custom =media queries       ##
+##  13. $Contact Form              ##
+##################################### */
+
+.button {
+	font-family: 'Droid Sans', "Helvetica Neue", Helvetica, Arial, sans-serif;
+	background-color: rgb(1,193,255);
+	border-color: rgb(1,193,255);
+	font-size: 1.5rem;
+}
+
+	.button:hover, .button:focus {
+		background: #61B329;
+	}
+
+textarea {
+	min-height: 169px;
+}
+
+fieldset {
+	border: none;
+}
+
+span.success, small.success {
+	display: block;
+	padding: 0.375rem 0.5625rem 0.5625rem;
+	margin-top: -1px;
+	margin-bottom: 1rem;
+	font-size: 1.25rem;
+	font-weight: normal;
+	font-style: italic;
+	background: #61B329;
+	color: #fff;
+	font-family: 'Droid Sans', "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+span.error, small.error {
+	font-size: 1.25rem;
+	font-family: 'Droid Sans', "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+/*###################################
+##  14. $Timeline                   ##
+##################################### */
+
+.sociales {
+	text-align: center;
+	margin-bottom: 20px;
+}
+
+	#timeline {
+		width: 800px;
+		height: 350px;
+		overflow: hidden;
+		margin-top: 20px;
+		margin-left: auto;
+		margin-bottom: 0;
+		margin-right: auto;
+		position: relative;
+		background: url('../img/dot.gif') left 45px repeat-x;
+	}
+		#dates {
+			width: 800px;
+			height: 60px;
+			overflow: hidden;
+		}
+			#dates li {
+				list-style: none;
+				float: left;
+				width: 100px;
+				height: 50px;
+				font-family: 'Droid Sans', "Helvetica Neue", Helvetica, Arial, sans-serif;
+				font-size: 24px;
+				text-align: center;
+				background: url('../img/biggerdot.png') center bottom no-repeat;
+			}
+				#dates a {
+					line-height: 38px;
+					font-family: 'Droid Sans', "Helvetica Neue", Helvetica, Arial, sans-serif;
+					padding-bottom: 10px;
+					color: rgb(1,193,255);
+				}
+				#dates .selected {
+					font-family: 'Droid Sans', "Helvetica Neue", Helvetica, Arial, sans-serif;
+			        font-size: 38px;
+				}
+		
+		#issues {
+			width: 800px;
+			height: 350px;
+			overflow: hidden;
+		}	
+			#issues li {
+				width: 800px;
+				height: 350px;
+				list-style: none;
+				float: left;
+			}
+				#issues li.selected img {
+					-webkit-transform: scale(1.1,1.1);
+					-moz-transform: scale(1.1,1.1);
+				    -o-transform: scale(1.1,1.1);
+				    -ms-transform: scale(1.1,1.1);
+				    transform: scale(1.1,1.1);
+				}
+				#issues li img {
+					float: left;
+					margin: 10px 30px 10px 50px;
+					background: transparent;
+					-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#00FFFFFF,endColorstr=#00FFFFFF)"; /* IE 8 */   
+					filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#00FFFFFF,endColorstr=#00FFFFFF);/* IE 6 & 7 */      
+					zoom: 1;
+					-webkit-transition: all 2s ease-in-out;
+					-moz-transition: all 2s ease-in-out;
+					-o-transition: all 2s ease-in-out;
+					-ms-transition: all 2s ease-in-out; 
+					transition: all 2s ease-in-out;
+					-webkit-transform: scale(0.7,0.7);
+					-moz-transform: scale(0.7,0.7);
+				    -o-transform: scale(0.7,0.7);
+				    -ms-transform: scale(0.7,0.7);
+				    transform: scale(0.7,0.7);
+				}
+				#issues li h1 {
+					color: rgb(0,61,125);
+					font-family: 'Droid Sans', "Helvetica Neue", Helvetica, Arial, sans-serif;
+					font-size: 48px;
+					margin: 20px 0;
+					text-shadow: #000 1px 1px 2px;
+				}
+				#issues li p {
+					font-size: 14px;
+					font-family: 'Droid Sans', "Helvetica Neue", Helvetica, Arial, sans-serif;
+					margin-right: 70px;
+					font-weight: normal;
+					line-height: 22px;
+					-webkit-font-smoothing: antialiased;
+					-moz-osx-font-smoothing: grayscale;
+				}
+		
+		#grad_left,
+		#grad_right {
+			width: 100px;
+			height: 350px;
+			position: absolute;
+			top: 0;
+		}
+			#grad_left {
+		        left: 0;
+		        
+			}
+			#grad_right {
+		        right: 0;
+		        
+			}
+		
+		#next,
+		#prev {
+			position: absolute;
+			top: 0;
+			font-size: 70px;
+			top: 170px;
+			width: 22px;
+			height: 38px;
+			background-position: 0 0;
+			background-repeat: no-repeat;
+			text-indent: -9999px;
+			overflow: hidden;
+		}
+			#next:hover,
+			#prev:hover {
+				background-position: 0 -76px;
+			}
+			#next {
+				right: 0;
+				background-image: url('../img/next.png');
+			}
+			#prev {
+				left: 0;
+				background-image: url('../img/prev.png');
+			}
+				#next.disabled,
+				#prev.disabled {
+					opacity: 0.2;
+				}
+				
+/*###################################
+##  15 Custom =media queries       ##
 ##################################### */
 		
 /* // Small screens */
@@ -639,6 +933,10 @@ body {
 	.top-bar-section ul li.active {
 		background: #454e64;
 		border-top: 3px solid transparent;
+	}
+	
+	#timeline {
+		width: 200px;
 	}
 	
 } /* Define mobile styles */
@@ -751,6 +1049,26 @@ body {
 	.smallSpace {
 		padding-left: 4px;
 	}
+	
+	.mobile-hidden {
+		visibility: hidden;
+		display: none;
+	}
+}
+
+@media only screen and (max-width:800px) { 
+
+	#timeline {
+		width: 660px;
+	}
+	
+	#issues li p {
+		width: 640px;	
+	}
+	
+	#issues li img {
+		display: none; 
+	}
 }
 
 @media only screen and (max-width:640px) {
@@ -774,6 +1092,19 @@ body {
 		visibility: hidden;
 		display: none;
 	}
+	
+	#timeline {
+		width: 400px;
+	}
+	
+	#issues li img {
+		display: none; 
+	}
+	
+	#issues li p {
+		width: 380px;
+		
+	}
 }
 
 @media only screen and (min-width:641px) {
@@ -783,6 +1114,24 @@ body {
 		display: none;
 	}
 }
+
+@media only screen and (max-width: 321px) { 
+	
+	#timeline {
+		width: 220px;
+	}
+	
+	#issues li img {
+		display: none; 
+	}
+	
+	#issues li p {
+		width: 220px;
+		
+	}
+	
+	
+} /* Define mobile styles */
 
 /* // Large screens */
 @media only screen and (min-width: 64.063em) { } /* min-width 1025px, large screens */
@@ -796,147 +1145,3 @@ body {
 
 /* // XXLarge screens */
 @media only screen and (min-width: 120.063em) { } /* min-width 1921px, xlarge screens */
-
-/*###################################
-##  12 Skills diagram                ##
-##################################### */
-
-.chart {
-  position: relative;
-  display: inline-block;
-  width: 152px;
-  height: 152px;
-  margin-bottom: 26px;
-  text-align: center;
-}
-.chart canvas {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 152px;
-  height: 152px;
-}
-
-.skillBg {
-	background: url('../img/skills.png') no-repeat 0 0;
-}
-
-.percent {
-	display: inline-block;
-	font-size: 21px;
-	color: #474d5d;
-	line-height: 152px;
-	z-index: 2;
-}
-.percent:after {
-  content: '%';
-  margin-left: 0.1em;
-  font-size: .8em;
-}
-.angular {
-  margin-top: 100px;
-}
-.angular .chart {
-  margin-top: 0;
-}
-input {
-  display: block;
-  margin: auto;
-  margin-bottom: 3em;
-}
-  
-/*###################################
-##  13. Fixes and customizations    ##
-#####################################*/  
- 
-nav.top-bar {
-	text-align:center;
-}
-
-section.top-bar-section {
-	display: inline-block;
-}
-
-.top-bar-section ul li {
-	margin: 0 8px;
-}
-
-	.top-bar-section ul li>a {
-		font-size: 16px;
-		font-family: 'Droid Sans', "Helvetica Neue", Helvetica, Arial, sans-serif;
-		font-style: normal;
-		font-weight: lighter;
-	}
-
-.inline-list {
-	text-align: center;
-}
-	
-	.inline-list>li {
-		float: none;
-		display: inline-block;
-	}
-
-.vco-slider .slider-item .content .content-container .media .media-wrapper .media-container .media-frame, .vco-slider .slider-item .content .content-container .media .media-wrapper .media-container .media-image img {
-	border: 0 !important;
-}
-	
-.vco-storyjs img {
-	border: none !important;
-}
- 
-img {
-	border: none !important;
-}
-
-.orbit-container .orbit-slide-number {
-	color: #6f6f6f;
-	font-family: 'Droid Sans', "Helvetica Neue", Helvetica, Arial, sans-serif;
-	background: rgba(0,0,0,0);
-}
-
-	.orbit-container .orbit-slides-container>* .orbit-caption {
-		background-color: rgba(51,51,51,0.5);
-		font-family: 'Droid Sans', "Helvetica Neue", Helvetica, Arial, sans-serif;
-	}
-
-/*###################################
-##  14. $Contact Form              ##
-##################################### */
-
-.button {
-	font-family: 'Droid Sans', "Helvetica Neue", Helvetica, Arial, sans-serif;
-	background-color: rgb(1,193,255);
-	border-color: rgb(1,193,255);
-	font-size: 1.5rem;
-}
-
-	.button:hover, .button:focus {
-		background: #61B329;
-	}
-
-textarea {
-	min-height: 169px;
-}
-
-fieldset {
-	border: none;
-}
-
-span.success, small.success {
-	display: block;
-	padding: 0.375rem 0.5625rem 0.5625rem;
-	margin-top: -1px;
-	margin-bottom: 1rem;
-	font-size: 1.25rem;
-	font-weight: normal;
-	font-style: italic;
-	background: #61B329;
-	color: #fff;
-	font-family: 'Droid Sans', "Helvetica Neue", Helvetica, Arial, sans-serif;
-}
-
-span.error, small.error {
-	font-size: 1.25rem;
-	font-family: 'Droid Sans', "Helvetica Neue", Helvetica, Arial, sans-serif;
-}
