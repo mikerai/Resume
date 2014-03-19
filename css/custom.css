@@ -16,6 +16,7 @@
 13. Fixes and customizations
 14. Contact form
 15. Timeline
+16. Social icons
 
 -------------------------------------------------------------------*/
 
@@ -677,19 +678,8 @@ section.top-bar-section {
 	.inline-list>li {
 		float: none;
 		display: inline-block;
+		margin: 0 17px;
 	}
-
-.vco-slider .slider-item .content .content-container .media .media-wrapper .media-container .media-frame, .vco-slider .slider-item .content .content-container .media .media-wrapper .media-container .media-image img {
-	border: 0 !important;
-}
-	
-.vco-storyjs img {
-	border: none !important;
-}
- 
-img {
-	border: none !important;
-}
 
 .orbit-container .orbit-slide-number {
 	color: #6f6f6f;
@@ -754,7 +744,7 @@ span.error, small.error {
 
 	#timeline {
 		width: 800px;
-		height: 350px;
+		height: 450px;
 		overflow: hidden;
 		margin-top: 20px;
 		margin-left: auto;
@@ -791,12 +781,12 @@ span.error, small.error {
 		
 		#issues {
 			width: 800px;
-			height: 350px;
+			height: 450px;
 			overflow: hidden;
 		}	
 			#issues li {
 				width: 800px;
-				height: 350px;
+				height: 450px;
 				list-style: none;
 				float: left;
 			}
@@ -845,7 +835,7 @@ span.error, small.error {
 		#grad_left,
 		#grad_right {
 			width: 100px;
-			height: 350px;
+			height: 450px;
 			position: absolute;
 			top: 0;
 		}
@@ -1129,8 +1119,7 @@ span.error, small.error {
 		width: 220px;
 		
 	}
-	
-	
+		
 } /* Define mobile styles */
 
 /* // Large screens */
