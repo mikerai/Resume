@@ -140,6 +140,7 @@ nav.tab-bar {
 
 	.firstDivUnder img {
 		opacity: 0.2;
+		filter: alpha(opacity = 20); /* For IE */
 	}
 	
 .bannerText {
