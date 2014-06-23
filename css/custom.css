@@ -16,6 +16,7 @@
 13. Fixes and customizations
 14. Contact form
 15. Timeline
+16. Social icons
 
 -------------------------------------------------------------------*/
 
@@ -678,19 +679,8 @@ section.top-bar-section {
 	.inline-list>li {
 		float: none;
 		display: inline-block;
+		margin: 0 17px;
 	}
-
-.vco-slider .slider-item .content .content-container .media .media-wrapper .media-container .media-frame, .vco-slider .slider-item .content .content-container .media .media-wrapper .media-container .media-image img {
-	border: 0 !important;
-}
-	
-.vco-storyjs img {
-	border: none !important;
-}
- 
-img {
-	border: none !important;
-}
 
 .orbit-container .orbit-slide-number {
 	color: #6f6f6f;
@@ -716,6 +706,42 @@ img {
 
 	.button:hover, .button:focus {
 		background: #61B329;
+	}
+
+.button-1 {
+	font-family: 'Droid Sans',"Helvetica Neue",Helvetica,Arial,sans-serif;
+	background-color: rgba(0,0,0,.3);
+	border-radius: 15px;
+	font-size: 1rem;
+	border-style: solid;
+	border-width: 0px;
+	cursor: pointer;
+	font-weight: normal;
+	line-height: normal;
+	margin: 0 0 1.25rem;
+	position: relative;
+	text-decoration: none;
+	text-align: center;
+	display: inline-block;
+	padding-top: 1rem;
+	padding-right: 2rem;
+	padding-bottom: 1.0625rem;
+	padding-left: 2rem;
+	font-size: 1rem;
+	border-color: #007095;
+	color: #fff;
+	-webkit-transition: background-color 300ms ease-out;
+	-moz-transition: background-color 300ms ease-out;
+	transition: background-color 300ms ease-out;
+	padding-top: 1.0625rem;
+	padding-bottom: 1rem;
+	-webkit-appearance: none;
+	border: none;
+	font-weight: normal !important;
+}
+
+	.button-1:hover, .button-1:focus {
+		background-color: rgba(0,0,0,.7);
 	}
 
 textarea {
@@ -755,7 +781,7 @@ span.error, small.error {
 
 	#timeline {
 		width: 800px;
-		height: 350px;
+		height: 450px;
 		overflow: hidden;
 		margin-top: 20px;
 		margin-left: auto;
@@ -792,12 +818,12 @@ span.error, small.error {
 		
 		#issues {
 			width: 800px;
-			height: 350px;
+			height: 450px;
 			overflow: hidden;
 		}	
 			#issues li {
 				width: 800px;
-				height: 350px;
+				height: 450px;
 				list-style: none;
 				float: left;
 			}
@@ -846,7 +872,7 @@ span.error, small.error {
 		#grad_left,
 		#grad_right {
 			width: 100px;
-			height: 350px;
+			height: 450px;
 			position: absolute;
 			top: 0;
 		}
@@ -1130,8 +1156,7 @@ span.error, small.error {
 		width: 220px;
 		
 	}
-	
-	
+		
 } /* Define mobile styles */
 
 /* // Large screens */
