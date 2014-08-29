@@ -84,7 +84,7 @@
             draw: function () {
 
                 // "cr3ativ" case
-                if (this.$.data('skin') == 'cr3ativ') {
+                if (this.$.data('skin') === 'cr3ativ') {
 
                     var a = this.angle(this.cv) // Angle
                     ,
@@ -152,9 +152,9 @@
         //Video Wallpaper Settings - alter the URL's to your converted videos		
         $("#video_element").wallpaper({
             source: {
-                mp4: "videos/clouds2.mp4",
-                ogg: "videos/clouds2.ogv",
-                webm: "videos/clouds2.webm"
+                mp4: "videos/videoHD.mp4",
+                ogg: "videos/videoHD.ogv",
+                webm: "videos/videoHD.webm"
             }
         });
 
