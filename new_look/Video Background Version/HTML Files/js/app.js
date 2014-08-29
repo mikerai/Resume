@@ -154,7 +154,8 @@
             source: {
                 mp4: "videos/videoHD.mp4",
                 ogg: "videos/videoHD.ogv",
-                webm: "videos/videoHD.webm"
+                webm: "videos/videoHD.webm",
+                mov: "videos/videoHD.mov"
             }
         });
 

@@ -48,6 +48,12 @@ a img, a, img { border: none; outline: none; text-decoration: none;}
     width: 170px;
     margin-bottom: 20px;
 }
+
+.owl-item {
+    height: auto;
+    min-height: 239px;
+}
+
 #toTop {
     display: none;
     position: fixed;
