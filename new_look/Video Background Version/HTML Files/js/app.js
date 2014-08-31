@@ -163,7 +163,13 @@
         $(".video-container").fitVids();
 
         //fancybox
-        $(".fancybox").fancybox();
+        $(".fancybox").fancybox({
+            openEffect  : 'none',
+            closeEffect : 'none',
+            iframe : {
+                preload: false
+            }
+        });
 
         //ScrolltoTop
         $("#toTop").scrollToTop(1000);
