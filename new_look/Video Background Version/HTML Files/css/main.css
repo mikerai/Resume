@@ -1158,7 +1158,7 @@ Responsive Syling
     }
     .wh100 {width: 100%; height: 100%;}
     
-    .parallax1 {background-image: url("../img/background-mobile.png"); background-attachment: scroll !important;}
+    .parallax1 {background-image: url("../img/background-mobile1.png"); background-attachment: scroll !important;}
 }
 
 /*@media all and (min-device-width : 320px) and (max-device-width : 568px){
