@@ -1159,5 +1159,7 @@ Responsive Syling
 }
 
 @media all and (min-device-width : 320px) and (max-device-width : 568px){
-      .parallax1, .parallax2 {  background-attachment: scroll; background-position: scroll; height: 100%; width:100%; overflow: scroll; -webkit-overflow-scrolling: touch;}
+      .parallax1, .parallax2 {  background-attachment: scroll; background-position: scroll; width:100%; overflow: scroll; -webkit-overflow-scrolling: touch;}
+      .parallax1 {height: auto;}
+      .parallax2 {height: 100%;}
     }
