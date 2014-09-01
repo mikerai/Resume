@@ -604,6 +604,7 @@ h5 {
 #socialsection:hover { cursor: pointer; }
 #social-left { text-align: center; display: inline-block; height: 100%; width: 50%; background-color: #262B30; float: left; min-height: 100px; border-radius: 3px 0 0 0; transition: all 0.3s ease-in-out;}
 #social-left:before { content: "Follow Me"; font-size: 15px; font-weight: 600; display: block; padding-top: 13px; color: #ffffff; }
+#social-left.sp:before {content: "Sígueme";}
 #social-left a { min-height: 24px; color: #ffffff; display: inline-block; margin-top: 5px;}
 #social-left [class^="icon-"]:before, #social-left [class*=" icon-"]:before {font-size: 24px; min-height: 24px; }
 #social-left [class^="icon-"]:hover:before, #social-left [class*=" icon-"]:hover:before {color: rgba(255, 255, 255, 1.0); }
@@ -670,6 +671,7 @@ h5 {
 }
 #social-right { text-align: center; display: inline-block; height: 100%; width: 50%; background-color: #262B30; float: left; min-height: 100px; border-radius: 0 3px 0 0 ; transition: all 0.3s ease-in-out;}
 #social-right:before { content: "Share This"; font-size: 15px; font-weight: 600; display: block; padding-top: 13px; color: #ffffff; }
+#social-right.sp:before {content: "Comparte";}
 #social-right a { min-height: 24px; color: #ffffff; display: inline-block; margin-top: 5px;}
 #social-right [class^="icon-"]:before, #social-right [class*=" icon-"]:before {font-size: 24px; min-height: 24px; }
 #social-right [class^="icon-"]:hover:before, #social-right [class*=" icon-"]:hover:before {color: rgba(255, 255, 255, 1.0); }
