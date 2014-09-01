@@ -75,8 +75,6 @@ a img, a, img { border: none; outline: none; text-decoration: none;}
     background-image: url('../img/gb.svg');
 }
 
-.w100 {width: 100%;}
-
 #toTop {
     display: none;
     position: fixed;
@@ -119,6 +117,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#24ffb07f', e
     z-index: 89;
     position: absolute;
 }
+
 /* End of the gradient - keep the width, height, z-index and position in the code above!! */
 
 #video_element { width: 100%; height: 100%; background-size: cover; background-position: center center; z-index:1; }
@@ -1048,10 +1047,11 @@ Responsive Syling
         -moz-background-size: cover;
         background-size: cover;
         background-position: center center;
-        background-attachment: fixed;
+        background-attachment: scroll;
         width: 100%;
         height: 100%;
     }
+    .parallax1 {background-image: url("../img/background-ipad.jpg"); background-attachment: scroll !important;}
     #contact_form { width: 100%; }
 }
 @media all and (max-width: 768px)  {
@@ -1156,10 +1156,13 @@ Responsive Syling
     margin-top: 20px;
     position: relative;
     }
+    .wh100 {width: 100%; height: 100%;}
+    
+    .parallax1 {background-image: url("../img/background-mobile.png"); background-attachment: scroll !important;}
 }
 
-@media all and (min-device-width : 320px) and (max-device-width : 568px){
+/*@media all and (min-device-width : 320px) and (max-device-width : 568px){
       .parallax1, .parallax2 {  background-attachment: scroll; background-position: scroll; width:100%; overflow: scroll; -webkit-overflow-scrolling: touch;}
       .parallax1 {height: auto;}
       .parallax2 {height: 100%;}
-    }
+    }*/
