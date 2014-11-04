@@ -1,9 +1,9 @@
 /*Customizations and site styles*/
 /*Fonts and general styling*/
 .row {max-width: 64rem;}
-body {font-family: 'Lato', Arial, sans-serif; text-rendering: optimizeLegibility;}
-h1, h2, h3, h4, h5, h6 {font-family: 'Lato', Arial, sans-serif;}
-button, .button {font-family: 'Lato', Arial, sans-serif;}
+body {font-family: Arial, "Helvetica", Helvetica, sans-serif; text-rendering: optimizeLegibility;}
+h1, h2, h3, h4, h5, h6 {font-family: Arial, "Helvetica", Helvetica, sans-serif;}
+button, .button {font-family: Arial, "Helvetica", Helvetica, sans-serif;}
 
 /* Colors 
 
