@@ -51,7 +51,7 @@ menu green separator rgb(0, 121, 52);
 	margin: 0 !important;
 }
 
-.lh-m {line-height: 4.438rem !important;}
+.lh-m {line-height: 4rem !important;}
 
 /*.menu a:hover {
 	color: #00461e !important;
@@ -167,7 +167,7 @@ ul.off-canvas-list li a:hover {
 
 .button.transparent {
 	background-color: transparent !important;
-	min-height: 4.438rem !important;
+	min-height: 4.3rem !important;
 }
 
 .menu .bh:hover {
