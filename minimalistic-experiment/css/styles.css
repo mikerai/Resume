@@ -55,8 +55,11 @@ menu green separator rgb(0, 121, 52);
 .mtb16 {margin: 1rem 0 !important;}
 .mb16 {margin-bottom: 1rem !important;}
 
+.mtb32 {margin: 2rem 0 !important;}
+.mb32 {margin-bottom: 2rem !important;}
+
 .mtb64 {margin-top: 4rem 0 !important;}
-.mt64 {margin-top: 4rem !important;}
+.mt64 {margin-top: 4.1rem !important;}
 
 
 /* Header and Menu */
@@ -192,8 +195,8 @@ ul.off-canvas-list li a:hover {
 
 .footer {
 	width: 100% !important;
-	background: rgb(203,201,207) !important;
-	background: rgba(203,201,207,0.85) !important;
+	background: rgb(255, 255, 255) !important;
+	background: rgba(255, 255, 255, 0.85) !important;
 	padding: 2.5rem 0 1.5rem;
 }
 
@@ -210,6 +213,8 @@ ul.off-canvas-list li a:hover {
 }
 
 /* Cusom Divs */
+
+#main {display: none;}
 
 .panel .blue {
 	background: rgb(203,201,207) !important;
