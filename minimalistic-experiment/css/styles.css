@@ -190,15 +190,7 @@ button:focus {outline:0;}
 @media only screen and (max-width: 40.063em) { 
 	#me, #skills, #resume, #portfolio, #ios, #contact {margin-top: 1.5rem !important;}
 	p.simple {font-size: 4.5rem !important; line-height: 4rem !important;}
-	nav {
-      display:none;
-  }
-  nav.showme {
-   display:block;
-  }
-  button {
-    display:block;
-  }
+	nav {display:none;}
 }
 
 /* Custom text styles */
