@@ -47,8 +47,8 @@ a:hover{color:#807F83;}
 .center {text-align: center !important;}
 .right {text-align: right !important;}
 
-.mtb16 {margin: 1rem 0 !important;}
-.mb16 {margin-bottom: 1rem !important;}
+.mtb16 {margin: 1.1rem 0 !important;}
+.mb16 {margin-bottom: 1.1rem !important;}
 
 .mtb32 {margin: 2rem 0 !important;}
 .mb32 {margin-bottom: 2rem !important;}
@@ -88,6 +88,8 @@ li {padding: 0.5rem 0;}
 	border-bottom: 2px solid #CC6699;
 }
 
+div.bh1.active {border-bottom: 2px solid #CC6699 !important;}
+
 #me {
 	border-left: 3px solid #CC6699;
 }
@@ -95,6 +97,8 @@ li {padding: 0.5rem 0;}
 .menu .bh2:hover {
 	border-bottom: 2px solid #33CCFF;
 }
+
+div.bh2.active {border-bottom: 2px solid #33CCFF !important;}
 
 #skills {
 	border-left: 3px solid #33CCFF;
@@ -104,6 +108,8 @@ li {padding: 0.5rem 0;}
 	border-bottom: 2px solid #DFCE3A;
 }
 
+div.bh3.active {border-bottom: 2px solid #DFCE3A !important;}
+
 #resume {
 	border-left: 3px solid #DFCE3A;
 }
@@ -111,6 +117,8 @@ li {padding: 0.5rem 0;}
 .menu .bh4:hover {
 	border-bottom: 2px solid #99CC66;
 }
+
+div.bh4.active {border-bottom: 2px solid #99CC66 !important;}
 
 #portfolio {
 	border-left: 3px solid #99CC66;
@@ -120,6 +128,8 @@ li {padding: 0.5rem 0;}
 	border-bottom: 2px solid #9999CC;
 }
 
+div.bh5.active {border-bottom: 2px solid #9999CC !important;}
+
 #ios {
 	border-left: 3px solid #9999CC;
 }
@@ -127,6 +137,8 @@ li {padding: 0.5rem 0;}
 .menu .bh6:hover {
 	border-bottom: 2px solid #FFAD6D;
 }
+
+div.bh6.active {border-bottom: 2px solid #FFAD6D !important;}
 
 #contact {
 	border-left: 3px solid #FFAD6D;
