@@ -39,3 +39,9 @@ $(function(){
       $('nav').slideToggle();
   });
 });
+
+$("#main").on("click", function(e){
+    e.preventDefault();
+    //$('nav').css("display","none");
+    $('nav').slideUp();
+});
