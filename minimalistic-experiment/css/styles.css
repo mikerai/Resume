@@ -214,7 +214,7 @@ ul.off-canvas-list li a:hover {
 
 /* Cusom Divs */
 
-#main {display: none;}
+#main {visibility: hidden;}
 
 .panel .blue {
 	background: rgb(203,201,207) !important;
