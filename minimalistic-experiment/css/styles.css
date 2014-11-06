@@ -2,7 +2,7 @@
 /*Fonts and general styling*/
 
 /* <link href='http://fonts.googleapis.com/css?family=Raleway:400,700' rel='stylesheet' type='text/css'> */
-
+p.simple {font-size: 12rem; font-family: Arial, sans-serif; font-weight: 700; color: #807F83;line-height: 10rem;text-align: center;}
 /* latin */
 @font-face {
   font-family: 'Raleway';
@@ -59,7 +59,8 @@ a:hover{color:#807F83;}
 
 .mt21f {margin-top: 21% !important;}
 
-li {padding: 0.5rem 0;}
+ul {margin: 0 !important;}
+li {padding: 0.75rem 0; font-size:1.125rem;}
 
 /* Header and Menu */
 
@@ -156,10 +157,10 @@ ul {
 /* Footer */
 
 .footer {
-	width: 100% !important;
+	margin: 0 !important;
 	background: rgb(255, 255, 255) !important;
 	background: rgba(255, 255, 255, 0.85) !important;
-	padding: 2.5rem 0 1.5rem;
+	padding: 0.5rem 0 1.5rem;
 }
 
 .footer p, .footer h4 {
@@ -168,6 +169,10 @@ ul {
 
 .footer a {
 	color: #000000 !important;
+}
+
+.footer .small-12 {
+	padding: 0.5rem 0 !important;
 }
 
 .footer a:hover {
@@ -183,8 +188,15 @@ ul {
 button:focus {outline:0;}
 
 .menuB{
+	font-size: 1.25rem !important;
     margin: 0 auto;
+    color: #ffffff !important;
+	background-color: #000000 !important;
 }
+
+	.menuB:hover, .menuB:focus {
+		background-color: #807F83 !important; 
+	}
 
 .button.success {
 	background-color: rgba(0, 146, 63, 1);
@@ -205,7 +217,7 @@ button:focus {outline:0;}
 
 @media only screen and (max-width: 40.063em) { 
 	#me, #skills, #resume, #portfolio, #ios, #contact {margin-top: 1.5rem !important;}
-	p.simple {font-size: 4.5rem !important; line-height: 4rem !important;}
+	p.simple {font-size: 4.5rem !important; line-height: 4rem !important;margin-top: 25%;}
 	nav {display:none;}
 }
 
