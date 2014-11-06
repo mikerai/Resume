@@ -36,6 +36,6 @@ $(function(){
 
 $(function(){
   $('button').click(function(){
-      $('nav').toggleClass('showme');
+      $('nav').slideToggle();
   });
 });
