@@ -15,21 +15,27 @@
 $('a').click(function(){
     $('html, body').animate({
         scrollTop: $( $(this).attr('href') ).offset().top-64
-    }, 1000);
+    }, 987);
     return false;
 });
 
 $(function(){
     var d = $('#main');
-    var dPosTop = d.offset().top+10;
+    var dPosTop = d.offset().top+20;
     var win = $(window);
     win.scroll(function(e){
         var scrollTop = win.scrollTop();
         if(scrollTop <= dPosTop){
          /* d.show(669); */
          //d.css("visibility","visible");
-         d.css({opacity: 0, visibility: "visible"}).animate({opacity: 1.0}, 1500);
+         d.css({opacity: 0, visibility: "visible"}).animate({opacity: 1.0}, 1597);
         }
     });
 
+});
+
+$(function(){
+  $('button').click(function(){
+      $('nav').toggleClass('showme');
+  });
 });

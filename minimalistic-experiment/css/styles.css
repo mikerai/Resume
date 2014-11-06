@@ -27,26 +27,17 @@ button, .button {font-family: 'Raleway', Arial, "Helvetica", Helvetica, sans-ser
 
 h1              { font-size: 2.5rem; margin: .67rem 0; }
 h2              { font-size: 2rem; margin: .75rem 0; }
-h3              { font-size: 1.75rem; margin: .83rem 0; }
-h4              { font-size: 1.25rem; margin: .83rem 0; }
+h3              { font-size: 1.5rem; margin: .83rem 0; }
+h4              { font-size: 1.125rem; margin: .83rem 0; }
 h5              { font-size: 1rem; margin: 1.5rem 0; }
 h6              { font-size: .83rem; margin: 1.67rem 0; }
 h1, h2, h3, h4,
 h5, h6          { font-weight: bolder; }
 p 				{ font-size: 1.125rem;}
 
-/* Colors 
+a {color: #000000;}
+a:hover{color:#807F83;}
 
-blue rgba(20,70,124,1);
-menu off canvas title blue rgba(16,58,102,1);
-menu blue hover rgba(16,58,102,1);
-menu blue separator rgba(13,45,80,1);
-
-green rgba(0, 146, 63, 1);
-menu off canvas title green rgba(0, 95, 41, 1);
-menu green hover rgba(0, 95, 41, 1);
-menu green separator rgb(0, 121, 52);
-*/
 /* Spacings */
 
 .center {text-align: center !important;}
@@ -59,8 +50,12 @@ menu green separator rgb(0, 121, 52);
 .mb32 {margin-bottom: 2rem !important;}
 
 .mtb64 {margin-top: 4rem 0 !important;}
-.mt64 {margin-top: 4.1rem !important;}
+.mt64 {margin-top: 4rem !important;}
+.mb64 {margin-bottom: 4rem !important;}
 
+.mt21f {margin-top: 21% !important;}
+
+li {padding: 0.5rem 0;}
 
 /* Header and Menu */
 
@@ -102,11 +97,11 @@ menu green separator rgb(0, 121, 52);
 }
 
 .menu .bh3:hover {
-	border-bottom: 2px solid #FFFF66;
+	border-bottom: 2px solid #DFCE3A;
 }
 
 #resume {
-	border-left: 3px solid #FFFF66;
+	border-left: 3px solid #DFCE3A;
 }
 
 .menu .bh4:hover {
@@ -135,60 +130,11 @@ menu green separator rgb(0, 121, 52);
 
 .lh-m {line-height: 4rem !important;}
 
-.top-bar a {color:#ffffff !important;}
+div.fixed.center.hide-for-medium-up { background: rgba(255, 255, 255, 0.85); }
 
-.contain-to-grid {
-	/*background: rgb(0, 146, 63);
-	background: rgba(0, 146, 63, 1);*/
-}
-
-.top-bar {
-	/*background: rgb(0, 146, 63) !important;
-	background: rgba(0, 146, 63, 1) !important;*/
-}
-
-.contain-to-grid .top-bar {
-	text-align: center;
-	display: inline-block;
-}
-
-.top-bar-section li:not(.has-form) a:not(.button) {
-	padding: 0 15px;
-	line-height: 45px;
-	/*background: rgb(0, 146, 63) !important;
-	background: rgba(0, 146, 63, 1) !important;*/
-}
-
-.top-bar.expanded .title-area {
-	/*background: rgb(0, 146, 63) !important;
-	background: rgba(0, 146, 63, 1) !important;*/
-}
-
-.tab-bar {
-	/*background: rgb(20,70,124) !important;
-	background: rgba(20,70,124,1) !important;*/
-}
-
-.left-small {
-	border-right: solid 1px rgba(13,45,80,1);
-	border-right: none !important;
-}
-
-.left-off-canvas-menu {
-	/*background: rgb(20, 70, 124) !important;
-	background: rgba(20, 70, 124, 1) !important;*/	
-}
-
-ul.off-canvas-list li label {
-	/*background: rgba(16,58,102,1) !important;*/
-}
-
-ul.off-canvas-list li a {
-	/*border-bottom: 1px solid rgba(13,45,80,1);*/
-}
-
-ul.off-canvas-list li a:hover {
-	/*background: rgba(16,58,102,1) !important;*/
+ul {
+    list-style-type:none;
+    overflow:hidden;
 }
 
 /* Footer */
@@ -216,24 +162,13 @@ ul.off-canvas-list li a:hover {
 
 #main {visibility: hidden;}
 
-.panel .blue {
-	background: rgb(203,201,207) !important;
-	background: rgba(203,201,207,0.85) !important;
-}
-
-.panel .blue h4 {
-	font-weight: bold;
-}
-
-.panel .blue p {
-	margin-bottom: 0.5rem;
-}
-
-.panel .blue h4, .panel .blue p {
-	color: #000000 !important;
-}
-
 /* Button customization */
+
+button:focus {outline:0;}
+
+.menuB{
+    margin: 0 auto;
+}
 
 .button.success {
 	background-color: rgba(0, 146, 63, 1);
@@ -244,10 +179,28 @@ ul.off-canvas-list li a:hover {
 	background-color: rgba(0, 95, 41, 1);
 }
 
-.button.transparent {
+.transparent {
 	background-color: transparent !important;
+}
+
+@media only screen and (max-width: 48em) { 
+	p.simple {font-size: 6rem !important; line-height: 5.5rem !important;}
 }
 
 @media only screen and (max-width: 40.063em) { 
 	#me, #skills, #resume, #portfolio, #ios, #contact {margin-top: 1.5rem !important;}
+	p.simple {font-size: 4.5rem !important; line-height: 4rem !important;}
+	nav {
+      display:none;
+  }
+  nav.showme {
+   display:block;
+  }
+  button {
+    display:block;
+  }
 }
+
+/* Custom text styles */
+
+#me h3 {color: #807F83;}
