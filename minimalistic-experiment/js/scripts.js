@@ -44,14 +44,13 @@ $(function(){
 
 $("#main").on("click", function(e){
     e.preventDefault();
-    //$('nav').css("display","none");
     $('nav').slideUp();
 });
 
 // Cache selectors
 var lastId,
-    topMenu = $("#top-menu"),
-    topMenuHeight = topMenu.outerHeight()+15,
+    topMenu = $("#top-menu, nav, .footer"),
+    topMenuHeight = topMenu.outerHeight()+150,
     // All list items
     menuItems = topMenu.find("a"),
     // Anchors corresponding to menu items
@@ -64,11 +63,12 @@ var lastId,
 // so we can get a fancy scroll animation
 menuItems.click(function(e){
   var href = $(this).attr("href"),
-      offsetTop = href === "#" ? 0 : $(href).offset().top-67;
+      offsetTop = href === "#" ? 0 : $(href).offset().top-66;
   $('html, body').stop().animate({ 
       scrollTop: offsetTop
   }, 987);
   e.preventDefault();
+  $('nav').slideUp();
 });
 
 // Bind to scroll
