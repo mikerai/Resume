@@ -3,7 +3,8 @@
 /*Fonts and general styling*/
 
 /* <link href='http://fonts.googleapis.com/css?family=Raleway:400,700' rel='stylesheet' type='text/css'> */
-p.simple {font-size: 12rem; font-family: Arial, sans-serif; font-weight: 700; color: #807F83;line-height: 10rem;text-align: center;}
+p.simple {font-size: 12rem; font-family: Arial, sans-serif; font-weight: 700; color: #807F83;line-height: 
+	10rem;text-align: center; margin: 21% 0 7% 0;}
 /* latin */
 @font-face {
   font-family: 'Raleway';
@@ -25,8 +26,9 @@ p.simple {font-size: 12rem; font-family: Arial, sans-serif; font-weight: 700; co
   U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
 }
 
-.row {max-width: 64rem;}
-body {font-family: 'Raleway', Arial, "Helvetica", Helvetica, sans-serif; font-weight: 400; text-rendering: optimizeLegibility;}
+.row {max-width: 64rem; margin: 0 auto !important;}
+body {font-family: 'Raleway', Arial, "Helvetica", Helvetica, sans-serif; font-weight: 400; text-rendering:
+ optimizeLegibility;}
 h1, h2, h3, h4, h5, h6 {font-family: 'Raleway', Arial, "Helvetica", Helvetica, sans-serif; font-weight: 400;}
 button, .button {font-family: 'Raleway', Arial, "Helvetica", Helvetica, sans-serif;}
 
@@ -63,6 +65,17 @@ a:hover{color:#807F83;}
 ul {margin: 0 !important;}
 li {padding: 0.75rem 0; font-size:1.125rem;}
 
+#me, #skills, #resume, #portfolio, #ios, #contact {padding: 0 0.9375rem; }
+
+.fixed {
+	position: fixed;
+	width: 100%;
+	top: 0;
+	right: 0;
+	left: 0;
+	z-index: 99;
+}
+
 /* Header and Menu */
 
 .header h1, .header h2, .header h3, .header h4, .header h5, .header h6, .header p {color:#ffffff;}
@@ -75,16 +88,13 @@ li {padding: 0.75rem 0; font-size:1.125rem;}
 	color: #000000 !important;
 	margin: 0 !important;
 	font-size: 1.5rem;
+	text-decoration: none;
 }
 
 	.menu a:hover {
 		color: #807F83 !important;
 		opacity: 0.8;
 	}
-
-.menu .bh:hover {
-	background-color: rgba(0, 0, 0, 0.1) !important;
-}
 
 .menu .bh1:hover {
 	border-bottom: 2px solid #CC6699;
@@ -146,4 +156,14 @@ div.bh6.active {border-bottom: 2px solid #FFAD6D !important;}
 	border-left: 3px solid #FFAD6D;
 }
 
-.lh-m {line-height: 4rem !important;}
+.lh-m {line-height: 4rem !important; text-align: center;}
+
+@media only screen and (max-width: 48em) { 
+	p.simple {font-size: 6rem !important; line-height: 5.5rem !important;}
+}
+
+@media only screen and (max-width: 40.063em) { 
+	#me, #skills, #resume, #portfolio, #ios, #contact {margin-top: 1.5rem !important;}
+	p.simple {font-size: 4.5rem !important; line-height: 4rem !important;margin-top: 25%;}
+	nav {display:none;}
+}

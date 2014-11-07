@@ -21,16 +21,16 @@ $('a').click(function(){
 
 $(function(){
     var d = $('#main');
-    var mobMen = $('nav');
-    var dPosTop = d.offset().top+20;
+    //var mobMen = $('nav');
+    var dPosTop = d.offset().top-20;
     var win = $(window);
     win.scroll(function(e){
         var scrollTop = win.scrollTop();
         if(scrollTop <= dPosTop){
-         /* d.show(669); */
+          //d.show(669); 
          //d.css("visibility","visible");
          d.css({opacity: 0, visibility: "visible"}).animate({opacity: 1.0}, 1597);
-         mobMen.slideUp();
+      //   mobMen.slideUp();
         }
     });
 
@@ -49,8 +49,8 @@ $("#main").on("click", function(e){
 
 // Cache selectors
 var lastId,
-    topMenu = $("#top-menu, nav, .footer"),
-    topMenuHeight = topMenu.outerHeight()+150,
+    topMenu = $(".menu, nav, .footer"),
+    topMenuHeight = topMenu.outerHeight()+15,
     // All list items
     menuItems = topMenu.find("a"),
     // Anchors corresponding to menu items
