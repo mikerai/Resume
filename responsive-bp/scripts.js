@@ -22,7 +22,7 @@ $('a').click(function(){
 $(function(){
     var d = $('#main');
     //var mobMen = $('nav');
-    var dPosTop = d.offset().top-20;
+    var dPosTop = $('body').offset().top+30;
     var win = $(window);
     win.scroll(function(e){
         var scrollTop = win.scrollTop();
