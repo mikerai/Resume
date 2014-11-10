@@ -65,7 +65,7 @@ a:hover{color:#807F83;}
 ul {margin: 0 !important;}
 li {padding: 0.75rem 0; font-size:1.125rem;}
 
-#me, #skills, #resume, #portfolio, #ios, #contact {padding: 0 0.9375rem; margin: 2rem auto !important;}
+#me, #skills, #resume, #portfolio, #ios, #contact {padding: 0.9375rem 0.9375rem; margin: 2rem auto !important;}
 
 .fixed {
 	position: fixed;
@@ -171,3 +171,5 @@ div.bh6.active {border-bottom: 2px solid #FFAD6D !important;}
 /* Cusom Divs */
 
 #main {visibility: hidden;}
+
+#me h3, #skills h3, #resume h3, #portfolio h3, #ios h3, #contact h3 {color: #807F83;}
