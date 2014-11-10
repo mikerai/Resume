@@ -170,6 +170,8 @@ div.bh6.active {border-bottom: 2px solid #FFAD6D !important;}
 
 /* Cusom Divs */
 
-#main {visibility: hidden;}
+#main {visibility: hidden; opacity:0; transition:opacity 1.597s; -webkit-transition: 1.597s opacity; -moz-transition: 1.597s opacity;}
+
+#main.show {visibility: visible; opacity: 1;}
 
 #me h3, #skills h3, #resume h3, #portfolio h3, #ios h3, #contact h3 {color: #807F83;}

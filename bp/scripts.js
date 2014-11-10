@@ -29,7 +29,8 @@ $(function(){
         if(scrollTop <= dPosTop){
           //d.show(669); 
          //d.css("visibility","visible");
-         d.css({opacity: 0, visibility: "visible"}).animate({opacity: 1.0}, 1597);
+         //d.css({opacity: 0, visibility: "visible"}).animate({opacity: 1.0}, 1597);
+         $('#main').addClass("show");
       //   mobMen.slideUp();
         }
     });
