@@ -80,13 +80,26 @@ li {padding: 0.75rem 0; font-size:1.125rem;}
 
 .header h1, .header h2, .header h3, .header h4, .header h5, .header h6, .header p {color:#ffffff;}
 
+#main {visibility: hidden; opacity:0; transition:opacity 1.597s; -webkit-transition: 1.597s opacity; -moz-transition: 1.597s opacity;
+-webkit-transition: all 1.597s ease; -moz-transition: all 1.597s ease; -o-transition: all 1.597s ease; transition: all 1.597s ease;}
+#main.show {visibility: visible; opacity: 1;}
+
 .menu {
 	background: rgba(255, 255, 255, 0.85);
-	/*box-shadow: 1px 1px 55px #888888;*/
+	box-shadow: 0 0 0 #fff;
+	opacity: 0;
+	transition:box-shadow 1.597s;
+	-webkit-transition: 1.597s box-shadow;
+	-moz-transition: 1.597s box-shadow;
+	-webkit-transition: all 1.597s ease; 
+	-moz-transition: all 1.597s ease; 
+	-o-transition: all 1.597s ease; 
+	transition: all 1.597s ease;
 }
 
 .bs {
 	box-shadow: 1px 1px 55px #888888;
+	opacity: 1;
 }
 
 .menu a {
@@ -189,10 +202,8 @@ div.fixed.center.visible-xs {background: rgba(255, 255, 255, 0.85);}
 
 /* Cusom Divs */
 
-.hide {visibility: hidden;}
-
-#main {visibility: hidden; opacity:0; transition:opacity 1.597s; -webkit-transition: 1.597s opacity; -moz-transition: 1.597s opacity;}
-#main {-webkit-transition: all 1.597s ease; -moz-transition: all 1.597s ease; -o-transition: all 1.597s ease; transition: all 1.597s ease;}
+#main {visibility: hidden; opacity:0; transition:opacity 1.597s; -webkit-transition: 1.597s opacity; -moz-transition: 1.597s opacity;
+-webkit-transition: all 1.597s ease; -moz-transition: all 1.597s ease; -o-transition: all 1.597s ease; transition: all 1.597s ease;}
 #main.show {visibility: visible; opacity: 1;}
 
 #me h3, #skills h3, #resume h3, #portfolio h3, #ios h3, #contact h3 {color: #807F83;}

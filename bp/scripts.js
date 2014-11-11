@@ -32,11 +32,12 @@ $(function(){
          //d.css("visibility","visible");
          //d.css({opacity: 0, visibility: "visible"}).animate({opacity: 1.0}, 1597);
          d.addClass("show");
-         men.addClass("bs", 3000);
+         men.addClass("bs");
       //   mobMen.slideUp();
         }
         else if(scrollTop < dPosTop) {
           d.removeClass("show");
+          men.removeClass("bs");
         }
     });
 
