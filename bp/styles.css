@@ -193,9 +193,8 @@ div.fixed.center.visible-xs {background: rgba(255, 255, 255, 0.85);}
 #me h3, #skills h3, #resume h3, #portfolio h3, #ios h3, #contact h3 {color: #807F83;}
 
 .modal-overlay {
+	background: rgb(255,255,255);
 	background: rgba(255,255,255,0.95);
-	background: url(img/trans10.png);
-	background-repeat: repeat;
 }
 
 .modal-lock>body, .modal-on {

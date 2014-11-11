@@ -51,18 +51,10 @@ $("#main").on("click", function(e){
     $('nav').slideUp();
 });
 
-if($('html').hasClass('modal-on')) {
-  console.log("whatever");
-  $("div.row.lh-m.menu.fixed.hidden-xs").addClass("hide");
-}
-else {
-    
-}
-
 // Cache selectors
 var lastId,
     topMenu = $(".menu, nav, .footer"),
-    topMenuHeight = topMenu.outerHeight()+15,
+    topMenuHeight = topMenu.outerHeight()+67,
     // All list items
     menuItems = topMenu.find("a"),
     // Anchors corresponding to menu items
