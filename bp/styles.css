@@ -82,6 +82,11 @@ li {padding: 0.75rem 0; font-size:1.125rem;}
 
 .menu {
 	background: rgba(255, 255, 255, 0.85);
+	/*box-shadow: 1px 1px 55px #888888;*/
+}
+
+.bs {
+	box-shadow: 1px 1px 55px #888888;
 }
 
 .menu a {

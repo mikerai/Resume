@@ -22,6 +22,7 @@ $('a').click(function(){
 $(function(){
     var d = $('#main');
     //var mobMen = $('nav');
+    var men = $('div.row.lh-m.menu.fixed.hidden-xs');
     var dPosTop = $('body').offset().top+30;
     var win = $(window);
     win.scroll(function(e){
@@ -31,6 +32,7 @@ $(function(){
          //d.css("visibility","visible");
          //d.css({opacity: 0, visibility: "visible"}).animate({opacity: 1.0}, 1597);
          d.addClass("show");
+         men.addClass("bs", 3000);
       //   mobMen.slideUp();
         }
         else if(scrollTop < dPosTop) {
