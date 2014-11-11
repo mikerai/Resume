@@ -26,12 +26,15 @@ $(function(){
     var win = $(window);
     win.scroll(function(e){
         var scrollTop = win.scrollTop();
-        if(scrollTop <= dPosTop){
+        if(scrollTop >= dPosTop){
           //d.show(669); 
          //d.css("visibility","visible");
          //d.css({opacity: 0, visibility: "visible"}).animate({opacity: 1.0}, 1597);
-         $('#main').addClass("show");
+         d.addClass("show");
       //   mobMen.slideUp();
+        }
+        else if(scrollTop < dPosTop) {
+          d.removeClass("show");
         }
     });
 
@@ -47,6 +50,14 @@ $("#main").on("click", function(e){
     e.preventDefault();
     $('nav').slideUp();
 });
+
+if($('html').hasClass('modal-on')) {
+  console.log("whatever");
+  $("div.row.lh-m.menu.fixed.hidden-xs").addClass("hide");
+}
+else {
+    
+}
 
 // Cache selectors
 var lastId,
