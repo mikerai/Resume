@@ -88,6 +88,7 @@ li {padding: 0.75rem 0; font-size:1.125rem;}
 	background: rgba(255, 255, 255, 0.85);
 	box-shadow: 0 0 0 #fff;
 	opacity: 0;
+	visibility: hidden;
 	transition:box-shadow 1.597s;
 	-webkit-transition: 1.597s box-shadow;
 	-moz-transition: 1.597s box-shadow;
@@ -100,6 +101,7 @@ li {padding: 0.75rem 0; font-size:1.125rem;}
 .bs {
 	box-shadow: 1px 1px 55px #888888;
 	opacity: 1;
+	visibility: visible;
 }
 
 .menu a {
