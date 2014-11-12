@@ -33,7 +33,7 @@ $(function(){
          //d.css({opacity: 0, visibility: "visible"}).animate({opacity: 1.0}, 1597);
          d.addClass("show");
          men.addClass("bs");
-         $('p.simple').css("color","#807F83");
+         $('p.simple').css("color","#fff");
       //   mobMen.slideUp();
         }
         else if(scrollTop < dPosTop) {

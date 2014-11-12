@@ -10,10 +10,10 @@ p.simple {font-size: 12rem;
 	line-height: 10rem;
 	text-align: center; 
 	margin: 21% 0 7% 0;
-	-webkit-transition: all 1.597s ease; 
-	-moz-transition: all 1.597s ease; 
-	-o-transition: all 1.597s ease; 
-	transition: all 1.597s ease;
+	-webkit-transition: all 4.181s ease; 
+	-moz-transition: all 4.181s ease; 
+	-o-transition: all 4.181s ease; 
+	transition: all 4.181s ease;
 }
 /* latin */
 @font-face {
