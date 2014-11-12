@@ -39,6 +39,13 @@ $(function(){
           d.removeClass("show");
           men.removeClass("bs");
         }
+        if (($(document).height() - $(window).height()) - $(window).scrollTop() < 2 ){
+          $('footer').addClass("bs");
+        }
+
+        else if (($(document).height() - $(window).height()) - $(window).scrollTop() > 2 ){
+          $('footer').removeClass("bs");
+        }
     });
 
 });
@@ -56,7 +63,7 @@ $("#main").on("click", function(e){
 
 // Cache selectors
 var lastId,
-    topMenu = $(".menu, nav, .footer"),
+    topMenu = $(".menu, nav, footer"),
     topMenuHeight = topMenu.outerHeight()+67,
     // All list items
     menuItems = topMenu.find("a"),
