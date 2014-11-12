@@ -34,12 +34,14 @@ $(function(){
          d.addClass("show");
          men.addClass("bs");
          $('p.simple').css("color","#fff");
+         $('p.simple').css("text-shadow","0 0 8px #807F83");
       //   mobMen.slideUp();
         }
         else if(scrollTop < dPosTop) {
           d.removeClass("show");
           men.removeClass("bs");
           $('p.simple').css("color","#000");
+          $('p.simple').css("text-shadow","none");
         }
         if (($(document).height() - $(window).height()) - $(window).scrollTop() < 2 ){
           $('footer').addClass("bs");
