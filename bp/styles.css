@@ -3,8 +3,18 @@
 /*Fonts and general styling*/
 
 /* <link href='http://fonts.googleapis.com/css?family=Raleway:400,700' rel='stylesheet' type='text/css'> */
-p.simple {font-size: 12rem; font-family: Arial, sans-serif; font-weight: 700; color: #807F83;line-height: 
-	10rem;text-align: center; margin: 21% 0 7% 0;}
+p.simple {font-size: 12rem; 
+	font-family: Arial, sans-serif; 
+	font-weight: 700; 
+	color: #000;
+	line-height: 10rem;
+	text-align: center; 
+	margin: 21% 0 7% 0;
+	-webkit-transition: all 1.597s ease; 
+	-moz-transition: all 1.597s ease; 
+	-o-transition: all 1.597s ease; 
+	transition: all 1.597s ease;
+}
 /* latin */
 @font-face {
   font-family: 'Raleway';
@@ -80,8 +90,8 @@ li {padding: 0.75rem 0; font-size:1.125rem;}
 
 .header h1, .header h2, .header h3, .header h4, .header h5, .header h6, .header p {color:#ffffff;}
 
-#main {visibility: hidden; opacity:0; transition:opacity 1.597s; -webkit-transition: 1.597s opacity; -moz-transition: 1.597s opacity;
--webkit-transition: all 1.597s ease; -moz-transition: all 1.597s ease; -o-transition: all 1.597s ease; transition: all 1.597s ease;}
+#main {visibility: hidden; opacity:0; -webkit-transition: all 1.597s ease; -moz-transition: all 1.597s ease; 
+	-o-transition: all 1.597s ease; transition: all 1.597s ease;}
 #main.show {visibility: visible; opacity: 1;}
 
 .menu {
@@ -89,9 +99,6 @@ li {padding: 0.75rem 0; font-size:1.125rem;}
 	box-shadow: 0 0 0 #fff;
 	opacity: 0;
 	visibility: hidden;
-	transition:box-shadow 1.597s;
-	-webkit-transition: 1.597s box-shadow;
-	-moz-transition: 1.597s box-shadow;
 	-webkit-transition: all 1.597s ease; 
 	-moz-transition: all 1.597s ease; 
 	-o-transition: all 1.597s ease; 
@@ -178,16 +185,6 @@ div.bh6.active {border-bottom: 2px solid #FFAD6D !important;}
 
 .lh-m {line-height: 4rem !important; text-align: center;}
 
-@media only screen and (max-width: 48em) { 
-	p.simple {font-size: 6rem !important; line-height: 5.5rem !important;}
-}
-
-@media only screen and (max-width: 40.063em) { 
-	#me, #skills, #resume, #portfolio, #ios, #contact {margin-top: 1.5rem !important;}
-	p.simple {font-size: 4.5rem !important; line-height: 4rem !important;margin-top: 25%;}
-	nav {display:none;}
-}
-
 /* Mobile menu */
 
 ul {
@@ -200,12 +197,16 @@ ul li a {
 	text-decoration: none;
 }
 
-div.fixed.center.visible-xs {background: rgba(255, 255, 255, 0.85);}
+div.fixed.center.visible-xs {
+	background: rgba(255, 255, 255, 0.85);
+	box-shadow: 1px 1px 55px #888888;
+}
 
 /* Cusom Divs */
 
-#main {visibility: hidden; opacity:0; transition:opacity 1.597s; -webkit-transition: 1.597s opacity; -moz-transition: 1.597s opacity;
--webkit-transition: all 1.597s ease; -moz-transition: all 1.597s ease; -o-transition: all 1.597s ease; transition: all 1.597s ease;}
+#main {visibility: hidden; opacity:0; transition:opacity 1.597s; -webkit-transition: 1.597s opacity; 
+	-moz-transition: 1.597s opacity; -webkit-transition: all 1.597s ease; -moz-transition: all 1.597s ease; 
+	-o-transition: all 1.597s ease; transition: all 1.597s ease;}
 #main.show {visibility: visible; opacity: 1;}
 
 #me h3, #skills h3, #resume h3, #portfolio h3, #ios h3, #contact h3 {color: #807F83;}
@@ -244,4 +245,43 @@ button:focus {outline:0;}
     margin: 0 auto;
     color: #ffffff !important;
 	background-color: #000000 !important;
+}
+
+/* Footer */
+
+footer {
+	-webkit-transition: all 1.597s ease; 
+	-moz-transition: all 1.597s ease; 
+	-o-transition: all 1.597s ease; 
+	transition: all 1.597s ease;
+	padding: 2rem 0 1rem;
+}
+
+footer .col-s-2 {	
+	padding: 0 0 0.5rem;
+}
+
+footer  a {
+	text-decoration: none;
+	padding: 1.125rem 0;
+	font-size: 1.125rem;
+}
+
+footer p {
+	margin-top: 0;
+}
+
+/* Custom media queries*/
+
+@media only screen and (max-width: 48em) { 
+	p.simple {
+		font-size: 6rem !important; 
+		line-height: 5.5rem !important;
+	}
+}
+
+@media only screen and (max-width: 40.063em) { 
+	#me, #skills, #resume, #portfolio, #ios, #contact {margin-top: 0.5rem !important;}
+	p.simple {font-size: 4.5rem !important; line-height: 4rem !important;margin-top: 25%;}
+	nav {display:none;}
 }
