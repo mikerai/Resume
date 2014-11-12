@@ -33,11 +33,13 @@ $(function(){
          //d.css({opacity: 0, visibility: "visible"}).animate({opacity: 1.0}, 1597);
          d.addClass("show");
          men.addClass("bs");
+         $('p.simple').css("color","#807F83");
       //   mobMen.slideUp();
         }
         else if(scrollTop < dPosTop) {
           d.removeClass("show");
           men.removeClass("bs");
+          $('p.simple').css("color","#000");
         }
         if (($(document).height() - $(window).height()) - $(window).scrollTop() < 2 ){
           $('footer').addClass("bs");
