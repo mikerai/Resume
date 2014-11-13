@@ -87,21 +87,32 @@ $.fn.isOnScreen = function(){
     
 };
 
-$('div#skills.row').click(function(){
+$('div#resume.row').click(function(){
     alert($(this).isOnScreen());
 });
 
 var Box = {
     Update: function(){
-        $.each($("div#skills.row"), function(){
-            if ($("div#skills.row").isOnScreen()) {
+        $.each($("div#resume.row"), function(){
+            if ($("div#resume.row").isOnScreen()) {
               console.log("is visible");
                  //$('p.simplify').css("color","#fff");
-                 $('p.simplify').css({'color':'#fff', 'text-shadow':'0 0 20px #15A8C6'});
+                 $('p.simplify').css({'color':'#fff', 'text-shadow':'0 0 20px #33CCFF'});
             }    
             else{
               console.log("is NOT visible");
                 $('p.simplify').css({'color':'#33CCFF', 'text-shadow':'none'});
+            }
+        });
+        $.each($("div#ios.row"), function(){
+            if ($("div#ios.row").isOnScreen()) {
+              console.log("is visible");
+                 //$('p.simplify').css("color","#fff");
+                 $('p.ksimple').css({'color':'#fff', 'text-shadow':'0 0 20px #99CC66'});
+            }    
+            else{
+              console.log("is NOT visible");
+                $('p.ksimple').css({'color':'#99CC66', 'text-shadow':'none'});
             }
         });
     }    
