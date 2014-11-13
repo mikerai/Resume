@@ -274,6 +274,17 @@ button:focus {outline:0;}
 	background-color: #000000 !important;
 }
 
+button.submit-button {
+	background-color: green !important;
+	color: white !important;
+}
+
+	.submit-button:focus {outline: 0;}
+
+button.submit-button:active {
+	background-color: blue !important;
+}
+
 /* Footer */
 
 footer {
@@ -296,6 +307,12 @@ footer  a {
 
 footer p {
 	margin-top: 0;
+}
+
+/* Forms */
+
+.no-edit, input, select, textarea {
+	color: #888;
 }
 
 /* Custom media queries*/
