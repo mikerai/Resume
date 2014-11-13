@@ -23,7 +23,9 @@ $(function(){
     var d = $('#main');
     //var mobMen = $('nav');
     var men = $('div.row.lh-m.menu.fixed.hidden-xs');
-    var dPosTop = $('body').offset().top+30;
+    var menMob = $('div.fixed.center.visible-xs');
+    var pSimple = $('p.simple');
+    var dPosTop = $('body').offset().top+60;
     var win = $(window);
     win.scroll(function(e){
         var scrollTop = win.scrollTop();
@@ -33,16 +35,28 @@ $(function(){
          //d.css({opacity: 0, visibility: "visible"}).animate({opacity: 1.0}, 1597);
          d.addClass("show");
          men.addClass("bs");
-         $('p.simple').css("color","#fff");
-         $('p.simple').css("text-shadow","0 0 8px #807F83");
+         menMob.css("box-shadow","1px 1px 15px #888888");
+         pSimple.css("color","#fff");
+         //pSimple.css("text-shadow","0 0 8px #807F83");
+         //pSimple.css("text-shadow","0 0 20px #15A8C6");
+         pSimple.css("text-shadow","0 0 20px #CC6699");
+         
       //   mobMen.slideUp();
         }
-        else if(scrollTop < dPosTop) {
+        else if(scrollTop < dPosTop && scrollTop > dPosTop-50) {
           d.removeClass("show");
           men.removeClass("bs");
-          $('p.simple').css("color","#000");
-          $('p.simple').css("text-shadow","none");
+          menMob.css("box-shadow","none");
+          //pSimple.css("color","#15A8C6");
+          pSimple.css("color","#CC6699");
+          
+          pSimple.css("text-shadow","none");
         }
+
+        else if(scrollTop > dPosTop-60) {
+            pSimple.css("color","#888");
+        }
+
         if (($(document).height() - $(window).height()) - $(window).scrollTop() < 2 ){
           $('footer').addClass("bs");
         }
@@ -52,6 +66,51 @@ $(function(){
         }
     });
 
+});
+
+$.fn.isOnScreen = function(){
+    
+    var win = $(window);
+    
+    var viewport = {
+        top : win.scrollTop(),
+        left : win.scrollLeft()
+    };
+    viewport.right = viewport.left + win.width();
+    viewport.bottom = viewport.top + win.height();
+    
+    var bounds = this.offset();
+    bounds.right = bounds.left + this.outerWidth();
+    bounds.bottom = bounds.top + this.outerHeight();
+    
+    return (!(viewport.right < bounds.left || viewport.left > bounds.right || viewport.bottom < bounds.top || viewport.top > bounds.bottom));
+    
+};
+
+$('div#skills.row').click(function(){
+    alert($(this).isOnScreen());
+});
+
+var Box = {
+    Update: function(){
+        $.each($("div#skills.row"), function(){
+            if ($("div#skills.row").isOnScreen()) {
+              console.log("is visible");
+                 //$('p.simplify').css("color","#fff");
+                 $('p.simplify').css({'color':'#fff', 'text-shadow':'0 0 20px #15A8C6'});
+            }    
+            else{
+              console.log("is NOT visible");
+                $('p.simplify').css({'color':'#33CCFF', 'text-shadow':'none'});
+            }
+        });
+    }    
+}
+
+Box.Update();
+
+$(window).scroll(function () {
+     Box.Update();
 });
 
 $(function(){

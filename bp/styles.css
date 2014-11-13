@@ -6,15 +6,29 @@
 p.simple {font-size: 12rem; 
 	font-family: Arial, sans-serif; 
 	font-weight: 700; 
-	color: #000;
+	color: #888;
 	line-height: 10rem;
 	text-align: center; 
-	margin: 21% 0 7% 0;
+	margin: 19% 0 2% 0;
 	-webkit-transition: all 2.584s ease; 
 	-moz-transition: all 2.584s ease; 
 	-o-transition: all 2.584s ease; 
 	transition: all 2.584s ease;
 }
+
+p.simplify {font-size: 12rem; 
+	font-family: Arial, sans-serif; 
+	font-weight: 700; 
+	color: #33CCFF;
+	line-height: 10rem;
+	text-align: center; 
+	margin: 1% 0 1% 0;
+	-webkit-transition: all 2.584s ease; 
+	-moz-transition: all 2.584s ease; 
+	-o-transition: all 2.584s ease; 
+	transition: all 2.584s ease;
+}
+
 /* latin */
 @font-face {
   font-family: 'Raleway';
@@ -278,10 +292,16 @@ footer p {
 		font-size: 6rem !important; 
 		line-height: 5.5rem !important;
 	}
+
+	p.simplify {
+		font-size: 6rem !important; 
+		line-height: 5.5rem !important;
+	}
 }
 
 @media only screen and (max-width: 40.063em) { 
 	#me, #skills, #resume, #portfolio, #ios, #contact {margin-top: 0.5rem !important;}
-	p.simple {font-size: 4.5rem !important; line-height: 4rem !important;margin-top: 25%;}
+	p.simple {font-size: 4.5rem !important; line-height: 4rem !important; margin-top: 35%;}
+	p.simplify {font-size: 4.5rem !important; line-height: 4rem !important;}
 	nav {display:none;}
 }
