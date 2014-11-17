@@ -138,40 +138,25 @@
                 <h3>Please send me a message.</h3>
 
                 <section>
-                    <form action="verify.php" method="post">
-                        <fieldset>
-                            <div class="row">
-                                <div class="col-s-6">
-                                    <div class="row">
-                                        <div class="col-s-4">
-                                            <label for="name">Your name</label>
-                                        </div>
-                                        <div class="col-s-8">
-                                              <input type="text" id="name" name="name" value="">  
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-s-4">
-                                            <label for="email">Your email address</label>
-                                        </div>
-                                        <div class="col-s-8">
-                                              <input type="email" id="email" name="email">  
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-s-4">
-                                            <label for="message">Your name</label>
-                                        </div>
-                                        <div class="col-s-8">
-                                              <textarea id="message" name="message" data-autosize data-autosize-remove-attributes="data-val-message" data-autosize-remove-classes="validate error" ></textarea > 
-                                        </div>
-                                        <div class="form-actions">
-                                            <button class="submit-button" style="float: right;" type="submit">Send</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </fieldset>
+                    <form class="cmxform" id="commentForm" method="get" action="">
+                      <fieldset>
+                        <legend>Please provide your name, email address (won't be published) and a comment</legend>
+                        <p>
+                          <label for="cname">Name (required, at least 2 characters)</label>
+                          <input id="cname" name="name" minlength="2" type="text" required/>
+                        </p>
+                        <p>
+                          <label for="cemail">E-Mail (required)</label>
+                          <input id="cemail" type="email" name="email" required/>
+                        </p>
+                        <p>
+                          <label for="ccomment">Your message (required)</label>
+                          <textarea id="ccomment" name="comment" required></textarea>
+                        </p>
+                        <p>
+                          <input class="submit" type="submit" value="Submit"/>
+                        </p>
+                      </fieldset>
                     </form>
                 </section>
         </div>
@@ -212,8 +197,11 @@
     <!--[if gt IE 8]><!-->
     <script type='text/javascript' src="vendor/jquery-2.1.1.min.js"></script>
     <!--<![endif]-->
-
     <script type='text/javascript' src="responsive.min.js"></script>
     <script type='text/javascript' src="scripts.js"></script>
+    <script type='text/javascript' src="validate.js"></script>
+    <script>
+        $("#commentForm").validate();
+    </script>
 </body>
 </html>
