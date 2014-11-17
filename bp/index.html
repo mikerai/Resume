@@ -138,7 +138,12 @@
                 <h3>Please send me a message.</h3>
 
                 <section>
-                    <form action="#">
+                    <form action="verify.php" method="post">
+                        <?php
+                          require_once('recaptchalib.php');
+                          $publickey = "6LfP2P0SAAAAAEQv19ZXrjY9GoxxnLulbQYAHDYF"; // you got this from the signup page
+                          echo recaptcha_get_html($publickey);
+                        ?>
                         <fieldset>
                             <div class="row">
                                 <div class="col-s-6">
