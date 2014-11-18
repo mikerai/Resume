@@ -134,27 +134,25 @@
         </div>
         <div class="row" id="contact">
             <h2>Contact me</h2>
-
-                <h3>Please send me a message.</h3>
-
                 <section>
                     <form class="cmxform" id="commentForm" method="post" action="verify.php" novalidate="novalidate">
+                      <h3>Please send me a message.</h3>
                       <fieldset>
-                        <legend>Please provide your name, email address (won't be published) and a comment</legend>
+                        <legend>Please provide your name, email address and a message.</legend>
                         <p>
-                          <label for="cname">Name (required, at least 2 characters)</label>
-                          <input id="cname" name="name" minlength="2" type="text" required/>
+                          <label for="cname">Name</label>
+                          <input id="cname" name="name" type="text" required/>
                         </p>
                         <p>
-                          <label for="cemail">E-Mail (required)</label>
+                          <label for="cemail">E-mail</label>
                           <input id="cemail" type="email" name="email" required/>
                         </p>
                         <p>
-                          <label for="ccomment">Your comment (required)</label>
+                          <label for="ccomment">Your message</label>
                           <textarea id="ccomment" name="comment" required></textarea>
                         </p>
                         <p>
-                          <input class="submit" type="submit" value="Submit"/>
+                          <button class="submit" type="submit" value="Submit">Submit</button>
                         </p>
                       </fieldset>
                     </form>
@@ -200,31 +198,5 @@
     <script type='text/javascript' src="responsive.min.js"></script>
     <script type='text/javascript' src="scripts.js"></script>
     <script type='text/javascript' src="validate.js"></script>
-    <script>
-        $("#commentForm").validate({
-          rules: {
-            name: "required",
-            email: {
-              required: true,
-              email: true
-            },
-            comment: {
-                required: true,
-                minlength: 5
-            }
-          },
-          messages: {
-            name: "Please specify your name",
-            email: {
-              required: "We need your email address to contact you",
-              email: "Your email address must be in the format of name@domain.com"
-            },
-            comment: {
-              required: "You need to enter some message",
-              minlength: "Please add something"
-            }
-          }
-        });
-    </script>
 </body>
 </html>

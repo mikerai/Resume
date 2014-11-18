@@ -311,8 +311,24 @@ footer p {
 
 /* Forms */
 
+#cname, #cemail, #ccomment {
+	width: 100%;
+}
+
+#ccomment {
+	min-height: 8rem;
+}
+
 .no-edit, input, select, textarea {
 	color: #888;
+}
+
+p.success {
+	color: #99CC66;
+}
+
+label.error {
+	color:red;
 }
 
 /* Custom media queries*/

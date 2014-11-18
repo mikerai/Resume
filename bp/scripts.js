@@ -198,6 +198,50 @@ $(window).scroll(function(){
 });
 
 //Contact Form
+
+$(document).ready(function () {
+            $("#commentForm").validate({
+                rules: {
+                    name: { 
+                      required: true,
+                      minlength: 2
+                    },
+                    email: {
+                      required: true,
+                      email: true
+                    },
+                    comment: {
+                        required: true,
+                        minlength: 5
+                    }
+                  },
+                  messages: {
+                    name: {
+                      required: "Please specify your name",
+                      minlength: "At least two characters are required"
+                    },
+                    email: {
+                      required: "We need your email address to contact you",
+                      email: "Your email address must be in the format of name@domain.com"
+                    },
+                    comment: {
+                      required: "You need to enter some message",
+                      minlength: "Please add something"
+                    }
+                  }
+            });
+
+            $("button.submit").click(function () {
+                if (!$("#commentForm").validate()) { // Not Valid
+                    return false;
+                } else {
+                    $("#commentForm").submit()
+                }
+            });
+        });
+
+//Contact error removal and success
+
         $(document).on('submit', 'form#commentForm', function (e) {
         
             e.preventDefault();
@@ -205,38 +249,6 @@ $(window).scroll(function(){
             $('form#commentForm .error').remove();
         
             var hasError = false;
-        
-            $('.requiredField').each(function () {
-        
-                if ($.trim($(this).val()) == '') {
-        
-                    var labelText = $(this).prev('label').text();
-        
-                    $(this).parent().append('<span class="error">Please complete the required fields.</span>');
-        
-                    $(this).addClass('inputError');
-        
-                    hasError = true;
-        
-                } else if ($(this).hasClass('email')) {
-        
-                    var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
-        
-                    if (!emailReg.test($.trim($(this).val()))) {
-        
-                        var labelText = $(this).prev('label').text();
-         
-            $(this).parent().append('<span class="error">You entered an invalid email</span>');
-                 
-                        $(this).addClass('inputError');
-                 
-                        hasError = true;
-                 
-                    }
-                
-                }
-            
-            });
             
             if (!hasError) {
             
