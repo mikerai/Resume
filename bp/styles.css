@@ -311,6 +311,11 @@ footer p {
 
 /* Forms */
 
+button.submit {
+	color: #fff;
+	background-color: #99CC66;
+}
+
 #cname, #cemail, #ccomment {
 	width: 100%;
 }

@@ -200,7 +200,7 @@ $(window).scroll(function(){
 //Contact Form
 
 $(document).ready(function () {
-            $("button[type=submit]").attr("disabled", "disabled");
+            //$("button[type=submit]").attr("disabled", "disabled");
             $("#commentForm").validate({
                 rules: {
                     name: { 
@@ -231,6 +231,14 @@ $(document).ready(function () {
                     }
                   }, 
             });
+
+            /*$('#commentForm').bind('change keyup', function() {
+                if($(this).validate().checkForm()) {
+                    $('button[type=submit]').attr('disabled', false);
+                } else {
+                    $('button[type=submit]').attr('disabled', true);
+                }
+            });*/
 
             $("button.submit").click(function () {
                 if (!$("#commentForm").validate()) { // Not Valid
