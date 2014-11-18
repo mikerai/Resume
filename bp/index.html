@@ -138,7 +138,7 @@
                 <h3>Please send me a message.</h3>
 
                 <section>
-                    <form class="cmxform" id="commentForm" method="get" action="">
+                    <form class="cmxform" id="commentForm" method="post" action="verify.php" novalidate="novalidate">
                       <fieldset>
                         <legend>Please provide your name, email address (won't be published) and a comment</legend>
                         <p>
@@ -150,7 +150,7 @@
                           <input id="cemail" type="email" name="email" required/>
                         </p>
                         <p>
-                          <label for="ccomment">Your message (required)</label>
+                          <label for="ccomment">Your comment (required)</label>
                           <textarea id="ccomment" name="comment" required></textarea>
                         </p>
                         <p>
@@ -201,7 +201,30 @@
     <script type='text/javascript' src="scripts.js"></script>
     <script type='text/javascript' src="validate.js"></script>
     <script>
-        $("#commentForm").validate();
+        $("#commentForm").validate({
+          rules: {
+            name: "required",
+            email: {
+              required: true,
+              email: true
+            },
+            comment: {
+                required: true,
+                minlength: 5
+            }
+          },
+          messages: {
+            name: "Please specify your name",
+            email: {
+              required: "We need your email address to contact you",
+              email: "Your email address must be in the format of name@domain.com"
+            },
+            comment: {
+              required: "You need to enter some message",
+              minlength: "Please add something"
+            }
+          }
+        });
     </script>
 </body>
 </html>

@@ -196,3 +196,70 @@ $(window).scroll(function(){
          .end().filter("[href=#"+id+"]").parent().addClass("active");
    }                   
 });
+
+//Contact Form
+        $(document).on('submit', 'form#commentForm', function (e) {
+        
+            e.preventDefault();
+        
+            $('form#commentForm .error').remove();
+        
+            var hasError = false;
+        
+            $('.requiredField').each(function () {
+        
+                if ($.trim($(this).val()) == '') {
+        
+                    var labelText = $(this).prev('label').text();
+        
+                    $(this).parent().append('<span class="error">Please complete the required fields.</span>');
+        
+                    $(this).addClass('inputError');
+        
+                    hasError = true;
+        
+                } else if ($(this).hasClass('email')) {
+        
+                    var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
+        
+                    if (!emailReg.test($.trim($(this).val()))) {
+        
+                        var labelText = $(this).prev('label').text();
+         
+            $(this).parent().append('<span class="error">You entered an invalid email</span>');
+                 
+                        $(this).addClass('inputError');
+                 
+                        hasError = true;
+                 
+                    }
+                
+                }
+            
+            });
+            
+            if (!hasError) {
+            
+                $('form#commentForm input.submit').fadeOut('normal', function () {
+            
+                    $(this).parent().append('');
+            
+                });
+            
+                var formInput = $(this).serialize();
+            
+                $.post($(this).attr('action'), formInput, function (data) {
+            
+                    $('form#commentForm').slideUp("fast", function () {
+            
+                        $(this).before('<p class="success">Thank you! Your email was successfully sent. I will contact you as soon as possible.</p>');
+            
+                    });
+            
+                });
+            
+            }
+
+            return false;
+
+        });

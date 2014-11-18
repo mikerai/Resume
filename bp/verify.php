@@ -2,7 +2,7 @@
   $email_to = "miguel@mikerai.com";
 	$name = $_POST["name"];
 	$email = $_POST["email"];
-	$message = $_POST["message"];
+	$message = $_POST["comment"];
 	$text = "NAME: $name<br>
 	         EMAIL: $email<br>	 
 	         MESSAGE: $message";
