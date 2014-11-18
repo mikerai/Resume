@@ -200,6 +200,7 @@ $(window).scroll(function(){
 //Contact Form
 
 $(document).ready(function () {
+            $("button[type=submit]").attr("disabled", "disabled");
             $("#commentForm").validate({
                 rules: {
                     name: { 
@@ -228,13 +229,14 @@ $(document).ready(function () {
                       required: "You need to enter some message",
                       minlength: "Please add something"
                     }
-                  }
+                  }, 
             });
 
             $("button.submit").click(function () {
                 if (!$("#commentForm").validate()) { // Not Valid
                     return false;
                 } else {
+                    //$("button.submit").prop('disabled', false);
                     $("#commentForm").submit()
                 }
             });
