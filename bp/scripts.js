@@ -125,8 +125,14 @@ $(window).scroll(function () {
 });
 
 $(function(){
-  $('button').click(function(){
+  $('button.menuB').click(function(){
       $('nav').slideToggle();
+  });
+});
+
+$(function(){
+  $('button.tweets').click(function(){
+      $('#tweets').slideToggle();
   });
 });
 

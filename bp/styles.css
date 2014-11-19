@@ -239,7 +239,7 @@ div.fixed.center.visible-xs {
 #me h3, #skills h3, #resume h3, #portfolio h3, #ios h3, #contact h3 {color: #807F83;}
 
 #tweets {
-	
+	display: none;
 }
 
 .modal-overlay {
@@ -272,15 +272,24 @@ div.fixed.center.visible-xs {
 button:focus {outline:0;}
 
 .menuB{
-	font-size: 1.25rem !important;
+	font-size: 1.25rem;
     margin: 0 auto;
-    color: #ffffff !important;
-	background-color: #000000 !important;
+    color: #ffffff;
+	background-color: #000000;
 }
 
-button.submit-button {
-	background-color: green !important;
-	color: white !important;
+.tweets{
+	font-size: 1.25rem;
+    margin: 0 auto;
+    color: #ffffff;
+	background-color: #000000;
+}
+
+button.submit {
+	font-size: 1.25rem;
+	background-color: #6bb933;
+	border-color: #60a62e #519f18 #409701;
+	color: #ffffff;
 }
 
 	.submit-button:focus {outline: 0;}
@@ -314,11 +323,6 @@ footer p {
 }
 
 /* Forms */
-
-button.submit {
-	color: #fff;
-	background-color: #99CC66;
-}
 
 #cname, #cemail, #ccomment {
 	width: 100%;
