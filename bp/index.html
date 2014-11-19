@@ -134,29 +134,35 @@
         </div>
         <div class="row" id="contact">
             <h2>Contact me</h2>
-                <section>
-                    <form class="cmxform" id="commentForm" method="post" action="verify.php" novalidate="novalidate">
-                      <h3>Please send me a message.</h3>
-                      <fieldset>
-                        <legend>Please provide your name, email address and a message.</legend>
-                        <p>
-                          <label for="cname">Name</label>
-                          <input id="cname" name="name" type="text" required/>
-                        </p>
-                        <p>
-                          <label for="cemail">E-mail</label>
-                          <input id="cemail" type="email" name="email" required/>
-                        </p>
-                        <p>
-                          <label for="ccomment">Your message</label>
-                          <textarea id="ccomment" name="comment" required></textarea>
-                        </p>
-                        <p>
-                          <button class="submit" type="submit" value="Submit">Submit</button>
-                        </p>
-                      </fieldset>
-                    </form>
-                </section>
+                <div class="col-xs-6">
+                    <section>
+                        <form class="cmxform" id="commentForm" method="post" action="verify.php" novalidate="novalidate">
+                          <h3>Please send me a message.</h3>
+                          <fieldset>
+                            <legend>Please provide your name, email address and a message.</legend>
+                            <p>
+                              <label for="cname">Name</label>
+                              <input id="cname" name="name" type="text" required/>
+                            </p>
+                            <p>
+                              <label for="cemail">E-mail</label>
+                              <input id="cemail" type="email" name="email" required/>
+                            </p>
+                            <p>
+                              <label for="ccomment">Your message</label>
+                              <textarea id="ccomment" name="comment" required></textarea>
+                            </p>
+                            <p>
+                              <button class="submit" type="submit" value="Submit">Submit</button>
+                            </p>
+                          </fieldset>
+                        </form>
+                    </section>
+                </div>
+                <div class="col-xs-6" id="tweets">
+                    <a class="twitter-timeline" data-dnt="true" href="https://twitter.com/mikerai_UX" data-widget-id="534906066828419073">Tweets by @mikerai_UX</a>
+                <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+                </div>
         </div>
 
         <footer class="row">
