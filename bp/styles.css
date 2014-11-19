@@ -210,7 +210,11 @@ div.bh6.active {border-bottom: 2px solid #FFAD6D !important;}
 	border-left: 3px solid #FFAD6D;
 }
 
-.lh-m {line-height: 4rem !important; text-align: center;}
+.lh-m {
+	line-height: 4rem !important; 
+	text-align: center;
+	max-width: 160rem;
+}
 
 /* Mobile menu */
 
@@ -306,6 +310,7 @@ footer {
 	-o-transition: all 1.597s ease; 
 	transition: all 1.597s ease;
 	padding: 2rem 0 1rem;
+	max-width: 160rem !important;
 }
 
 footer .col-s-2 {	
