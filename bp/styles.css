@@ -246,6 +246,14 @@ div.fixed.center.visible-xs {
 	display: none;
 }
 
+div.row.clients {
+	/*background-color: #888888;*/
+	background-color: #29292b;
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0, #303032), color-stop(1.0, #29292b));
+	background: -moz-linear-gradient(top, #303032, #29292b);
+	padding: 1rem;
+}
+
 .modal-overlay {
 	background: rgb(255,255,255);
 	background: rgba(255,255,255,0.95);
