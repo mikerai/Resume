@@ -19,6 +19,20 @@ $('a').click(function(){
     return false;
 });*/
 
+$(document).ready(function() {
+  //$("body").fadeIn(1000);
+    setTimeout(function(){
+        //$("#main").fadeIn(2584);
+        $("body, #main").animate({ scrollTop: $('body').offset().top+60}, 2584);
+    },4181);
+  //$("body, #main").animate({ scrollTop: $('body').offset().top+60}, 2584);
+    var menBlack = $('div.row.lh-m.menu.fixed.hidden-xs');
+    setTimeout(function() {
+        menBlack.addClass("black");
+    }, 10000);
+});
+
+
 $(function(){
     var d = $('#main');
     //var mobMen = $('nav');
