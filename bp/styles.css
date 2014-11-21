@@ -117,10 +117,6 @@ li {padding: 0.75rem 0; font-size:1.125rem;}
 
 .header h1, .header h2, .header h3, .header h4, .header h5, .header h6, .header p {color:#ffffff;}
 
-#main {visibility: hidden; opacity:0; -webkit-transition: all 1.597s ease; -moz-transition: all 1.597s ease; 
-	-o-transition: all 1.597s ease; transition: all 1.597s ease;}
-#main.show {visibility: visible; opacity: 1;}
-
 .menu {
 	background-color: rgba(255, 255, 255, 0.85);
 	box-shadow: 0 0 0 #fff;

@@ -38,7 +38,7 @@ $(document).ready(function() {
 
 
 $(function(){
-    var d = $('#bg');
+    var d = $('#me');
     //var mobMen = $('nav');
     var men = $('div.row.lh-m.menu.fixed.hidden-xs');
     var menMob = $('div.fixed.center.visible-xs');
