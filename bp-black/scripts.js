@@ -27,18 +27,18 @@ $(document).ready( function() {
     });
 });
 
-$(document).ready(function() {
+/*$(document).ready(function() {
   //$("body").fadeIn(1000);
     setTimeout(function(){
         //$("#bg").fadeIn(2584);
-        $("body, #bg").animate({ scrollTop: $('body').offset().top+60}, 2584);
+        $("body, #main").animate({ scrollTop: $('body').offset().top+60}, 2584);
     },4181);
   //$("body, #bg").animate({ scrollTop: $('body').offset().top+60}, 2584);
-});
+});*/
 
 
 $(function(){
-    var d = $('#me');
+    var d = $('#main');
     //var mobMen = $('nav');
     var men = $('div.row.lh-m.menu.fixed.hidden-xs');
     var menMob = $('div.fixed.center.visible-xs');
