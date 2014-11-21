@@ -20,9 +20,9 @@ $('a').click(function(){
 });*/
 
 $(document).ready( function() {
-    $('body').blurjs({
+    $('#bg').blurjs({
         source: 'body',
-        radius: 50,
+        radius: 70,
         overlay: 'rgba(0, 0, 0, .2)'
     });
 });
