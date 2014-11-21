@@ -19,7 +19,15 @@ $('a').click(function(){
     return false;
 });*/
 
-$(document).ready(function() {
+$(document).ready( function() {
+    $('#bg').blurjs({
+        source: 'body',
+        radius: 30,
+        overlay: 'rgba(0, 0, 0, .2)'
+    });
+});
+
+/*$(document).ready(function() {
   //$("body").fadeIn(1000);
     setTimeout(function(){
         //$("#main").fadeIn(2584);
