@@ -1,16 +1,15 @@
-body {
+/*body {
     background-image: url(img/background@2x.jpg);
-}
+}*/
 
-#bg {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -2;
-    background: #FFF;
-    background-size: cover !important;
+
+
+body { 
+  background: url(img/background2@2x.jpg) no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
 }
 
 /* Custom styles */
@@ -21,7 +20,7 @@ body {
 p.simple {font-size: 12rem; 
 	font-family: Arial, sans-serif; 
 	font-weight: 700; 
-	color: #888;
+	color: #ffffff;
 	line-height: 10rem;
 	text-align: center; 
 	margin: 19% 0 2% 0;
@@ -79,7 +78,7 @@ p.ksimple {font-size: 12rem;
 }
 
 .row {max-width: 64rem; margin: 0 auto !important;}
-body {font-family: 'Raleway', Arial, "Helvetica", Helvetica, sans-serif; font-weight: 400; text-rendering:
+body {color:#ffffff; font-family: 'Raleway', Arial, "Helvetica", Helvetica, sans-serif; font-weight: 400; text-rendering:
  optimizeLegibility;}
 h1, h2, h3, h4, h5, h6 {font-family: 'Raleway', Arial, "Helvetica", Helvetica, sans-serif; font-weight: 400;}
 button, .button {font-family: 'Raleway', Arial, "Helvetica", Helvetica, sans-serif;}
@@ -137,8 +136,7 @@ li {padding: 0.75rem 0; font-size:1.125rem;}
 #main.show {visibility: visible; opacity: 1;}
 
 .menu {
-	background-color: rgba(255, 255, 255, 0.85);
-	box-shadow: 0 0 0 #fff;
+	background-color: rgba(0,0,0,0.6);
 	opacity: 0;
 	visibility: hidden;
 	-webkit-transition: all 1.597s ease; 
@@ -167,7 +165,7 @@ li {padding: 0.75rem 0; font-size:1.125rem;}
 }
 
 .menu a {
-	color: #000000;
+	color: #ffffff;
 	margin: 0 !important;
 	font-size: 1.5rem;
 	text-decoration: none;
@@ -189,7 +187,7 @@ li {padding: 0.75rem 0; font-size:1.125rem;}
 div.bh1.active {border-bottom: 2px solid #CC6699 !important;}
 
 #me {
-	border-left: 3px solid #CC6699;
+	border-top: 3px solid #CC6699;
 }
 
 .menu .bh2:hover {
@@ -199,7 +197,7 @@ div.bh1.active {border-bottom: 2px solid #CC6699 !important;}
 div.bh2.active {border-bottom: 2px solid #33CCFF !important;}
 
 #skills {
-	border-left: 3px solid #33CCFF;
+	border-top: 3px solid #33CCFF;
 }
 
 .menu .bh3:hover {
@@ -209,7 +207,7 @@ div.bh2.active {border-bottom: 2px solid #33CCFF !important;}
 div.bh3.active {border-bottom: 2px solid #DFCE3A !important;}
 
 #resume {
-	border-left: 3px solid #DFCE3A;
+	border-top: 3px solid #DFCE3A;
 }
 
 .menu .bh4:hover {
@@ -219,7 +217,7 @@ div.bh3.active {border-bottom: 2px solid #DFCE3A !important;}
 div.bh4.active {border-bottom: 2px solid #99CC66 !important;}
 
 #portfolio {
-	border-left: 3px solid #99CC66;
+	border-top: 3px solid #99CC66;
 }
 
 .menu .bh5:hover {
@@ -229,7 +227,7 @@ div.bh4.active {border-bottom: 2px solid #99CC66 !important;}
 div.bh5.active {border-bottom: 2px solid #9999CC !important;}
 
 #ios {
-	border-left: 3px solid #9999CC;
+	border-top: 3px solid #9999CC;
 }
 
 .menu .bh6:hover {
@@ -239,7 +237,7 @@ div.bh5.active {border-bottom: 2px solid #9999CC !important;}
 div.bh6.active {border-bottom: 2px solid #FFAD6D !important;}
 
 #contact {
-	border-left: 3px solid #FFAD6D;
+	border-top: 3px solid #FFAD6D;
 }
 
 .lh-m {
@@ -280,9 +278,6 @@ div.fixed.center.visible-xs {
 
 div.row.clients {
 	/*background-color: #888888;*/
-	background-color: #29292b;
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0, #303032), color-stop(1.0, #29292b));
-	background: -moz-linear-gradient(top, #303032, #29292b);
 	padding: 1rem;
 }
 
@@ -361,6 +356,7 @@ footer  a {
 	text-decoration: none;
 	padding: 1.125rem 0;
 	font-size: 1.125rem;
+	color:#ffffff;
 }
 
 footer p {

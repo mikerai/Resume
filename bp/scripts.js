@@ -25,7 +25,6 @@ $(document).ready(function() {
         //$("#main").fadeIn(2584);
         $("body, #main").animate({ scrollTop: $('body').offset().top+60}, 2584);
     },4181);
-  //$("body, #main").animate({ scrollTop: $('body').offset().top+60}, 2584);
 });
 
 

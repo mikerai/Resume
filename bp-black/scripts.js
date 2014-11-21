@@ -20,25 +20,25 @@ $('a').click(function(){
 });*/
 
 $(document).ready( function() {
-    $('#bg').blurjs({
+    $('body').blurjs({
         source: 'body',
-        radius: 30,
+        radius: 50,
         overlay: 'rgba(0, 0, 0, .2)'
     });
 });
 
-/*$(document).ready(function() {
+$(document).ready(function() {
   //$("body").fadeIn(1000);
     setTimeout(function(){
-        //$("#main").fadeIn(2584);
-        $("body, #main").animate({ scrollTop: $('body').offset().top+60}, 2584);
+        //$("#bg").fadeIn(2584);
+        $("body, #bg").animate({ scrollTop: $('body').offset().top+60}, 2584);
     },4181);
-  //$("body, #main").animate({ scrollTop: $('body').offset().top+60}, 2584);
+  //$("body, #bg").animate({ scrollTop: $('body').offset().top+60}, 2584);
 });
 
 
 $(function(){
-    var d = $('#main');
+    var d = $('#bg');
     //var mobMen = $('nav');
     var men = $('div.row.lh-m.menu.fixed.hidden-xs');
     var menMob = $('div.fixed.center.visible-xs');
@@ -54,7 +54,7 @@ $(function(){
          d.addClass("show");
          men.addClass("bs");
          menMob.css("box-shadow","1px 1px 15px #888888");
-         pSimple.css("color","#fff");
+         //pSimple.css("color","#ffffff");
          //pSimple.css("text-shadow","0 0 8px #807F83");
          //pSimple.css("text-shadow","0 0 20px #15A8C6");
          pSimple.css("text-shadow","0 0 20px #CC6699");
@@ -66,13 +66,13 @@ $(function(){
           men.removeClass("bs");
           menMob.css("box-shadow","none");
           //pSimple.css("color","#15A8C6");
-          pSimple.css("color","#CC6699");
+          //pSimple.css("color","#CC6699");
           
           pSimple.css("text-shadow","none");
         }
 
         else if(scrollTop > dPosTop-60) {
-            pSimple.css("color","#888");
+            pSimple.css("color","#ffffff");
         }
 
         if (($(document).height() - $(window).height()) - $(window).scrollTop() < 2 ){
@@ -154,13 +154,13 @@ $(function(){
   });
 });
 
-$("#main").on("click", function(e){
+$("#bg").on("click", function(e){
     e.preventDefault();
     $('nav').slideUp();
 });
 
 /*$('p.simple').click(function () {
-    var divID = '#main' + this.id;
+    var divID = '#bg' + this.id;
     $('html, body').animate({
         scrollTop: $(divID).offset().top-34
     }, 2584);
@@ -168,7 +168,7 @@ $("#main").on("click", function(e){
 
 $('p.simple').on("click", function(e){
   e.preventDefault();
-  var divID = '#main' + this.id;
+  var divID = '#bg' + this.id;
     $('html, body').animate({
         scrollTop: $(divID).offset().top-34
     }, 987);
