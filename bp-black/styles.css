@@ -27,11 +27,12 @@ body {
     background-size: cover !important;
 }
 
-/* Custom styles */
+/* Custom styles 
 
-/*Fonts and general styling*/
+Fonts and general styling
 
-/* <link href='http://fonts.googleapis.com/css?family=Raleway:400,700' rel='stylesheet' type='text/css'> */
+<link href='http://fonts.googleapis.com/css?family=Raleway:400,700' rel='stylesheet' type='text/css'> */
+
 p.simple {font-size: 12rem; 
 	font-family: Arial, sans-serif; 
 	font-weight: 700; 
@@ -297,14 +298,6 @@ div.row.clients {
 	background: rgba(255,255,255,0.95);
 }
 
-.modal-lock>body, .modal-on {
-	/*filter: blur(10px);
-	-webkit-filter: blur(10px);
-	-moz-filter: blur(10px);
-	filter: url(img/blur.svg);*/
-
-}
-
 .modal-footer, .modal-header {
 	color: #000;
 }
@@ -396,7 +389,7 @@ label.error {
 	color:red;
 }
 
-/* Custom media queries*/
+/* Custom media queries */
 
 @media only screen and (max-width: 48em) { 
 	p.simple, p.simplify, p.ksimple {
