@@ -310,6 +310,10 @@ button.tweets{
 		outline: 0;
 	}
 
+	button.tweets:hover {
+		background-color: #cdcdcd;
+	}
+
 button.submit {
 	font-size: 1.25rem;
 	background-color: #6bb933;
@@ -317,11 +321,13 @@ button.submit {
 	color: #ffffff;
 }
 
-	.submit-button:focus {outline: 0;}
+	button.submit:focus {
+		outline: 0;
+	}
 
-button.submit-button:active {
-	background-color: blue !important;
-}
+	button.submit:active {
+		background-color: blue;
+	}
 
 /* Footer */
 
