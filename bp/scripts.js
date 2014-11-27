@@ -134,7 +134,7 @@ $(window).scroll(function () {
 });
 
 $(function(){
-  $('button.menuB').click(function(){
+  $('input.menuB').click(function(){
       $('nav').slideToggle();
   });
 });

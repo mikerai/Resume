@@ -243,7 +243,7 @@ ul li a {
 
 div.fixed.center.visible-xs {
 	background: rgba(255, 255, 255, 0.85);
-	box-shadow: 1px 1px 55px #888888;
+	box-shadow: none;
 }
 
 /* Cusom Divs */
@@ -272,14 +272,6 @@ div.row.clients {
 	background: rgba(255,255,255,0.95);
 }
 
-.modal-lock>body, .modal-on {
-	/*filter: blur(10px);
-	-webkit-filter: blur(10px);
-	-moz-filter: blur(10px);
-	filter: url(img/blur.svg);*/
-
-}
-
 .modal-footer, .modal-header {
 	color: #000;
 }
@@ -294,21 +286,29 @@ div.row.clients {
 
 /* Button customization */
 
-button:focus {outline:0;}
+input.menuB{
+	background: transparent;
+	border: 1px solid transparent;
+	width: 60px;
+	height: 60px;
+    margin: 0 0 0 80%;
+	background-color: transparent;
+}
 
-.menuB{
+	input.menuB:focus {
+		outline:0;
+	}
+
+button.tweets{
 	font-size: 1.25rem;
     margin: 0 auto;
     color: #ffffff;
 	background-color: #000000;
 }
 
-.tweets{
-	font-size: 1.25rem;
-    margin: 0 auto;
-    color: #ffffff;
-	background-color: #000000;
-}
+	button.tweets:focus {
+		outline: 0;
+	}
 
 button.submit {
 	font-size: 1.25rem;
