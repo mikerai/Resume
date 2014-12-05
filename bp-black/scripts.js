@@ -164,7 +164,7 @@ $("#bg").on("click", function(e){
     $('html, body').animate({
         scrollTop: $(divID).offset().top-34
     }, 2584);
-});*/
+});  */
 
 $('p.simple').on("click", function(e){
   e.preventDefault();
