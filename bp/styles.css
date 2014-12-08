@@ -137,9 +137,9 @@ li {padding: 0.75rem 0; font-size:1.125rem;}
 	background: -moz-linear-gradient(top, #303032, rgba(41,41,43,0.85));
 }
 
-.black.bs {
-	box-shadow: 1px 1px 55px #000000;
-}
+	.black.bs {
+		box-shadow: 1px 1px 55px #000000;
+	}
 
 .bs {
 	box-shadow: 1px 1px 55px #888888;
@@ -157,6 +157,10 @@ li {padding: 0.75rem 0; font-size:1.125rem;}
 	.menu a:hover {
 		color: #807F83;
 		opacity: 0.8;
+	}
+
+	.menu a:focus {
+		outline: none;
 	}
 
 .black a {
@@ -319,6 +323,7 @@ button.submit {
 	background-color: #6bb933;
 	border-color: #60a62e #519f18 #409701;
 	color: #ffffff;
+	display: none;
 }
 
 	button.submit:focus {
@@ -349,6 +354,10 @@ footer  a {
 	padding: 1.125rem 0;
 	font-size: 1.125rem;
 }
+
+	footer a:focus {
+		outline: none;
+	}
 
 footer p {
 	margin-top: 0;
