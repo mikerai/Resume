@@ -81,6 +81,7 @@ p 				{ font-size: 1.125rem;}
 
 a {color: #000000;}
 a:hover{color:#807F83;}
+a:focus{outline: none;}
 
 /* Spacings */
 

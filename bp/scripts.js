@@ -96,9 +96,9 @@ $.fn.isOnScreen = function(){
     
 };
 
-$('div#resume.row').click(function(){
+/*$('div#resume.row').click(function(){
     alert($(this).isOnScreen());
-});
+});*/
 
 var Box = {
     Update: function(){
@@ -242,7 +242,7 @@ $(document).ready(function () {
                     },
                     comment: {
                       required: "You need to enter some message",
-                      minlength: "Please add something"
+                      minlength: "Please add something to the message field"
                     }
                   }, 
             });
@@ -268,35 +268,19 @@ $(document).ready(function () {
 //Contact error removal and success
 
         $(document).on('submit', 'form#commentForm', function (e) {
-        
             e.preventDefault();
-        
             $('form#commentForm .error').remove();
-        
             var hasError = false;
-            
             if (!hasError) {
-            
                 $('form#commentForm input.submit').fadeOut('normal', function () {
-            
                     $(this).parent().append('');
-            
                 });
-            
                 var formInput = $(this).serialize();
-            
                 $.post($(this).attr('action'), formInput, function (data) {
-            
                     $('form#commentForm').slideUp("fast", function () {
-            
                         $(this).before('<p class="success">Thank you! Your email was successfully sent. I will contact you as soon as possible.</p>');
-            
                     });
-            
                 });
-            
             }
-
             return false;
-
-        });
+});
