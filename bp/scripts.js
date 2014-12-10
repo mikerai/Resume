@@ -145,6 +145,12 @@ $(function(){
   });
 });
 
+$("button.tweets").click(function () {
+  $(this).text(function(i, v){
+    return v === 'Hide my tweets' ? 'View my tweets' : 'Hide my tweets'
+  })
+});
+
 $("#main").on("click", function(e){
     e.preventDefault();
     $('nav').slideUp();
