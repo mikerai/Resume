@@ -81,7 +81,7 @@ p 				{ font-size: 1.125rem;}
 
 a {color: #000000;}
 a:hover{color:#807F83;}
-a:focus{outline: none;}
+/* a:focus{outline: none;} */
 
 /* Spacings */
 
@@ -158,10 +158,6 @@ li {padding: 0.75rem 0; font-size:1.125rem;}
 	.menu a:hover {
 		color: #807F83;
 		opacity: 0.8;
-	}
-
-	.menu a:focus {
-		outline: none;
 	}
 
 .black a {
@@ -311,10 +307,6 @@ button.tweets{
 	background-color: #000000;
 }
 
-	button.tweets:focus {
-		outline: 0;
-	}
-
 	button.tweets:hover {
 		background-color: #cdcdcd;
 	}
@@ -324,12 +316,7 @@ button.submit {
 	background-color: #6bb933;
 	border-color: #60a62e #519f18 #409701;
 	color: #ffffff;
-	display: none;
 }
-
-	button.submit:focus {
-		outline: 0;
-	}
 
 	button.submit:active {
 		background-color: blue;
@@ -356,15 +343,15 @@ footer  a {
 	font-size: 1.125rem;
 }
 
-	footer a:focus {
-		outline: none;
-	}
-
 footer p {
 	margin-top: 0;
 }
 
 /* Forms */
+
+.contactForm {
+	display: none;
+}
 
 #cname, #cemail, #ccomment {
 	width: 95%;

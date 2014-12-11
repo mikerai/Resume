@@ -25,8 +25,17 @@ $(document).ready(function() {
         //$("#main").fadeIn(2584);
         $("body, #main").animate({ scrollTop: $('body').offset().top+60}, 2584);
     },4181);
-}); */
+}); 
 
+$('a').on( 'keyup', function( e ) {
+    if( e.which == 9 ) {
+        console.log( e.target.href );
+        $("body").fadeIn(1000);
+          setTimeout(function(){
+              //$("#main").fadeIn(2584);
+              $("body, #main").animate({ scrollTop: $('body').offset().top+60}, 2584);
+          },4181);}
+} ); */
 
 $(function(){
     var d = $('#main');
