@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <head>
 <link rel="canonical" href="http://mikerai.com" />
-<meta name="robots" content="noindex">
+<meta name="robots" content="index follow">
 <title>Miguel Angel Rodriguez Alvarez Icaza - UX Manager</title>
 
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -481,6 +481,18 @@
                     <label>Your Message</label>
                     <textarea name="message" id="message" rows="8" cols="30" class="requiredField message"></textarea>
                     </p>
+
+                    <p class="noCaptcha">
+                        <label for="captcha">Are you human?</label>
+                        <div class="g-recaptcha" data-sitekey="6Lfr4v4SAAAAAG2uh-QBhK-4NVX1gtyaXt5z79BT" data-callback="onValidate" data-theme="dark"></div>
+                    </p>
+                    <script>
+                        onValidate = function (){
+                            $("input#submitted").slideToggle(150);
+                            $("p.noCaptcha").fadeOut(1500);
+                            $("div.g-recaptcha").fadeOut(1500);
+                        };
+                    </script>
 
                     <p><input name="submitted" id="submitted" value="Submit" class="submit" type="submit" /></p>
 
