@@ -299,3 +299,7 @@ $(document).ready(function () {
             }
             return false;
 });
+
+$(function(){
+  $('#Container').mixItUp();
+});

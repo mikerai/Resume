@@ -285,7 +285,7 @@ div.fixed.center.visible-xs {
 #me h3, #skills h3, #resume h3, #portfolio h3, #ios h3, #contact h3 {color: #807F83;}
 
 #tweets {
-	display: none;
+	display: block;
 }
 
 div.row.clients {
@@ -338,7 +338,7 @@ button.submit {
 	.submit-button:focus {outline: 0;}
 
 button.submit-button:active {
-	background-color: blue !important;
+	background-color: blue;
 }
 
 /* Footer */
@@ -368,6 +368,10 @@ footer p {
 }
 
 /* Forms */
+
+.contactForm {
+	display: none;
+}
 
 #cname, #cemail, #ccomment {
 	width: 95%;

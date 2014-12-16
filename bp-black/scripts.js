@@ -105,10 +105,6 @@ $.fn.isOnScreen = function(){
     
 };
 
-$('div#resume.row').click(function(){
-    alert($(this).isOnScreen());
-});
-
 var Box = {
     Update: function(){
         $.each($("div#resume.row"), function(){
@@ -143,7 +139,7 @@ $(window).scroll(function () {
 });
 
 $(function(){
-  $('button.menuB').click(function(){
+  $('input.menuB').click(function(){
       $('nav').slideToggle();
   });
 });
@@ -154,21 +150,27 @@ $(function(){
   });
 });
 
-$("#bg").on("click", function(e){
+$("button.tweets").click(function () {
+  $(this).text(function(i, v){
+    return v === 'Hide my tweets' ? 'View my tweets' : 'Hide my tweets'
+  })
+});
+
+$("#main").on("click", function(e){
     e.preventDefault();
     $('nav').slideUp();
 });
 
 /*$('p.simple').click(function () {
-    var divID = '#bg' + this.id;
+    var divID = '#main' + this.id;
     $('html, body').animate({
         scrollTop: $(divID).offset().top-34
     }, 2584);
-});  */
+});*/
 
 $('p.simple').on("click", function(e){
   e.preventDefault();
-  var divID = '#bg' + this.id;
+  var divID = '#main' + this.id;
     $('html, body').animate({
         scrollTop: $(divID).offset().top-34
     }, 987);
@@ -251,7 +253,7 @@ $(document).ready(function () {
                     },
                     comment: {
                       required: "You need to enter some message",
-                      minlength: "Please add something"
+                      minlength: "Please add something to the message field"
                     }
                   }, 
             });
@@ -277,35 +279,19 @@ $(document).ready(function () {
 //Contact error removal and success
 
         $(document).on('submit', 'form#commentForm', function (e) {
-        
             e.preventDefault();
-        
             $('form#commentForm .error').remove();
-        
             var hasError = false;
-            
             if (!hasError) {
-            
                 $('form#commentForm input.submit').fadeOut('normal', function () {
-            
                     $(this).parent().append('');
-            
                 });
-            
                 var formInput = $(this).serialize();
-            
                 $.post($(this).attr('action'), formInput, function (data) {
-            
                     $('form#commentForm').slideUp("fast", function () {
-            
                         $(this).before('<p class="success">Thank you! Your email was successfully sent. I will contact you as soon as possible.</p>');
-            
                     });
-            
                 });
-            
             }
-
             return false;
-
-        });
+});
