@@ -45,7 +45,7 @@
 
 p.simple {
 	color: #888;
-	margin: 15% 0 2% 0;
+	margin: 1% 0 2% 0;
 }
 
 p.simplify { 
@@ -78,7 +78,7 @@ body {font-family: 'Raleway', Arial, "Helvetica", Helvetica, sans-serif; font-we
 h1, h2, h3, h4, h5, h6 {font-family: 'Raleway', Arial, "Helvetica", Helvetica, sans-serif; font-weight: 200; text-rendering: optimizeLegibility;}
 button, .button {font-family: 'Raleway', Arial, "Helvetica", Helvetica, sans-serif;}
 
-h1              { font-size: 5rem; margin: .67rem 0; }
+h1              { font-size: 5rem; margin: .67rem 0; text-align: center; }
 h2              { font-size: 2rem; margin: .75rem 0; }
 h3              { font-size: 1.5rem; margin: .83rem 0; }
 h4              { font-size: 1.125rem; margin: .83rem 0; }
