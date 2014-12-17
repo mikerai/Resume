@@ -73,7 +73,7 @@ body {
 }
 
 p.simple {
-	color: #888;
+	color: #ffffff;
 	margin: 1% 0 2% 0;
 }
 
@@ -103,7 +103,7 @@ p.simple, p.simplify, p.ksimple {
 }
 
 .row {max-width: 64rem; margin: 0 auto !important;}
-body {font-family: 'Raleway', Arial, "Helvetica", Helvetica, sans-serif; font-weight: 300; text-rendering: optimizeLegibility;}
+body {font-family: 'Raleway', Arial, "Helvetica", Helvetica, sans-serif; font-weight: 300; text-rendering: optimizeLegibility; color:#ffffff;}
 h1, h2, h3, h4, h5, h6 {font-family: 'Raleway', Arial, "Helvetica", Helvetica, sans-serif; font-weight: 200; text-rendering: optimizeLegibility;}
 button, .button {font-family: 'Raleway', Arial, "Helvetica", Helvetica, sans-serif;}
 
