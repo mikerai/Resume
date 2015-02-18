@@ -102,12 +102,12 @@ p.simple, p.simplify, p.ksimple {
 	transition: all 2.584s ease;
 }
 
-.row {max-width: 64rem; margin: 0 auto !important;}
+.row {max-width: 64rem; margin: 0 auto ;}
 body {font-family: 'Raleway', Arial, "Helvetica", Helvetica, sans-serif; font-weight: 300; text-rendering: optimizeLegibility; color:#ffffff;}
 h1, h2, h3, h4, h5, h6 {font-family: 'Raleway', Arial, "Helvetica", Helvetica, sans-serif; font-weight: 200; text-rendering: optimizeLegibility;}
 button, .button {font-family: 'Raleway', Arial, "Helvetica", Helvetica, sans-serif;}
 
-h1              { font-size: 5rem; margin: .67rem 0; text-align: center;}
+h1              { font-size: 5rem; margin: .67rem 0; }
 h2              { font-size: 2rem; margin: .75rem 0; }
 h3              { font-size: 1.5rem; margin: .83rem 0; }
 h4              { font-size: 1.125rem; margin: .83rem 0; }
@@ -120,25 +120,25 @@ a:hover{color:#807F83;}
 
 /* Spacings */
 
-.center {text-align: center !important;}
-.right {text-align: right !important;}
+.center {text-align: center ;}
+.right {text-align: right ;}
 
-.mtb16 {margin: 1.1rem 0 !important;}
-.mb16 {margin-bottom: 1.1rem !important;}
+.mtb16 {margin: 1.1rem 0 ;}
+.mb16 {margin-bottom: 1.1rem ;}
 
-.mtb32 {margin: 2rem 0 !important;}
-.mb32 {margin-bottom: 2rem !important;}
+.mtb32 {margin: 2rem 0 ;}
+.mb32 {margin-bottom: 2rem ;}
 
-.mtb64 {margin-top: 4rem 0 !important;}
-.mt64 {margin-top: 4rem !important;}
-.mb64 {margin-bottom: 4rem !important;}
+.mtb64 {margin-top: 4rem 0 ;}
+.mt64 {margin-top: 4rem ;}
+.mb64 {margin-bottom: 4rem ;}
 
-.mt21f {margin-top: 21% !important;}
+.mt21f {margin-top: 21% ;}
 
-ul {margin: 0 !important;}
+ul {margin: 0 ;}
 li {padding: 0.75rem 0; font-size:1.125rem;}
 
-#me, #skills, #resume, #portfolio, #ios, #contact {padding: 0.9375rem 0.9375rem; margin: 2rem auto !important;}
+#me, #skills, #resume, #portfolio, #ios, #contact {padding: 0.9375rem 0.9375rem; margin: 2rem auto ;}
 
 .fixed {
 	position: fixed;
@@ -184,7 +184,7 @@ li {padding: 0.75rem 0; font-size:1.125rem;}
 
 .menu a {
 	color: #ffffff;
-	margin: 0 !important;
+	margin: 0 ;
 	font-size: 1.5rem;
 	text-decoration: none;
 }
@@ -202,7 +202,7 @@ li {padding: 0.75rem 0; font-size:1.125rem;}
 	border-bottom: 2px solid #CC6699;
 }
 
-div.bh1.active {border-bottom: 2px solid #CC6699 !important;}
+div.bh1.active {border-bottom: 2px solid #CC6699 ;}
 
 #me {
 	border-top: 3px solid #CC6699;
@@ -212,7 +212,7 @@ div.bh1.active {border-bottom: 2px solid #CC6699 !important;}
 	border-bottom: 2px solid #33CCFF;
 }
 
-div.bh2.active {border-bottom: 2px solid #33CCFF !important;}
+div.bh2.active {border-bottom: 2px solid #33CCFF ;}
 
 #skills {
 	border-top: 3px solid #33CCFF;
@@ -222,7 +222,7 @@ div.bh2.active {border-bottom: 2px solid #33CCFF !important;}
 	border-bottom: 2px solid #DFCE3A;
 }
 
-div.bh3.active {border-bottom: 2px solid #DFCE3A !important;}
+div.bh3.active {border-bottom: 2px solid #DFCE3A ;}
 
 #resume {
 	border-top: 3px solid #DFCE3A;
@@ -232,7 +232,7 @@ div.bh3.active {border-bottom: 2px solid #DFCE3A !important;}
 	border-bottom: 2px solid #99CC66;
 }
 
-div.bh4.active {border-bottom: 2px solid #99CC66 !important;}
+div.bh4.active {border-bottom: 2px solid #99CC66 ;}
 
 #portfolio {
 	border-top: 3px solid #99CC66;
@@ -242,7 +242,7 @@ div.bh4.active {border-bottom: 2px solid #99CC66 !important;}
 	border-bottom: 2px solid #9999CC;
 }
 
-div.bh5.active {border-bottom: 2px solid #9999CC !important;}
+div.bh5.active {border-bottom: 2px solid #9999CC ;}
 
 #ios {
 	border-top: 3px solid #9999CC;
@@ -252,14 +252,14 @@ div.bh5.active {border-bottom: 2px solid #9999CC !important;}
 	border-bottom: 2px solid #FFAD6D;
 }
 
-div.bh6.active {border-bottom: 2px solid #FFAD6D !important;}
+div.bh6.active {border-bottom: 2px solid #FFAD6D ;}
 
 #contact {
 	border-top: 3px solid #FFAD6D;
 }
 
 .lh-m {
-	line-height: 4rem !important; 
+	line-height: 4rem ; 
 	text-align: center;
 	max-width: 160rem;
 }
@@ -361,7 +361,7 @@ footer {
 	-o-transition: all 1.597s ease; 
 	transition: all 1.597s ease;
 	padding: 2rem 0 1rem;
-	max-width: 160rem !important;
+	max-width: 160rem ;
 }
 
 footer .col-s-2 {	
@@ -409,15 +409,16 @@ label.error {
 
 @media only screen and (max-width: 48em) { 
 	p.simple, p.simplify, p.ksimple {
-		font-size: 6rem !important; 
-		line-height: 5.5rem !important;
+		font-size: 6rem ; 
+		line-height: 5.5rem ;
 	}
 }
 
 @media only screen and (max-width: 40.063em) { 
-	#me, #skills, #resume, #portfolio, #ios, #contact {margin-top: 0.5rem !important;}
-	p.simple {font-size: 4.5rem !important; line-height: 4rem !important; margin-top: 35%;}
-	p.simplify, p.ksimple {font-size: 4.5rem !important; line-height: 4rem !important;}
+	h1 {font-size: 3.75rem;}
+	#me, #skills, #resume, #portfolio, #ios, #contact {margin-top: 0.5rem ;padding: 0.9375rem 0.5rem;}
+	p.simple {font-size: 4.5rem ; line-height: 4rem ; margin-top: 35%;}
+	p.simplify, p.ksimple {font-size: 4.5rem ; line-height: 4rem ;}
 	nav {display:none;}
 }
 
