@@ -278,8 +278,19 @@ ul li a {
 
 div.fixed.center.visible-xs {
 	background: rgba(255, 255, 255, 0.85);
+	visibility: hidden; 
+	opacity:0; 
+	transition:opacity 1.597s; 
+	-webkit-transition: 1.597s opacity; 
+	-moz-transition: 1.597s opacity; 
+	-webkit-transition: all 1.597s ease; 
+	-moz-transition: all 1.597s ease; 
+	-o-transition: all 1.597s ease; 
+	transition: all 1.597s ease;
 	box-shadow: 1px 1px 55px #888888;
 }
+
+	div.fixed.center.visible-xs.show {visibility: visible; opacity: 1;}
 
 /* Custom Divs */
 

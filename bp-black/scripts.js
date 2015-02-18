@@ -36,6 +36,10 @@ $(document).ready( function() {
   //$("body, #bg").animate({ scrollTop: $('body').offset().top+60}, 2584);
 });*/
 
+$('body').click(function() {
+   $('div.fixed.center.visible-xs').addClass("show");
+});
+
 
 $(function(){
     var d = $('#main');
@@ -54,6 +58,7 @@ $(function(){
          d.addClass("show");
          men.addClass("bs");
          menMob.css("box-shadow","1px 1px 15px #888888");
+         menMob.addClass("show");
          //pSimple.css("color","#ffffff");
          //pSimple.css("text-shadow","0 0 8px #807F83");
          //pSimple.css("text-shadow","0 0 20px #15A8C6");
@@ -139,7 +144,7 @@ $(window).scroll(function () {
 });
 
 $(function(){
-  $('input.menuB').click(function(){
+  $('button.menuB').click(function(){
       $('nav').slideToggle();
   });
 });
