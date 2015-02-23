@@ -316,7 +316,7 @@ input.menuB{
 
 button.tweets{
 	font-size: 1.25rem;
-    margin: 0 auto;
+    margin: 0 auto 1.1rem;
     color: #ffffff;
 	background-color: #000000;
 }
