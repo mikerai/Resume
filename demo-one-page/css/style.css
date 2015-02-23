@@ -10,13 +10,21 @@ body {
 }
 
 #first {
-	margin-top: 2rem;
+	margin-top: 3em;
 }
 
 /* Spacings and elemnts ordering */
 
 .ptb8 {
 	padding: 0.5rem 0;
+}
+
+.pt12 {
+	padding: 0.75rem 0 0;
+}
+
+.prl16 {
+	padding: 0 1rem;
 }
 
 .center {
