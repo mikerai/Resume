@@ -1,0 +1,313 @@
+@import url("http://hello.myfonts.net/count/2d77fb");
+ 
+@font-face {font-family: 'MuseoSans-500';src: url('webfonts/2D77FB_0_0.eot');src: url('webfonts/2D77FB_0_0.eot?#iefix') format('embedded-opentype'),url('webfonts/2D77FB_0_0.woff2') format('woff2'),url('webfonts/2D77FB_0_0.woff') format('woff'),url('webfonts/2D77FB_0_0.ttf') format('truetype'),url('webfonts/2D77FB_0_0.svg#wf') format('svg');}
+
+/* Basic layout styling */
+
+body {
+	background-color: rgb(255,255,255);
+}
+
+#wrapper {
+	background-color: rgba(152,207,178,1);
+	margin-top: -6px;
+}
+
+.intro h1, .intro h2, .intro h3, .intro h4, .intro h5 { 
+	font-family: MuseoSans-500; 
+	font-weight: normal; 
+	font-style: normal; 
+	color: rgb(255,255,255);
+}
+
+h2.title {
+	color: rgb(255,255,255);
+	font-size: 4rem;
+	font-family: MuseoSans-500; 
+	font-weight: normal; 
+	font-style: normal; 
+}
+
+.row {
+	max-width: 186.25rem;
+	padding: 0 1rem;
+}
+
+nav {
+	height: 4.75rem;
+}
+	
+	nav a {
+		font-size: 1.5rem;
+	}
+
+	nav > div {
+		margin: 1.25rem 0;
+	}
+
+nav.row {
+	padding: 0;
+}
+
+.content {
+	background-color: rgb(255,255,255);
+}
+
+#home {
+	margin-top: 4.75rem;
+	position: relative;
+	padding: 0;
+}
+
+	#home video {
+		position: relative;
+	}
+
+video#bgvid {
+	min-width: 100%; min-height: 100%;
+	width: 100%; height: 100%; z-index: -100;
+	background: url('../img/arq.jpg') no-repeat;
+	background-size: cover;
+}
+
+.intro {
+	position: absolute;
+	top: 50%;
+	left: 2.5%;
+	z-index: 1;
+	width: 64%;
+	height: 30%;
+	background-color: rgba(0,0,0,0.5);
+	padding: 0 1rem;
+}
+
+	.intro h1 {
+		font-size: 7rem;
+		letter-spacing: -3px;
+	}
+
+	.intro h2 {
+		font-size: 3rem;
+	}
+
+#edu {
+	background-color: transparent;
+}
+
+#edu .content h2 {
+	color: rgb(125,125,125);
+}
+
+#skills {
+	background-color: rgba(251,207,160,1);
+} 
+
+#exp {
+	background-color: rgba(154,208,255,1);
+}
+
+#contact {
+	background-color: rgba(242,92,92,1);
+}
+
+footer {
+	background-color: rgba(102,102,102,1);
+	color: rgb(255,255,255);
+}
+
+#edu, #skills, #exp, #contact{
+	color: rgb(0,0,0);
+	padding: 4rem;
+}
+
+/* Spacings and elemnts ordering */
+
+.pt8 {
+	padding-top: 0.5rem;
+}
+
+.ptb8 {
+	padding: 0.5rem 0;
+}
+
+.pt12 {
+	padding: 0.75rem 0 0;
+}
+
+.prl16 {
+	padding: 0 1rem;
+}
+
+.center {
+	text-align: center;
+}
+
+div.menu {
+	z-index: 999;
+	background-color: rgba(255,255,255,0.65);
+}
+
+input.menuB {
+	margin: 0 auto;
+	height: 2rem;
+	width: 2rem;
+}
+
+/* Coloring */
+
+nav {
+	background-color: transparent;
+}
+
+	nav a {
+		color: rgb(0,0,0);
+	}
+
+/* Custom media queries */
+
+@media only screen and (min-width: 64.063em) and (max-width: 90em) { 
+	
+	.intro {
+		top: 45%;
+		width: 60%;
+		height: 50%;
+		background-color: rgba(0,0,0,0.5);
+		padding: 0 0.5rem;
+	}
+
+	.intro h1 {
+		font-size: 5rem;
+	}
+
+	.intro h2 {
+		font-size: 2.5rem;
+	}
+
+	nav {
+		background-color: transparent;
+	}
+
+	nav a {
+		font-size: 1.125rem;
+	}
+
+	nav > div {
+		margin: 1.5rem 0;
+	}
+
+}
+
+@media only screen and (min-width: 40.125em) and (max-width: 64em) { 
+
+	.intro {
+		top: 50%;
+		width: 60%;
+		height: 30%;
+		background-color: rgba(0,0,0,0.5);
+		padding: 0 0.5rem;
+	}
+
+	.intro h1 {
+		font-size: 3rem;
+	}
+
+	.intro h2 {
+		font-size: 1.5rem;
+	}
+
+	nav {
+		background-color: transparent;
+	}
+
+	nav a {
+		font-size: 1.125rem;
+	}
+
+	nav > div {
+		margin: 1.5rem 0;
+	}
+
+}
+
+@media only screen and (width: 48em) {
+
+	.intro {
+		top: 40%;
+		width: 60%;
+		height: 50%;
+		background-color: rgba(0,0,0,0.5);
+		padding: 0 0.5rem;
+	}
+
+	.intro h1 {
+		font-size: 3rem;
+	}
+
+	.intro h2 {
+		font-size: 1.5rem;
+	}
+
+	nav {
+		height: 4rem;
+	}
+	
+	nav a {
+		font-size: 1rem;
+	}
+
+	nav > div {
+		margin: 1.125rem 0;
+	}
+
+	#home {
+		margin-top: 4rem;
+	}
+
+}
+
+@media only screen and (max-width: 40.063em) { 
+
+	div.menu {
+		background-color: rgba(255,255,255,0.85);
+	}
+	
+	.intro {
+		top:2%;
+		width: 92%;
+		height: 90%;
+		background-color: rgba(0,0,0,0.5);
+		padding: 0 0.5rem;
+	}
+
+	.intro h1 {
+		font-size: 2rem;
+	}
+
+	.intro h2 {
+		font-size: 1.125rem;
+	} 
+
+	#home {
+		margin-top: 2rem;
+	}
+
+	h2.title {
+		font-size: 3rem;
+	}
+
+	nav a {
+		font-size: 1.125rem;
+	}
+
+	nav > div {
+		margin: 1rem 0;
+	}
+
+	nav {
+		display: none;	
+	}
+
+	.row {
+		padding: 0 0.5rem;
+	}
+}
