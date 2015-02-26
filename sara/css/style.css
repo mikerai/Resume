@@ -149,8 +149,8 @@ div.menu {
 
 input.menuB {
 	margin: 0 auto;
-	height: 2rem;
-	width: 2rem;
+	height: 2.5rem;
+	width: 2.5rem;
 }
 
 /* Coloring */
@@ -267,29 +267,38 @@ nav {
 
 @media only screen and (max-width: 40.063em) { 
 
+	#home {
+		background: url('../img/arq.jpg') fixed no-repeat top center / 100vw;
+		margin-top: 2.5rem;
+	}
+
+	video {
+		visibility: hidden;
+	}
+
+	#wrapper {
+		margin-top: -1.75rem;
+	}
+
 	div.menu {
 		background-color: rgba(255,255,255,0.85);
 	}
 	
 	.intro {
-		top:2%;
-		width: 92%;
-		height: 90%;
+		top:1%;
+		width: 95%;
+		height: 84%;
 		background-color: rgba(0,0,0,0.5);
 		padding: 0 0.5rem;
 	}
 
 	.intro h1 {
-		font-size: 2rem;
+		font-size: 1.75rem;
 	}
 
 	.intro h2 {
 		font-size: 1.125rem;
 	} 
-
-	#home {
-		margin-top: 2rem;
-	}
 
 	h2.title {
 		font-size: 3rem;
