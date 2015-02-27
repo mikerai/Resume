@@ -1,29 +1,161 @@
-@import url("http://hello.myfonts.net/count/2d77fb");
- 
-@font-face {font-family: 'MuseoSans-500';src: url('webfonts/2D77FB_0_0.eot');src: url('webfonts/2D77FB_0_0.eot?#iefix') format('embedded-opentype'),url('webfonts/2D77FB_0_0.woff2') format('woff2'),url('webfonts/2D77FB_0_0.woff') format('woff'),url('webfonts/2D77FB_0_0.ttf') format('truetype'),url('webfonts/2D77FB_0_0.svg#wf') format('svg');}
+/* latin-ext */
+@font-face {
+  font-family: 'Dosis';
+  font-style: normal;
+  font-weight: 200;
+  src: local('Dosis ExtraLight'), local('Dosis-ExtraLight'), url(http://fonts.gstatic.com/s/dosis/v4/VK-RlLrn4NFhRGqPkj6IwBkAz4rYn47Zy2rvigWQf6w.woff2) format('woff2');
+  unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Dosis';
+  font-style: normal;
+  font-weight: 200;
+  src: local('Dosis ExtraLight'), local('Dosis-ExtraLight'), url(http://fonts.gstatic.com/s/dosis/v4/RPKDmaFi75RJkvjWaDDb0nYhjbSpvc47ee6xR_80Hnw.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Lato Regular'), local('Lato-Regular'), url(http://fonts.gstatic.com/s/lato/v11/8qcEw_nrk_5HEcCpYdJu8BTbgVql8nDJpwnrE27mub0.woff2) format('woff2');
+  unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Lato Regular'), local('Lato-Regular'), url(http://fonts.gstatic.com/s/lato/v11/MDadn8DQ_3oT6kvnUq_2r_esZW2xOQ-xsNqO47m55DA.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 300;
+  src: local('Lato Light'), local('Lato-Light'), url(http://fonts.gstatic.com/s/lato/v11/IY9HZVvI1cMoAHxvl0w9LVKPGs1ZzpMvnHX-7fPOuAc.woff2) format('woff2');
+  unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 300;
+  src: local('Lato Light'), local('Lato-Light'), url(http://fonts.gstatic.com/s/lato/v11/22JRxvfANxSmnAhzbFH8PgLUuEpTyoUstqEm5AMlJo4.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Yanone Kaffeesatz';
+  font-style: normal;
+  font-weight: 200;
+  src: local('Yanone Kaffeesatz ExtraLight'), local('YanoneKaffeesatz-ExtraLight'), url(http://fonts.gstatic.com/s/yanonekaffeesatz/v7/We_iSDqttE3etzfdfhuPRbvQMs1fw8fEQY4hjSRsy20U24FapfJwyacJ6xNu5rm9.woff2) format('woff2');
+  unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Yanone Kaffeesatz';
+  font-style: normal;
+  font-weight: 200;
+  src: local('Yanone Kaffeesatz ExtraLight'), local('YanoneKaffeesatz-ExtraLight'), url(http://fonts.gstatic.com/s/yanonekaffeesatz/v7/We_iSDqttE3etzfdfhuPRYuLSQHnHW2U4NkxJ--PfJX3rGVtsTkPsbDajuO5ueQw.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
 
 /* Basic layout styling */
 
 body {
 	background-color: rgb(255,255,255);
+	font-family: 'Lato'
 }
+
+	body a {
+		color: rgb(21,166,116);
+	}
+
+a:hover{
+	color: rgb(21,166,116);
+}
+
+	a:focus {
+		color: rgb(255,255,255);
+	}
 
 #wrapper {
-	background-color: rgba(152,207,178,1);
-	margin-top: -6px;
+	background-color: rgba(53,53,53,1);
+	padding: 1.5rem;
 }
 
-.intro h1, .intro h2, .intro h3, .intro h4, .intro h5 { 
-	font-family: MuseoSans-500; 
-	font-weight: normal; 
-	font-style: normal; 
-	color: rgb(255,255,255);
+section#home {
+	height: 100vh;
 }
+
+#home {
+	padding: 0 1rem;
+}
+
+aside {
+	top: 0;
+	bottom: 0;
+	position: fixed !important;
+	right: 0;
+	padding: 0 !important;
+	background-color: rgba(255,255,255,0.1);
+}
+
+	aside > div {
+		height: 20%;
+		padding-top: 76px;
+		border-bottom: solid 1px black;
+	}
+
+		aside > div > a {
+			color: rgb(255,255,255);
+			font-size: 2rem;
+			font-weight: 300;
+		}
+
+aside > div.home.active {
+	background-color: rgba(183,183,183,1);
+}
+
+aside > div.edu.active {
+	background-color: rgb(152,207,178);
+}
+
+aside > div.skills.active {
+	background-color: rgb(251,207,160);
+}
+
+aside > div.exp.active {
+	background-color: rgb(154,208,255);
+}
+
+aside > div.contact.active {
+	background-color: rgb(194,50,45);
+}
+
+.intro {
+	background-color: rgba(0,0,0,0.1);
+	border: solid 2px rgba(0,0,0,0.1);
+	margin-top: 2rem;
+	padding: 9%;	
+}
+
+	.intro h1 { 
+		font-family: 'Yanone Kaffeesatz'; 
+		font-weight: normal; 
+		font-style: normal;
+		font-size: 10rem; 
+		text-align: center;
+		color: rgb(255,255,255);
+	}
 
 h2.title {
-	color: rgb(255,255,255);
+	color: rgb(217,217,217);
 	font-size: 4rem;
-	font-family: MuseoSans-500; 
+	font-family: 'Dosis'; 
 	font-weight: normal; 
 	font-style: normal; 
 }
@@ -34,11 +166,13 @@ h2.title {
 }
 
 nav {
-	height: 4.75rem;
+	z-index: 999;
+    width:100%; 
 }
 	
 	nav a {
 		font-size: 1.5rem;
+		color: rgb(0,0,0);
 	}
 
 	nav > div {
@@ -50,75 +184,32 @@ nav.row {
 }
 
 .content {
-	background-color: rgb(255,255,255);
+	background-color: rgb(242,242,242);
 }
 
-#home {
-	margin-top: 4.75rem;
-	position: relative;
-	padding: 0;
-}
-
-	#home video {
-		position: relative;
-	}
-
-video#bgvid {
-	min-width: 100%; min-height: 100%;
-	width: 100%; height: 100%; z-index: -100;
-	background: url('../img/arq.jpg') no-repeat;
-	background-size: cover;
-}
-
-.intro {
-	position: absolute;
-	top: 50%;
-	left: 2.5%;
-	z-index: 1;
-	width: 64%;
-	height: 30%;
-	background-color: rgba(0,0,0,0.5);
-	padding: 0 1rem;
-}
-
-	.intro h1 {
-		font-size: 7rem;
-		letter-spacing: -3px;
-	}
-
-	.intro h2 {
-		font-size: 3rem;
-	}
-
-#edu {
-	background-color: transparent;
-}
-
-#edu .content h2 {
-	color: rgb(125,125,125);
-}
-
-#skills {
-	background-color: rgba(251,207,160,1);
-} 
-
-#exp {
-	background-color: rgba(154,208,255,1);
-}
-
-#contact {
-	background-color: rgba(242,92,92,1);
+textarea {
+	min-height: 8rem;
 }
 
 footer {
-	background-color: rgba(102,102,102,1);
+	padding-top: 1rem;
+	background-color: rgba(102,102,102,0.4);
 	color: rgb(255,255,255);
 }
 
 #edu, #skills, #exp, #contact{
 	color: rgb(0,0,0);
 	padding: 4rem;
+	margin-top: 1rem;
 }
+
+#edu h2, #skills h2, #exp h2, #contact h2 {
+	color: rgb(125,125,125);
+}
+
+	#edu h2.title, #skills h2.title, #exp h2.title, #contact h2.title {
+		color: rgb(255,255,255);
+	}
 
 /* Spacings and elemnts ordering */
 
@@ -142,9 +233,11 @@ footer {
 	text-align: center;
 }
 
-div.menu {
+div.menu.center {
 	z-index: 999;
-	background-color: rgba(255,255,255,0.65);
+	position: fixed; 
+    top:0%;
+    width:100%; 
 }
 
 input.menuB {
@@ -153,15 +246,28 @@ input.menuB {
 	width: 2.5rem;
 }
 
-/* Coloring */
-
-nav {
-	background-color: transparent;
+#edu .row.collapse, #skills .row.collapse, #exp .row.collapse, #contact .row.collapse {
+	padding: 1rem 0;
 }
 
-	nav a {
-		color: rgb(0,0,0);
-	}
+/* Coloring and other stuff */
+
+.last-title {
+	border-top: solid 1px rgb(125,125,125);
+}
+
+/* No Captcha recaptcha */
+
+button.success {
+	display: none;
+}
+
+/* Contact form styles */
+
+p.success {
+	font-size: 1.5rem;
+	color: #43AC6A;
+} 
 
 /* Custom media queries */
 
@@ -181,10 +287,6 @@ nav {
 
 	.intro h2 {
 		font-size: 2.5rem;
-	}
-
-	nav {
-		background-color: transparent;
 	}
 
 	nav a {
@@ -215,10 +317,6 @@ nav {
 		font-size: 1.5rem;
 	}
 
-	nav {
-		background-color: transparent;
-	}
-
 	nav a {
 		font-size: 1.125rem;
 	}
@@ -228,6 +326,8 @@ nav {
 	}
 
 }
+
+
 
 @media only screen and (width: 48em) {
 
@@ -268,8 +368,7 @@ nav {
 @media only screen and (max-width: 40.063em) { 
 
 	#home {
-		background: url('../img/arq.jpg') fixed no-repeat top center / 100vw;
-		margin-top: 2.5rem;
+		margin-top: 0rem;
 	}
 
 	video {
@@ -277,31 +376,31 @@ nav {
 	}
 
 	#wrapper {
-		margin-top: -1.75rem;
+		margin-top: 0;
+		padding: 0;
 	}
 
-	div.menu {
+	div.menu.center {
 		background-color: rgba(255,255,255,0.85);
 	}
 	
 	.intro {
-		top:1%;
-		width: 95%;
-		height: 84%;
 		background-color: rgba(0,0,0,0.5);
 		padding: 0 0.5rem;
+		text-align: left;
+		margin-top: 40%;
 	}
 
 	.intro h1 {
-		font-size: 1.75rem;
+		font-size: 3rem;
 	}
 
-	.intro h2 {
-		font-size: 1.125rem;
+	.intro h2.title {
+		font-size: 2rem;
 	} 
 
 	h2.title {
-		font-size: 3rem;
+		font-size: 2.5rem;
 	}
 
 	nav a {

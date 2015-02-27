@@ -15,61 +15,62 @@
     
   </head>
   <body>
-   
-    <div class="menu fixed center">
-      <input class="menuB hide-for-medium-up" type="image" src="img/menuB.png"></input>
-      <nav class="row center"> 
-        <div class="medium-2 medium-offset-1 columns center prl16"><a href="#home" class="menu">Inicio</a></div>
-        <div class="medium-2 columns center prl16"><a href="#edu" class="menu">Educaci&oacute;n</a></div>
-        <div class="medium-2 columns center prl16"><a href="#skills" class="menu">Habilidades</a></div>
-        <div class="medium-2 columns center prl16"><a href="#exp" class="menu">Experiencia</a></div>
-        <div class="medium-2 end columns center prl16"><a href="#contact" class="menu">Contacto</a></div>
-      </nav>
+  <div id="wrapper">
+    <div class="menu center hide-for-medium-up">
+      <input class="menuB" type="image" src="img/menuB.png"></input>
+        <nav class="row center"> 
+          <div class="medium-2 medium-offset-1 columns center prl16"><a href="#home" class="menu">Inicio</a></div>
+          <div class="medium-2 columns center prl16"><a href="#edu" class="menu">Educaci&oacute;n</a></div>
+          <div class="medium-2 columns center prl16"><a href="#skills" class="menu">Habilidades</a></div>
+          <div class="medium-2 columns center prl16"><a href="#exp" class="menu">Experiencia</a></div>
+          <div class="medium-2 end columns center prl16"><a href="#contact" class="menu">Contacto</a></div>
+        </nav>
     </div>
-    <section id="home" class="row">
-      <video autoplay loop poster="img/arq.jpg" id="bgvid">
-        <source src="videos/arq.webm" type="video/webm">
-        <source src="videos/arq.mp4" type="video/mp4">
-        <source src="videos/arq.ogv" type="video/ogg">
-      </video>
-      <div class="intro">
-        <h1>Sara Mui&ntilde;o Murga</h1>
-        <h2>Maestra en Arquitectura y Nuevo Urbanismo</h2>
-        <h2>Coordinadora de proyectos ejecutivos habitacionales</h2>
-      </div>
-    </section>
-    <div id="wrapper">
-      <section id="edu" class="row">
+    <div class="row">
+      <section id="home" class="medium-9 small-12 columns">
+        <div class="intro">
+          <h1 class="title">Sara Mui&ntilde;o Murga</h1>
+          <h2 class="title">Maestra en Arquitectura y Nuevo Urbanismo</h2>
+          <h2 class="title">Coordinadora de Proyectos Habitacionales</h2>
+          <h2 class="title">Arquitecta</h2>
+        </div>
+      </section>
+
+      <section id="edu" class="medium-9 small-12 columns">
         <h2 class="title">Educaci&oacute;n</h2>
         <div class="row content">
-          <div class="medium-3 small-12 columns center">
-            <img class="pt8" src="img/edu.png" alt="Education icon representing a female graduate">
-          </div>
-          <div class="medium-9 small-12 columns">
+          <div class="medium-10 medium-offset-2 small-12 columns">
             <div class="row collapse">
-              <div class="medium-3 small-12 columns">
+              <div class="medium-5 small-12 columns">
                 <h2>Maestr&iacute;a</h2>
               </div>
-              <div class="medium-6 small-12 columns">
+              <div class="medium-6 small-11 columns">
                 <p>Arquitectura y Nuevo Urbanismo</p>
                 <p><b>ITESM</b> Campus Quer&eacute;taro</p>
                 <p>agosto 2010 - julio 2012</p>
               </div>
+              <div class="medium-1 small-1 columns center">
+                
+              </div>
             </div>
-            <div class="row collapse">
-              <div class="medium-3 small-12 columns">
+            <div class="row collapse last-title">
+              <div class="medium-5 small-12 columns">
                 <h2>Licenciatura</h2>
               </div>
-              <div class="medium-6 small-12 columns">
+              <div class="medium-6 small-11 columns">
                 <p>Arquitectura</p>
                 <p><b>ITESM</b> Campus Quer&eacute;taro</p>
                 <p>agosto 1995 - mayo 2000</p>
+              </div>
+              <div class="medium-1 small-1 columns center">
+                
               </div>
             </div>
           </div>
         </div>
       </section>
-      <section id="skills" class="row">
+
+      <section id="skills" class="medium-9 small-12 columns">
         <h2 class="title">Habilidades</h2>
         <div class="row content">
           <div class="medium-3 small 12 columns center">
@@ -77,32 +78,76 @@
           </div>
         </div>
       </section>
-      <section id="exp" class="row">
+
+      <section id="exp" class="medium-9 small-12 columns">
         <h2 class="title">Experiencia</h2>
         <div class="row content">
           
         </div>
       </section>
-      <section id="contact" class="row">
-        <h2 class="title"></h2>
-        <div class="row content">
-          <div class="medium-3 small-12 columns center">
-            <img src="img/contact.png" alt="Contact icon">
+
+      <section id="contact" class="medium-9 small-12 columns">
+        <h2 class="title">Contacto</h2>
+        <div class="row">
+          <div class="medium-9 small-12 columns">
+            <form data-abide class="cmxform" id="commentForm" method="post" action="verify.php" novalidate="novalidate">
+              <div class="name-field">
+                <label>Tu nombre <small>*requerido</small>
+                  <input type="text" name="name" required pattern="[a-zA-Z]+">
+                </label>
+                <small class="error">Necesitamos tu nombre para saber qui&eacute;n eres</small>
+              </div>
+              <div class="email-field">
+                <label>Correo electr&oacute;nico <small>*requerido</small>
+                  <input type="email" name="email" required>
+                </label>
+                <small class="error">Direcci&oacute;n de correo electr&oacute;nico no v&aacute;lida</small>
+              </div>
+              <div class="comment-field">
+                <label>Tus comentarios <small>*requerido</small>
+                  <textarea type="text" name="comment" required pattern="[a-zA-Z]+"></textarea>
+                </label>
+                <small class="error">D&eacute;janos un comentario.</small>
+              </div>
+              <p class="noCaptcha">
+                <label for="captcha">¿Eres humano?</label>
+                  <div class="g-recaptcha" data-sitekey="6LexvwITAAAAAN9TkOYnlVQo1uggUNnhR8a-mngD" data-callback="onValidate" data-theme="dark"></div>
+              </p>
+              <script>
+                onValidate = function ()
+                  {
+                    $("button.success").slideToggle(150);
+                    $("p.noCaptcha").fadeOut(1500);
+                    $("div.g-recaptcha").fadeOut(1500);
+                  };
+              </script>
+              <button class="success submit" type="submit">Enviar</button>
+            </form>
           </div>
         </div>
       </section>
+
+      <footer class="medium-9 small-12 columns columns">
+        <div class="large-10-centered columns center">
+          <p>Copyright &copy;2015. <a href="#home">Mikerai.com</a></p>
+        </div>
+      </footer>
+
+      <aside class="medium-3 hide-for-small columns center">
+        <div class="medium-12 columns home"><a href="#home">Inicio</a></div>
+        <div class="medium-12 columns edu"><a href="#edu">Educaci&oacute;n</a></div>
+        <div class="medium-12 columns skills"><a href="#skills">Habilidades</a></div>
+        <div class="medium-12 columns exp"><a href="#exp">Experiencia</a></div>
+        <div class="medium-12 columns contact"><a href="#contact">Contacto</a></div>
+      </aside>
+
     </div>
-    <footer class="row">
-      <div class="10-large large-centered columns center">
-        <p>Copyright &copy;2015. <a href="#home">Mikerai.com</a></p>
-      </div>
-    </footer>
+
+  </div>
+    
     <script type='text/javascript' src="js/vendor/jquery.js"></script>
     <script type='text/javascript' src="js/foundation.min.js"></script>
     <script type='text/javascript' src="js/scripts.js"></script>
-    <script>
-      $(document).foundation();
-    </script>
-    <!--<script type='text/javascript' src="https://www.google.com/recaptcha/api.js?hl=es"></script>-->
+    <script type='text/javascript' src="https://www.google.com/recaptcha/api.js?hl=es"></script>
   </body>
 </html>
