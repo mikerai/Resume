@@ -11,7 +11,7 @@
   font-family: 'Dosis';
   font-style: normal;
   font-weight: 200;
-  src: local('Dosis ExtraLight'), local('Dosis-ExtraLight'), url(http://fonts.gstatic.com/s/dosis/v4/RPKDmaFi75RJkvjWaDDb0nYhjbSpvc47ee6xR_80Hnw.woff2) format('woff2'), url(/fonts/Dosis.ttf) format('otf');
+  src: local('Dosis ExtraLight'), local('Dosis-ExtraLight'), url(http://fonts.gstatic.com/s/dosis/v4/RPKDmaFi75RJkvjWaDDb0nYhjbSpvc47ee6xR_80Hnw.woff2) format('woff2'), url(fonts/Dosis.ttf) format('truetype');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
 }
 /* latin-ext */
@@ -43,7 +43,7 @@
   font-family: 'Lato';
   font-style: normal;
   font-weight: 300;
-  src: local('Lato Light'), local('Lato-Light'), url(http://fonts.gstatic.com/s/lato/v11/22JRxvfANxSmnAhzbFH8PgLUuEpTyoUstqEm5AMlJo4.woff2) format('woff2'), url(/fonts/Lato.ttf) format('otf');
+  src: local('Lato Light'), local('Lato-Light'), url(http://fonts.gstatic.com/s/lato/v11/22JRxvfANxSmnAhzbFH8PgLUuEpTyoUstqEm5AMlJo4.woff2) format('woff2'), url(fonts/Lato.ttf) format('truetype');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
 }
 /* latin-ext */
@@ -59,7 +59,7 @@
   font-family: 'Yanone Kaffeesatz';
   font-style: normal;
   font-weight: 200;
-  src: local('Yanone Kaffeesatz ExtraLight'), local('YanoneKaffeesatz-ExtraLight'), url(http://fonts.gstatic.com/s/yanonekaffeesatz/v7/We_iSDqttE3etzfdfhuPRYuLSQHnHW2U4NkxJ--PfJX3rGVtsTkPsbDajuO5ueQw.woff2) format('woff2'), url(/fonts/Yanone_Kaffeesatz.ttf) format('otf');
+  src: local('Yanone Kaffeesatz ExtraLight'), local('YanoneKaffeesatz-ExtraLight'), url(http://fonts.gstatic.com/s/yanonekaffeesatz/v7/We_iSDqttE3etzfdfhuPRYuLSQHnHW2U4NkxJ--PfJX3rGVtsTkPsbDajuO5ueQw.woff2) format('woff2'), url(fonts/Yanone_Kaffeesatz.ttf) format('truetype');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
 }
 
@@ -67,7 +67,7 @@
 
 body {
 	background-color: rgb(255,255,255);
-	font-family: 'Lato'
+	font-family: 'Lato', sans-serif;
 }
 
 	body a {
@@ -144,7 +144,7 @@ aside > div.contact.active {
 }
 
 	.intro h1 { 
-		font-family: 'Yanone Kaffeesatz'; 
+		font-family: 'Yanone Kaffeesatz', sans-serif; 
 		font-weight: normal; 
 		font-style: normal;
 		font-size: 10rem; 
@@ -155,7 +155,7 @@ aside > div.contact.active {
 h2.title {
 	color: rgb(217,217,217);
 	font-size: 4rem;
-	font-family: 'Dosis'; 
+	font-family: 'Dosis', sans-serif; 
 	font-weight: normal; 
 	font-style: normal; 
 }
