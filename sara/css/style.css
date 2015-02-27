@@ -11,7 +11,7 @@
   font-family: 'Dosis';
   font-style: normal;
   font-weight: 200;
-  src: local('Dosis ExtraLight'), local('Dosis-ExtraLight'), url(http://fonts.gstatic.com/s/dosis/v4/RPKDmaFi75RJkvjWaDDb0nYhjbSpvc47ee6xR_80Hnw.woff2) format('woff2');
+  src: local('Dosis ExtraLight'), local('Dosis-ExtraLight'), url(http://fonts.gstatic.com/s/dosis/v4/RPKDmaFi75RJkvjWaDDb0nYhjbSpvc47ee6xR_80Hnw.woff2) format('woff2'), url(/fonts/Dosis.ttf) format('otf');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
 }
 /* latin-ext */
@@ -43,7 +43,7 @@
   font-family: 'Lato';
   font-style: normal;
   font-weight: 300;
-  src: local('Lato Light'), local('Lato-Light'), url(http://fonts.gstatic.com/s/lato/v11/22JRxvfANxSmnAhzbFH8PgLUuEpTyoUstqEm5AMlJo4.woff2) format('woff2');
+  src: local('Lato Light'), local('Lato-Light'), url(http://fonts.gstatic.com/s/lato/v11/22JRxvfANxSmnAhzbFH8PgLUuEpTyoUstqEm5AMlJo4.woff2) format('woff2'), url(/fonts/Lato.ttf) format('otf');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
 }
 /* latin-ext */
@@ -59,7 +59,7 @@
   font-family: 'Yanone Kaffeesatz';
   font-style: normal;
   font-weight: 200;
-  src: local('Yanone Kaffeesatz ExtraLight'), local('YanoneKaffeesatz-ExtraLight'), url(http://fonts.gstatic.com/s/yanonekaffeesatz/v7/We_iSDqttE3etzfdfhuPRYuLSQHnHW2U4NkxJ--PfJX3rGVtsTkPsbDajuO5ueQw.woff2) format('woff2');
+  src: local('Yanone Kaffeesatz ExtraLight'), local('YanoneKaffeesatz-ExtraLight'), url(http://fonts.gstatic.com/s/yanonekaffeesatz/v7/We_iSDqttE3etzfdfhuPRYuLSQHnHW2U4NkxJ--PfJX3rGVtsTkPsbDajuO5ueQw.woff2) format('woff2'), url(/fonts/Yanone_Kaffeesatz.ttf) format('otf');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
 }
 
@@ -367,8 +367,12 @@ p.success {
 
 @media only screen and (max-width: 40.063em) { 
 
+	#edu, #skills, #exp, #contact {
+		padding: 0;
+	}
+	
 	#home {
-		margin-top: 0rem;
+		margin-top: 0;
 	}
 
 	video {
@@ -388,7 +392,7 @@ p.success {
 		background-color: rgba(0,0,0,0.5);
 		padding: 0 0.5rem;
 		text-align: left;
-		margin-top: 40%;
+		margin-top: 25%;
 	}
 
 	.intro h1 {
@@ -416,6 +420,6 @@ p.success {
 	}
 
 	.row {
-		padding: 0 0.5rem;
+		padding: 0;
 	}
 }
