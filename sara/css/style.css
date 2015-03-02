@@ -75,7 +75,7 @@ body {
 	}
 
 a:hover{
-	color: rgb(21,166,116);
+	color: rgba(0,0,0,0.5);
 }
 
 	a:focus {
@@ -106,30 +106,53 @@ aside {
 
 	aside > div {
 		height: 20%;
-		padding-top: 76px;
 		border-bottom: solid 1px black;
+		position: relative;
 	}
 
 		aside > div > a {
 			color: rgb(255,255,255);
 			font-size: 2rem;
 			font-weight: 300;
+			position: absolute;
+			top: 25%;
+			right: 12.5%;
 		}
+
+div.home:hover{
+	background-color: rgba(183,183,183,1);
+}
 
 aside > div.home.active {
 	background-color: rgba(183,183,183,1);
+}
+
+div.edu:hover {
+	background-color: rgb(152,207,178);
 }
 
 aside > div.edu.active {
 	background-color: rgb(152,207,178);
 }
 
+div.skills:hover {
+	background-color: rgb(251,207,160);
+}
+
 aside > div.skills.active {
 	background-color: rgb(251,207,160);
 }
 
+div.exp:hover {
+	background-color: rgb(154,208,255);
+}
+
 aside > div.exp.active {
 	background-color: rgb(154,208,255);
+}
+
+div.contact:hover {
+	background-color: rgb(194,50,45);
 }
 
 aside > div.contact.active {
@@ -274,9 +297,6 @@ p.success {
 @media only screen and (min-width: 64.063em) and (max-width: 90em) { 
 	
 	.intro {
-		top: 45%;
-		width: 60%;
-		height: 50%;
 		background-color: rgba(0,0,0,0.5);
 		padding: 0 0.5rem;
 	}
