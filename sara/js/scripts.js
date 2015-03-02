@@ -32,6 +32,22 @@ $('section, footer').on("click", function(e){
 	$('.mobile nav').slideUp();
 });
 
+//Fader function
+
+$(function() {
+  var faderIndex = 0,
+        faders = $('div.intro > h2');
+    function nextFade() {
+        $(faders[faderIndex]).fadeOut(1500, function() {
+            faderIndex++;
+            if (faderIndex >= faders.length)
+                faderIndex = 0;
+            $(faders[faderIndex]).fadeIn(3500, nextFade);
+        });
+    }
+    nextFade();
+});
+
 // SPY MENU Cache selectors
 
 $('nav a, aside a, footer a').click(function(){
