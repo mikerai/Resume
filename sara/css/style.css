@@ -3,7 +3,7 @@
   font-family: 'Open Sans Condensed';
   font-style: normal;
   font-weight: 300;
-  src: local('Open Sans Cond Light'), local('OpenSans-CondensedLight'), url(http://fonts.gstatic.com/s/opensanscondensed/v10/gk5FxslNkTTHtojXrkp-xD_0YkshJ_UyXEU-Q7eV4G5_v5H-gcmDugi2HQeB0BPm.woff2) format('woff2'), url('fonts/Open_Sans_Condensed.ttf') format('truetype');
+  src: local('Open Sans Cond Light'), local('OpenSans-CondensedLight'), url(http://fonts.gstatic.com/s/opensanscondensed/v10/gk5FxslNkTTHtojXrkp-xD_0YkshJ_UyXEU-Q7eV4G5_v5H-gcmDugi2HQeB0BPm.woff2) format('woff2'), url(fonts/Open_Sans_Condensed.ttf) format('truetype');
   unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;
 }
 /* latin */
@@ -11,7 +11,7 @@
   font-family: 'Open Sans Condensed';
   font-style: normal;
   font-weight: 300;
-  src: local('Open Sans Cond Light'), local('OpenSans-CondensedLight'), url(http://fonts.gstatic.com/s/opensanscondensed/v10/gk5FxslNkTTHtojXrkp-xMmDra0ONnO3FPH--kzkC5zr7w4p9aSvGirXi6XmeXNA.woff2) format('woff2');
+  src: local('Open Sans Cond Light'), local('OpenSans-CondensedLight'), url(http://fonts.gstatic.com/s/opensanscondensed/v10/gk5FxslNkTTHtojXrkp-xMmDra0ONnO3FPH--kzkC5zr7w4p9aSvGirXi6XmeXNA.woff2) format('woff2'), url(fonts/Open_Sans_Condensed.ttf) format('truetype');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
 }
 
@@ -20,7 +20,7 @@
   font-family: 'Open Sans';
   font-style: normal;
   font-weight: 300;
-  src: local('Open Sans Light'), local('OpenSans-Light'), url(http://fonts.gstatic.com/s/opensans/v10/DXI1ORHCpsQm3Vp6mXoaTSYtBUPDK3WL7KRKS_3q7OE.woff2) format('woff2'), url('fonts/Open_Sans_300.ttf') format('truetype');
+  src: local('Open Sans Light'), local('OpenSans-Light'), url(http://fonts.gstatic.com/s/opensans/v10/DXI1ORHCpsQm3Vp6mXoaTSYtBUPDK3WL7KRKS_3q7OE.woff2) format('woff2'), url(fonts/Open_Sans_300.ttf) format('truetype');
   unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;
 }
 /* latin */
@@ -28,7 +28,7 @@
   font-family: 'Open Sans';
   font-style: normal;
   font-weight: 300;
-  src: local('Open Sans Light'), local('OpenSans-Light'), url(http://fonts.gstatic.com/s/opensans/v10/DXI1ORHCpsQm3Vp6mXoaTRampu5_7CjHW5spxoeN3Vs.woff2) format('woff2');
+  src: local('Open Sans Light'), local('OpenSans-Light'), url(http://fonts.gstatic.com/s/opensans/v10/DXI1ORHCpsQm3Vp6mXoaTRampu5_7CjHW5spxoeN3Vs.woff2) format('woff2'), url(fonts/Open_Sans_300.ttf) format('truetype');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
 }
 
@@ -37,7 +37,7 @@
   font-family: 'Open Sans';
   font-style: normal;
   font-weight: 400;
-  src: local('Open Sans'), local('OpenSans'), url(http://fonts.gstatic.com/s/opensans/v10/u-WUoqrET9fUeobQW7jkRZBw1xU1rKptJj_0jans920.woff2) format('woff2'), url('fonts/Open_Sans_400.ttf') format('truetype');
+  src: local('Open Sans'), local('OpenSans'), url(http://fonts.gstatic.com/s/opensans/v10/u-WUoqrET9fUeobQW7jkRZBw1xU1rKptJj_0jans920.woff2) format('woff2'), url(fonts/Open_Sans_400.ttf) format('truetype');
   unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;
 }
 /* latin */
@@ -45,7 +45,7 @@
   font-family: 'Open Sans';
   font-style: normal;
   font-weight: 400;
-  src: local('Open Sans'), local('OpenSans'), url(http://fonts.gstatic.com/s/opensans/v10/cJZKeOuBrn4kERxqtaUH3ZBw1xU1rKptJj_0jans920.woff2) format('woff2');
+  src: local('Open Sans'), local('OpenSans'), url(http://fonts.gstatic.com/s/opensans/v10/cJZKeOuBrn4kERxqtaUH3ZBw1xU1rKptJj_0jans920.woff2) format('woff2'), url(fonts/Open_Sans_400.ttf) format('truetype');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
 }
 
@@ -55,6 +55,7 @@ body {
 	background-color: rgb(255,255,255);
 	font-family: 'Open Sans', sans-serif;
 	font-weight: 300;
+	-webkit-font-smoothing: antialiased; 
 }
 
 	body a {
@@ -62,7 +63,7 @@ body {
 	}
 
 a:hover{
-	color: rgba(0,0,0,0.5);
+	color: rgb(0,0,0);
 }
 
 	a:focus {
@@ -98,7 +99,7 @@ aside {
 	}
 
 		aside > div > a {
-			color: rgb(255,255,255);
+			color: rgba(102,102,102,0.8);
 			font-size: 2rem;
 			font-weight: 300;
 			position: absolute;
@@ -106,44 +107,48 @@ aside {
 			right: 12.5%;
 		}
 
+			aside > div > a:focus {
+			color: rgba(102,102,102,0.8);
+		}
+
 div.home:hover{
-	background-color: rgba(183,183,183,1);
+	background-color: rgba(21,166,116,1);
 }
 
 aside > div.home.active {
-	background-color: rgba(183,183,183,1);
+	background-color: rgba(21,166,116,1);
 }
 
 div.edu:hover {
-	background-color: rgb(152,207,178);
+	background-color: rgb(255,140,45);
 }
 
 aside > div.edu.active {
-	background-color: rgb(152,207,178);
+	background-color: rgb(255,140,45);
 }
 
 div.skills:hover {
-	background-color: rgb(251,207,160);
+	background-color: rgb(232,183,45);
 }
 
 aside > div.skills.active {
-	background-color: rgb(251,207,160);
+	background-color: rgb(232,183,45);
 }
 
 div.exp:hover {
-	background-color: rgb(154,208,255);
+	background-color: rgb(255,255,255);
 }
 
 aside > div.exp.active {
-	background-color: rgb(154,208,255);
+	background-color: rgb(255,255,255);
 }
 
 div.contact:hover {
-	background-color: rgb(194,50,45);
+	background-color: rgb(22,127,171);
 }
 
 aside > div.contact.active {
-	background-color: rgb(194,50,45);
+	background-color: rgb(22,127,171);
 }
 
 .intro {
@@ -158,8 +163,12 @@ aside > div.contact.active {
 		font-weight: 300; 
 		font-style: normal;
 		font-size: 8rem; 
-		text-align: center;
 		color: rgb(255,255,255);
+		-webkit-font-smoothing: antialiased; 
+	}
+
+	.intro h2 {
+		display: none;
 	}
 
 h2.title {
@@ -167,7 +176,17 @@ h2.title {
 	font-size: 4rem;
 	font-family: 'Open Sans Condensed', sans-serif; 
 	font-weight: 300; 
-	font-style: normal; 
+	font-style: normal;
+	-webkit-font-smoothing: antialiased; 
+	text-rendering: optimizeLegibility;
+}
+
+footer {
+	font-family: 'Open Sans' sans-serif; 
+	font-weight: 300; 
+	font-style: normal;
+	-webkit-font-smoothing: antialiased; 
+	text-rendering: optimizeLegibility;
 }
 
 .row {
@@ -209,7 +228,7 @@ footer {
 
 #edu, #skills, #exp, #contact{
 	color: rgb(0,0,0);
-	padding: 4rem;
+	padding: 4rem 1rem;
 	margin-top: 1rem;
 }
 
@@ -257,7 +276,7 @@ input.menuB {
 }
 
 #edu .row.collapse, #skills .row.collapse, #exp .row.collapse, #contact .row.collapse {
-	padding: 1rem 0;
+	padding: 1rem 0.25rem;
 }
 
 /* Coloring and other stuff */
@@ -374,9 +393,17 @@ p.success {
 
 @media only screen and (max-width: 40.063em) { 
 
-	#edu, #skills, #exp, #contact {
+	#edu, #skills, #exp {
+		padding: 0 0.5rem;
+	}
+
+	#contact {
 		padding: 0;
 	}
+
+		#contact h2.title{
+			padding: 0 0.5rem;
+		}
 	
 	#home {
 		margin-top: 0;
@@ -407,7 +434,7 @@ p.success {
 	}
 
 	.intro h2.title {
-		font-size: 2rem;
+		font-size: 1.5rem;
 	} 
 
 	h2.title {
