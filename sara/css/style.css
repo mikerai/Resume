@@ -453,6 +453,14 @@ p.success {
 }
 
 @media only screen and (max-width: 40.063em) { 
+	
+	ul li {
+			font-size: 1rem;
+		}
+
+	#exp ul {
+		padding: 0;
+	}
 
 	.download {
 		font-size: 1.25rem;
