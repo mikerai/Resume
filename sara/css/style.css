@@ -99,7 +99,7 @@ aside {
 	}
 
 		aside > div > a {
-			color: rgba(102,102,102,0.8);
+			color: rgb(255,255,255);
 			font-size: 2rem;
 			font-weight: 300;
 			position: absolute;
@@ -112,43 +112,43 @@ aside {
 		}
 
 div.home:hover{
-	background-color: rgba(21,166,116,1);
+	background-color: #334D5C;
 }
 
 aside > div.home.active {
-	background-color: rgba(21,166,116,1);
+	background-color: #334D5C;
 }
 
 div.edu:hover {
-	background-color: rgb(255,140,45);
+	background-color: #45B29D;
 }
 
 aside > div.edu.active {
-	background-color: rgb(255,140,45);
+	background-color: #45B29D;
 }
 
 div.skills:hover {
-	background-color: rgb(232,183,45);
+	background-color: #EFC94C;
 }
 
 aside > div.skills.active {
-	background-color: rgb(232,183,45);
+	background-color: #EFC94C;
 }
 
 div.exp:hover {
-	background-color: rgb(255,255,255);
+	background-color: #E27A3F;
 }
 
 aside > div.exp.active {
-	background-color: rgb(255,255,255);
+	background-color: #E27A3F;
 }
 
 div.contact:hover {
-	background-color: rgb(22,127,171);
+	background-color: #DF5A49;
 }
 
 aside > div.contact.active {
-	background-color: rgb(22,127,171);
+	background-color: #DF5A49;
 }
 
 .intro {
