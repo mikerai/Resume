@@ -59,7 +59,8 @@ body {
 }
 
 	body a {
-		color: rgb(21,166,116);
+		/*color: rgb(21,166,116);*/
+		color: rgb(67,172,106);
 	}
 
 a:hover{
@@ -75,8 +76,8 @@ a:hover{
 	padding: 1.5rem;
 }
 
-section#home {
-	height: 100vh;
+section#home, section#edu, section#skills, section#exp, section#contact {
+	min-height: 100vh;
 }
 
 #home {
@@ -99,16 +100,18 @@ aside {
 	}
 
 		aside > div > a {
-			color: rgb(255,255,255);
+			display: block;
+			text-align: right;
 			font-size: 2rem;
 			font-weight: 300;
-			position: absolute;
-			top: 25%;
-			right: 12.5%;
+			color: rgb(255,255,255);
+			height: 100%;
+			width: 100%;
+			padding-top: 12.5%;	
 		}
 
 			aside > div > a:focus {
-			color: rgba(102,102,102,0.8);
+			color: rgba(255,255,255);
 		}
 
 div.home:hover{
@@ -151,8 +154,12 @@ aside > div.contact.active {
 	background-color: #DF5A49;
 }
 
+h1, h2, h3, h4, h5, h6 {
+	font-family: 'Open Sans' sans-serif;
+}
+
 .intro {
-	background-color: rgba(0,0,0,0.1);
+	background-color: rgba(53,53,53,0.1);;
 	border: solid 2px rgba(0,0,0,0.1);
 	margin-top: 2rem;
 	padding: 7%;	
@@ -228,8 +235,7 @@ footer {
 
 #edu, #skills, #exp, #contact{
 	color: rgb(0,0,0);
-	padding: 4rem 1rem;
-	margin-top: 1rem;
+	padding: 0 1rem;
 }
 
 #edu h2, #skills h2, #exp h2, #contact h2 {
@@ -239,6 +245,46 @@ footer {
 	#edu h2.title, #skills h2.title, #exp h2.title, #contact h2.title {
 		color: rgb(255,255,255);
 	}
+
+#edu p {
+	font-size: 1.25rem;
+}
+
+ul {
+	list-style-type: square;
+	margin-bottom: 0;
+}
+
+	ul li {
+		font-size: 1.25rem;
+	}
+
+#skills ul {
+	padding: 2rem 1rem;
+}
+
+#exp ul {
+	padding: 1rem;
+}
+
+#exp div.row > div.row  {
+	border-top: solid 1px rgb(125,125,125);
+}
+
+	#exp div.row > div.row:first-child  {
+		border-top: none;
+	}
+
+label {
+	font-size: 1rem;
+	color:rgb(125,125,125);
+}
+
+input[type="text"],  
+input[type="email"],  
+textarea {
+	margin: 0.5rem 0 1rem 0;
+}
 
 /* Spacings and elemnts ordering */
 
@@ -252,6 +298,10 @@ footer {
 
 .pt12 {
 	padding: 0.75rem 0 0;
+}
+
+.pt32 {
+	padding-top: 2rem;
 }
 
 .prl16 {
@@ -280,6 +330,17 @@ input.menuB {
 }
 
 /* Coloring and other stuff */
+
+.download {
+	background-color: transparent;
+	border: 1px solid white;
+	padding: 2rem;
+	font-size: 1.5rem;
+}
+
+	.download:hover, .download:focus {
+		background-color: #334D5C;
+	}
 
 .last-title {
 	border-top: solid 1px rgb(125,125,125);
@@ -393,6 +454,10 @@ p.success {
 
 @media only screen and (max-width: 40.063em) { 
 
+	.download {
+		font-size: 1.25rem;
+	}
+	
 	#edu, #skills, #exp {
 		padding: 0 0.5rem;
 	}
@@ -418,24 +483,28 @@ p.success {
 		padding: 0;
 	}
 
-	div.menu.center {
-		background-color: rgba(255,255,255,0.85);
+	nav {
+		background-color: rgba(255,255,255,0.95);
 	}
 	
 	.intro {
-		background-color: rgba(0,0,0,0.5);
 		padding: 0 0.5rem;
 		text-align: left;
 		margin-top: 25%;
+		height: 14rem;
 	}
 
-	.intro h1 {
-		font-size: 3rem;
-	}
+		.intro h1 {
+			font-size: 3rem;
+		}
 
-	.intro h2.title {
-		font-size: 1.5rem;
-	} 
+		.intro h2.title {
+			font-size: 1.5rem;
+		}
+
+			.intro h2.title:last-child{
+				padding-top: 2rem;
+			} 
 
 	h2.title {
 		font-size: 2.5rem;
@@ -455,5 +524,9 @@ p.success {
 
 	.row {
 		padding: 0;
+	}
+
+	.row.pt32{
+		padding-top:1.5rem;
 	}
 }

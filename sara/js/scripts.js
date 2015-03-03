@@ -24,12 +24,33 @@ $(window).resize(function () {
 
 $("input.menuB").on("click", function(e){
     e.preventDefault();
+    if ($('.mobile nav').css('display') === 'block') {
+       console.log("shatlejl");
+       $('.mobile nav').slideToggle();
+       $('input.menuB').attr('src', 'img/menu-B.png');
+       $('div.menu.center').css('background-color', 'transparent')
+    }
+   else {
+    $('div.menu.center').css('background-color', 'rgba(255,255,255,0.95)')
+    $('input.menuB').attr('src', 'img/menu-A.png');
     $('.mobile nav').slideToggle();
+   }
 });
+
+/*$('.mobile nav').each(function(){
+    if ($(this).attr('style').display == 'block'){
+       $('div.menu.center').css('background-color:rgba(255,255,255,0.95);')
+    }
+    else {
+      
+    };
+});*/
 
 $('section, footer').on("click", function(e){
 	e.preventDefault();	
 	$('.mobile nav').slideUp();
+  $('div.menu.center').css('background-color', 'transparent');
+  $('input.menuB').attr('src', 'img/menu-B.png');
 });
 
 //Fader function
@@ -54,14 +75,16 @@ $('nav a, aside a, footer a').click(function(){
     $('html, body').animate({
         scrollTop: $( $(this).attr('href') ).offset().top
     }, 987);
-    $('.mobile nav').slideToggle();
+    $('.mobile nav').slideUp();
+    $('div.menu.center').css('background-color', 'transparent');
+    $('input.menuB').attr('src', 'img/menu-B.png');
     return false;
 });
 
 // Cache selectors
 var lastId,
     topMenu = $("aside, nav"),
-    topMenuHeight = topMenu.outerHeight()+67,
+    topMenuHeight = topMenu.outerHeight()+100,
     // All list items
     menuItems = topMenu.find("a"),
     // Anchors corresponding to menu items
@@ -74,12 +97,14 @@ var lastId,
 // so we can get a fancy scroll animation
 menuItems.click(function(e){
   var href = $(this).attr("href"),
-      offsetTop = href === "#" ? 0 : $(href).offset().top-66;
+      offsetTop = href === "#" ? 0 : $(href).offset().top;
   $('html, body').stop().animate({ 
       scrollTop: offsetTop
   }, 987);
   e.preventDefault();
   $('nav').slideUp();
+  $('div.menu.center').css('background-color', 'transparent');
+  $('input.menuB').attr('src', 'img/menu-B.png');
 });
 
 // Bind to scroll
