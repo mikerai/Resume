@@ -269,10 +269,12 @@ ul {
 
 #exp div.row > div.row  {
 	border-top: solid 1px rgb(125,125,125);
+	padding-top: 1rem;
 }
 
 	#exp div.row > div.row:first-child  {
 		border-top: none;
+		padding-top: 0;
 	}
 
 label {
