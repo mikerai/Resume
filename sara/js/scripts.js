@@ -2,6 +2,21 @@
 
 $(document).foundation();
 
+$(document).ready(function() {
+    $(".fancybox").fancybox({
+      nextClick:'true'
+    });
+});
+
+$('.showcase').click(function(e) {
+    var el, id = $(this).data('open-id');
+    if(id){
+        el = $('.fancybox[rel=' + id + ']:eq(0)');
+        e.preventDefault();
+        el.click();
+    }
+});
+
 $(function () {
     if ($(window).width() < 642) {
      $('body').addClass('mobile');
@@ -25,21 +40,20 @@ $(window).resize(function () {
 $("input.menuB").on("click", function(e){
     e.preventDefault();
     if ($('.mobile nav').css('display') === 'block') {
-       console.log("shatlejl");
        $('.mobile nav').slideToggle();
        $('input.menuB').attr('src', 'img/menu-B.png');
-       $('div.menu.center').css('background-color', 'transparent')
+       $('div.menu').css('background-color', 'transparent');
     }
    else {
-    $('div.menu.center').css('background-color', 'rgba(255,255,255,0.95)')
-    $('input.menuB').attr('src', 'img/menu-A.png');
-    $('.mobile nav').slideToggle();
+    $('.mobile nav').slideToggle(); 
+    $('div.menu').css('background-color', 'rgba(255,255,255,0.95)');
+    $('input.menuB').attr('src', 'img/menu-C.png');
    }
 });
 
 /*$('.mobile nav').each(function(){
     if ($(this).attr('style').display == 'block'){
-       $('div.menu.center').css('background-color:rgba(255,255,255,0.95);')
+       $('div.menu').css('background-color:rgba(255,255,255,0.95);')
     }
     else {
       
@@ -49,7 +63,7 @@ $("input.menuB").on("click", function(e){
 $('section, footer').on("click", function(e){
 	e.preventDefault();	
 	$('.mobile nav').slideUp();
-  $('div.menu.center').css('background-color', 'transparent');
+  $('div.menu').css('background-color', 'transparent');
   $('input.menuB').attr('src', 'img/menu-B.png');
 });
 
@@ -76,7 +90,7 @@ $('nav a, aside a, footer a').click(function(){
         scrollTop: $( $(this).attr('href') ).offset().top
     }, 987);
     $('.mobile nav').slideUp();
-    $('div.menu.center').css('background-color', 'transparent');
+    $('div.menu').css('background-color', 'transparent');
     $('input.menuB').attr('src', 'img/menu-B.png');
     return false;
 });
@@ -103,7 +117,7 @@ menuItems.click(function(e){
   }, 987);
   e.preventDefault();
   $('nav').slideUp();
-  $('div.menu.center').css('background-color', 'transparent');
+  $('div.menu').css('background-color', 'transparent');
   $('input.menuB').attr('src', 'img/menu-B.png');
 });
 

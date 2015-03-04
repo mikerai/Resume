@@ -9,6 +9,7 @@
     
     <link rel="stylesheet" href="css/foundation.css" />
     <link rel="stylesheet" href="css/style.css">
+    <style>.fancybox-lock{overflow: visible !important;}</style>
 
     <link rel="shortcut icon" type="image/x-icon" href="img/favicon.png">
     <link rel="icon" href="img/favicon.png" type="image/x-icon">
@@ -16,16 +17,25 @@
   </head>
   <body>
   <div id="wrapper">
-    <div class="menu center hide-for-medium-up">
-      <input class="menuB" type="image" src="img/menu-B.png"></input>
+    <div class="menu hide-for-medium-up">
+      <div class="row">
+        <input class="menuB" type="image" src="img/menu-B.png"></input>
+      </div>
         <nav class="row center"> 
-          <div class="medium-2 medium-offset-1 columns center prl16"><a href="#home" class="menu">Inicio</a></div>
-          <div class="medium-2 columns center prl16"><a href="#edu" class="menu">Educaci&oacute;n</a></div>
-          <div class="medium-2 columns center prl16"><a href="#skills" class="menu">Habilidades</a></div>
-          <div class="medium-2 columns center prl16"><a href="#exp" class="menu">Experiencia</a></div>
-          <div class="medium-2 end columns center prl16"><a href="#contact" class="menu">Contacto</a></div>
+          <div class="row">
+            <div class="small-6 columns center home"><a href="#home" class="menu">Inicio</a></div>
+            <div class="small-6 columns center edu"><a href="#edu" class="menu">Educaci&oacute;n</a></div>
+          </div>
+          <div class="row">
+            <div class="small-6 columns center exp"><a href="#exp" class="menu">Experiencia</a></div>
+            <div class="small-6 columns center skills"><a href="#skills" class="menu">Habilidades</a></div>
+          </div>
+          <div class="row">
+            <div class="small-12 columns center contact"><a href="#contact" class="menu">Contacto</a></div>
+          </div>
         </nav>
     </div>
+    <div class="main-content">
     <div class="row">
       <section id="home" class="large-10 medium-9 small-12 columns">
         <div class="intro">
@@ -89,25 +99,42 @@
         </div>
       </section>
 
-      <section id="skills" class="large-10 medium-9 small-12 columns">
-        <h2 class="title">Habilidades</h2>
-        <div class="row collapse content">
-          <ul>
-            <li>Experta en coordinaci&oacute;n de equipos de trabajo.</li>
-            <li>Habilidad para trabajar en equipos multidisciplinarios.</li>
-            <li>Met&oacute;dica y meticulosa al momento de establecer la planeaci&oacute;n de un proyecto.</li>
-            <li>Gran capacidad para definir rutas y etapas cr&iacute;ticas.</li>
-            <li>Alta atenci&oacute;n al detalle.</li>
-            <li>Experta en Autocad.</li>
-            <li>Experta en lotificaciones y proyectos de casa habitaci&oacute;n.</li>
-            <li>Usuaria intermedia en Google SketchUp y Google Earth.</li>
-            <li>Ingl&eacute;s nivel conversaci&oacute;n de negocios. Certificaci&oacute;n TOEFL.</li>
-          </ul>
-        </div>
-      </section>
-
       <section id="exp" class="large-10 medium-9 small-12 columns">
-        <h2 class="title">Experiencia</h2>
+        <div class="row">
+          <div class="medium-6 small-12 columns">  
+            <h2 class="title">Experiencia</h2>
+          </div>
+          <div class="medium-6 small-12 columns">
+            <a href="" class="showcase" data-open-id="album">Ver mi trabajo</a>
+              <div class="hide" id="gallery_one">
+                <a href="img/samples/1.jpg" class="fancybox" rel="album" title="Muestra de mi trabajo"><img src="img/samples/1.jpg" alt=""></a>
+                <!--<a href="img/samples/2.jpg" class="fancybox hide-for-small" rel="album" title="Muestra de mi trabajo"><img class="hide-for-small" src="img/samples/2.jpg" alt=""></a>
+                <a href="img/samples/3.jpg" class="fancybox hide-for-small" rel="album" title="Muestra de mi trabajo"><img class="hide-for-small" src="img/samples/3.jpg" alt=""></a>-->
+                <a href="img/samples/4.jpg" class="fancybox" rel="album" title="Muestra de mi trabajo"><img src="img/samples/4.jpg" alt=""></a>
+                <a href="img/samples/5.jpg" class="fancybox" rel="album" title="Muestra de mi trabajo"><img src="img/samples/5.jpg" alt=""></a>
+                <a href="img/samples/6.jpg" class="fancybox" rel="album" title="Muestra de mi trabajo"><img src="img/samples/6.jpg" alt=""></a>
+                <a href="img/samples/7.jpg" class="fancybox" rel="album" title="Muestra de mi trabajo"><img src="img/samples/7.jpg" alt=""></a>
+                <a href="img/samples/8.jpg" class="fancybox" rel="album" title="Muestra de mi trabajo"><img src="img/samples/8.jpg" alt=""></a>
+                <a href="img/samples/9.jpg" class="fancybox" rel="album" title="Muestra de mi trabajo"><img src="img/samples/9.jpg" alt=""></a>
+                <a href="img/samples/10.jpg" class="fancybox" rel="album" title="Muestra de mi trabajo"><img src="img/samples/10.jpg" alt=""></a>
+                <a href="img/samples/11.jpg" class="fancybox" rel="album" title="Muestra de mi trabajo"><img src="img/samples/11.jpg" alt=""></a>
+                <a href="img/samples/12.jpg" class="fancybox" rel="album" title="Muestra de mi trabajo"><img src="img/samples/12.jpg" alt=""></a>
+                <a href="img/samples/13.jpg" class="fancybox" rel="album" title="Muestra de mi trabajo"><img src="img/samples/13.jpg" alt=""></a>
+                <a href="img/samples/14.jpg" class="fancybox" rel="album" title="Muestra de mi trabajo"><img src="img/samples/14.jpg" alt=""></a>
+                <a href="img/samples/15.jpg" class="fancybox" rel="album" title="Muestra de mi trabajo"><img src="img/samples/15.jpg" alt=""></a>
+                <a href="img/samples/16.jpg" class="fancybox" rel="album" title="Muestra de mi trabajo"><img src="img/samples/16.jpg" alt=""></a>
+                <a href="img/samples/17.jpg" class="fancybox" rel="album" title="Muestra de mi trabajo"><img src="img/samples/17.jpg" alt=""></a>
+                <a href="img/samples/loarca1.png" class="fancybox" rel="album" title="Muestra de mi trabajo"><img src="img/samples/loarca1.png" alt=""></a>
+                <a href="img/samples/19.jpg" class="fancybox" rel="album" title="Muestra de mi trabajo"><img src="img/samples/19.jpg" alt=""></a>
+                <a href="img/samples/20.jpg" class="fancybox" rel="album" title="Muestra de mi trabajo"><img src="img/samples/20.jpg" alt=""></a>
+                <a href="img/samples/21.jpg" class="fancybox" rel="album" title="Muestra de mi trabajo"><img src="img/samples/21.jpg" alt=""></a>
+                <a href="img/samples/22.jpg" class="fancybox" rel="album" title="Muestra de mi trabajo"><img src="img/samples/22.jpg" alt=""></a>
+                <a href="img/samples/23.jpg" class="fancybox" rel="album" title="Muestra de mi trabajo"><img src="img/samples/23.jpg" alt=""></a>
+                <a href="img/samples/24.jpg" class="fancybox" rel="album" title="Muestra de mi trabajo"><img src="img/samples/24.jpg" alt=""></a>
+                
+              </div>
+          </div>
+        </div>
         <div class="row collapse content">
           <div class="row">
               <div class="medium-6 small-12 columns">
@@ -277,6 +304,23 @@
         </div>
       </section>
 
+      <section id="skills" class="large-10 medium-9 small-12 columns">
+        <h2 class="title">Habilidades</h2>
+        <div class="row collapse content">
+          <ul>
+            <li>Experta en coordinaci&oacute;n de equipos de trabajo.</li>
+            <li>Habilidad para trabajar en equipos multidisciplinarios.</li>
+            <li>Met&oacute;dica y meticulosa al momento de establecer la planeaci&oacute;n de un proyecto.</li>
+            <li>Gran capacidad para definir rutas y etapas cr&iacute;ticas.</li>
+            <li>Alta atenci&oacute;n al detalle.</li>
+            <li>Experta en Autocad.</li>
+            <li>Experta en lotificaciones y proyectos de casa habitaci&oacute;n.</li>
+            <li>Usuaria intermedia en Google SketchUp y Google Earth.</li>
+            <li>Ingl&eacute;s nivel conversaci&oacute;n de negocios. Certificaci&oacute;n TOEFL.</li>
+          </ul>
+        </div>
+      </section>
+
       <section id="contact" class="large-10 medium-9 small-12 columns">
         <h2 class="title">Contacto</h2>
           <div class="medium-6 small-12 columns">
@@ -328,17 +372,22 @@
       <aside class="large-2 medium-3 hide-for-small columns center">
         <div class="medium-12 columns home"><a href="#home">Inicio</a></div>
         <div class="medium-12 columns edu"><a href="#edu">Educaci&oacute;n</a></div>
-        <div class="medium-12 columns skills"><a href="#skills">Habilidades</a></div>
         <div class="medium-12 columns exp"><a href="#exp">Experiencia</a></div>
+        <div class="medium-12 columns skills"><a href="#skills">Habilidades</a></div>
         <div class="medium-12 columns contact"><a href="#contact">Contacto</a></div>
       </aside>
 
     </div>
-
+    </div>
   </div>
-    
+    <div class="bg-mobile hide-for-medium-up"></div>
     <script type='text/javascript' src="js/vendor/jquery.js"></script>
     <script type='text/javascript' src="js/foundation.min.js"></script>
+    <script type='text/javascript' src="js/jquery.fancybox.js"></script>
+    <script type='text/javascript' src="js/jquery.fancybox.pack.js"></script>
+    <script type='text/javascript' src="js/jquery.fancybox-buttons.js"></script>
+    <script type='text/javascript' src="js/jquery.fancybox-media.js"></script>
+    <script type='text/javascript' src="js/jquery.fancybox-thumbs.js"></script>
     <script type='text/javascript' src="js/scripts.js"></script>
     <script type='text/javascript' src="js/validate.js"></script>
     <script type='text/javascript' src="https://www.google.com/recaptcha/api.js?hl=es"></script>
