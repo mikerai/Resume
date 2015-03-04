@@ -234,6 +234,7 @@ nav.row {
 
 .content {
 	background-color: rgb(242,242,242);
+	color: rgb(0,0,0);
 }
 
 textarea {
@@ -349,6 +350,12 @@ input.menuB {
 }
 
 /* Coloring and other stuff */
+
+.sw {
+	position: absolute;
+	top: 5%;
+	left: 0;
+}
 
 .download-container {
 	position: absolute;
