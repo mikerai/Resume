@@ -55,10 +55,20 @@ body {
 	background-color: rgb(255,255,255);
 	font-family: 'Open Sans', sans-serif;
 	font-weight: 300;
+	font-style: normal;
 	-webkit-font-smoothing: antialiased; 
+	text-rendering: optimizeLegibility;
 }
 
 	body a {
+		color: rgb(67,172,106);
+	}
+
+	aside a {
+		font-family: 'Open Sans Condensed', sans-serif;
+		font-style: normal;
+		-webkit-font-smoothing: antialiased; 
+		text-rendering: optimizeLegibility;
 		/*color: rgb(21,166,116);*/
 		color: rgb(67,172,106);
 	}
@@ -155,12 +165,10 @@ aside > div.contact.active {
 }
 
 h1, h2, h3, h4, h5, h6 {
-	font-family: 'Open Sans' sans-serif;
+	font-family: 'Open Sans Condensed' sans-serif;
 }
 
 .intro {
-	background-color: rgba(0,0,0,0.1);;
-	border: solid 2px rgba(0,0,0,0.1);
 	margin-top: 2rem;
 	padding: 7%;	
 }
@@ -207,7 +215,12 @@ nav {
 }
 	
 	nav a {
-		font-size: 1.5rem;
+		font-family: 'Open Sans Condensed', sans-serif; 
+		font-weight: 300; 
+		font-style: normal;
+		-webkit-font-smoothing: antialiased; 
+		text-rendering: optimizeLegibility;
+		font-size: 1.25rem;
 		color: rgb(0,0,0);
 	}
 
@@ -302,12 +315,16 @@ textarea {
 	padding: 0.75rem 0 0;
 }
 
-.pt32 {
-	padding-top: 2rem;
+.pb16 {
+	padding-bottom: 1rem;
 }
 
 .prl16 {
 	padding: 0 1rem;
+}
+
+.pt32 {
+	padding-top: 2rem;
 }
 
 .center {
@@ -333,11 +350,22 @@ input.menuB {
 
 /* Coloring and other stuff */
 
+.download-container {
+	position: absolute;
+	bottom: 5%;
+	left: 0;
+}
+
 .download {
 	background-color: transparent;
 	border: 1px solid white;
-	padding: 2rem;
+	padding: 1rem 2rem;
 	font-size: 1.5rem;
+	font-family: 'Open Sans Condensed', sans-serif; 
+	font-weight: 300; 
+	font-style: normal;
+	-webkit-font-smoothing: antialiased; 
+	text-rendering: optimizeLegibility;
 }
 
 	.download:hover, .download:focus {
@@ -346,6 +374,7 @@ input.menuB {
 
 .last-title {
 	border-top: solid 1px rgb(125,125,125);
+	padding-top: 1rem;
 }
 
 /* No Captcha recaptcha */
@@ -413,8 +442,6 @@ p.success {
 	}
 
 }
-
-
 
 @media only screen and (width: 48em) {
 
@@ -515,10 +542,6 @@ p.success {
 
 	h2.title {
 		font-size: 2.5rem;
-	}
-
-	nav a {
-		font-size: 1.125rem;
 	}
 
 	nav > div {
