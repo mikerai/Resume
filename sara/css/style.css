@@ -159,7 +159,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .intro {
-	background-color: rgba(53,53,53,0.1);;
+	background-color: rgba(0,0,0,0.1);;
 	border: solid 2px rgba(0,0,0,0.1);
 	margin-top: 2rem;
 	padding: 7%;	
@@ -364,7 +364,6 @@ p.success {
 @media only screen and (min-width: 64.063em) and (max-width: 90em) { 
 	
 	.intro {
-		background-color: rgba(0,0,0,0.5);
 		padding: 0 0.5rem;
 	}
 
@@ -392,7 +391,6 @@ p.success {
 		top: 50%;
 		width: 60%;
 		height: 30%;
-		background-color: rgba(0,0,0,0.5);
 		padding: 0 0.5rem;
 	}
 
@@ -422,7 +420,6 @@ p.success {
 		top: 40%;
 		width: 60%;
 		height: 50%;
-		background-color: rgba(0,0,0,0.5);
 		padding: 0 0.5rem;
 	}
 
