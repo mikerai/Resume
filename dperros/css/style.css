@@ -839,8 +839,10 @@ p.success {
 		}
 
 	.showcase {
+		font-size: 1.25rem;
 		margin-bottom: 1.25rem;
 		float: none;
+
 	}
 
 	#wrapper {
