@@ -92,7 +92,7 @@ a:hover{
 }
 
 .main-content {
-	background-color: rgba(0,0,0,0.25);
+	background-color: rgba(0,0,0,0.35);
 }
 
 section#home, section#edu, section#skills, section#exp, section#contact {
@@ -322,7 +322,7 @@ ul {
 
 label {
 	font-size: 1rem;
-	color:rgb(125,125,125);
+	color:rgb(255,255,255);
 }
 
 input[type="text"],  
@@ -475,9 +475,6 @@ p.success {
 	background: #f9f9f9;
 	color: #444;
 	text-shadow: none;
-	-webkit-border-radius: 4px;
-	   -moz-border-radius: 4px;
-	        border-radius: 4px;
 }
 
 .fancybox-opened {
@@ -648,7 +645,7 @@ p.success {
 
 .fancybox-title {
 	visibility: hidden;
-	font: normal 13px/20px 'Open Sans' ,sans-serif;
+	font: normal 1.125rem 'Open Sans' ,sans-serif;
 	position: relative;
 	text-shadow: none;
 	z-index: 8050;
@@ -673,9 +670,6 @@ p.success {
 	padding: 2px 20px;
 	background: transparent; /* Fallback for web browsers that doesn't support RGBa */
 	background: rgba(0, 0, 0, 0.8);
-	-webkit-border-radius: 15px;
-	   -moz-border-radius: 15px;
-	        border-radius: 15px;
 	text-shadow: 0 1px 2px #222;
 	color: #FFF;
 	font-weight: bold;
@@ -742,7 +736,6 @@ p.success {
 	padding: 0;
 	list-style: none;
 	border: 1px solid #111;
-	border-radius: 3px;
 	-webkit-box-shadow: inset 0 0 0 1px rgba(255,255,255,.05);
 	   -moz-box-shadow: inset 0 0 0 1px rgba(255,255,255,.05);
 	        box-shadow: inset 0 0 0 1px rgba(255,255,255,.05);
