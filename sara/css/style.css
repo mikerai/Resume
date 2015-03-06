@@ -893,11 +893,6 @@ p.success {
 		top: 0;
 	    right: 0;
 	    left: 0;
-	    height: 1536px;
-	    background-image: url('../img/bg-tablet.jpg');
-	    background-position: 50% 0;
-	    background-repeat: no-repeat;
-	    z-index: -1;
 	}
 
 	.download-container {
@@ -905,7 +900,7 @@ p.success {
 	}
 
 	.bg-tablet {
-		/*position: fixed;*/
+		position: fixed;
 	    top: 0;
 	    right: 0;
 	    left: 0;
