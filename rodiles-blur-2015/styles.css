@@ -13,7 +13,7 @@ body {
 } */
 
 body {
-    background-image: url(img/background2.jpg);
+    background-image: url(img/rodiles.jpg);
 }
 
 #bg {
@@ -23,12 +23,11 @@ body {
     width: 100%;
     height: 100%;
     z-index: -2;
-    /*background: #FFF;*/
     background-size: cover !important;
 }
 
 #presentation {
-	height: 100vh;
+	min-height: 100vh;
 }
 
 /* Custom styles */
@@ -42,7 +41,7 @@ body {
   font-family: 'Raleway';
   font-style: normal;
   font-weight: 200;
-  src: local('Raleway ExtraLight'), local('Raleway-ExtraLight'), url(http://fonts.gstatic.com/s/raleway/v9/8KhZd3VQBtXTAznvKjw-kwsYbbCjybiHxArTLjt7FRU.woff2) format('woff2');
+  src: local('Raleway ExtraLight'), local('Raleway-ExtraLight'), url(http://fonts.gstatic.com/s/raleway/v9/8KhZd3VQBtXTAznvKjw-kwsYbbCjybiHxArTLjt7FRU.woff2) format('woff2'), url(fonts/Raleway-extralight.ttf) format('truetype');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
 }
 
@@ -51,7 +50,7 @@ body {
   font-family: 'Raleway';
   font-style: normal;
   font-weight: 300;
-  src: local('Raleway Light'), local('Raleway-Light'), url(http://fonts.gstatic.com/s/raleway/v9/-_Ctzj9b56b8RgXW8FAriQsYbbCjybiHxArTLjt7FRU.woff2) format('woff2');
+  src: local('Raleway Light'), local('Raleway-Light'), url(http://fonts.gstatic.com/s/raleway/v9/-_Ctzj9b56b8RgXW8FAriQsYbbCjybiHxArTLjt7FRU.woff2) format('woff2'), url(fonts/Raleway-light.ttf) format('truetype');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
 }
 
@@ -61,7 +60,7 @@ body {
   font-style: normal;
   font-weight: 400;
   src: local('Raleway'), 
-  url(http://fonts.gstatic.com/s/raleway/v9/QAUlVt1jXOgQavlW5wEfxVKPGs1ZzpMvnHX-7fPOuAc.woff2) format('woff2');
+  url(http://fonts.gstatic.com/s/raleway/v9/QAUlVt1jXOgQavlW5wEfxVKPGs1ZzpMvnHX-7fPOuAc.woff2) format('woff2'), url(fonts/Raleway.ttf) format('truetype');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, 
   U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
 }
@@ -71,7 +70,7 @@ body {
   font-style: normal;
   font-weight: 700;
   src: local('Raleway Bold'), local('Raleway-Bold'), 
-  url(http://fonts.gstatic.com/s/raleway/v9/JbtMzqLaYbbbCL9X6EvaIwsYbbCjybiHxArTLjt7FRU.woff2) format('woff2');
+  url(http://fonts.gstatic.com/s/raleway/v9/JbtMzqLaYbbbCL9X6EvaIwsYbbCjybiHxArTLjt7FRU.woff2) format('woff2'), url(fonts/Raleway-bold.ttf) format('truetype');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, 
   U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
 }
@@ -136,7 +135,7 @@ a:hover{color: rgba(255,255,255,0.5);}
 ul {margin: 0 ;}
 li {padding: 1.25rem 0; font-size:1.125rem;}
 
-#me, #skills, #portfolio, #contact {padding: 0.9375rem 0.9375rem; margin: 2rem auto ;}
+#me, #skills, #portfolio, #contact {padding: 0.9375rem 0.9375rem; margin: 2rem auto; min-height: 100vh;}
 
 .fixed {
 	position: fixed;
@@ -170,12 +169,7 @@ li {padding: 1.25rem 0; font-size:1.125rem;}
 	background: -moz-linear-gradient(top, #303032, rgba(41,41,43,0.85));
 }
 
-.black.bs {
-	box-shadow: 1px 1px 55px #000000;
-}
-
 .bs {
-	box-shadow: 1px 1px 25px #888888;
 	opacity: 1;
 	visibility: visible;
 }
@@ -236,7 +230,6 @@ div.fixed.center.visible-xs {
 	-moz-transition: all 1.597s ease; 
 	-o-transition: all 1.597s ease; 
 	transition: all 1.597s ease;
-	box-shadow: 1px 1px 55px #888888;
 }
 
 	div.fixed.center.visible-xs.show {visibility: visible; opacity: 1;}
@@ -397,10 +390,43 @@ label.error {
 
 /* Custom media queries */
 
+@media only screen and (max-width: 80em) { 
+	p.simple, p.consulting, p.simplify, p.ksimple {
+		font-size: 12rem ; 
+		line-height: 9rem ;
+	}
+
+	.mt64 {
+	  margin-top: 3.5rem;
+	}
+}
+
+@media only screen and (min-width: 48em) and (max-width: 64em) {
+
+	body {
+		background-image: none;
+	}
+
+	#bg {
+		position: fixed;
+	    top: 0;
+	    right: 0;
+	    left: 0;
+	    background-image: url(img/rodiles.jpg);
+	    background-position: 50% 0;
+	    background-repeat: no-repeat;
+	    z-index: -1;
+	}
+}
+
 @media only screen and (max-width: 64em) { 
 	p.simple, p.consulting, p.simplify, p.ksimple {
 		font-size: 10rem ; 
 		line-height: 9rem ;
+	}
+
+	.mt64 {
+	  margin-top: 3rem;
 	}
 }
 
@@ -418,13 +444,32 @@ label.error {
 		padding: 0.75rem 0;
 	  	font-size: 1.125rem;
 	}
+
+	.mt64 {
+	  margin-top: 3rem;
+	}
 }
 
 @media only screen and (max-width: 40.063em) { 
-	h1 {font-size: 3.75rem;}
+	body {
+		background-image: none;
+	}
+
+	#bg {
+		position: fixed;
+	    top: 0;
+	    right: 0;
+	    left: 0;
+	    background-image: url(img/rodiles.jpg);
+	    background-position: 50% 0;
+	    background-repeat: no-repeat;
+	    z-index: -1;
+	}
+
+	h1 {font-size: 3.5rem;}
 	#me, #skills, #portfolio, #contact {margin-top: 0.5rem ;padding: 0.9375rem 0.5rem;}
-	p.simple {font-size: 4.5rem ; line-height: 4rem ; margin-top: 35%;}
-	p.simplify, p.consulting, p.ksimple {font-size: 4.5rem ; line-height: 4rem ;}
+	p.simple {font-size: 3.5rem ; line-height: 3rem ; margin-top: 35%;}
+	p.simplify, p.consulting, p.ksimple {font-size: 3.5rem ; line-height: 3rem ;}
 	nav {display:none;}
 }
 

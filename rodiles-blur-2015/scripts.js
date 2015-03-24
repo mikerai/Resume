@@ -57,7 +57,7 @@ $(function(){
          //d.css({opacity: 0, visibility: "visible"}).animate({opacity: 1.0}, 1597);
          d.addClass("show");
          men.addClass("bs");
-         menMob.css("box-shadow","1px 1px 15px #888888");
+         menMob.css("box-shadow","none");
          menMob.addClass("show");
          //pSimple.css("color","#ffffff");
          //pSimple.css("text-shadow","0 0 8px #807F83");
