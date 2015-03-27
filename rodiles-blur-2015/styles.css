@@ -13,7 +13,7 @@ body {
 } */
 
 body {
-    background-image: url(img/rodiles.jpg);
+    background-image: url(img/bg/background2.jpg);
 }
 
 #bg {
@@ -216,11 +216,11 @@ ul {
 
 ul li a {
 	text-decoration: none;
-	color: #454545;
+	color: #1D6250;
 }
 
 div.fixed.center.visible-xs {
-	background: rgba(255, 255, 255, 0.85);
+	background-color: transparent;
 	visibility: hidden; 
 	opacity:0; 
 	transition:opacity 1.597s; 
@@ -288,10 +288,13 @@ button:hover {
 }
 
 .menuB{
+	float: right;
+	height: 2.5rem;
+	width: 2.5rem;
 	font-size: 1.25rem;
-    margin: 0 auto;
+	margin: .5rem 2%;
     color: #ffffff;
-	background-color: #000000;
+	background-color: rgba(255,255,255,0.35);
 	border: none;
 }
 
@@ -403,20 +406,6 @@ label.error {
 
 @media only screen and (min-width: 48em) and (max-width: 64em) {
 
-	body {
-		background-image: none;
-	}
-
-	#bg {
-		position: fixed;
-	    top: 0;
-	    right: 0;
-	    left: 0;
-	    background-image: url(img/rodiles.jpg);
-	    background-position: 50% 0;
-	    background-repeat: no-repeat;
-	    z-index: -1;
-	}
 }
 
 @media only screen and (max-width: 64em) { 
@@ -446,31 +435,21 @@ label.error {
 	}
 
 	.mt64 {
-	  margin-top: 3rem;
+	  margin-top: 4rem;
 	}
 }
 
 @media only screen and (max-width: 40.063em) { 
-	body {
-		background-image: none;
-	}
-
-	#bg {
-		position: fixed;
-	    top: 0;
-	    right: 0;
-	    left: 0;
-	    background-image: url(img/rodiles.jpg);
-	    background-position: 50% 0;
-	    background-repeat: no-repeat;
-	    z-index: -1;
-	}
 
 	h1 {font-size: 3.5rem;}
 	#me, #skills, #portfolio, #contact {margin-top: 0.5rem ;padding: 0.9375rem 0.5rem;}
-	p.simple {font-size: 3.5rem ; line-height: 3rem ; margin-top: 35%;}
+	p.simple {font-size: 3.5rem ; line-height: 3rem ; margin-top: 10%;}
 	p.simplify, p.consulting, p.ksimple {font-size: 3.5rem ; line-height: 3rem ;}
 	nav {display:none;}
+
+	#presentation img {
+		max-width: 15rem;
+	}
 }
 
 /* ADA helpers */

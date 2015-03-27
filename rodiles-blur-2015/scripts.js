@@ -41,6 +41,18 @@ $('body').click(function() {
 });
 
 
+$("input.menuB").on("click", function(e){
+    e.preventDefault();
+    if ($('nav').css('display') === 'block') {
+       $('input.menuB').attr('src', 'img/menu-B.png');
+       $('div.fixed.center.visible-xs.show').css('background-color', 'transparent');
+    }
+   else {
+    $('div.fixed.center.visible-xs.show').css('background-color', 'rgba(255,255,255,0.95)');
+    $('input.menuB').attr('src', 'img/menu-C.png');
+   }
+});
+
 $(function(){
     var d = $('#main');
     //var mobMen = $('nav');
@@ -52,27 +64,17 @@ $(function(){
     win.scroll(function(e){
         var scrollTop = win.scrollTop();
         if(scrollTop >= dPosTop){
-          //d.show(669); 
-         //d.css("visibility","visible");
-         //d.css({opacity: 0, visibility: "visible"}).animate({opacity: 1.0}, 1597);
          d.addClass("show");
          men.addClass("bs");
-         menMob.css("box-shadow","none");
          menMob.addClass("show");
-         //pSimple.css("color","#ffffff");
-         //pSimple.css("text-shadow","0 0 8px #807F83");
-         //pSimple.css("text-shadow","0 0 20px #15A8C6");
          pSimple.css("text-shadow","10px 10px 20px #1D6250");
          
       //   mobMen.slideUp();
         }
         else if(scrollTop < dPosTop && scrollTop > dPosTop-50) {
           d.removeClass("show");
+          menMob.removeClass("show")
           men.removeClass("bs");
-          menMob.css("box-shadow","none");
-          //pSimple.css("color","#15A8C6");
-          //pSimple.css("color","#CC6699");
-          
           pSimple.css("text-shadow","none");
         }
 
@@ -90,55 +92,6 @@ $(function(){
     });
 
 });
-
-//Counter
-
-/*(function($) {
-    $.fn.countTo = function(options) {
-        // merge the default plugin settings with the custom options
-        options = $.extend({}, $.fn.countTo.defaults, options || {});
-
-        // how many times to update the value, and how much to increment the value on each update
-        var loops = Math.ceil(options.speed / options.refreshInterval),
-            increment = (options.to - options.from) / loops;
-
-        return $(this).each(function() {
-            var _this = this,
-                loopCount = 0,
-                value = options.from,
-                interval = setInterval(updateTimer, options.refreshInterval);
-
-            function updateTimer() {
-                value += increment;
-                loopCount++;
-                $(_this).html(value.toFixed(options.decimals));
-
-                if (typeof(options.onUpdate) == 'function') {
-                    options.onUpdate.call(_this, value);
-                }
-
-                if (loopCount >= loops) {
-                    clearInterval(interval);
-                    value = options.to;
-
-                    if (typeof(options.onComplete) == 'function') {
-                        options.onComplete.call(_this, value);
-                    }
-                }
-            }
-        });
-    };
-
-    $.fn.countTo.defaults = {
-        from: 0,  // the number the element should start at
-        to: 100,  // the number the element should end at
-        speed: 1000,  // how long it should take to count between the target numbers
-        refreshInterval: 100,  // how often the element should be updated
-        decimals: 0,  // the number of decimal places to show
-        onUpdate: null,  // callback method for every time the element is updated,
-        onComplete: null,  // callback method for when the element finishes updating
-    };
-})(jQuery);*/
 
 $.fn.isOnScreen = function(){
     
@@ -161,28 +114,8 @@ $.fn.isOnScreen = function(){
 
 var Box = {
     Update: function(){
-        $.each($("div#simplify.row"), function(){
-            if ($("div#simplify.row").isOnScreen()) {
-              //console.log("is visible");
-                 $('p.simplify').css({'color':'#ffffff', 'text-shadow':'10px 10px 20px #1D6250'});
-            }    
-            else{
-              //console.log("is NOT visible");
-                $('p.simplify').css({'color':'transparent', 'text-shadow':'none'});
-            }
-        });
-        $.each($("div#ksimple.row"), function(){
-            if ($("div#ksimple.row").isOnScreen()) {
-              //console.log("is visible");
-                 $('p.ksimple').css({'color':'#ffffff', 'text-shadow':'10px 10px 20px #2577BE'});
-            }    
-            else{
-              //console.log("is NOT visible");
-                $('p.ksimple').css({'color':'transparent', 'text-shadow':'none'});
-            }
-        });
-        $.each($("div#consulting.row"), function(){
-            if ($("div#consulting.row").isOnScreen()) {
+      $.each($("div#skills.row"), function(){
+            if ($("div#skills.row").isOnScreen()) {
               //console.log("is visible");
                  $('p.consulting').css({'color':'#ffffff', 'text-shadow':'10px 10px 20px #2577BE'});
             }    
@@ -191,26 +124,27 @@ var Box = {
                 $('p.consulting').css({'color':'transparent', 'text-shadow':'none'});
             }
         });
-        /*$.each($("span.counter"), function(){
-            if ($("span.counter").isOnScreen()) {
+        $.each($("div#portfolio.row"), function(){
+            if ($("div#portfolio.row").isOnScreen()) {
               //console.log("is visible");
-                 jQuery(function($) {
-                  $('.counter').countTo({
-                      from: 50,
-                      to: 115000,
-                      speed: 5000,
-                      refreshInterval: 200,
-                      onComplete: function(value) {
-                          console.debug(this);
-                      }
-                  });
-              });
+                 $('p.simplify').css({'color':'#ffffff', 'text-shadow':'10px 10px 20px #1D6250'});
             }    
             else{
               //console.log("is NOT visible");
-                
+                $('p.simplify').css({'color':'transparent', 'text-shadow':'none'});
             }
-        });*/
+        });
+        
+        $.each($("div#contact.row"), function(){
+            if ($("div#contact.row").isOnScreen()) {
+              //console.log("is visible");
+                 $('p.ksimple').css({'color':'#ffffff', 'text-shadow':'10px 10px 20px #2577BE'});
+            }    
+            else{
+              //console.log("is NOT visible");
+                $('p.ksimple').css({'color':'transparent', 'text-shadow':'none'});
+            }
+        });
     }    
 }
 
@@ -221,7 +155,7 @@ $(window).scroll(function () {
 });
 
 $(function(){
-  $('button.menuB').click(function(){
+  $('input.menuB').click(function(){
       $('nav').slideToggle();
   });
 });
@@ -241,6 +175,8 @@ $("button.tweets").click(function () {
 $("#main, #presentation").on("click", function(e){
     e.preventDefault();
     $('nav').slideUp();
+    $('input.menuB').attr('src', 'img/menu-B.png');
+    $('div.fixed.center.visible-xs.show').css('background-color', 'transparent');
 });
 
 /*$('p.simple').click(function () {
@@ -280,6 +216,8 @@ menuItems.click(function(e){
   }, 987);
   e.preventDefault();
   $('nav').slideUp();
+  $('input.menuB').attr('src', 'img/menu-B.png');
+  $('div.fixed.center.visible-xs.show').css('background-color', 'transparent');
 });
 
 // Bind to scroll
