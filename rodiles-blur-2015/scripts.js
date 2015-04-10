@@ -17,7 +17,7 @@ $('a').click(function(){
         scrollTop: $( $(this).attr('href') ).offset().top-64
     }, 987);
     return false;
-});*/
+});
 
 $(document).ready( function() {
     $('#bg').blurjs({
@@ -25,7 +25,7 @@ $(document).ready( function() {
         radius: 70,
         overlay: 'rgba(0, 0, 0, .2)'
     });
-});
+});*/
 
 /*$(document).ready(function() {
   //$("body").fadeIn(1000);
