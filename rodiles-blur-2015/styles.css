@@ -210,10 +210,10 @@ li {padding: 1.25rem 0; font-size:1.125rem;}
 }
 
 .menu .bh1:hover, .menu .bh2:hover, .menu .bh4:hover, .menu .bh6:hover {
-	border-bottom: 2px solid #2577BE;
+	border-bottom: 3px solid #ecf0f1;/*#2577BE*/
 }
 
-div.bh1.active, div.bh2.active, div.bh4.active, div.bh6.active {border-bottom: 2px solid #2577BE;}
+div.bh1.active, div.bh2.active, div.bh4.active, div.bh6.active {border-bottom: 3px solid #ecf0f1;/*#2577BE*/}
 
 /*#me, #skills, #portfolio, #contact {
 	border-top: 3px solid #2577BE;
