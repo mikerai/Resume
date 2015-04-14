@@ -12,13 +12,9 @@ body {
   background-size: cover;
 } */
 
-body {
-    
-}
-
 #bg {
 	background-image: url(img/bg/background.jpg);
-    position: fixed;
+    position: absolute; /*fixed initially*/
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
@@ -26,16 +22,26 @@ body {
     top: 0;
     left: 0;
     width: 100%;
-    height: 100%;
-    z-index: -2;
+    height: 99.9vh; /*100% initially*/
+    z-index: -1;
     filter: blur(5px) brightness(0.75);
     -webkit-filter: blur(5px) brightness(0.75);
     -moz-filter: blur(5px) brightness(0.75);
     -ms-filter: blur(5px) brightness(0.75);
     -o-filter: blur(5px) brightness(0.75);
-    -webkit-transform: scale(1.1);
+    /*-webkit-transform: scale(1.1);
       -ms-transform: scale(1.1);
-          transform: scale(1.1);
+          transform: scale(1.1);*/
+}
+
+#bg-back {
+	position: absolute;
+    background-color: #000000;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh; /*100% initially*/
+    z-index: -2;
 }
 
 #presentation {
@@ -113,7 +119,7 @@ p.simple, p.consulting, p.simplify, p.ksimple {
 }
 
 .row {max-width: 100rem; margin: 0 auto ;}
-body {font-family: 'Raleway', Arial, "Helvetica", Helvetica, sans-serif; font-weight: 300; text-rendering: optimizeLegibility; color:#ffffff;}
+body {font-family: 'Raleway', Arial, "Helvetica", Helvetica, sans-serif; font-weight: 300; text-rendering: optimizeLegibility; color:#ffffff; background: #2980b9;}
 h1, h2, h3, h4, h5, h6 {font-family: 'Raleway', Arial, "Helvetica", Helvetica, sans-serif; font-weight: 200; text-rendering: optimizeLegibility;}
 button, .button {font-family: 'Raleway', Arial, "Helvetica", Helvetica, sans-serif;}
 
@@ -147,7 +153,14 @@ a:hover{color: rgba(255,255,255,0.5);}
 ul {margin: 0 ;}
 li {padding: 1.25rem 0; font-size:1.125rem;}
 
-#me, #skills, #portfolio, #contact {padding: 0.9375rem 0.9375rem; margin: 2rem auto; min-height: 100vh;}
+#me, #skills, #portfolio, #contact {padding: 0.9375rem 0.9375rem; margin: 2rem auto; /*min-height:100vh;*/}
+
+.row#skills {
+	background: #ecf0f1; 
+	color: #999999;
+	width: 100%;
+	max-width: 160rem;
+}
 
 .fixed {
 	position: fixed;
