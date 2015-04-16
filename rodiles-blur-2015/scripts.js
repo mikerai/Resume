@@ -37,19 +37,19 @@ $(document).ready( function() {
 });*/
 
 $('body').click(function() {
-   $('div.fixed.center.visible-xs').addClass("show");
+   //$('div.fixed.center.visible-xs').addClass("show");
 });
 
 
-$("input.menuB").on("click", function(e){
+$("a.btn-animated-lg").on("click", function(e){
     e.preventDefault();
     if ($('nav').css('display') === 'block') {
-       $('input.menuB').attr('src', 'img/menu-B.png');
+       //$('input.menuB').attr('src', 'img/menu-B.png');
        $('div.fixed.center.visible-xs.show').css('background-color', 'transparent');
     }
    else {
     $('div.fixed.center.visible-xs.show').css('background-color', 'rgba(255,255,255,0.95)');
-    $('input.menuB').attr('src', 'img/menu-C.png');
+    //$('input.menuB').attr('src', 'img/menu-C.png');
    }
 });
 
@@ -73,7 +73,7 @@ $(function(){
         }
         else if(scrollTop < dPosTop && scrollTop > dPosTop-50) {
           d.removeClass("show");
-          menMob.removeClass("show")
+          menMob.removeClass("show");
           men.removeClass("bs");
           pSimple.css("text-shadow","none");
         }
@@ -155,7 +155,7 @@ $(window).scroll(function () {
 });
 
 $(function(){
-  $('input.menuB').click(function(){
+  $('a.btn-animated-lg').click(function(){
       $('nav').slideToggle();
   });
 });
@@ -175,7 +175,8 @@ $("button.tweets").click(function () {
 $("#main, #presentation").on("click", function(e){
     e.preventDefault();
     $('nav').slideUp();
-    $('input.menuB').attr('src', 'img/menu-B.png');
+    //$(".btn-animated, .btn-animated-lg, .btn-anim-three, .btn-anim-three-lg").toggleClass( "closed" );
+    //$('input.menuB').attr('src', 'img/menu-B.png');
     $('div.fixed.center.visible-xs.show').css('background-color', 'transparent');
 });
 
@@ -196,7 +197,7 @@ $('p.simple').on("click", function(e){
 
 // Cache selectors
 var lastId,
-    topMenu = $(".menu, nav, footer"),
+    topMenu = $(".menu, nav"),
     topMenuHeight = topMenu.outerHeight()+67,
     // All list items
     menuItems = topMenu.find("a"),
@@ -216,6 +217,7 @@ menuItems.click(function(e){
   }, 987);
   e.preventDefault();
   $('nav').slideUp();
+  $(".btn-animated, .btn-animated-lg, .btn-anim-three, .btn-anim-three-lg").toggleClass( "closed" );
   $('input.menuB').attr('src', 'img/menu-B.png');
   $('div.fixed.center.visible-xs.show').css('background-color', 'transparent');
 });
@@ -242,6 +244,88 @@ $(window).scroll(function(){
          .end().filter("[href=#"+id+"]").parent().addClass("active");
    }                   
 });
+
+//Animated close button
+
+$( ".btn-animated, .btn-animated-lg, .btn-anim-three, .btn-anim-three-lg" ).on( "click", function() {
+  $(this).toggleClass( "closed" );
+});
+
+// Scroll helper
+
+//this is where we apply opacity to the arrow
+$(window).scroll( function(){
+
+  //get scroll position
+  var topWindow = $(window).scrollTop();
+  //multipl by 1.5 so the arrow will become transparent half-way up the page
+  var topWindow = topWindow * 5;
+  
+  //get height of window
+  var windowHeight = $(window).height();
+      
+  //set position as percentage of how far the user has scrolled 
+  var position = topWindow / windowHeight;
+  //invert the percentage
+  position = 1 - position;
+
+  //define arrow opacity as based on how far up the page the user has scrolled
+  //no scrolling = 1, half-way up the page = 0
+  $('.arrow-wrap').css('opacity', position);
+
+});
+
+//Code stolen from css-tricks for smooth scrolling:
+
+$(document).ready(function() {
+
+  function filterPath(string) {
+  return string
+    .replace(/^\//,'')
+    .replace(/(index|default).[a-zA-Z]{3,4}$/,'')
+    .replace(/\/$/,'');
+  }
+  var locationPath = filterPath(location.pathname);
+  var scrollElem = scrollableElement('html', 'body');
+ 
+  $('a[href*=#]').each(function() {
+    var thisPath = filterPath(this.pathname) || locationPath;
+    if (  locationPath == thisPath
+    && (location.hostname == this.hostname || !this.hostname)
+    && this.hash.replace(/#/,'') ) {
+      var $target = $(this.hash), target = this.hash;
+      if (target) {
+        var targetOffset = $target.offset().top+10;
+        $(this).click(function(event) {
+          event.preventDefault();
+          $(scrollElem).animate({scrollTop: targetOffset}, 987, function() {
+            location.hash = target;
+          });
+        });
+      }
+    }
+  });
+ 
+  // use the first element that is "scrollable"
+  function scrollableElement(els) {
+    for (var i = 0, argLength = arguments.length; i <argLength; i++) {
+      var el = arguments[i],
+          $scrollElement = $(el);
+      if ($scrollElement.scrollTop()> 0) {
+        return el;
+      } else {
+        $scrollElement.scrollTop(1);
+        var isScrollable = $scrollElement.scrollTop()> 0;
+        $scrollElement.scrollTop(0);
+        if (isScrollable) {
+          return el;
+        }
+      }
+    }
+    return [];
+  }
+
+}); 
 
 //Contact Form
 

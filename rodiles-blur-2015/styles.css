@@ -253,6 +253,234 @@ div.fixed.center.visible-xs {
 
 	div.fixed.center.visible-xs.show {visibility: visible; opacity: 1;}
 
+/* Animated close button */
+
+.circle{
+    border-radius: 1000px !important;
+}
+.invert{
+    background: rgba(255,255,255,.8) !important;
+}
+.invert span{
+    background: #000 !important
+}
+.btn-animated{
+    background: rgba(0,0,0,.6);
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    border-radius: 3px;
+    position:relative;
+    margin: 20px;
+}
+
+.btn-animated span{
+    position: absolute;
+    height: 3px;
+    border-radius: 2px;
+    background: #fff;
+    -webkit-transition: all .4s ease;
+    -moz-transition: all .4s ease;
+    transition: all .4s ease;
+}
+
+.btn-animated span.one{
+    width: 16px;
+    top: 10px;
+    left: 7px;
+}
+.btn-animated span.two{
+    width: 16px;
+    top: 17px;
+    left: 7px;
+}
+
+.btn-animated.closed span.one{
+    width: 20px;
+    top: 13px;
+    left: 5px;
+    -webkit-transform: rotate(225deg);
+    -moz-transform: rotate(225deg);
+    transform: rotate(225deg);
+}
+.btn-animated.closed span.two{
+    width: 20px;
+    top: 13px;
+    left: 5px;
+    -webkit-transform: rotate(-225deg);
+    -moz-transform: rotate(-225deg);
+    transform: rotate(-225deg);
+}
+
+.btn-anim-three{
+    background: rgba(0,0,0,.6);
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    border-radius: 3px;
+    position:relative;
+    margin: 20px;
+}
+
+.btn-anim-three span{
+    position: absolute;
+    height: 3px;
+    border-radius: 2px;
+    background: #fff;
+    -webkit-transition: all .4s ease;
+    -moz-transition: all .4s ease;
+    transition: all .4s ease;
+}
+
+.btn-anim-three span.one{
+    width: 16px;
+    top: 8px;
+    left: 7px;
+}
+.btn-anim-three span.two{
+    width: 16px;
+    top: 14px;
+    left: 7px;
+}
+
+.btn-anim-three span.three{
+    width: 16px;
+    top: 20px;
+    left: 7px;
+}
+
+.btn-anim-three.closed span.one{
+    width: 20px;
+    top: 13px;
+    left: 5px;
+    -webkit-transform: rotate(225deg);
+    -moz-transform: rotate(225deg);
+    transform: rotate(225deg);
+}
+
+.btn-anim-three.closed span.two{
+    width: 3px;
+    left: 12px;
+}
+.btn-anim-three.closed span.three{
+    width: 20px;
+    top: 13px;
+    left: 5px;
+    -webkit-transform: rotate(-225deg);
+    -moz-transform: rotate(-225deg);
+    transform: rotate(-225deg);
+}
+
+/* big version */
+.btn-animated-lg{
+    background: rgba(0,0,0,.6);
+    display: inline-block;
+    width: 3.75rem;
+    height: 3.75rem;
+    border-radius: 0.375rem;
+    position:relative;
+    margin: 1.25rem;
+    float: right;
+}
+.btn-animated-lg span{
+    position: absolute;
+    height: 6px;
+    border-radius: 4px;
+    background: #fff;
+    -webkit-transition: all .4s ease;
+    -moz-transition: all .4s ease;
+    transition: all .4s ease;
+}
+
+.btn-animated-lg span.one{
+    width: 32px;
+    top: 20px;
+    left: 14px;
+}
+.btn-animated-lg span.two{
+    width: 32px;
+    top: 34px;
+    left: 14px;
+}
+
+.btn-animated-lg.closed span.one{
+    width: 40px;
+    top: 26px;
+    left: 10px;
+    -webkit-transform: rotate(225deg);
+    -moz-transform: rotate(225deg);
+    transform: rotate(225deg);
+}
+.btn-animated-lg.closed span.two{
+    width: 40px;
+    top: 26px;
+    left: 10px;
+    -webkit-transform: rotate(-225deg);
+    -moz-transform: rotate(-225deg);
+    transform: rotate(-225deg);
+}
+
+.btn-anim-three-lg{
+    background: rgba(0,0,0,.6);
+    display: inline-block;
+    width: 60px;
+    height: 60px;
+    border-radius: 6px;
+    position:relative;
+    margin: 20px;
+}
+
+.btn-anim-three-lg span{
+    position: absolute;
+    height: 6px;
+    border-radius: 4px;
+    background: #fff;
+    -webkit-transition: all .4s ease;
+    -moz-transition: all .4s ease;
+    transition: all .4s ease;
+}
+
+.btn-anim-three-lg span.one{
+    width: 32px;
+    top: 16px;
+    left: 14px;
+}
+.btn-anim-three-lg span.two{
+    width: 32px;
+    top: 27px;
+    left: 14px;
+}
+
+.btn-anim-three-lg span.three{
+    width: 32px;
+    top: 38px;
+    left: 14px;
+}
+
+.btn-anim-three-lg.closed span.one{
+    width: 40px;
+    top: 26px;
+    left: 10px;
+    -webkit-transform: rotate(225deg);
+    -moz-transform: rotate(225deg);
+    transform: rotate(225deg);
+}
+.btn-anim-three-lg.closed span.two{
+    width: 4px;
+    left: 25px;
+}
+
+.btn-anim-three-lg.closed span.three{
+    width: 40px;
+    top: 26px;
+    left: 10px;
+    -webkit-transform: rotate(-225deg);
+    -moz-transform: rotate(-225deg);
+    transform: rotate(-225deg);
+}
+
+/* End of animated button */
+
 /* Custom Divs */
 
 #main {visibility: hidden; opacity:0; transition:opacity 1.597s; -webkit-transition: 1.597s opacity; 
@@ -274,6 +502,94 @@ div.fixed.center.visible-xs {
 #tweets {
 	display: block;
 }
+
+/* Scroll helper */
+
+* {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+/* the important styles */
+
+.arrow-wrap {
+  position:absolute;
+  z-index:1;
+  float: right;
+  right: 4.5rem;
+  bottom: 3%;
+  background: transparent;
+  width:2rem;
+  height:2rem;
+  padding:1rem;
+  border-radius:50%;
+  font-size:0.5em;
+  display:block;
+  box-shadow:none;
+}
+
+.arrow {
+  float:left;
+  position:relative;
+  width: 0px;
+height: 0px;
+border-style: solid;
+border-width: 3em 3em 0 3em;
+border-color: rgba(255,255,255,0.45) transparent transparent transparent;
+  -webkit-transform:rotate(360deg)
+}
+
+.arrow:after {
+  content:'';
+  position:absolute;
+  top:-3.2em;
+  left:-3em;
+  width: 0px;
+height: 0px;
+border-style: solid;
+border-width: 3em 3em 0 3em;
+border-color: transparent transparent transparent transparent;
+  -webkit-transform:rotate(360deg)
+}
+
+
+.hint {
+  position:absolute;
+  top:0.6em;
+  width:100%;
+  left:0;
+  font-size:2em;
+  font-style:italic;
+  text-align:center;
+  color:#fff;
+  opacity:0;
+}
+
+
+.arrow-wrap:hover .hint {
+  opacity:1;
+}
+
+
+  @-webkit-keyframes arrows {
+    0% { top:0; }
+    10% { top:12%; }
+    20% { top:0; }
+    30% { top:12%; }
+    40% { top:-12%; }
+    50% { top:12%; }
+    60% { top:0; }
+    70% { top:12%; }
+    80% { top:-12%; }
+    90% { top:12%; }
+    100% { top:0; }
+  }
+  
+  .arrow-wrap .arrow {
+    -webkit-animation: arrows 2.8s 0.4s;
+    -webkit-animation-delay: 3s;
+  }
 
 div.row.clients {
 	/*background-color: #888888;*/
