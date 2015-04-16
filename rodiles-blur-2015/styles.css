@@ -514,15 +514,14 @@ div.fixed.center.visible-xs {
 /* the important styles */
 
 .arrow-wrap {
-  position:absolute;
+  position:relative;
   z-index:1;
   float: right;
-  right: 4.5rem;
-  bottom: 3%;
+  top:-1em;
   background: transparent;
-  width:2rem;
-  height:2rem;
-  padding:1rem;
+  width:10em;
+  height:10em;
+  padding:2rem;
   border-radius:50%;
   font-size:0.5em;
   display:block;
