@@ -514,18 +514,19 @@ div.fixed.center.visible-xs {
 /* the important styles */
 
 .arrow-wrap {
-  position:relative;
-  z-index:1;
   float: right;
-  top:-1em;
-  background: transparent;
+  position: absolute;
+  z-index:1;
+  right: 2%;
+  bottom: 2%;
+  background:#1b1b1b;
   width:10em;
   height:10em;
-  padding:2rem;
+  padding:4em 2em;
   border-radius:50%;
   font-size:0.5em;
   display:block;
-  box-shadow:none;
+  box-shadow:0px 0px 5px 0px #333;
 }
 
 .arrow {
@@ -535,7 +536,7 @@ div.fixed.center.visible-xs {
 height: 0px;
 border-style: solid;
 border-width: 3em 3em 0 3em;
-border-color: rgba(255,255,255,0.45) transparent transparent transparent;
+border-color: #ffffff transparent transparent transparent;
   -webkit-transform:rotate(360deg)
 }
 
@@ -548,7 +549,7 @@ border-color: rgba(255,255,255,0.45) transparent transparent transparent;
 height: 0px;
 border-style: solid;
 border-width: 3em 3em 0 3em;
-border-color: transparent transparent transparent transparent;
+border-color: #1b1b1b transparent transparent transparent;
   -webkit-transform:rotate(360deg)
 }
 
