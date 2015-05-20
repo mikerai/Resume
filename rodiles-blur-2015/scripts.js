@@ -175,17 +175,17 @@ $("button.tweets").click(function () {
 $("#main, #presentation").on("click", function(e){
     e.preventDefault();
     $('nav').slideUp();
-    //$(".btn-animated, .btn-animated-lg, .btn-anim-three, .btn-anim-three-lg").toggleClass( "closed" );
     //$('input.menuB').attr('src', 'img/menu-B.png');
     $('div.fixed.center.visible-xs.show').css('background-color', 'transparent');
-});
 
-/*$('p.simple').click(function () {
-    var divID = '#main' + this.id;
-    $('html, body').animate({
-        scrollTop: $(divID).offset().top-34
-    }, 2584);
-});*/
+    if ($('.btn-animated-lg').hasClass("closed")){
+        $('.btn-animated-lg').removeClass("closed");        
+    }
+    else
+    {
+      $('.btn-animated-lg').addClass("").removeClass("");
+    }    
+});
 
 $('p.simple').on("click", function(e){
   e.preventDefault();
@@ -245,6 +245,23 @@ $(window).scroll(function(){
    }                   
 });
 
+//Footer smooth scroll
+
+$(function() {
+  $('footer a, a.arrow-wrap').click(function() {
+    if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'') && location.hostname == this.hostname) {
+      var target = $(this.hash);
+      target = target.length ? target : $('[name=' + this.hash.slice(1) +']');
+      if (target.length) {
+        $('html,body').animate({
+          scrollTop: target.offset().top-66
+        }, 987);
+        return false;
+      }
+    }
+  });
+});
+
 //Animated close button
 
 $( ".btn-animated, .btn-animated-lg, .btn-anim-three, .btn-anim-three-lg" ).on( "click", function() {
@@ -277,7 +294,7 @@ $(window).scroll( function(){
 
 //Code stolen from css-tricks for smooth scrolling:
 
-$(document).ready(function() {
+/*$(document).ready(function() {
 
   function filterPath(string) {
   return string
@@ -325,7 +342,7 @@ $(document).ready(function() {
     return [];
   }
 
-}); 
+}); */
 
 //Contact Form
 
