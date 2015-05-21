@@ -506,6 +506,10 @@ div.fixed.center.visible-xs {
 	display: block;
 }
 
+.clients img:hover {
+  opacity: 0.5;
+}
+
 /* Scroll helper */
 
 * {
