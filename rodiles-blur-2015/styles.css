@@ -510,6 +510,43 @@ div.fixed.center.visible-xs {
   opacity: 0.5;
 }
 
+#skills a {
+  color: #51B54F;
+}
+
+#consulting {
+  background-image: url(img/bg/business.jpg);
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  top: 0;
+  left: 0;
+  padding: 4% 0;
+}
+
+#simplify {
+  background-image: url(img/bg/web.jpg);
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  top: 0;
+  left: 0;
+  padding: 4% 0;
+}
+
+#ksimple {
+  background-image: url(img/bg/contact.jpg);
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  top: 0;
+  left: 0;
+  padding: 14% 0;
+}
+
 /* Scroll helper */
 
 * {

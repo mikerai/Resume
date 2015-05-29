@@ -197,7 +197,7 @@ $('p.simple').on("click", function(e){
 
 // Cache selectors
 var lastId,
-    topMenu = $(".menu, nav"),
+    topMenu = $(".menu, nav, #skills"),
     topMenuHeight = topMenu.outerHeight()+67,
     // All list items
     menuItems = topMenu.find("a"),
