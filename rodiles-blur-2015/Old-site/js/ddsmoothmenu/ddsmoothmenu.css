@@ -1,0 +1,180 @@
+#submenuArrow {
+	width: 108px;
+	height: 9px;
+	position: absolute;
+	bottom:0px;
+	left: 0;
+	z-index: 101;
+	opacity: 0;
+	filter: Alpha(opacity=0);
+	pointer-events: none;
+	cursor: pointer;
+}
+.arrow-up {
+	position: absolute;
+	top: 4px;
+	width: 12px;
+	height: 6px;
+}
+/* #ddsmoothmenu
+================================================== */
+
+.ddsmoothmenu {
+	width: auto;
+	float: right;
+	color: #aaa;
+	display: inline;
+}
+.ddsmoothmenu ul {
+	z-index:100;
+	margin: 0;
+	padding: 0;
+	list-style-type: none;
+}
+/*Top level list items*/
+.ddsmoothmenu ul li {
+	position: relative;
+	display: inline;
+	float: left;
+	text-align: center;
+}
+.ddsmoothmenu ul li img {
+	margin-top: 26px;
+}
+.ddsmoothmenu ul li ul li img {
+	margin-top: 0;
+}
+/*Top level menu link items style*/
+.ddsmoothmenu ul li a {
+	display: block;
+	color: #aaaaaa;
+	padding: 35px 20px 34px 20px;
+	text-decoration: none;
+	height: 20px;
+	text-align:center;
+	text-transform:capitalize;
+}
+* html .ddsmoothmenu ul li a { /*IE6 hack to get sub menu links to behave correctly*/
+	display: inline-block;
+	color: #aaaaaa;
+}
+.ddsmoothmenu ul li a:link, .ddsmoothmenu ul li a:visited {
+	color: #131313;
+	-webkit-transition: color 0.2s ease-out, background 0.2s ease-out;
+	-moz-transition: color 0.2s ease-out, background 0.2s ease-out;
+	-o-transition: color 0.2s ease-out, background 0.2s ease-out;
+	-ms-transition: color 0.2s ease-out, background 0.2s ease-out;
+	transition: color 0.2s ease-out, background 0.2s ease-out;
+}
+.ddsmoothmenu ul li ul li a:link, .ddsmoothmenu ul li ul li a:visited {
+	color: #fff;
+}
+.ddsmoothmenu ul li a.selected {
+	color: #ffffff;
+}
+.ddsmoothmenu ul li a:hover, .ddsmoothmenu ul li a.current {
+	color: #ffffff;
+}
+/*1st sub level menu*/
+.ddsmoothmenu ul li ul {
+	position: absolute;
+	left: 0;
+	margin-top: 3px;
+	display: none; /*collapse all sub menus to begin with*/
+	visibility: hidden;
+	top:86px !important;
+}
+.ddsmoothmenu ul li ul ul {
+	top:0 !important;
+}
+.ddsmoothmenu ul li ul:before {
+	content:"";
+	position:absolute;
+	top:-3px;
+	left:0px;
+	right:0px;
+	bottom:0px;
+	height: 3px;
+	/* Fallback for browsers that doesn't support rgba */
+    background: rgb(0, 0, 0) transparent;
+	/* rgba with 0.6 opacity */
+    background: rgba(0, 0, 0, 0);
+    /* For IE 5.5 - 7 */
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#7f000000, endColorstr=#7f000000);
+	/* For IE 8 */
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#7f000000, endColorstr=#7f000000)";
+}
+/*Sub level menu list items (undo style from Top level List Items)*/
+.ddsmoothmenu ul li ul li {
+	display: list-item;
+	float: none;
+	text-align: left;
+}
+/*All subsequent sub menu levels vertical offset after 1st level sub menu */
+.ddsmoothmenu ul li ul li ul {
+	top: 0;
+	margin-top: 0;
+}
+/* Sub level menu links style */
+.ddsmoothmenu ul li ul li a {
+	font-size:16px;
+	width: 210px; /*width of sub menus*/
+	padding: 10px 5px 10px 10px;
+	margin: 0;
+	border-top-width: 0;
+	color: #ffffff;
+	text-align:left;
+}
+.ddsmoothmenu ul li ul li a:link, .ddsmoothmenu ul li ul li a:visited {
+	color: #fff;
+	-webkit-transition: color 0.2s ease-out, background 0.2s ease-out;
+	-moz-transition: color 0.2s ease-out, background 0.2s ease-out;
+	-o-transition: color 0.2s ease-out, background 0.2s ease-out;
+	-ms-transition: color 0.2s ease-out, background 0.2s ease-out;
+	transition: color 0.2s ease-out, background 0.2s ease-out;
+}
+/* Holly Hack for IE \*/
+* html .ddsmoothmenu {
+	height: 1%;
+} /*Holly Hack for IE7 and below*/
+/* ######### CSS classes applied to down and right arrow images  ######### */
+
+.downarrowclass {
+	position: absolute;
+	top: 12px;
+	right: 7px;
+}
+.rightarrowclass {
+	position: absolute;
+	top: 6px;
+	right: 5px;
+}
+/* ######### CSS for shadow added to sub menus  ######### */
+
+.ddshadow { /*shadow for NON CSS3 capable browsers*/
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 0;
+	height: 0;
+	background: black;
+}
+.toplevelshadow { /*shadow opacity for NON CSS3 capable browsers. Doesn't work in IE*/
+	opacity: 0.8;
+}
+.ddsmoothmenu ul li a:hover, .ddsmoothmenu ul li a.current, .ddsmoothmenu ul li a.selected {
+	background-image:url(../../images/menu-h.jpg);
+	background-repeat:repeat;
+}
+.ddsmoothmenu ul li ul li a {
+	background: #f60;
+}
+.ddsmoothmenu ul li ul li a:link, .ddsmoothmenu ul li ul li a:visited {
+	background: #131313;
+}
+.ddsmoothmenu ul#main-menu li ul li a:hover {
+	color: #131313 !important;
+}
+.ddsmoothmenu ul#main-menu li ul li a.selected, .ddsmoothmenu ul#main-menu li ul li a.current {
+	color: #131313;
+}

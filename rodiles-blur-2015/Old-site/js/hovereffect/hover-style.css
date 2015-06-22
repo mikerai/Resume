@@ -1,0 +1,90 @@
+/* Portolio Hover */
+.da-thumbs li, .da-thumbs li img {
+	display: block;
+	position: relative;
+}
+.da-thumbs li {
+	overflow: hidden;
+}
+.da-thumbs li:hover article:before {
+	content: "";
+	position: absolute;
+	top: 5px;
+	left: 47.9%;
+	border-style: solid;
+	border-image: none;
+	border-width: 6px;
+}
+.da-thumbs li article {
+	background-repeat:repeat-x;
+	display:none;
+	position: absolute;
+	width: 100%;
+	height: 100%;
+}
+.da-thumbs li article h5 {
+	margin-top:23px;
+	margin-bottom:4px;
+}
+.da-thumbs li article h5, .da-thumbs li article span, .da-thumbs li article p {
+	padding-left:10px;
+	padding-right:10px;
+}
+.da-thumbs li article span {
+	display:inline-block;
+	margin-bottom:5px;
+}
+.da-thumbs li article p {
+	color:#fff;
+}
+.da-thumbs li article span a {
+	color:#fff;
+	font-style: italic;
+	font-weight: bold;
+	text-transform: capitalize;
+}
+.da-thumbs li article.da-animate {
+	-webkit-transition: all 0.2s ease;
+	-moz-transition: all 0.2s ease-in-out;
+	-o-transition: all 0.2s ease-in-out;
+	-ms-transition: all 0.2s ease-in-out;
+	transition: all 0.2s ease-in-out;
+}
+.ico {
+	bottom:0px;
+	position:absolute;
+	right:0px;
+}
+.ico a {
+	background-color:#222222;
+	color:#fff;
+	font-size:20px;
+	padding:10px;
+}
+.ico a:hover {
+	text-align:center;
+}
+/* Initial state classes: */
+.da-slideFromTop {
+	left: 0px;
+	top: -100%;
+}
+.da-slideFromBottom {
+	left: 0px;
+	top: 100%;
+}
+.da-slideFromLeft {
+	top: 0px;
+	left: -100%;
+}
+.da-slideFromRight {
+	top: 0px;
+	left: 100%;
+}
+/* Final state classes: */
+.da-slideTop {
+	top: 0px;
+}
+.da-slideLeft {
+	left: 0px;
+}
