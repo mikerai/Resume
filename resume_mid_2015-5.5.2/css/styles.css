@@ -48,7 +48,7 @@ h1, h2, h3, h4, h5, h6, p {
 	height: 100%;
 	top: 0;
 	left: 0;
-	background: rgba(153,204,51,0.9);
+	background: rgba(255,76,99,0.9);
 	z-index: 3;
 }
 
@@ -132,7 +132,7 @@ h1, h2, h3, h4, h5, h6, p {
 /* Foundation Customization*/
 
 .row {
-	max-width: 80rem;
+	max-width: 200rem;
 }
 
 /* Spacings and alignments */
@@ -148,8 +148,15 @@ h1, h2, h3, h4, h5, h6, p {
 	background-color: transparent;
 	z-index: 2;
 }
+
+	#home p {
+		font-size: 2.75rem;
+		margin-bottom: 0;
+	}
+
 	#home h1, #home p {
 		color: #ffffff;
+		padding-left: 0.5rem;
 	}
 
 #about, #skills, #experience, #contact {
@@ -170,13 +177,51 @@ h1, h2, h3, h4, h5, h6, p {
     background-size: cover;
 }
 
-#about, #experience {
-	background-color: #E8E0DA;
+#about .me {
+	position: absolute;
+	top: 50%;
+	left: 4%;
 }
 
-#skills, #contact {
-	background-color: #DCECDD;
+.me h2 {
+	color: #ffffff;
 }
+
+.me button {
+	background-color: #ffffff;
+	color: rgb(255,76,99);
+	border: 2px solid #ffffff;
+	margin-right: 3rem;
+}
+
+	.me button:hover {
+		background-color: transparent;
+		color: #ffffff;
+		border: 2px solid rgb(255,76,99);
+	}
+
+#skills {
+	background-color: #FEFEFE;
+}
+
+#experience {
+	background: #E8E0DA url('../img/web.jpg') no-repeat center center;
+    background-size: cover;
+}
+
+#contact {
+	background-color: #FEFEFE;
+}
+
+@media only screen and (max-width: 47.9375em) {
+	#home h1, #home p{
+		font-size: 1.125rem;
+	}
+
+	#home h1 {
+		padding-top: 0.5rem;
+	}
+} 
 
 @media screen and (max-height: 30.5em) {
 	.overlay nav {

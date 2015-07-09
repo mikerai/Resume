@@ -10,7 +10,20 @@
     <link rel="stylesheet" href="css/styles.css" />
     
   </head>
-  <body>
+  <body id="top">
+  <!-- open/close -->
+    <div class="overlay overlay-corner">
+      <button type="button" class="overlay-close">Close</button>
+      <nav>
+        <ul>
+          <li><a href="#top">Home</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#skills">Skills</a></li>
+          <li><a href="#experience">Experience</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
     <div class="row collapse" id="home">
       <!-- Top Navigation -->
       <section class="columns small-6">
@@ -20,26 +33,35 @@
         <p>Menu <img id="trigger-overlay" src="img/menu.png" alt="Menu icon"></p>
       </section>
     </div>
-    <div class="row hero" id="about">
+    <section class="row hero" id="about">
       <div class="texture-overlay"></div>
-    </div>
-    <div class="row" id="skills"></div>
-    <div class="row" id="experience"></div>
-    <div class="row" id="contact"></div>
+        <div class="row me">
+          <div class="columns small-12">
+            <h2>Miguel Angel Rodriguez Alvarez Icaza</h2>
+          </div>
+          <div class="columns small-12">
+            <button>Contact me</button>
+            <button>Learn more</button>
+          </div>
+        </div>
+    </section>
+    <section class="row" id="skills">
+        <article>
+          <h2>Skills</h2>
+        </article>
+    </section>
+    <section class="row" id="experience">
+      <article>
+        <h2>Experience</h2>
+      </article>
+    </section>
+    <section class="row" id="contact">
+      <article>
+        <h2>Contact</h2>
+      </article>
+    </section>
     <!-- /container -->
-    <!-- open/close -->
-    <div class="overlay overlay-corner">
-      <button type="button" class="overlay-close">Close</button>
-      <nav>
-        <ul>
-          <li><a href="#">Home</a></li>
-          <li><a href="#about">About</a></li>
-          <li><a href="#skills">Skills</a></li>
-          <li><a href="#experience">Experience</a></li>
-          <li><a href="#contact">Contact</a></li>
-        </ul>
-      </nav>
-    </div>
+    
     <script src="js/vendor/modernizr.js"></script>
     <script src="js/vendor/jquery.js"></script>
     <script src="js/foundation.min.js"></script>
