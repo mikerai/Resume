@@ -159,7 +159,7 @@ h1, h2, h3, h4, h5, h6, p {
 		padding-left: 0.5rem;
 	}
 
-#about, #skills, #experience, #contact {
+#intro, #about, #skills, #experience, #contact {
 	height: 100vh;
 }
 
@@ -177,7 +177,7 @@ h1, h2, h3, h4, h5, h6, p {
     background-size: cover;
 }
 
-#about .me {
+#intro .me {
 	position: absolute;
 	top: 50%;
 	left: 4%;
@@ -201,12 +201,12 @@ h1, h2, h3, h4, h5, h6, p {
 	}
 
 #skills {
-	background-color: #FEFEFE;
+	background: #E8E0DA url('../img/shine.png') no-repeat center center fixed;
+    background-size: cover;
 }
 
 #experience {
-	background: #E8E0DA url('../img/web.jpg') no-repeat center center;
-    background-size: cover;
+	background-color: #FEFEFE;
 }
 
 #contact {
