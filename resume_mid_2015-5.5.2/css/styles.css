@@ -222,6 +222,12 @@ h1, h2, h3, h4, h5, h6, p {
     filter: progid: DXImageTransform.Microsoft.gradient(GradientType=1, StartColorStr='#59c0ad', EndColorStr='#FEFBF3');
 }
 
+#about .formation {
+	background: #FEFEFE url('../img/ux.jpg') no-repeat center center;
+	background-size: cover;
+	min-height: 100vh;
+}
+
 #skills {
 	background: #E8E0DA url('../img/web.jpg') no-repeat center center fixed;
     background-size: cover;
@@ -230,6 +236,10 @@ h1, h2, h3, h4, h5, h6, p {
 #experience {
 	background: #FEFEFE url('../img/ux1.jpg') no-repeat center center;
 	background-size: cover;
+}
+
+#experience .clients {
+
 }
 
 #contact {
