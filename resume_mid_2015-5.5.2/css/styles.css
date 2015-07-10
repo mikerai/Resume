@@ -142,6 +142,18 @@ h1, h2, h3, h4, h5, h6, p {
 }
 
 /* Custom divs */
+#intro, #about, #skills, #experience, #contact {
+	min-height: 100vh;
+}
+
+#intro h2, #about h2, #skills h2, #experience h2 {
+	color: #FEFEFE;
+	padding-left: 0.5rem;
+}
+
+#contact h2 {
+	padding-left: 0.5rem;
+}
 
 #home {
 	position: fixed;
@@ -158,10 +170,6 @@ h1, h2, h3, h4, h5, h6, p {
 		color: #ffffff;
 		padding-left: 0.5rem;
 	}
-
-#intro, #about, #skills, #experience, #contact {
-	height: 100vh;
-}
 
 .texture-overlay {
   position: absolute;
@@ -200,17 +208,110 @@ h1, h2, h3, h4, h5, h6, p {
 		border: 2px solid rgb(255,76,99);
 	}
 
+#about {
+	background: -webkit-linear-gradient(left top, #2B221D, #FEFBF3); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(bottom right, #2B221D, #FEFBF3); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(bottom right, #2B221D, #FEFBF3); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(to bottom right, #2B221D, #FEFBF3); /* Standard syntax (must be last) */
+    background-image: -webkit-gradient(linear, left top, right bottom, from(#2B221D), to(#FEFBF3));
+    background-image: -webkit-linear-gradient(left top, #2B221D, #FEFBF3);
+    background-image: -moz-linear-gradient(left top, #2B221D, #FEFBF3);
+    background-image: -o-linear-gradient(left top, #2B221D, #FEFBF3);
+    background-image: -ms-linear-gradient(left top, #2B221D, #FEFBF3);
+    background-image: linear-gradient(left top, #2B221D, #FEFBF3);
+    filter: progid: DXImageTransform.Microsoft.gradient(GradientType=1, StartColorStr='#59c0ad', EndColorStr='#FEFBF3');
+}
+
 #skills {
-	background: #E8E0DA url('../img/shine.png') no-repeat center center fixed;
+	background: #E8E0DA url('../img/web.jpg') no-repeat center center fixed;
     background-size: cover;
 }
 
 #experience {
-	background-color: #FEFEFE;
+	background: #FEFEFE url('../img/ux1.jpg') no-repeat center center;
+	background-size: cover;
 }
 
 #contact {
 	background-color: #FEFEFE;
+}
+
+footer section p:last-child {
+	text-align: center;
+}
+
+footer p {
+	margin-bottom: 0;
+}
+
+/* Share styles */
+
+.share {
+  /*max-width: 37.5rem;*/
+  height: 6.25rem;
+  margin: 0 auto;
+  -webkit-filter: url("#goo");
+  filter: url("../index.html#goo");
+}
+
+.share-button,
+.share-toggle-button {
+  background-color: rgb(255,76,99) !important;
+  padding: 0;
+  position: absolute;
+  display: inline-block;
+  left: 50%;
+  top: 50%;
+  border-radius: 50%;
+  width: 5rem;
+  height: 5rem;
+  line-height: 5rem;
+  margin-left: -2.5rem;
+  margin-top: -2.5rem;
+  background: #cccccc;
+  text-align: center;
+  color: #ffffff;
+  border: none;
+  outline: none;
+}
+
+.share-button:hover,
+.share-toggle-button:hover {
+  color: #ffffff;
+}
+
+.share-button {
+  font-size: 2rem;
+  background: #737070;
+  -webkit-transform: scale(0.95, 0.95);
+  transform: scale(0.95, 0.95);
+  color: #222222;
+}
+
+a.share-button {
+  background-color: rgba(38,155,255,0.9) !important;
+  color: #ffffff;
+}
+
+a.share-button:hover, 
+a.share-button:focus {
+  color: #dfd7d7;
+}
+
+.share-toggle-button {
+  z-index: 9;
+  background: #666666;
+  font-size: 1.75rem;
+}
+
+.share-items {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.share-item {
+  display: inline-block;
 }
 
 @media only screen and (max-width: 47.9375em) {
