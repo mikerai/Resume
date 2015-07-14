@@ -100,7 +100,7 @@ h1, h2, h3, h4, h5, h6, p {
 	font-size: 54px;
 	font-weight: 300;
 	display: block;
-	color: #fff;
+	color: #ffffff;
 	-webkit-transition: color 0.2s;
 	transition: color 0.2s;
 }
@@ -147,6 +147,7 @@ h1, h2, h3, h4, h5, h6, p {
 }
 
 #intro h2, #about h2, #skills h2, #experience h2 {
+	position: relative;
 	color: #FEFEFE;
 	padding-left: 0.5rem;
 }
@@ -171,6 +172,10 @@ h1, h2, h3, h4, h5, h6, p {
 		padding-left: 0.5rem;
 	}
 
+	#home #trigger-overlay {
+		cursor: pointer;
+	}
+
 .texture-overlay {
   position: absolute;
   top: 0px;
@@ -184,6 +189,37 @@ h1, h2, h3, h4, h5, h6, p {
     background: #E8E0DA url('../img/ux2.jpg') no-repeat center center;
     background-size: cover;
 }
+
+blockquote, blockquote p {
+  font-size: 2rem;
+  border-left: none;
+}
+
+	blockquote:before {
+		color: #000000;
+	    content: "\201C";
+	    display: inline-block;
+	    font-family: georgia;
+	    font-size: 4rem;
+	    vertical-align: middle;
+	}
+
+	blockquote:after {
+		color: #000000;
+	    content: "\201D";
+	    display: inline-block;
+	    font-family: georgia;
+	    font-size: 4rem;
+	    vertical-align: middle;
+	}
+
+.ux-quote blockquote {
+	text-align: center;
+}
+
+	.ux-quote p {
+		text-align: right;
+	}
 
 #intro .me {
 	position: absolute;
@@ -209,31 +245,23 @@ h1, h2, h3, h4, h5, h6, p {
 	}
 
 #about {
-	background: -webkit-linear-gradient(left top, #2B221D, #FEFBF3); /* For Safari 5.1 to 6.0 */
-    background: -o-linear-gradient(bottom right, #2B221D, #FEFBF3); /* For Opera 11.1 to 12.0 */
-    background: -moz-linear-gradient(bottom right, #2B221D, #FEFBF3); /* For Firefox 3.6 to 15 */
-    background: linear-gradient(to bottom right, #2B221D, #FEFBF3); /* Standard syntax (must be last) */
-    background-image: -webkit-gradient(linear, left top, right bottom, from(#2B221D), to(#FEFBF3));
-    background-image: -webkit-linear-gradient(left top, #2B221D, #FEFBF3);
-    background-image: -moz-linear-gradient(left top, #2B221D, #FEFBF3);
-    background-image: -o-linear-gradient(left top, #2B221D, #FEFBF3);
-    background-image: -ms-linear-gradient(left top, #2B221D, #FEFBF3);
-    background-image: linear-gradient(left top, #2B221D, #FEFBF3);
-    filter: progid: DXImageTransform.Microsoft.gradient(GradientType=1, StartColorStr='#59c0ad', EndColorStr='#FEFBF3');
+	background-color: rgb(40,43,42);
 }
 
 #about .formation {
-	background: #FEFEFE url('../img/ux.jpg') no-repeat center center;
+	background: #FEFEFE url('../img/web.jpg') no-repeat center center;
 	background-size: cover;
 	min-height: 100vh;
 }
 
 #skills {
-	background: #E8E0DA url('../img/web.jpg') no-repeat center center fixed;
+	position: relative;
+	background: #E8E0DA url('../img/ux.jpg') no-repeat center center fixed;
     background-size: cover;
 }
 
 #experience {
+	position: relative;
 	background: #FEFEFE url('../img/ux1.jpg') no-repeat center center;
 	background-size: cover;
 }
@@ -243,8 +271,58 @@ h1, h2, h3, h4, h5, h6, p {
 }
 
 #contact {
-	background-color: #FEFEFE;
+	background-color: #fefefe;
 }
+
+/* No Captcha recaptcha */
+
+button.success {
+	display: none;
+}
+
+/* Contact form styles */
+
+input[type="text"], input[type="email"], textarea[type="text"] {
+	background-color: #404040;
+	opacity: 0.3;
+	font-size: 1.25rem;
+    padding: 1rem;
+    width: 100%;
+    -webkit-appearance: none;
+    margin: 0.3125rem 0;
+    border: none;
+    border-radius: 0;
+    transition: all .3s ease-in-out;
+    outline: 0;
+}
+
+	textarea[type="text"] {
+		min-height: 8rem;
+	}
+
+	input[type="text"]:focus, input[type="email"]:focus, textarea[type="text"]:focus {
+		opacity: 1;
+		border: none;
+		outline: 0;
+		background-color: #fefefe;
+	}
+
+[data-abide] .error small.error, [data-abide] .error span.error, [data-abide] span.error, [data-abide] small.error {
+  font-size: 1rem;
+  font-style: italic;
+  background: #8b1820;
+  color: #FFFFFF;
+}
+
+.error label, .error label.error {
+  color: #8b1820;
+}
+
+p.success {
+	font-size: 1.5rem;
+	color: rgb(255,76,99);
+	padding: 1rem;
+} 
 
 footer section p:last-child {
 	text-align: center;
