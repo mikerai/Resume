@@ -137,8 +137,8 @@ $(function() {
       target = target.length ? target : $('[name=' + this.hash.slice(1) +']');
       if (target.length) {
         $('html,body').animate({
-          scrollTop: target.offset().top
-        }, 1000);
+          scrollTop: target.offset().top-$('header').height()
+        }, 1597);
         return false;
       }
     }
