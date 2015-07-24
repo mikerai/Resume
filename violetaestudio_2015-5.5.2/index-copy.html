@@ -1,0 +1,188 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Violeta Estudio</title>
+    <meta name="description" content="Arquitectura llevada a otro nivel. Somos especialistas en proyectos, urbanización, calidad y servicios de arquitectura.">
+    <link rel="stylesheet" href="css/normalize.css" />
+    <link rel="stylesheet" href="css/foundation.css" />
+    <link rel="stylesheet" type="text/css" href="/fonts/font-awesome-4.3.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="fonts/vicons/vicons-font.css" />
+    <link rel="stylesheet" href="css/styles.css" />
+    
+  </head>
+  <body>
+  <!-- open/close -->
+    <div class="overlay overlay-corner">
+      <button type="button" class="overlay-close">Close</button>
+      <nav>
+        <ul>
+          <li><a href="#intro">Home</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#skills">Skills</a></li>
+          <li><a href="#experience">Experience</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+    <header class="row collapse" id="home">
+      <!-- Top Navigation -->
+      <section class="columns small-6">
+        <h1>Violeta Estudio</h1>
+      </section>
+      <section class="columns small-6 text-right">
+        <p><span id="trigger-overlay">Menu <img src="img/menu.png" alt="Menu icon"></span></p>
+      </section>
+    </header>
+    <section class="row hero" id="intro">
+      <div class="texture-overlay"></div>
+        <div class="row me">
+          <div class="columns small-12">
+            <h2>Miguel Angel Rodriguez Alvarez Icaza</h2>
+          </div>
+          <div class="columns small-12">
+            <a href="#contact"><button>Contact me</button></a>
+            <button>Learn more</button>
+          </div>
+        </div>
+    </section>
+    <section class="row collapse ux-quote">
+      <div class="columns-small-12">  
+        <blockquote>A bad web site is like a grumpy salesperson</blockquote>
+        <div class="columns small-10 end">
+          <p>Jakob Nielsen</p>
+        </div>
+      </div>
+    </section>
+    <section class="row" id="about">
+      <article>
+        <div class="columns small-12 medium-6 large-6 formation">
+          <div class="texture-overlay"></div>
+          <h2>About</h2>
+        </div>
+        <div class="columns small-12 medium-6 large-6">
+          
+        </div>
+      </article>
+    </section>
+    <section class="row" id="skills">
+      <div class="texture-overlay"></div>
+        <article>
+          <h2>Skills</h2>
+        </article>
+    </section>
+    <section class="row" id="experience">
+      <div class="texture-overlay"></div>
+        <article>
+          <h2>Experience</h2>
+          <div class="columns small-12 medium-6 large-6 clients">
+            <p>These are the clients that I have worked with.</p>
+          </div>
+          <div class="columns small-12 medium-6 large-6">
+            
+          </div>
+        </article>
+    </section>
+    <section class="row" id="contact">
+      <article>
+        <h2>Contact</h2>
+        <div class="columns small-10 small-centered medium-8 medium-centered large-6 large-centered">
+          <form data-abide class="cmxform" id="commentForm" method="post" action="verify.php" novalidate="novalidate">
+            <div class="name-field">
+              <label for="name">Name
+                <input type="text" name="name" required pattern="[a-zA-Z]+" placeholder="Your name here">
+              </label>
+              <small class="error">Name is required to know who I should address to.</small>
+            </div>
+            <div class="email-field">
+              <label for="email">Email
+                <input type="email" name="email" required placeholder="Your email goes here">
+              </label>
+              <small class="error">A valid email address is required.</small>
+            </div>
+            <div class="comment-field">
+                <label for="comment">Message
+                  <textarea type="text" name="comment" required pattern="[a-zA-Z]+" placeholder="Your message here"></textarea>
+                </label>
+                <small class="error">Please leave us a comment.</small>
+              </div>
+            <script>
+              onValidate = function ()
+                {
+                  $("button.success").slideToggle(150);
+                  $("p.noCaptcha").fadeOut(1500);
+                  $("div.g-recaptcha").fadeOut(1500);
+                };
+            </script>
+            <button class="success submit" type="submit">Submit</button>
+          </form>
+          <div class="row">
+            <div class="small-12 columns google-recaptcha">
+              <p class="noCaptcha">
+                <label for="captcha">Are you human?</label>   
+              </p>
+              <div class="g-recaptcha" data-sitekey="6LcdPAoTAAAAAMlLEnPU33AN8_we0WyFOzNypx1U" data-callback="onValidate"></div>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+    
+    <footer class="row">
+      <section class="columns small-12 small-centered content">
+        <div class="share">
+          <button class="share-toggle-button">
+            <i class="share-icon fa fa-share-alt"></i>
+          </button>
+          <ul class="share-items">
+            <li class="share-item">
+              <a href="http://www.linkedin.com/in/mikerai/en" target="_blank" class="share-button">
+                <i class="share-icon fa fa-linkedin"></i>
+              </a>
+            </li>
+            <li class="share-item">
+              <a href="https://twitter.com/mikerai_UX" target="_blank" class="share-button">
+                <i class="share-icon fa fa-twitter"></i>
+              </a>
+            </li>
+            <li class="share-item">
+              <a href="https://itunes.apple.com/mx/artist/phiveleven-llc-mikerai/id461579017?l=en" target="_blank" class="share-button">
+                <i class="share-icon fa fa-apple"></i>
+              </a>
+            </li>
+            <li class="share-item">
+              <a href="https://plus.google.com/u/2/+MiguelAngelRodríguezAlvarezIcaza/posts/" target="_blank" class="share-button">
+                <i class="share-icon fa fa-google-plus"></i>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </section>
+      <section class="columns small-12 small-centered">
+        <p>&copy; Copyright 2015. Mikerai.com</p>
+      </section>
+
+      <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="0">
+        <defs>
+          <filter id="goo">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="12" result="blur" />
+            <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 35 -15" result="goo" />
+            <feComposite in="SourceGraphic" in2="goo" operator="atop"/>
+          </filter>
+        </defs>
+      </svg>
+
+    </footer>
+
+    <!-- /container -->
+    
+    <script src="js/vendor/modernizr.js"></script>
+    <script src="js/vendor/jquery.js"></script>
+    <script src="js/foundation.min.js"></script>
+    <script src="js/TweenMax.min.js"></script>
+    <script src="js/foundation/foundation.abide.js"></script>
+    <script src="js/scripts.js"></script>
+    <script type='text/javascript' src="https://www.google.com/recaptcha/api.js?es"></script>
+  </body>
+</html>
