@@ -269,8 +269,9 @@ img.bg {
 	}
 
 	.blur{
-	  height:16rem;
-	  margin:0 auto;
+	  height: 19rem;
+    width: 70vw;
+    margin: -2rem;
 	}
 } 
 
@@ -288,12 +289,23 @@ img.bg {
 	}
 
 	.widget{
-	  height:40vh;
+	  height:50vh;
 	  width:80vw;
 	}
 
 	.blur{
-	  height:40vh;
-	  margin:0 auto;
+	  height:60vh;
+    width: 90vw;
+	  margin:-1.125rem;
 	}
+  img.bg {
+    min-width: 100vw;
+  }
+}
+
+@media screen and (max-width: 25.875em) {
+  .widget{
+    height:15rem;
+    min-height: 13rem;
+  }
 }
