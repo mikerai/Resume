@@ -125,11 +125,6 @@ h1, h2, h3, h4, h5, h6, p {
 #intro h2, #about h2, #skills h2, #experience h2 {
   position: relative;
   color: $main-color-2;
-  padding-left: 0.5rem;
-}
-
-#contact h2 {
-  padding-left: 0.5rem;
 }
 
 #home {
@@ -199,7 +194,7 @@ blockquote {
 
 #intro .me {
   position: absolute;
-  top: 50%;
+  top: 68%;
   left: 4%;
 }
 
