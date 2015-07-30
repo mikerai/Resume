@@ -245,7 +245,7 @@ $(document).ready(function(){
   })
   
 })
-
+/*
 //Contact Form
 
 $(document).ready(function () {
@@ -287,7 +287,7 @@ $(document).ready(function () {
                 } else {
                     $('button[type=submit]').attr('disabled', true);
                 }
-            });*/
+            });*//*
 
             $("button.submit").click(function () {
                 if (!$("#commentForm").validate()) { // Not Valid
@@ -317,4 +317,4 @@ $(document).ready(function () {
                 });
             }
             return false;
-});
+});*/
