@@ -1,0 +1,19 @@
+RewriteEngine on
+
+RewriteCond %{HTTP_REFERER} !^$
+RewriteCond %{HTTP_REFERER} !^http://mikerai.com/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://mikerai.com$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://mikerai.com/demo/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://mikerai.com/demo$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://violetaestudio.com/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://violetaestudio.com$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://violetaestudio.mikerai.com/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://violetaestudio.mikerai.com$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://www.mikerai.com/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://www.mikerai.com$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://www.violetaestudio.com/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://www.violetaestudio.com$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://www.violetaestudio.mikerai.com/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://www.violetaestudio.mikerai.com$      [NC]
+RewriteRule .*\.(jpg|jpeg|gif|png|bmp)$ - [F,NC]
+
