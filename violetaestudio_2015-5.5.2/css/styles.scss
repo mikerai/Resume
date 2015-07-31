@@ -12,7 +12,7 @@ html, button, input, select, textarea {
 body {
   margin: 0;
   font-family: $font-stack;
-  font-weight: 300;
+  font-weight: 100;
 }
 
 h1, h2, h3, h4, h5, h6, p {
@@ -31,11 +31,11 @@ h1, h2, h3, h4, h5, h6, p {
   background: $primary-color-5;
   z-index: 3;
   .overlay-close {
-    width: 80px;
-    height: 80px;
+    width: 5rem;
+    height: 5rem;
     position: absolute;
-    right: 20px;
-    top: 20px;
+    right: 1.25rem;
+    top: 1.25rem;
     overflow: hidden;
     border: none;
     background: url(../img/cross.png) no-repeat center center;
@@ -63,13 +63,17 @@ h1, h2, h3, h4, h5, h6, p {
       display: block;
       height: 20%;
       height: calc(100% / 5);
-      min-height: 54px;
+      min-height: 3.375rem;
       -webkit-backface-visibility: hidden;
       backface-visibility: hidden;
       a {
-        font-size: 54px;
-        font-weight: 300;
+        font: {
+            family: $font-stack;
+            size: 3.375rem;
+            weight: 100;
+          }
         display: block;
+        letter-spacing: 0.3125rem;
         color: $main-color-2;
         -webkit-transition: color 0.2s;
         transition: color 0.2s;
@@ -207,6 +211,7 @@ blockquote {
     color: $primary-color-2;
     border: 2px solid $main-color-2;
     margin-right: 3rem;
+    font-size: 1.125rem;
     &:hover {
       background-color: transparent;
       color: $main-color-2;
