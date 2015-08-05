@@ -28,7 +28,7 @@ h1, h2, h3, h4, h5, h6, p {
   height: 100%;
   top: 0;
   left: 0;
-  background: $primary-color-5;
+  background: $color5-a;
   z-index: 3;
   .overlay-close {
     width: 5rem;
@@ -209,14 +209,14 @@ blockquote {
   }
   button {
     background-color: $main-color-2;
-    color: $primary-color-2;
+    color: $color5;
     border: 2px solid $main-color-2;
     margin-right: 3rem;
     font-size: 1.125rem;
     &:hover {
       background-color: transparent;
       color: $main-color-2;
-      border: 2px solid $primary-color-2;
+      border: 2px solid $color5;
     }
   }
 }
@@ -307,28 +307,28 @@ textarea[type="text"]:focus {
     small.error, span.error {
       font-size: 1rem;
       font-style: italic;
-      background: #8b1820;
+      background: #FFCCCC;
       color: $primary-color-1;
     }
   }
   span.error, small.error {
     font-size: 1rem;
     font-style: italic;
-    background: #8b1820;
+    background: #FFCCCC;
     color: $primary-color-1;
   }
 }
 
 .error label {
-  color: #8b1820;
+  color: $primary-color-1;
   &.error {
-    color: #8b1820;
+    color: $primary-color-1;
   }
 }
 
 p.success {
   font-size: 1.5rem;
-  color: $primary-color-2;
+  color: $color1;
   padding: 1rem;
 }
 
@@ -342,7 +342,7 @@ footer {
   background-color: rgba(255, 255, 255, 0.85);
   box-shadow: 0 0 7px rgba(0,0,0,0.3);
   p {
-    margin-bottom: 0;
+    margin-bottom:0;
   }
 }
 
@@ -357,7 +357,7 @@ footer {
 }
 
 .share-button, .share-toggle-button {
-  background-color: $primary-color-2 !important;
+  background-color: $color5 !important;
   padding: 0;
   position: absolute;
   display: inline-block;
@@ -389,7 +389,7 @@ footer {
 }
 
 a.share-button {
-  background-color: $primary-color-7 !important;
+  background-color: $color1 !important;
   color: $main-color-2;
   &:hover, &:focus {
     color: #dfd7d7;
