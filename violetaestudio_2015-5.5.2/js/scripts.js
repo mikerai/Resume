@@ -245,6 +245,30 @@ $(document).ready(function(){
   })
   
 })
+
+$(function(){
+    $('header').data('size','big');
+});
+
+$(window).scroll(function(){
+    if($(document).scrollTop() > 0)
+    {
+        if($('header').data('size') == 'big')
+        {
+            $('header').data('size','small');
+            $('header').addClass('scrolling', 666);
+        }
+    }
+    else
+    {
+        if($('header').data('size') == 'small')
+        {
+            $('header').data('size','big');
+            $('header').removeClass('scrolling', 666);
+        }  
+    }
+});
+
 /*
 //Contact Form
 

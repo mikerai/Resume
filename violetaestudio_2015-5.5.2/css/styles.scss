@@ -142,15 +142,49 @@ p {
   background-color: $main-color-4;
   z-index: 2;
   box-shadow: 0 0 7px rgba(0,0,0,0.3);
+  -webkit-transition: all 0.5s ease;
+  -moz-transition: all 0.5s ease;
+  -o-transition: all 0.5s ease;
+  transition: all 0.5s ease;
   p {
     font-size: 2.75rem;
     margin-bottom: 0;
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    transition: all 0.5s ease;
   }
   h1, p {
     color: $main-color-2;
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    transition: all 0.5s ease;
   }
   #trigger-overlay {
     cursor: pointer;
+  }
+}
+
+header#home.scrolling {
+    background-color: $main-color-7;
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+  h1{
+    font-size: 1.75rem;
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+  }
+  p {
+    font-size: 1.75rem;
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    transition: all 0.5s ease;
   }
 }
 
