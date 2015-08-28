@@ -257,6 +257,7 @@ $(window).scroll(function(){
         {
             $('header').data('size','small');
             $('header').addClass('scrolling', 666);
+            $('footer').addClass('visible'), 1000;
             $('h1').html('V E');
             //$('h1').text('V E').fadeIn(2500);
         }
@@ -267,6 +268,7 @@ $(window).scroll(function(){
         {
             $('header').data('size','big');
             $('header').removeClass('scrolling', 666);
+            $('footer').removeClass('visible'), 1000;
             $('h1').html('Violeta Estudio');
             //$('h1').text('Violeta Estudio').fadeIn(2500);
         }  
