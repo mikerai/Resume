@@ -373,6 +373,7 @@ p.success {
 }
 
 footer {
+  bottom: -5%;
   -webkit-transition: all 0.5s ease;
   -moz-transition: all 0.5s ease;
   -o-transition: all 0.5s ease;
@@ -382,8 +383,20 @@ footer {
   transition:visibility 0s linear 0.5s,opacity 0.5s linear;
   section p:last-child {
     text-align: center;
+    font-weight: bold;
+    color: $main-color-1;
+    margin-top: 1.71875rem;
   }
-  padding-bottom: 0.5rem;
+  section a {
+    color: $color5;
+    font-weight: bold;
+    display: inline-block;
+    margin-top: 1.71875rem;
+  }
+    section a:hover, section a:focus {
+      color: $color1;
+    }
+  padding-bottom: 0;
   position: fixed;
   bottom: 0;
   background-color: rgba(255, 255, 255, 0.85);
@@ -396,16 +409,19 @@ footer {
     visibility: visible;
     opacity:1;
     transition-delay:0s;
+    bottom: -5%;
   }
   p {
     margin-bottom:0;
+  }
+  button, .button{
+    margin: 0;
   }
 }
 
 /* Share styles */
 
 .share {
-  margin-bottom: 0.5rem;
   height: auto;
   margin: 0 auto;
   -webkit-filter: url("#goo");
@@ -418,13 +434,13 @@ footer {
   position: absolute;
   display: inline-block;
   left: 50%;
-  top: 50%;
+  top: 5%;
   border-radius: 50%;
-  width: 5rem;
-  height: 5rem;
-  line-height: 5rem;
-  margin-left: -2.5rem;
-  margin-top: -2.5rem;
+  width: 4rem;
+  height: 4rem;
+  line-height: 4rem;
+  margin-left: -2rem;
+  margin-top: -2rem;
   background: #cccccc;
   text-align: center;
   color: $main-color-2;
@@ -437,7 +453,7 @@ footer {
 }
 
 .share-button {
-  font-size: 2rem;
+  font-size: 1.75rem;
   background: #737070;
   -webkit-transform: scale(0.95, 0.95);
   transform: scale(0.95, 0.95);

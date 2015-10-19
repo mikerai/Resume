@@ -275,6 +275,12 @@ $(window).scroll(function(){
     }
 });
 
+$("footer").hover(function(){
+    $(this).css("bottom", "0");
+    }, function(){
+    $(this).css("bottom", "-5%");
+});
+
 /*
 //Contact Form
 
