@@ -1,5 +1,8 @@
-/* Custom styles */
-
+// Custom styles 
+@import 'normalize.css';
+@import 'foundation.css';
+@import '../fonts/font-awesome-4.3.0/css/font-awesome.min.css';
+@import '../fonts/vicons/vicons-font.css';
 @import 'colors';
 @import 'fonts';
 
@@ -26,7 +29,7 @@ p {
   font-weight: 300;
 }
 
-/* Overlay style */
+// Overlay style 
 
 .overlay {
   position: fixed;
@@ -91,11 +94,11 @@ p {
   }
 }
 
-/* Overlay closing cross */
+// Overlay closing cross 
 
-/* Menu style */
+// Menu style 
 
-/* Effects */
+// Effects 
 
 .overlay-corner {
   opacity: 0;
@@ -114,19 +117,19 @@ p {
   }
 }
 
-/* Foundation Customization*/
+// Foundation Customization
 
 .row {
   max-width: 200rem;
 }
 
-/* Spacings and alignments */
+// Spacings and alignments 
 
 .text-right {
   text-align: right;
 }
 
-/* Custom divs */
+// Custom divs 
 
 #intro, #about, #skills, #experience, #contact {
   min-height: 100vh;
@@ -287,13 +290,13 @@ blockquote {
   background-color: #fefefe;
 }
 
-/* No Captcha recaptcha */
+// No Captcha recaptcha 
 
 button.success {
   display: none;
 }
 
-/* Contact form styles */
+// Contact form styles 
 
 input {
   &[type="text"], &[type="email"] {
@@ -419,7 +422,7 @@ footer {
   }
 }
 
-/* Share styles */
+// Share styles 
 
 .share {
   height: auto;
