@@ -23,7 +23,6 @@ $headers  = "MIME-Version: 1.0\r\n";
 $headers .= "Content-type: text/html; charset=UTF-8\r\n";
 $headers .= "From: <".$from. ">" ;
 
-
 //send for each mail
 foreach($to as $mail){
    mail($mail, $subject, $msg, $headers);
