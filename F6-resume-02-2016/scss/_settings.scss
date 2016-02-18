@@ -45,12 +45,14 @@
 // ---------
 
 $global-font-size: 100%;
-$global-width: rem-calc(1200);
+$global-width: rem-calc(1240);
 $global-lineheight: 1.5;
 $primary-color: #2C3E50; //Blue
 $secondary-color: #468966; //Green
 $third-color: #493159; //Purple
-$fourth-color: ; //
+$fourth-color: #2980B9; //Light blue
+$fifth-color: #3498B8; //Lighter blue
+$sixth-color: #E74C3C; //Orangish 
 $success-color: #3adb76;
 $warning-color: #ffae00;
 $alert-color: #ec5840;
@@ -58,7 +60,7 @@ $light-gray: #e6e6e6;
 $medium-gray: #cacaca;
 $dark-gray: #8a8a8a;
 $black: #0a0a0a;
-$white: #fefefe;
+$white: #ECF0F1;
 $body-background: $white;
 $body-font-color: $black;
 $body-font-family: 'montserratlight', Helvetica, Arial, sans-serif;
