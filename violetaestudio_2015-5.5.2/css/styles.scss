@@ -9,7 +9,7 @@
 html, button, input, select, textarea {
   font-family: sans-serif;
   font-family: $font-stack;
-  font-weight: 300;
+  font-weight: 100;
 }
 
 body {
@@ -20,13 +20,13 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: $font-stack;
-  font-weight: 300;
+  font-weight: 100;
   padding-left: 0.5rem;
 }
 
 p {
   font-family: $font-stack;
-  font-weight: 300;
+  font-weight: 100;
 }
 
 // Overlay style 
@@ -248,7 +248,10 @@ blockquote {
 
 .me {
   h2 {
-    color: $main-color-2;
+    //color: $main-color-2;
+    @include stroke(2,$main-color-4);
+    letter-spacing: 3px;
+    padding: 0;
   }
   button {
     background-color: $main-color-2;
@@ -256,6 +259,7 @@ blockquote {
     border: 2px solid $main-color-2;
     margin-right: 3rem;
     font-size: 1.125rem;
+    font-weight: 400;
     &:hover {
       background-color: transparent;
       color: $main-color-2;
