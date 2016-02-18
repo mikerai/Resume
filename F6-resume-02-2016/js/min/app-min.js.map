@@ -1,0 +1,1 @@
+{"version":3,"sources":["../app.js"],"names":["$","document","foundation","click","event","preventDefault","animate","scrollTop","attr","this","offset","top"],"mappings":"AAAAA,EAAE,WACDA,EAAEC,UAAUC,aAEZF,EAAE,KAAKG,MAAM,WAKV,MAJFC,OAAMC,iBACJL,EAAE,cAAcM,SACZC,UAAWP,EAAGA,EAAEQ,KAAKC,KAAM,SAAUC,SAASC,KAC/C,MACI","file":"app-min.js"}

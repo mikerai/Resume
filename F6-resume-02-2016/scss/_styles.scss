@@ -1,0 +1,79 @@
+body {
+	
+}
+
+nav{
+	background-color: $third-color !important;
+	border: 1px solid $third-color;
+	a{
+		display: block;
+		padding: rem-calc(15);
+		text-align: center;
+		color: $white;
+		&:hover, &:focus, &:active{
+			background-color: $white;
+			color: $third-color;
+		}
+	}
+}
+
+section {
+	&.hero{
+		margin-bottom: rem-calc(15);
+		text-align: center;
+		position: relative;
+		overflow: hidden;
+		height: 80vh;
+		-webkit-box-shadow: 0 8px 6px -6px black;
+	   	 -moz-box-shadow: 0 8px 6px -6px black;
+	        	box-shadow: 0 8px 6px -6px black;
+	  div{
+	  	padding: 0;
+	  }
+		img{
+			position: absolute;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			left: 0;
+			margin: auto;
+			opacity: 0.76;
+			z-index: -1;
+		}
+	}
+	&.welcome{
+		h1, h2{
+			font-size: rem-calc(31);
+		}
+	}
+	&.resume{
+
+	}
+	&.education{
+
+	}
+	&.portfolio{
+
+	}
+	&.contact{
+
+	}
+}
+
+footer{
+	
+}
+
+@media screen and (width: 48em) and (orientation: portrait){
+	section{
+		&.hero{
+			height: 50vh;
+		}
+	}
+}
+
+@include breakpoint(small only) {
+	#menu{
+		display: none !important;
+	}
+}
