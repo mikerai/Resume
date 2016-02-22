@@ -3162,12 +3162,12 @@
 		"outputPathIsSetByUser": 0,
 		"outputStyle": 1
 		},
-	"\/bower_components\/what-input\/polyfills\/ie8\/addEventListener.js": {
+	"\/bower_components\/what-input\/polyfills\/ie8\/EventListener.js": {
 		"fileType": 64,
 		"ignore": 0,
 		"ignoreWasSetByUser": 0,
-		"inputAbbreviatedPath": "\/bower_components\/what-input\/polyfills\/ie8\/addEventListener.js",
-		"outputAbbreviatedPath": "\/bower_components\/what-input\/polyfills\/ie8\/min\/addEventListener-min.js",
+		"inputAbbreviatedPath": "\/bower_components\/what-input\/polyfills\/ie8\/EventListener.js",
+		"outputAbbreviatedPath": "\/bower_components\/what-input\/polyfills\/ie8\/min\/EventListener-min.js",
 		"outputPathIsOutsideProject": 0,
 		"outputPathIsSetByUser": 0,
 		"outputStyle": 1,
@@ -3290,6 +3290,28 @@
 		"outputPathIsSetByUser": 0,
 		"processed": 0
 		},
+	"\/img\/dressbarn.png": {
+		"fileType": 32768,
+		"ignore": 0,
+		"ignoreWasSetByUser": 0,
+		"initialSize": 3372,
+		"inputAbbreviatedPath": "\/img\/dressbarn.png",
+		"outputAbbreviatedPath": "\/img\/dressbarn.png",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"processed": 0
+		},
+	"\/img\/exchange.png": {
+		"fileType": 32768,
+		"ignore": 0,
+		"ignoreWasSetByUser": 0,
+		"initialSize": 11363,
+		"inputAbbreviatedPath": "\/img\/exchange.png",
+		"outputAbbreviatedPath": "\/img\/exchange.png",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"processed": 0
+		},
 	"\/img\/hero-banner.jpg": {
 		"fileType": 16384,
 		"ignore": 0,
@@ -3312,6 +3334,28 @@
 		"outputPathIsSetByUser": 0,
 		"processed": 0
 		},
+	"\/img\/huawei.png": {
+		"fileType": 32768,
+		"ignore": 0,
+		"ignoreWasSetByUser": 0,
+		"initialSize": 14836,
+		"inputAbbreviatedPath": "\/img\/huawei.png",
+		"outputAbbreviatedPath": "\/img\/huawei.png",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"processed": 0
+		},
+	"\/img\/justice.png": {
+		"fileType": 32768,
+		"ignore": 0,
+		"ignoreWasSetByUser": 0,
+		"initialSize": 11261,
+		"inputAbbreviatedPath": "\/img\/justice.png",
+		"outputAbbreviatedPath": "\/img\/justice.png",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"processed": 0
+		},
 	"\/img\/keyboard.jpg": {
 		"fileType": 16384,
 		"ignore": 0,
@@ -3319,6 +3363,72 @@
 		"initialSize": 32788,
 		"inputAbbreviatedPath": "\/img\/keyboard.jpg",
 		"outputAbbreviatedPath": "\/img\/keyboard.jpg",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"processed": 0
+		},
+	"\/img\/lenox.png": {
+		"fileType": 32768,
+		"ignore": 0,
+		"ignoreWasSetByUser": 0,
+		"initialSize": 12638,
+		"inputAbbreviatedPath": "\/img\/lenox.png",
+		"outputAbbreviatedPath": "\/img\/lenox.png",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"processed": 0
+		},
+	"\/img\/lowes.png": {
+		"fileType": 32768,
+		"ignore": 0,
+		"ignoreWasSetByUser": 0,
+		"initialSize": 6642,
+		"inputAbbreviatedPath": "\/img\/lowes.png",
+		"outputAbbreviatedPath": "\/img\/lowes.png",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"processed": 0
+		},
+	"\/img\/natural_partners.png": {
+		"fileType": 32768,
+		"ignore": 0,
+		"ignoreWasSetByUser": 0,
+		"initialSize": 8769,
+		"inputAbbreviatedPath": "\/img\/natural_partners.png",
+		"outputAbbreviatedPath": "\/img\/natural_partners.png",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"processed": 0
+		},
+	"\/img\/nexcom.png": {
+		"fileType": 32768,
+		"ignore": 0,
+		"ignoreWasSetByUser": 0,
+		"initialSize": 9325,
+		"inputAbbreviatedPath": "\/img\/nexcom.png",
+		"outputAbbreviatedPath": "\/img\/nexcom.png",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"processed": 0
+		},
+	"\/img\/toysrus.png": {
+		"fileType": 32768,
+		"ignore": 0,
+		"ignoreWasSetByUser": 0,
+		"initialSize": 5182,
+		"inputAbbreviatedPath": "\/img\/toysrus.png",
+		"outputAbbreviatedPath": "\/img\/toysrus.png",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"processed": 0
+		},
+	"\/img\/tru.png": {
+		"fileType": 32768,
+		"ignore": 0,
+		"ignoreWasSetByUser": 0,
+		"initialSize": 4438,
+		"inputAbbreviatedPath": "\/img\/tru.png",
+		"outputAbbreviatedPath": "\/img\/tru.png",
 		"outputPathIsOutsideProject": 0,
 		"outputPathIsSetByUser": 0,
 		"processed": 0
@@ -3363,6 +3473,17 @@
 		"initialSize": 267272,
 		"inputAbbreviatedPath": "\/img\/ux5.jpg",
 		"outputAbbreviatedPath": "\/img\/ux5.jpg",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"processed": 0
+		},
+	"\/img\/workngear.png": {
+		"fileType": 32768,
+		"ignore": 0,
+		"ignoreWasSetByUser": 0,
+		"initialSize": 6172,
+		"inputAbbreviatedPath": "\/img\/workngear.png",
+		"outputAbbreviatedPath": "\/img\/workngear.png",
 		"outputPathIsOutsideProject": 0,
 		"outputPathIsSetByUser": 0,
 		"processed": 0

@@ -2,6 +2,21 @@ body {
 	
 }
 
+// Font-sizes from 10 through 30 
+@for $i from 10 through 30{
+   .fsz#{$i} { font-size: rem-calc($i); }
+}
+
+// Margins
+@for $j from 0 through 30{
+   .m#{$j} { margin: rem-calc($j); }.mtb#{$j} { margin-top: rem-calc($j); margin-bottom: rem-calc($j); }.mlr#{$j} { margin-left: rem-calc($j); margin-right: rem-calc($j); }.mt#{$j} { margin-top: rem-calc($j); }.mb#{$j} { margin-bottom: rem-calc($j); }.ml#{$j} { margin-left: rem-calc($j); }.mr#{$j} { margin-right: rem-calc($j); }
+}
+
+// Paddings
+@for $k from 0 through 30{
+   .p#{$k} { padding: rem-calc($k); }.ptb#{$k} { padding-top: rem-calc($k); padding-bottom: rem-calc($k); }.plr#{$k} { padding-left: rem-calc($k); padding-right: rem-calc($k); }.pt#{$k} { padding-top: rem-calc($k); }.pb#{$k} { padding-bottom: rem-calc($k); }.pl#{$k} { padding-left: rem-calc($k); }.pr#{$k} { padding-right: rem-calc($k); }
+}
+
 nav{
 	background-color: $fourth-color !important;
 	border: 1px solid $fourth-color;
@@ -31,12 +46,12 @@ section {
 		margin-top: rem-calc(60);
 		.hero-content{
 			position: absolute;
-			top: 15%;
+			top: 20%;
 			left: 0;
 			right: 0;
 			width: 50%;
 			z-index: 2;
-			text-align: center;
+			//text-align: center;
 			color: $white;
 			background: rgba(0,0,0,0.55);
 			padding: rem-calc(25);

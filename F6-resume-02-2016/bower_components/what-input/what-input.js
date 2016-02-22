@@ -22,7 +22,7 @@
   var activeKeys = [];
 
   // cache document.body
-  var body = document.body;
+  var body;
 
   // boolean: true if touch buffer timer is running
   var buffer = false;
@@ -131,14 +131,18 @@
       ) {
         // ignore keyboard typing on form elements
       } else {
-        currentInput = value;
-        body.setAttribute('data-whatinput', currentInput);
-
-        if (inputTypes.indexOf(currentInput) === -1) inputTypes.push(currentInput);
+        switchInput(value);
       }
     }
 
     if (value === 'keyboard') logKeys(eventKey);
+  }
+
+  function switchInput(string) {
+    currentInput = string;
+    body.setAttribute('data-whatinput', currentInput);
+
+    if (inputTypes.indexOf(currentInput) === -1) inputTypes.push(currentInput);
   }
 
   function key(event) {
@@ -170,6 +174,7 @@
   }
 
   function bindEvents() {
+    body = document.body;
 
     // pointer events (mouse, pen, touch)
     if (window.PointerEvent) {
@@ -226,8 +231,19 @@
     ---------------
   */
 
-  if ('addEventListener' in window && Array.prototype.indexOf) {
-    bindEvents();
+  if (
+    'addEventListener' in window &&
+    Array.prototype.indexOf
+  ) {
+
+    // if the dom is already ready already (script was placed at bottom of <body>)
+    if (document.body) {
+      bindEvents();
+
+    // otherwise wait for the dom to load (script was placed in the <head>)
+    } else {
+      document.addEventListener('DOMContentLoaded', bindEvents);
+    }
   }
 
 
@@ -249,7 +265,7 @@
     types: function() { return inputTypes; },
 
     // accepts string: manually set the input type
-    set: setInput
+    set: switchInput
   };
 
 }));
