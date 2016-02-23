@@ -47,12 +47,20 @@
 $global-font-size: 100%;
 $global-width: rem-calc(1240);
 $global-lineheight: 1.5;
-$primary-color: #2C3E50; //Blue
-$secondary-color: #468966; //Green
-$third-color: #493159; //Purple
-$fourth-color: #2980B9; //Light blue
-$fifth-color: #3498B8; //Lighter blue
-$sixth-color: #E74C3C; //Orangish 
+// Neutral blue palette from Kuler Adobe
+$ka-1: #FCFFF5; //white
+$ka-2: #D1DBBD; //pearl
+$ka-3: #91AA9D; //silk green
+$ka-4: #3E606F; //steel green-blue-gray
+$ka-5: #193441; //sober blue
+$red: #BF2C37;
+$yellow: #FFE200;
+$light-blue: #4797D2;
+$medium-blue: #004997;
+$orange: #E74C3C; 
+$primary-color: #2C3E50; 
+$green: #468966; 
+$purple: #493159; 
 $success-color: #3adb76;
 $warning-color: #ffae00;
 $alert-color: #ec5840;
@@ -63,11 +71,11 @@ $black: #0a0a0a;
 $white: #ECF0F1;
 $body-background: $white;
 $body-font-color: $black;
-$body-font-family: 'montserratlight', Helvetica, Arial, sans-serif;
+$body-font-family: -apple-system, 'Lato', Helvetica, Arial, sans-serif;
 $body-antialiased: true;
 $global-margin: 1rem;
 $global-padding: 1rem;
-$global-weight-normal: normal;
+$global-weight-normal: 400;
 $global-weight-bold: bold;
 $global-radius: 0;
 $global-text-direction: ltr;
@@ -123,7 +131,7 @@ $header-sizes: (
 );
 $header-color: inherit;
 $header-lineheight: 1.4;
-$header-margin-bottom: 0.5rem;
+$header-margin-bottom: 0;
 $header-text-rendering: optimizeLegibility;
 $small-font-size: 80%;
 $header-small-font-color: $medium-gray;
@@ -233,10 +241,10 @@ $breadcrumbs-item-slash: true;
 $button-padding: 0.85em 1em;
 $button-margin: 0 0 $global-margin 0;
 $button-fill: solid;
-$button-background: $primary-color;
+$button-background: $ka-1;
 $button-background-hover: scale-color($button-background, $lightness: -15%);
-$button-color: #fff;
-$button-color-alt: #000;
+$button-color: $ka-5;
+$button-color-alt: $black;
 $button-radius: $global-radius;
 $button-sizes: (
   tiny: 0.6rem,

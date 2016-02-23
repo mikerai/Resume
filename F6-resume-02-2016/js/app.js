@@ -48,6 +48,10 @@ function isDesktop() {
 	  });
 	});
 
+  if (isMobile()) {
+    $('.linkedin').remove();
+  }
+
 	if (isDesktop()) {
 		var lastScrollY = 0,
     ticking = false,

@@ -2,6 +2,10 @@ body {
 	
 }
 
+.strong{
+	font-weight: 700;
+}
+
 // Font-sizes from 10 through 30 
 @for $i from 10 through 30{
    .fsz#{$i} { font-size: rem-calc($i); }
@@ -18,8 +22,9 @@ body {
 }
 
 nav{
-	background-color: $fourth-color !important;
-	border: 1px solid $fourth-color;
+	background-color: $ka-4 !important;
+	border: 1px solid $ka-4;
+	border-top: none;
 	-moz-box-shadow: 0 2px 3px 0px rgba(0, 0, 0, 0.16);
 	-webkit-box-shadow: 0 2px 3px 0px rgba(0, 0, 0, 0.16);
 	box-shadow: 0 2px 3px 0px rgba(0, 0, 0, 0.16);
@@ -33,38 +38,87 @@ nav{
 		padding: rem-calc(15);
 		text-align: center;
 		color: $white;
-		font-size: rem-calc(19);
+		font-size: rem-calc(21);
 		&:hover, &:focus, &:active{
 			background-color: $white;
-			color: $fifth-color;
+			color: $ka-5;
 		}
 	}
 }
 
 section {
+	h3, h4, h5, h6{
+		font-family: 'montserratregular';
+	}
 	&.hero{
 		margin-top: rem-calc(60);
 		.hero-content{
+			text-align: center;
 			position: absolute;
 			top: 20%;
 			left: 0;
 			right: 0;
 			width: 50%;
 			z-index: 2;
-			//text-align: center;
 			color: $white;
-			background: rgba(0,0,0,0.55);
-			padding: rem-calc(25);
-			-moz-box-shadow: 0 3px 3px 0px rgba(0, 0, 0, 0.76);
-			-webkit-box-shadow: 0 3px 3px 0px rgba(0, 0, 0, 0.76);
-			box-shadow: 0 3px 3px 0px rgba(0, 0, 0, 0.76);
+			background: rgba(0,0,0,0.69);
+			padding: 0 0 rem-calc(15);
+			-moz-box-shadow: 0 3px 3px 0px rgba(0, 0, 0, 0.86);
+			-webkit-box-shadow: 0 3px 3px 0px rgba(0, 0, 0, 0.86);
+			box-shadow: 0 3px 3px 0px rgba(0, 0, 0, 0.86);
 			h1, h2{
-				font-size: rem-calc(31);
 				letter-spacing: rem-calc(2);
+				text-align: center;
+			}
+			h1{
+				border: 5px solid $white;
+				padding: rem-calc(15);
+				font:{
+					family:'montserratextra_bold', sans-serif;
+					size: rem-calc(34);
+				}
+				margin: rem-calc(15) 0;
+			}
+			h2{
+				font: {
+					family: 'montserratsemi_bold', sans-serif;
+					size: rem-calc(28);
+				}
 			}
 				p{
 				margin: rem-calc(19) 0;
 				font-size: rem-calc(23);
+			}
+			.b1, .b2, .b3, .b4, .b5, .b6{
+				height: rem-calc(10);
+				margin-bottom: rem-calc(15);
+			}
+			.b1{
+				background-color: $ka-1;
+			}
+			.b2{
+				background-color: $ka-2;
+			}
+			.b3{
+				background-color: $ka-3;
+			}
+			.b4{
+				background-color: $ka-4;
+			}
+			.b5{
+				background-color: $ka-5;
+			}
+			.b6{
+				background-color: $white;
+			}
+			.hollow{
+				border: 2px solid $white;
+				color: $white;
+				&:hover{
+					border: 2px solid $ka-2;
+					background-color: $ka-2;
+					color: $ka-5;
+				}
 			}
 		}
 		article{
@@ -73,7 +127,6 @@ section {
 		}
 		div{
 			color: $white;
-			//max-width: $global-width;
 			margin: 0 auto;
 		}
 		&#home{
@@ -92,12 +145,34 @@ section {
 		  opacity: 0.85;
 		}
 	}
-
-	&.tools, &.resume, &.education, &.skills, &.portfolio, &.contact{
+	&.resume,  &.skills, &.education, &.tools, &.portfolio, &.contact{
 		padding: rem-calc(15) 0;
 		h3{
 			font-size: rem-calc(25);
 			letter-spacing: rem-calc(2);
+		}
+	}
+	
+	&.resume{
+
+	}
+	&.skills{
+
+	}
+	&.education{
+		article{
+			border-bottom: 1px solid $medium-gray;
+			padding-top: rem-calc(15);
+			padding-bottom: rem-calc(15);
+			&:first-of-type{
+				
+			}
+			&:nth-of-type(2){
+				
+			}
+			&:nth-of-type(3){
+				
+			}
 		}
 	}
 	&.tools{
@@ -124,25 +199,32 @@ section {
 			z-index: -1;
 		}
 	}
-	&.resume{
-
-	}
-	&.education{
-
-	}
-	&.skills{
-
-	}
 	&.portfolio{
-
+		img{
+			opacity: 0.5;
+			transition: all 0.5s;
+			&:hover{
+				opacity: 1;
+			}
+		}
 	}
 	&.contact{
-
+		.submit{
+			min-width: rem-calc(150);
+			background-color: $ka-3;
+			border: 2px solid $ka-3;
+			color: $white;
+			&:hover{
+				background-color: $white;
+				color: $ka-3;
+				border: 2px solid $ka-3;
+			}
+		}
 	}
 }
 
 footer{
-	background-color: $secondary-color;
+	background-color: $ka-5;
 	padding: rem-calc(15) 0;
 	div{
 			color: $white;
@@ -160,7 +242,34 @@ footer{
 }
 
 @include breakpoint(small only) {
-	#menu{
+	#menu, #IN-widget{
 		display: none !important;
+	}
+	section{
+		padding: 0 rem-calc(5) !important;
+		&.hero{
+			margin-top: 0;
+			padding: 0 !important;
+			.hero-content{
+				width: 95%;
+				top: 5%;
+				h1{
+					font-size: rem-calc(24);
+				}
+				h2{
+					font-size: rem-calc(18);
+				}
+				p{
+					font-size: rem-calc(15);
+				}
+			}
+			&#home{
+			  height: 100vh;
+			}
+		}
+		&.tools{
+			margin-top: rem-calc(5);
+			margin-bottom: rem-calc(5);
+		}
 	}
 }
