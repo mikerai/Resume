@@ -1,6 +1,6 @@
 {
   "name": "what-input",
-  "version": "1.2.3",
+  "version": "1.2.5",
   "homepage": "https://github.com/ten1seven/what-input",
   "authors": [
     "Jeremy Fields <jeremy.fields@viget.com>"
@@ -28,14 +28,14 @@
     "type": "git",
     "url": "git://github.com/ten1seven/what-input.git"
   },
-  "_release": "1.2.3",
+  "_release": "1.2.5",
   "_resolution": {
     "type": "version",
-    "tag": "v1.2.3",
-    "commit": "78e50dc5d7cef8498e9932c838703c6460c98646"
+    "tag": "v1.2.5",
+    "commit": "41310e9d90f20b8af9498d1bb04067da2b9e2c69"
   },
   "_source": "git://github.com/ten1seven/what-input.git",
-  "_target": "^1.2.3",
+  "_target": "^1.2.5",
   "_originalSource": "what-input",
   "_direct": true
 }

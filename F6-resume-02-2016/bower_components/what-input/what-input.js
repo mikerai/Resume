@@ -30,20 +30,33 @@
   // the last used input type
   var currentInput = null;
 
-  // array of form elements that take keyboard input
-  var formInputs = [
-    'input',
-    'select',
-    'textarea'
+  // `input` types that don't accept text
+  var nonTypingInputs = [
+    'button',
+    'checkbox',
+    'file',
+    'image',
+    'radio',
+    'reset',
+    'submit'
   ];
 
   // detect version of mouse wheel event to use
   // via https://developer.mozilla.org/en-US/docs/Web/Events/wheel
   var mouseWheel = detectWheel();
 
+  // list of modifier keys commonly used with the mouse and
+  // can be safely ignored to prevent false keyboard detection
+  var ignoreMap = [
+    16, // shift
+    17, // control
+    18  // alt
+  ];
+
   // mapping of events to input types
   var inputMap = {
     'keydown': 'keyboard',
+    'keyup': 'keyboard',
     'mousedown': 'mouse',
     'mousemove': 'mouse',
     'MSPointerDown': 'pointer',
@@ -59,7 +72,7 @@
   // array of all used input types
   var inputTypes = [];
 
-  // mapping of key codes to common name
+  // mapping of key codes to a common name
   var keyMap = {
     9: 'tab',
     13: 'enter',
@@ -91,12 +104,11 @@
 
   // allows events that are also triggered to be filtered out for `touchstart`
   function eventBuffer() {
-    clearTimeout(timer);
-
+    clearTimer();
     setInput(event);
 
     buffer = true;
-    timer = setTimeout(function() {
+    timer = window.setTimeout(function() {
       buffer = false;
     }, 650);
   }
@@ -105,16 +117,28 @@
     if (!buffer) setInput(event);
   }
 
+  function unBufferedEvent(event) {
+    clearTimer();
+    setInput(event);
+  }
+
+  function clearTimer() {
+    window.clearTimeout(timer);
+  }
+
   function setInput(event) {
     var eventKey = key(event);
-    var eventTarget = target(event);
     var value = inputMap[event.type];
     if (value === 'pointer') value = pointerType(event);
 
     // don't do anything if the value matches the input type already set
     if (currentInput !== value) {
+      var eventTarget = target(event);
+      var eventTargetNode = eventTarget.nodeName.toLowerCase();
+      var eventTargetType = (eventTargetNode === 'input') ? eventTarget.getAttribute('type') : null;
+
       if (
-        // only if the user flag to allow typing in form fields isn't set
+        (// only if the user flag to allow typing in form fields isn't set
         !body.hasAttribute('data-whatinput-formtyping') &&
 
         // only if currentInput has a value
@@ -126,10 +150,17 @@
         // not if the key is `TAB`
         keyMap[eventKey] !== 'tab' &&
 
-        // only if the target is one of the elements in `formInputs`
-        formInputs.indexOf(eventTarget.nodeName.toLowerCase()) >= 0
+        // only if the target is a form input that accepts text
+        (
+           eventTargetNode === 'textarea' ||
+           eventTargetNode === 'select' ||
+           (eventTargetNode === 'input' && nonTypingInputs.indexOf(eventTargetType) < 0)
+        )) || (
+          // ignore modifier keys
+          ignoreMap.indexOf(eventKey) > -1
+        )
       ) {
-        // ignore keyboard typing on form elements
+        // ignore keyboard typing
       } else {
         switchInput(value);
       }
@@ -196,10 +227,11 @@
     }
 
     // mouse wheel
-    body.addEventListener(mouseWheel, setInput);
+    body.addEventListener(mouseWheel, bufferedEvent);
 
-    // keyboard
-    body.addEventListener('keydown', setInput);
+    // keyboard events
+    body.addEventListener('keydown', unBufferedEvent);
+    body.addEventListener('keyup', unBufferedEvent);
     document.addEventListener('keyup', unLogKeys);
   }
 

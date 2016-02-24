@@ -41,14 +41,24 @@
       </article>
     </section>
 
-    <section class="row collapse resume" id="resume">
+    <section class="row resume align-middle" id="resume">
       <div class="small-12 columns">
         <h3>Work History</h3>
-        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dignissimos commodi, illum, at soluta, ducimus eius mollitia nam quam nulla obcaecati quis, quo. Maxime aspernatur, deserunt ratione quam nulla, odit quidem!</p>
+      </div>
+      <div class="columns small-12 medium-7 large-8">
+        <article class="row column small-uncollapse medium-collapse">
+          <div class="columns small-12">
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore est provident asperiores eligendi nesciunt, atque reiciendis magni repudiandae numquam modi eos explicabo eaque doloremque, fugit dolores officia. Voluptatibus ullam, iure?</p>
+          </div>
+        </article>
+      </div>
+      <div class="columns medium-5 large-4 linkedin">
+        <script src="//platform.linkedin.com/in.js" type="text/javascript"></script>
+        <script type="IN/MemberProfile" data-id="https://www.linkedin.com/in/mikerai" data-format="inline" data-related="false" data-width="300"></script>
       </div>
     </section>
 
-    <section class="row collapse skills" id="skills">
+    <section class="row skills" id="skills">
       <div>
         <h3>What I am good at</h3>
       Lorem ipsum dolor sit amet, consectetur adipisicing elit. Expedita, odit dolore dolorem officiis obcaecati molestiae quasi magnam neque natus, similique magni nam. Magnam soluta nostrum porro eligendi assumenda, molestias officia.</div>
@@ -56,11 +66,11 @@
       <div>Laboriosam corrupti, accusamus at nisi odio! Quod pariatur facilis nesciunt aliquid quisquam ratione, quasi eum ut iste repellat at magnam qui, dignissimos delectus expedita! Iure earum, ipsa dolorum illo. Id.</div>
     </section>
   
-    <section class="row collapse education" id="education">
+    <section class="row education" id="education">
       <div class="columns small-12">
         <h3>Academic Background</h3>
       </div>
-      <article class="row small-uncollapse medium-collapse column small-12 align-middle">
+      <article class="row column small-12 align-middle">
         <div class="columns small-4 medium-5">
           <img alt="Instituto Universitario de la Empresa" title="Instituto Universitario de la Empresa" data-interchange="[img/iude.png, small], [img/iude.png, medium], [img/iude.png, large], [img/uniovi@2x.png, retina]">
         </div>
@@ -73,7 +83,7 @@
           <p class="strong">Summa Cum Laude</p>
         </div>
       </article>
-      <article class="row small-uncollapse medium-collapse column small-12 align-middle">
+      <article class="row column small-12 align-middle">
         <div class="columns small-4 medium-5">
           <img src="img/itesm.png" alt="Instituto Tecnologico y de Estudios Superiores de Monterrey" title="Instituto Tecnologico y de Estudios Superiores de Monterrey">
         </div>
@@ -85,7 +95,7 @@
           <p>Mechanical and Electrical Engineering.</p>
         </div>
       </article>
-      <article class="row small-uncollapse medium-collapse column small-12 align-middle">
+      <article class="row column small-12 align-middle">
         <div class="columns small-4 medium-5">
           <img src="img/unadm.png" alt="Universidad Abierta y a Distancia de Mexico" title="Universidad Abierta y a Distancia de Mexico">
         </div>
@@ -104,7 +114,7 @@
       </div>
     </section>
 
-    <section class="row collapse align-middle portfolio" id="portfolio">
+    <section class="row align-middle portfolio" id="portfolio">
       <div class="columns small-12">
         <h3>This is what I have done</h3>
       </div>
@@ -122,49 +132,45 @@
       <div class="columns small-6 medium-3 text-center mtb15"><a href="http://workngear.com" target="_blank"><img src="img/workngear.png" alt="Work N Gear online store" title="Work N Gear online store"></a></div>
     </section>
 
-    <section class="row small-uncollapse medium-collapse contact" id="contact">
+    <section class="row contact" id="contact">
       <div class="columns small-12">
         <h3>Contact Me</h3>
       </div>
-      <article class="row small-uncollapse medium-collapse column small-12">
-        <div class="columns small-12 medium-5">
-          <form action="" data-abide novalidate>
-            <div class="row small-uncollapse medium-collapse">
-              <div class="small-12 columns">
-                <label>Your name
-                  <input type="text" placeholder="Your Name goes here" aria-describedby="Please enter your name so I can know who I am addressing to" required pattern="text">
-                  <span class="form-error">
-                    Please enter your Name.
-                  </span>
-                </label>
-              </div>
-              <div class="small-12 columns">
-                <label>Your e-mail address
-                  <input type="text" placeholder="Your e-mail address goes here" aria-describedby="Please enter your email address so I can contact you back" required pattern="email">
-                  <span class="form-error">
-                    Please enter your email address.
-                  </span>
-                </label>
-              </div>
-              <div class="small-12 columns">
-                <label>Your e-mail address
-                  <textarea placeholder="None"  aria-describedby="Please enter your message so I can know how I can assist you" required pattern="text"></textarea>
-                  <span class="form-error">
-                    Please include something on your message.
-                  </span>
-                </label>
-              </div>
-              <div class="columns small-12 text-right">
-                <button class="submit large button" type="submit">Send</button>
-              </div>
-            </div>
-          </form>
-        </div>
-        <div class="columns medium-7 text-center linkedin">
-          <script src="//platform.linkedin.com/in.js" type="text/javascript"></script>
-          <script type="IN/MemberProfile" data-id="https://www.linkedin.com/in/mikerai" data-format="inline" data-related="false" data-width="300"></script>
-        </div>
-      </article>    
+      <div class="columns small-12 medium-7 large-5">
+        <form class="row column collapse" action="" data-abide novalidate>
+          <div class="small-12 columns">
+            <label>Your name
+              <input type="text" placeholder="Your Name goes here" aria-describedby="Please enter your name so I can know who I am addressing to" required pattern="text">
+              <span class="form-error">
+                Please enter your Name.
+              </span>
+            </label>
+          </div>
+          <div class="small-12 columns">
+            <label>Your e-mail address
+              <input type="text" placeholder="Your e-mail address goes here" aria-describedby="Please enter your email address so I can contact you back" required pattern="email">
+              <span class="form-error">
+                Please enter your email address.
+              </span>
+            </label>
+          </div>
+          <div class="small-12 columns">
+            <label>Your e-mail address
+              <textarea placeholder="Your message goes here"  aria-describedby="Please enter your message so I can know how I can assist you" required pattern="text"></textarea>
+              <span class="form-error">
+                Please include something on your message.
+              </span>
+            </label>
+          </div>
+          <div class="columns small-12 action">
+            <button class="submit large button" type="submit">Send</button>
+          </div>
+        </form>
+      </div>
+      <div class="columns medium-5 large-offset-1 text-center">
+        <a class="twitter-timeline" data-dnt="true" href="https://twitter.com/mikerai_UX" data-widget-id="534906066828419073">Tweets by @mikerai_UX</a>
+        <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+      </div>   
     </section>
 
     <footer class="row expanded align-middle">

@@ -112,6 +112,7 @@ section {
 				background-color: $white;
 			}
 			.hollow{
+				width: rem-calc(200);
 				border: 2px solid $white;
 				color: $white;
 				&:hover{
@@ -154,7 +155,9 @@ section {
 	}
 	
 	&.resume{
-
+		.linkedin{
+			text-align: center;
+		}
 	}
 	&.skills{
 
@@ -209,16 +212,45 @@ section {
 		}
 	}
 	&.contact{
-		.submit{
-			min-width: rem-calc(150);
-			background-color: $ka-3;
-			border: 2px solid $ka-3;
-			color: $white;
-			&:hover{
-				background-color: $white;
-				color: $ka-3;
+		.action{
+			.submit{
+				float: right;
+				min-width: rem-calc(250);
+				background-color: $ka-3;
 				border: 2px solid $ka-3;
+				color: $white;
+				&:hover{
+					background-color: $white;
+					color: $ka-3;
+					border: 2px solid $ka-3;
+				}
 			}
+		}
+		input, textarea{
+			background-color: transparent;
+			border: none;
+			-webkit-appearance: none;
+			//-moz-box-shadow: inset 0 0 4px rgba(0,0,0,0.2); 
+			//-webkit-box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.2); 
+			//box-shadow: inner 0 0 4px rgba(0, 0, 0, 0.2);
+			-moz-box-shadow: none; 
+			-webkit-box-shadow: none; 
+			box-shadow: none;
+			-webkit-transition: all 0.30s ease-in-out;
+		  -moz-transition: all 0.30s ease-in-out;
+		  -ms-transition: all 0.30s ease-in-out;
+		  -o-transition: all 0.30s ease-in-out;
+			&:focus{
+				background-color: $ultra-white;
+				outline: none !important;
+    		border: 1px solid $dark-gray;
+    		-moz-box-shadow: inset 0 0 rem-calc(15) $ka-3;
+    		-webkit-box-shadow: inset 0 0 rem-calc(15) $ka-3;
+    		box-shadow: 0 0 rem-calc(15) $ka-3;
+			} 
+		}
+		textarea{
+			min-height: rem-calc(100);
 		}
 	}
 }
@@ -233,10 +265,39 @@ footer{
 		}
 }
 
-@media screen and (width: 48em) and (orientation: portrait){
+@include breakpoint(medium only) {
+	section{
+	}
+}
+
+@media screen and (width: 64em) and (orientation: landscape){
+	nav{
+		width: rem-calc(1024);
+	}
 	section{
 		&.hero{
-			height: 50vh;
+			.hero-content{
+				width: 80%;
+			}
+			&#home{
+				height: rem-calc(700);
+			}
+		}
+	}
+}
+
+@media screen and (width: 48em) and (orientation: portrait){
+	nav{
+		width: rem-calc(768);
+	}
+	section{
+		&.hero{
+			.hero-content{
+				width: 90%;
+			}
+			&#home{
+				height: rem-calc(800);
+			}
 		}
 	}
 }
@@ -270,6 +331,11 @@ footer{
 		&.tools{
 			margin-top: rem-calc(5);
 			margin-bottom: rem-calc(5);
+		}
+		&.contact{
+			.submit{
+				width: 100%;
+			}
 		}
 	}
 }

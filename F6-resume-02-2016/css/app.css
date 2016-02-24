@@ -2108,6 +2108,7 @@ section.hero {
     section.hero .hero-content .b6 {
       background-color: #ECF0F1; }
     section.hero .hero-content .hollow {
+      width: 12.5rem;
       border: 2px solid #ECF0F1;
       color: #ECF0F1; }
       section.hero .hero-content .hollow:hover {
@@ -2139,6 +2140,9 @@ section.resume, section.skills, section.education, section.tools, section.portfo
   section.resume h3, section.skills h3, section.education h3, section.tools h3, section.portfolio h3, section.contact h3 {
     font-size: 1.5625rem;
     letter-spacing: 0.125rem; }
+
+section.resume .linkedin {
+  text-align: center; }
 
 section.education article {
   border-bottom: 1px solid #cacaca;
@@ -2173,15 +2177,38 @@ section.portfolio img {
   section.portfolio img:hover {
     opacity: 1; }
 
-section.contact .submit {
-  min-width: 9.375rem;
+section.contact .action .submit {
+  float: right;
+  min-width: 15.625rem;
   background-color: #91AA9D;
   border: 2px solid #91AA9D;
   color: #ECF0F1; }
-  section.contact .submit:hover {
+  section.contact .action .submit:hover {
     background-color: #ECF0F1;
     color: #91AA9D;
     border: 2px solid #91AA9D; }
+
+section.contact input, section.contact textarea {
+  background-color: transparent;
+  border: none;
+  -webkit-appearance: none;
+  -moz-box-shadow: none;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  -webkit-transition: all 0.30s ease-in-out;
+  -moz-transition: all 0.30s ease-in-out;
+  -ms-transition: all 0.30s ease-in-out;
+  -o-transition: all 0.30s ease-in-out; }
+  section.contact input:focus, section.contact textarea:focus {
+    background-color: #FFFFFF;
+    outline: none !important;
+    border: 1px solid #8a8a8a;
+    -moz-box-shadow: inset 0 0 0.9375rem #91AA9D;
+    -webkit-box-shadow: inset 0 0 0.9375rem #91AA9D;
+    box-shadow: 0 0 0.9375rem #91AA9D; }
+
+section.contact textarea {
+  min-height: 6.25rem; }
 
 footer {
   background-color: #193441;
@@ -2191,9 +2218,21 @@ footer {
     max-width: 77.5rem;
     margin: 0 auto; }
 
+@media screen and (width: 64em) and (orientation: landscape) {
+  nav {
+    width: 64rem; }
+  section.hero .hero-content {
+    width: 80%; }
+  section.hero#home {
+    height: 43.75rem; } }
+
 @media screen and (width: 48em) and (orientation: portrait) {
-  section.hero {
-    height: 50vh; } }
+  nav {
+    width: 48rem; }
+  section.hero .hero-content {
+    width: 90%; }
+  section.hero#home {
+    height: 50rem; } }
 
 @media screen and (min-width: 0em) and (max-width: 39.9375em) {
   #menu, #IN-widget {
@@ -2216,7 +2255,9 @@ footer {
         height: 100vh; }
     section.tools {
       margin-top: 0.3125rem;
-      margin-bottom: 0.3125rem; } }
+      margin-bottom: 0.3125rem; }
+    section.contact .submit {
+      width: 100%; } }
 
 /*! normalize.css v3.0.3 | MIT License | github.com/necolas/normalize.css */
 /**

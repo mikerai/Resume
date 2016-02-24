@@ -9,29 +9,21 @@ $(function(){
 	  }
 	}
 
-function isTablet() {
-  if ($(window).width() <= 1024 && $(window).width() >= 768) {
-    return true;
-  } else {
-    return false;
-  }
-}
+	function isTablet() {
+	  if ($(window).width() <= 1024 && $(window).width() >= 768) {
+	    return true;
+	  } else {
+	    return false;
+	  }
+	}
 
-function isDesktop() {
-  if ($(window).width() >= 1025) {
-    return true;
-  } else {
-    return false;
-  }
-}
-
-/*	$('a').click(function(){
-		event.preventDefault();
-    $('html, body').animate({
-        scrollTop: $( $.attr(this, 'href') ).offset().top -60
-    }, 500);
-    return false;
-	}); */
+	function isDesktop() {
+	  if ($(window).width() >= 1025) {
+	    return true;
+	  } else {
+	    return false;
+	  }
+	}
 
 	$(function() {
 	  $('a[href*="#"]:not([href="#"])').click(function() {
@@ -50,6 +42,9 @@ function isDesktop() {
 
   if (isMobile()) {
     $('.linkedin').remove();
+  }
+
+  if (isTablet()) {
   }
 
 	if (isDesktop()) {
