@@ -2108,7 +2108,7 @@ section.hero {
     section.hero .hero-content .b6 {
       background-color: #ECF0F1; }
     section.hero .hero-content .hollow {
-      width: 12.5rem;
+      min-width: 15.625rem;
       border: 2px solid #ECF0F1;
       color: #ECF0F1; }
       section.hero .hero-content .hollow:hover {

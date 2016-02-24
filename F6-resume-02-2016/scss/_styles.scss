@@ -112,7 +112,7 @@ section {
 				background-color: $white;
 			}
 			.hollow{
-				width: rem-calc(200);
+				min-width: rem-calc(250);
 				border: 2px solid $white;
 				color: $white;
 				&:hover{
