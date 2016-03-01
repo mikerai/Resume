@@ -2053,7 +2053,11 @@ nav {
     padding: 0.9375rem;
     text-align: center;
     color: #ECF0F1;
-    font-size: 1.3125rem; }
+    font-size: 1.3125rem;
+    -webkit-transition: all 0.30s ease-in-out;
+    -moz-transition: all 0.30s ease-in-out;
+    -ms-transition: all 0.30s ease-in-out;
+    -o-transition: all 0.30s ease-in-out; }
     nav a:hover, nav a:focus, nav a:active {
       background-color: #ECF0F1;
       color: #193441; }
@@ -2066,7 +2070,7 @@ section.hero {
   section.hero .hero-content {
     text-align: center;
     position: absolute;
-    top: 20%;
+    top: 15%;
     left: 0;
     right: 0;
     width: 50%;
