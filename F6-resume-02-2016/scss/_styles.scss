@@ -2,10 +2,6 @@ body {
 	
 }
 
-.strong{
-	font-weight: 700;
-}
-
 // Font-sizes from 10 through 30 
 @for $i from 10 through 30{
    .fsz#{$i} { font-size: rem-calc($i); }
@@ -19,6 +15,18 @@ body {
 // Paddings
 @for $k from 0 through 30{
    .p#{$k} { padding: rem-calc($k); }.ptb#{$k} { padding-top: rem-calc($k); padding-bottom: rem-calc($k); }.plr#{$k} { padding-left: rem-calc($k); padding-right: rem-calc($k); }.pt#{$k} { padding-top: rem-calc($k); }.pb#{$k} { padding-bottom: rem-calc($k); }.pl#{$k} { padding-left: rem-calc($k); }.pr#{$k} { padding-right: rem-calc($k); }
+}
+
+::-moz-selection { 
+	background-color: #BEF6A8; 
+}
+
+::selection {
+	background-color: #BEF6A8;
+}
+
+.strong{
+	font-weight: 700;
 }
 
 nav{
@@ -39,10 +47,10 @@ nav{
 		text-align: center;
 		color: $white;
 		font-size: rem-calc(21);
-		-webkit-transition: all 0.30s ease-in-out;
-	  -moz-transition: all 0.30s ease-in-out;
-	  -ms-transition: all 0.30s ease-in-out;
-	  -o-transition: all 0.30s ease-in-out;
+		-webkit-transition: all 0.3s ease-in-out;
+	  -moz-transition: all 0.3s ease-in-out;
+	  -ms-transition: all 0.3s ease-in-out;
+	  -o-transition: all 0.3s ease-in-out;
 		&:hover, &:focus, &:active{
 			background-color: $white;
 			color: $ka-5;
@@ -207,11 +215,24 @@ section {
 		}
 	}
 	&.portfolio{
+		margin-bottom: rem-calc(17);
 		img{
 			opacity: 0.5;
-			transition: all 0.5s;
+			-webkit-transition: all 0.3s ease-in-out;
+		  -moz-transition: all 0.3s ease-in-out;
+		  -ms-transition: all 0.3s ease-in-out;
+		  -o-transition: all 0.3s ease-in-out;
+		  transition: all 0.3s ease-in-out;
+		  -webkit-transform: scale(1); 
+	    -ms-transform: scale(1); 
+	    -moz-transform: scale(1);
+	    transform: scale(1);
 			&:hover{
 				opacity: 1;
+				-webkit-transform: scale(1.1); 
+		    -ms-transform: scale(1.1); 
+		    -moz-transform: scale(1.1);
+		    transform: scale(1.1);
 			}
 		}
 	}
@@ -223,7 +244,7 @@ section {
 		}
 		p{
 			margin-top: rem-calc(15);
-			font-size: rem-calc(18);
+			font-size: rem-calc(19);
 		}
 		form{
 			max-width: $global-width;
@@ -231,23 +252,28 @@ section {
 			margin-left: auto !important;
 			label{
 				color: $ka-1 !important;
+				font-size: rem-calc(15);
 			}
 			::-webkit-input-placeholder {
 				color: $ka-4 !important;
+				opacity: 0.7;
 			} 
 			:-moz-placeholder{
 				color: $ka-4 !important;
-				opacity: 1;
+				opacity: 0.7;
 			} 
 			::-moz-placeholder{
 				color: $ka-4 !important;
-				opacity: 1;
+				opacity: 0.7;
 			} 
 			:-ms-input-placeholder{
 				color: $ka-4 !important;
+				opacity: 0.7;
 			} 
 			:placeholder-shown {
 				color: $ka-4 !important;
+				opacity: 0.7;
+				border-bottom: 1px solid rgba(0,0,0,0.1);
 			}
 			.form-error{
 				background-color: rgba(255,255,255,0.6);
@@ -279,10 +305,10 @@ section {
 			-moz-box-shadow: none; 
 			-webkit-box-shadow: none; 
 			box-shadow: none;
-			-webkit-transition: all 0.30s ease-in-out;
-		  -moz-transition: all 0.30s ease-in-out;
-		  -ms-transition: all 0.30s ease-in-out;
-		  -o-transition: all 0.30s ease-in-out;
+			-webkit-transition: all 0.3s ease-in-out;
+		  -moz-transition: all 0.3s ease-in-out;
+		  -ms-transition: all 0.3s ease-in-out;
+		  -o-transition: all 0.3s ease-in-out;
 			&:focus{
 				background-color: $ultra-white;
 				outline: none !important;
@@ -348,6 +374,33 @@ footer{
 	.cr{
 		padding-top: rem-calc(10);
 		text-align: center;
+		color: $ka-4;
+	}
+	ul{
+		list-style-type: none;
+		li{
+			padding: rem-calc(15);
+			display: block;
+			text-align: center;
+			a{
+				color: $white;
+				-webkit-transition: all 0.3s ease-in-out;
+			  -moz-transition: all 0.3s ease-in-out;
+			  -ms-transition: all 0.3s ease-in-out;
+			  -o-transition: all 0.3s ease-in-out;
+			  transition: all 0.3s ease-in-out;
+				&:hover{
+					color: $ka-4;
+				}
+			}
+			&.q-links{
+				font:{
+					size: rem-calc(19);
+					weight: bold;
+					family: 'montserratsemi_bold', sans-serif;
+				}
+			}
+		}
 	}
 }
 
