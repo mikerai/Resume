@@ -2240,7 +2240,7 @@ section.contact {
 
 footer {
   background-color: #193441;
-  padding: 0.9375rem 0; }
+  padding: 0.9375rem 0 0 0; }
   footer div {
     color: #ECF0F1;
     max-width: 77.5rem;
@@ -2275,6 +2275,9 @@ footer {
     background-color: #193441;
     opacity: 1;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.25); }
+  footer .cr {
+    padding-top: 0.625rem;
+    text-align: center; }
 
 @media screen and (width: 64em) and (orientation: landscape) {
   nav {
