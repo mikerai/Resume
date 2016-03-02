@@ -625,23 +625,11 @@
         color: #193441; }
       .ha-header nav a:last-child {
         margin-right: 0; }
+      .ha-header nav a.active {
+        border-bottom: 3px solid #ECF0F1; }
   .ha-header nav::before {
     content: '';
     height: 100%; }
-  .ha-header h1::after {
-    content: '';
-    width: 100px;
-    height: 96px;
-    background: #ECF0F1;
-    position: absolute;
-    z-index: 100;
-    top: 0;
-    left: 0;
-    cursor: pointer;
-    box-shadow: inset 0 8px #2d383f, inset 0 16px #ECF0F1, inset 0 24px #2d383f, inset 0 32px #ECF0F1, inset 0 40px #2d383f, inset 0 48px #ECF0F1, inset 0 56px #2d383f;
-    opacity: 0;
-    border: 20px solid #ECF0F1;
-    transition: opacity 0.5s; }
   .ha-header .ha-header-front nav a:first-child {
     border: 2px solid #e74c3c; }
     .ha-header .ha-header-front nav a:first-child:hover {
@@ -658,7 +646,7 @@
   perspective: 1100px;
   perspective-origin: 50% 0; }
   .ha-header-perspective > div {
-    background: #3E606F !important;
+    background: #3E606F;
     text-align: center;
     padding: 0 7%;
     height: 100%;
@@ -730,7 +718,9 @@
   .ha-header-rotate .ha-header-bottom {
     top: 50%;
     transition: transform 0.5s;
-    transform: rotateX(0deg) translateY(-100%); }
+    transform: rotateX(0deg) translateY(-100%);
+    background: #193441;
+    opacity: 0.8; }
 
 .ha-header-rotateBack {
   height: 3.875rem;
@@ -2372,7 +2362,7 @@ section.hero .hero-content {
     min-width: 15.625rem;
     border: 2px solid #ECF0F1;
     color: #ECF0F1; }
-    section.hero .hero-content .hollow:hover, section.hero .hero-content .hollow:active, section.hero .hero-content .hollow:focus, section.hero .hero-content .hollow:visited {
+    section.hero .hero-content .hollow:hover {
       border: 2px solid #FCFFF5;
       background-color: #FCFFF5;
       color: #193441; }
@@ -2406,8 +2396,43 @@ section.resume, section.skills, section.education, section.tools, section.portfo
     font-size: 1.5625rem;
     letter-spacing: 0.125rem; }
 
+section.resume .objective {
+  padding: 0.9375rem; }
+
+section.resume ul {
+  margin-left: 0; }
+  section.resume ul li {
+    list-style-type: none; }
+    section.resume ul li:before {
+      content: '\2022';
+      display: inline;
+      position: relative;
+      max-width: 0;
+      max-height: 0;
+      left: -10px;
+      top: 0;
+      color: #3E606F;
+      font-size: 1.875rem;
+      vertical-align: middle; }
+
 section.resume .linkedin {
   text-align: center; }
+
+section.skills ul {
+  margin-left: 0; }
+  section.skills ul li {
+    list-style-type: none; }
+    section.skills ul li:before {
+      content: '\2022';
+      display: inline;
+      position: relative;
+      max-width: 0;
+      max-height: 0;
+      left: -10px;
+      top: 0;
+      color: #91AA9D;
+      font-size: 1.875rem;
+      vertical-align: middle; }
 
 section.education article {
   border-bottom: 1px solid #cacaca;

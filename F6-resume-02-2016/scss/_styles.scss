@@ -105,10 +105,13 @@ section {
 				min-width: rem-calc(250);
 				border: 2px solid $white;
 				color: $white;
-				&:hover, &:active, &:focus, &:visited{
+				&:hover{
 					border: 2px solid $ka-1;
 					background-color: $ka-1;
 					color: $ka-5;
+				}
+				&:active, &:focus, &:visited{
+					
 				}
 			}
 		}
@@ -145,12 +148,50 @@ section {
 	}
 	
 	&.resume{
+		.objective{
+			padding: rem-calc(15);
+		}
+		ul{
+			margin-left: 0;
+			li{
+				list-style-type: none;
+				&:before{
+				  content: '\2022';
+				  display: inline;
+				  position: relative;
+				  max-width: 0;
+				  max-height: 0;
+				  left: -10px;
+				  top: 0;
+				  color: $ka-4;
+				  font-size: rem-calc(30);
+				  vertical-align: middle;
+				}
+			}
+		}
 		.linkedin{
 			text-align: center;
 		}
 	}
 	&.skills{
-
+		ul{
+			margin-left: 0;
+			li{
+				list-style-type: none;
+				&:before{
+				  content: '\2022';
+				  display: inline;
+				  position: relative;
+				  max-width: 0;
+				  max-height: 0;
+				  left: -10px;
+				  top: 0;
+				  color: $ka-3;
+				  font-size: rem-calc(30);
+				  vertical-align: middle;
+				}
+			}
+		}
 	}
 	&.education{
 		article{

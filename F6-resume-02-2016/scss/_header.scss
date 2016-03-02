@@ -94,27 +94,15 @@
 			&:last-child {
 				margin-right: 0;
 			}
+			&.active{
+				border-bottom: 3px solid $white;
+			}
 		}
 	}
 	nav::before {
 		@extend %extend_1;
 		content: '';
 		height: 100%;
-	}
-	h1::after {
-		content: '';
-		width: 100px;
-		height: 96px;
-		background: $white;
-		position: absolute;
-		z-index: 100;
-		top: 0;
-		left: 0;
-		cursor: pointer;
-		box-shadow: inset 0 8px #2d383f, inset 0 16px $white, inset 0 24px #2d383f, inset 0 32px $white, inset 0 40px #2d383f, inset 0 48px $white, inset 0 56px #2d383f;
-		opacity: 0;
-		border: 20px solid $white;
-		transition: opacity 0.5s;
 	}
 	.ha-header-front nav a {
 		&:first-child {
@@ -138,7 +126,7 @@
 	perspective: 1100px;
 	perspective-origin: 50% 0;
 	> div {
-		background: $ka-4 !important;
+		background: $ka-4;
 		text-align: center;
 		padding: 0 7%;
 		height: 100%;
@@ -218,6 +206,8 @@
 		top: 50%;
 		transition: transform 0.5s;
 		transform: rotateX(0deg) translateY(-100%);
+		background: $ka-5;
+		opacity: 0.8;
 	}
 }
 .ha-header-rotateBack {
