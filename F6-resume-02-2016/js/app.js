@@ -47,6 +47,8 @@ $(function(){
   if (isTablet()) {
   }
 
+  //----- Parallax for Desktop
+
 	if (isDesktop()) {
 		var lastScrollY = 0,
     ticking = false,
