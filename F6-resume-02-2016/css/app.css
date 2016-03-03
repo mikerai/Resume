@@ -2395,7 +2395,7 @@ section.hero #parallax-bg {
   bottom: 0;
   background: url("/img/hero-banner.jpg") 50% 0 no-repeat;
   background-size: cover;
-  opacity: 0.85; }
+  opacity: 1; }
 
 section.resume, section.skills, section.education, section.tools, section.portfolio, section.contact {
   padding: 0.9375rem 0; }
