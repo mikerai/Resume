@@ -29,6 +29,13 @@ body {
 	font-weight: 700;
 }
 
+.defs-only {
+  position: absolute;
+  height: 0; width: 0;
+  overflow: none;
+  left: -100%;
+}
+
 section {
 	h3, h4, h5, h6{
 		font-family: 'montserratregular';
@@ -231,6 +238,9 @@ section {
 			margin: auto;
 			opacity: 0.76;
 			z-index: -1;
+			-webkit-filter: url(#monochrome);
+  		filter:  url(#monochrome);
+  		//box-shadow: #224 0.2em 0.2em 0.6em 0.1em;
 		}
 	}
 	&.portfolio{
