@@ -202,17 +202,14 @@ section {
 	}
 	&.education{
 		article{
-			border-bottom: 1px solid $medium-gray;
 			padding-top: rem-calc(15);
 			padding-bottom: rem-calc(15);
-			&:first-of-type{
-				
-			}
-			&:nth-of-type(2){
-				
-			}
-			&:nth-of-type(3){
-				
+			border: 1px solid red;
+			.logo{
+				//text-align: center;
+				height: rem-calc(180);
+				margin-left: auto;
+				margin-right: auto;
 			}
 		}
 	}
@@ -525,6 +522,11 @@ footer{
 			}
 			&#home{
 			  height: 100vh;
+			}
+		}
+		&.education{
+			.logo{
+				text-align: center;
 			}
 		}
 		&.tools{

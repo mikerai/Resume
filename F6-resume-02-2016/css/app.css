@@ -2442,9 +2442,13 @@ section.skills ul {
       vertical-align: middle; }
 
 section.education article {
-  border-bottom: 1px solid #cacaca;
   padding-top: 0.9375rem;
-  padding-bottom: 0.9375rem; }
+  padding-bottom: 0.9375rem;
+  border: 1px solid red; }
+  section.education article .logo {
+    height: 11.25rem;
+    margin-left: auto;
+    margin-right: auto; }
 
 section.tools {
   margin-top: 1.5625rem;
@@ -2669,6 +2673,8 @@ footer {
           font-size: 0.9375rem; }
       section.hero#home {
         height: 100vh; }
+    section.education .logo {
+      text-align: center; }
     section.tools {
       margin-top: 0.3125rem;
       margin-bottom: 0.3125rem; }
