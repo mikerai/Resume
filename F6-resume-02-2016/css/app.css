@@ -2426,16 +2426,17 @@ section.resume .linkedin {
   text-align: center; }
 
 section.skills ul {
-  margin-left: 0; }
+  margin-left: 1.0625rem; }
   section.skills ul li {
     list-style-type: none; }
-    section.skills ul li:before {
+    section.skills ul li::before {
       content: '\2022';
       display: inline;
       position: relative;
       max-width: 0;
       max-height: 0;
-      left: -10px;
+      margin-left: 0.625rem;
+      left: -0.625rem;
       top: 0;
       color: #91AA9D;
       font-size: 1.875rem;
@@ -2619,36 +2620,6 @@ footer {
     color: #ECF0F1;
     max-width: 77.5rem;
     margin: 0 auto; }
-  footer .cd-top {
-    display: inline-block;
-    height: 3rem;
-    width: 3rem;
-    position: fixed;
-    bottom: 2.5rem;
-    right: 0.625rem;
-    box-shadow: 0 0 0.625rem rgba(0, 0, 0, 0.05);
-    overflow: hidden;
-    text-indent: 100%;
-    white-space: nowrap;
-    background: rgba(25, 52, 65, 0.8) url("../img/cd-top-arrow.svg") no-repeat center 50%;
-    visibility: hidden;
-    opacity: 0;
-    -webkit-transition: opacity .3s 0s, visibility 0s .3s;
-    -moz-transition: opacity .3s 0s, visibility 0s .3s;
-    transition: opacity .3s 0s, visibility 0s .3s; }
-  footer .cd-top.cd-is-visible, footer .cd-top.cd-fade-out, footer .no-touch .cd-top:hover {
-    -webkit-transition: opacity .3s 0s, visibility 0s 0s;
-    -moz-transition: opacity .3s 0s, visibility 0s 0s;
-    transition: opacity .3s 0s, visibility 0s 0s; }
-  footer .cd-top.cd-is-visible {
-    visibility: visible;
-    opacity: 1; }
-  footer .cd-top.cd-fade-out {
-    opacity: .4; }
-  footer .cd-top:hover, footer .no-touch .cd-top:hover {
-    background-color: #193441;
-    opacity: 1;
-    box-shadow: 0 0 0.625rem rgba(0, 0, 0, 0.75); }
   footer .cr {
     padding-top: 0.625rem;
     text-align: center;
@@ -2688,12 +2659,7 @@ footer {
   section.hero .hero-content {
     width: 80%; }
   section.hero#home {
-    height: 43.75rem; }
-  .cd-top {
-    height: 60px;
-    width: 60px;
-    right: 30px;
-    bottom: 30px; } }
+    height: 43.75rem; } }
 
 @media screen and (width: 48em) and (orientation: portrait) {
   nav {
@@ -2701,10 +2667,7 @@ footer {
   section.hero .hero-content {
     width: 90%; }
   section.hero#home {
-    height: 50rem; }
-  .cd-top {
-    right: 20px;
-    bottom: 20px; } }
+    height: 50rem; } }
 
 @media screen and (max-width: 39.9375em) {
   #menu, #IN-widget {

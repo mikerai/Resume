@@ -182,16 +182,17 @@ section {
 	}
 	&.skills{
 		ul{
-			margin-left: 0;
+			margin-left: rem-calc(17);
 			li{
 				list-style-type: none;
-				&:before{
+				&::before{
 				  content: '\2022';
 				  display: inline;
 				  position: relative;
 				  max-width: 0;
 				  max-height: 0;
-				  left: -10px;
+				  margin-left: rem-calc(10);
+				  left: rem-calc(-10);
 				  top: 0;
 				  color: $ka-3;
 				  font-size: rem-calc(30);
@@ -421,45 +422,6 @@ footer{
 		max-width: $global-width;
 		margin: 0 auto;
 	}
-	// Back to top for Desktop and tablet
-	.cd-top {
-	  display: inline-block;
-	  height: rem-calc(48);
-	  width: rem-calc(48);
-	  position: fixed;
-	  bottom: rem-calc(40);
-	  right: rem-calc(10);
-	  box-shadow: 0 0 rem-calc(10) rgba(0, 0, 0, 0.05);
-	  // image replacement properties
-	  overflow: hidden;
-	  text-indent: 100%;
-	  white-space: nowrap;
-	  background: rgba(25, 52, 65, 0.8) url('../img/cd-top-arrow.svg') no-repeat center 50%;
-	  visibility: hidden;
-	  opacity: 0;
-	  -webkit-transition: opacity .3s 0s, visibility 0s .3s;
-	  -moz-transition: opacity .3s 0s, visibility 0s .3s;
-	  transition: opacity .3s 0s, visibility 0s .3s;
-	}
-	.cd-top.cd-is-visible, .cd-top.cd-fade-out, .no-touch .cd-top:hover {
-	  -webkit-transition: opacity .3s 0s, visibility 0s 0s;
-	  -moz-transition: opacity .3s 0s, visibility 0s 0s;
-	  transition: opacity .3s 0s, visibility 0s 0s;
-	}
-	.cd-top.cd-is-visible {
-	  //the button becomes visible
-	  visibility: visible;
-	  opacity: 1;
-	}
-	.cd-top.cd-fade-out {
-	  //if the user keeps scrolling down, the button is out of focus and becomes less visible
-	  opacity: .4;
-	}
-	.cd-top:hover, .no-touch .cd-top:hover {
-	  background-color: $ka-5;
-	  opacity: 1;
-	  box-shadow: 0 0 rem-calc(10) rgba(0, 0, 0, 0.75);
-	}
 	.cr{
 		padding-top: rem-calc(10);
 		text-align: center;
@@ -533,12 +495,6 @@ footer{
 			}
 		}
 	}
-	.cd-top {
-    height: 60px;
-    width: 60px;
-    right: 30px;
-    bottom: 30px;
-  }
 }
 
 @media screen and (width: 48em) and (orientation: portrait){
@@ -555,10 +511,6 @@ footer{
 			}
 		}
 	}
-	.cd-top {
-    right: 20px;
-    bottom: 20px;
-  }
 }
 
 @include breakpoint(small only) {

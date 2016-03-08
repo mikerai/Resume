@@ -25,9 +25,9 @@ $(function(){
 	  }
 	}
 
-  if (isMobile()) {
+  /*if (isMobile()) {
     $('.linkedin, .cd-top').remove();
-  }
+  }*/
 
   if (isTablet()) {
   }
