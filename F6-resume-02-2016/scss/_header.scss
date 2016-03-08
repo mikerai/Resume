@@ -80,7 +80,7 @@
 			padding: rem-calc(10) rem-calc(45);
 			margin: 0 0.4em 0;
 			cursor: pointer;
-			color: $white;
+			color: $ka-5;
 			outline: none;
 			text-decoration: none;
 			-webkit-transition: all 0.3s ease-in-out;
@@ -88,14 +88,14 @@
 		  -ms-transition: all 0.3s ease-in-out;
 		  -o-transition: all 0.3s ease-in-out;
 			&:hover, &:focus, &:active{
-				background-color: $white;
+				background-color: $ka-3;
 				color: $ka-5;
 			}
 			&:last-child {
 				margin-right: 0;
 			}
 			&.active{
-				border-bottom: 3px solid $white;
+				border-bottom: 3px solid $ka-5;
 			}
 		}
 	}
@@ -206,8 +206,8 @@
 		top: 50%;
 		transition: transform 0.5s;
 		transform: rotateX(0deg) translateY(-100%);
-		background: $ka-5;
-		opacity: 0.8;
+		background: $white;
+		opacity: 0.95;
 	}
 }
 .ha-header-rotateBack {

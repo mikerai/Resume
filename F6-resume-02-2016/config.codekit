@@ -4177,6 +4177,39 @@
 		"shouldRunAutoprefixer": 0,
 		"shouldRunBless": 0,
 		"useLibsass": 1
+		},
+	"\/videos\/Hello-World.jpg": {
+		"fileType": 16384,
+		"ignore": 0,
+		"ignoreWasSetByUser": 0,
+		"initialSize": 116866,
+		"inputAbbreviatedPath": "\/videos\/Hello-World.jpg",
+		"outputAbbreviatedPath": "\/videos\/Hello-World.jpg",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"processed": 0
+		},
+	"\/videos\/Productive-Morning.jpg": {
+		"fileType": 16384,
+		"ignore": 0,
+		"ignoreWasSetByUser": 0,
+		"initialSize": 63452,
+		"inputAbbreviatedPath": "\/videos\/Productive-Morning.jpg",
+		"outputAbbreviatedPath": "\/videos\/Productive-Morning.jpg",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"processed": 0
+		},
+	"\/videos\/Wall-Sketching.jpg": {
+		"fileType": 16384,
+		"ignore": 0,
+		"ignoreWasSetByUser": 0,
+		"initialSize": 94919,
+		"inputAbbreviatedPath": "\/videos\/Wall-Sketching.jpg",
+		"outputAbbreviatedPath": "\/videos\/Wall-Sketching.jpg",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"processed": 0
 		}
 	},
 "hooks": [
