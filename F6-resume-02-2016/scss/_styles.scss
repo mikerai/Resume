@@ -366,8 +366,6 @@ section {
 	border-right: none;
 	border-left: none;
 	position: relative;
-	-webkit-filter: url(#monochrome);
-  		filter:  url(#monochrome);
 }
 .video-container {
 	position: relative;
@@ -376,7 +374,7 @@ section {
 	height: 100%;
 	width: 100%;
 	overflow: hidden;
-	background: #000;
+	background: transparent;
 	.filter {
 		z-index: 100;
 		position: absolute;
@@ -385,7 +383,7 @@ section {
 	}
 	video {
 		position: absolute;
-		z-index: 0;
+		z-index: 2;
 		bottom: 0;
 		&.fillWidth {
 			width: 100%;

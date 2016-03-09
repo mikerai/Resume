@@ -2573,9 +2573,7 @@ section.contact {
 .homepage-hero-module {
   border-right: none;
   border-left: none;
-  position: relative;
-  -webkit-filter: url(#monochrome);
-  filter: url(#monochrome); }
+  position: relative; }
 
 .video-container {
   position: relative;
@@ -2584,7 +2582,7 @@ section.contact {
   height: 100%;
   width: 100%;
   overflow: hidden;
-  background: #000; }
+  background: transparent; }
   .video-container .filter {
     z-index: 100;
     position: absolute;
@@ -2592,7 +2590,7 @@ section.contact {
     width: 100%; }
   .video-container video {
     position: absolute;
-    z-index: 0;
+    z-index: 2;
     bottom: 0; }
     .video-container video.fillWidth {
       width: 100%; }
