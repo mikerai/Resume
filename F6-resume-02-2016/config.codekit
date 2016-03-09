@@ -4189,6 +4189,17 @@
 		"outputPathIsSetByUser": 0,
 		"processed": 0
 		},
+	"\/videos\/Mock-up.jpg": {
+		"fileType": 16384,
+		"ignore": 0,
+		"ignoreWasSetByUser": 0,
+		"initialSize": 99397,
+		"inputAbbreviatedPath": "\/videos\/Mock-up.jpg",
+		"outputAbbreviatedPath": "\/videos\/Mock-up.jpg",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"processed": 0
+		},
 	"\/videos\/Productive-Morning.jpg": {
 		"fileType": 16384,
 		"ignore": 0,
@@ -4214,7 +4225,7 @@
 	},
 "hooks": [
 	],
-"lastSavedByUser": "Miguel Angel Rodriguez Alvarez Icaza",
+"lastSavedByUser": "Miguel Ángel Rodríguez Álvarez Icaza",
 "manualImportLinks": {
 	},
 "projectAttributes": {
