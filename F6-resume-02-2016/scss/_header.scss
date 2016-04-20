@@ -35,9 +35,10 @@
 	left: 0;
 	width: 100%;
 	padding: 0;
-	z-index: 50;
+	//z-index: 50;
 	transform: translateY(0%);
 	transition: all 0.5s;
+	z-index: 999;
 	p {
 		@extend %extend_1;
 		font: {
@@ -133,7 +134,8 @@
 		width: 100%;
 		margin: 0 auto;
 		position: relative;
-		text-align: justify;
+		//text-align: justify;
+		-webkit-backface-visibility: hidden;
 		backface-visibility: hidden;
 		transition: all 0.5s;
 		overflow: hidden;
@@ -320,5 +322,53 @@
 		nav {
 			font-size: 60%;
 		}
+	}
+}
+
+@media screen and (min-width: 48rem) and (max-width: 64rem) {
+	.ha-header{
+		.ha-header-perspective {
+			> div {
+				padding: 0 rem-calc(1) !important;
+			}
+		}
+		nav{
+			a{
+				font-size: rem-calc(15);
+				padding: rem-calc(10) rem-calc(15);
+				margin: 0;
+			}
+		}
+		.ha-header-bottom{
+			nav{
+				padding: 0;
+			}
+		}
+	}
+}
+
+@media screen and (width: 64rem) and (orientation: landscape){
+	.ha-header{
+		nav{
+			a{
+				margin: 0 rem-calc(17);
+			}
+		}
+	}
+}
+
+@media screen and (width: 48rem) and (orientation: portrait){
+	.ha-header{
+		nav{
+			a{
+				margin: 0 rem-calc(4);
+			}
+		}
+	}
+}
+
+@include breakpoint(small only) {
+	#ha-header{
+		display: none !important;
 	}
 }

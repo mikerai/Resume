@@ -3,13 +3,17 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <link rel="canonical" href="http://mikerai.com" />
+    <meta name="robots" content="index follow">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Miguel Angel Rodriguez Alvarez Icaza</title>
+    <meta name="description" content="Hi! Welcome to my personal site. I'm a UX Manager and an iOS Developer. Contact me to talk about your project.">
     <link rel="stylesheet" href="css/app.css">
+    <link rel="shortcut icon" type="image/x-icon" href="img/favicon.ico">
   </head>
   <body>
 
-    <header id="ha-header" class="row expanded ha-header ha-header-small">
+    <header id="ha-header" class="row expanded ha-header ha-header-small hide-for-small">
       <div class="ha-header-perspective">
         <div class="ha-header-front">
           <nav>
@@ -29,10 +33,30 @@
       </div>
     </header>
 
+    <header id="mobile" class="row collapse show-for-small-only">
+      <nav class="mobile columns small-12">
+        <ul class="accordion" data-accordion data-allow-all-closed="true">
+          <li class="accordion-item" data-accordion-item>
+            <a href="#" class="accordion-title">Menu</a>
+            <div class="accordion-content" data-tab-content>
+              <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#resume">Resume</a></li>
+                <li><a href="#skills">Skills</a></li>
+                <li><a href="#education">Education</a></li>
+                <li><a href="#porfolio">Portfolio</a></li>
+                <li><a href="#contact">Contact Me</a></li>
+              </ul>
+            </div>
+          </li>
+        </ul>
+      </nav>
+    </header>
+
     <section class="row hero expanded" id="home">
       <div id="parallax-bg"></div>
-        <article class="row hero-content">
-          <div class="row column small-12">
+        <article class="hero-content">
+          <div class="row collapse">
             <div class="columns b1"></div>
             <div class="columns b2"></div>
             <div class="columns b3"></div>
@@ -53,7 +77,7 @@
       </article>
     </section>
 
-    <section class="row resume ha-waypoint" id="resume" data-animate-down="ha-header-rotate" data-animate-up="ha-header-small">
+    <section class="row align-top resume ha-waypoint" id="resume" data-animate-down="ha-header-rotate" data-animate-up="ha-header-small">
       <div class="columns small-12 objective">
         <h3>Professional Objective</h3>
         <p>Taking care of the smallest details - methodically - is essential for projects to be delivered on time and with the highest standards. I would personally not have it any other way after seeing the difference it makes.</p>
@@ -62,18 +86,58 @@
       <div class="small-12 columns">
         <h3>Work History</h3>
       </div>
-      
-      <div class="columns align-self-middle small-12 medium-7 large-8">
-        <article class="row column small-uncollapse medium-collapse">
-          <div class="columns small-12">
-            
+
+      <article class="columns small-12">
+        <div class="row pb10">
+          <div class="columns align-self-top small-12 medium-4">
+            <h2>UX Manager</h2>
+            <p class="text-center">2013 - Present</p>
+            <a href="http://speedcommerce.com" target="_blank"><img src="img/speedcommerce.png" alt="Speed Commerce provides ecommerce technology and service solutions to retailers and manufacturers. These solutions help brands acquire new customers and strengthen the relationship with existing ones by providing personalized, relevant experiences. Services include: ecommerce platform development; hosting, managed ecommerce, and marketing services; order and inventory management; pick, pack, and ship; returns processing; and 24/7 customer care."></a>
+            <h4>Speed Commerce</h4>
+            <p>E-commerce expert. In charge of the Graphic Design and HTML Development Teams. User Interface and User Experience focused. Cross Browser compatibility expert. Professional RWD solutions oriented.</p>
           </div>
-        </article>
-      </div>
-      <!--<div class="columns align-self-middle medium-5 large-4 linkedin">
-        <script src="//platform.linkedin.com/in.js" type="text/javascript"></script>
-        <script type="IN/MemberProfile" data-id="https://www.linkedin.com/in/mikerai" data-format="inline" data-related="false" data-width="300"></script>
-      </div>-->
+          <div class="columns align-self-top small-12 medium-4">
+            <h2>UX Developer. Mobile Research Lead. Co-founder</h2>
+            <p class="text-center">2009 - Present</p>
+            <a href="http://phiveleven.com" target="_blank"><img src="img/511.png" alt="5 11 logo"></a>
+            <h4>Phiveleven</h4>
+            <p>Focused on User Experience designs. Developer of fully responsive websites. Designed, developed and published 10 iOS apps featuring data lookup and entry, reference, email, Social sharing accumulating 15 000+ downloads to date.</p>
+          </div>
+          <div class="columns align-self-top small-12 medium-4">
+            <h2>Sales, Logistics &amp; Distribution Director. Co-founder</h2>
+            <p class="text-center">2007 - Present</p>
+            <a href="http://rodiles.com.mx" target="_blank"><img src="img/rodiles.png" alt="Rodiles de Mexico logo"></a>
+            <h4>Rodiles de Mexico</h4>
+            <p>Liaise and negotiator with customers and suppliers. Develop new and existing business by gaining new contracts, analyzing logistical problems and produce new solutions in order to keep and create profitable businesses.</p>
+          </div>
+        </div>
+        <div class="row pb10">
+          <div class="columns align-self-top small-12 medium-6">
+            <h2>Quality Engineer &amp; Quality Assurance Manager</h2>
+            <p class="text-center">2003 - 2007</p>
+            <a href="http://rioglass.com" target="_blank"><img src="img/rioglass.png" alt="Rioglass logo"></a>
+            <h4>Rioglass</h4>
+            <p>Responsible for the Premium Products Quality Assurance Team (BMW, Jaguar, Mini, and Lamborghini). Defined, managed and assured goals and production targets to meet customer's specifications and demand.</p>
+          </div>
+          <div class="columns align-self-top small-12 medium-6">
+            <h2>Product Engineer &amp; Six Sigma Green Belt</h2>
+            <p class="text-center">2000 - 2002</p>
+            <a href="http://ford.com" target="_blank"><img src="img/ford.png" alt="Ford Motor Company logo"></a>
+            <h4>Ford Motor Company</h4>
+            <p>Saved over USD$150,000 during 2002 in the production and assembly line of the F-150 and F-250 trucks through the application of rigorous Six Sigma Methodologies. Reduced variability of power-train assembly process through the implementation of over 50 successful engineering changes in the production and assembly line.</p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="columns align-self-middle small-12 medium-6">
+            <a class="large download button" href="http://mikerai.com/Miguel_Angel_Rodriguez_Resume.pdf" download="Miguel_Angel_Rodriguez_Resume" target="_blank" title="Download my Resume on a PDF file">Download my Resume</a>
+          </div>
+          <div class="columns small-12 medium-6 linkedin">
+            <script src="//platform.linkedin.com/in.js" type="text/javascript"></script>
+            <script type="IN/MemberProfile" data-id="https://www.linkedin.com/in/mikerai" data-format="inline" data-related="false" data-width="300"></script>
+          </div>
+        </div>
+      </article>
+
     </section>
 
     <section class="row skills" id="skills">
@@ -110,7 +174,7 @@
       </div>
       <article class="row column small-12 medium-6">
         <div class="columns small-12 logo">
-          <img alt="Instituto Universitario de la Empresa" src="img/uniovi.png">
+          <a href="http://www.uniovi.es/" target="_blank"><img alt="Instituto Universitario de la Empresa" src="img/uniovi.png"></a>
         </div>
         <div class="columns small-12">
           <h4>Master in Business Administration</h4>
@@ -123,7 +187,7 @@
       </article>
       <article class="row column small-12 medium-6 align-top">
         <div class="columns small-12 logo">
-          <img src="img/itesm.png" alt="Instituto Tecnologico y de Estudios Superiores de Monterrey" title="Instituto Tecnologico y de Estudios Superiores de Monterrey">
+          <a href="http://itesm.mx" target="_blank"><img src="img/itesm.png" alt="Instituto Tecnologico y de Estudios Superiores de Monterrey" title="Instituto Tecnologico y de Estudios Superiores de Monterrey"></a>
         </div>
         <div class="columns small-12">
           <h4>Bachelor of Engineering</h4>
@@ -137,7 +201,6 @@
 
     <section class="homepage-hero-module">
       <div class="video-container">
-        <h3>This is what I have done</h3>
           <div class="filter"></div>
           <video autoplay loop class="fillWidth">
               <source src="videos/Productive-Morning.mp4" type="video/mp4" />Your browser does not support the video tag. I suggest you upgrade your browser.
@@ -149,15 +212,12 @@
       </div>
     </section> 
 
-    <!--<section class="row tools" id="tools">
-      <div class="small-12 columns">
-        <img src="img/design.jpg" alt="Hero banner">
-      </div>
-    </section>-->
-
     <section class="row portfolio" id="portfolio">
       <div class="column align-self-middle small-12">
         <h3>This is what I have done</h3>
+      </div>
+      <div class="column align-self-middle small-12">
+        <h2>Web Development</h2>
       </div>
       <div class="column align-self-middle small-6 medium-3 text-center mtb15"><a href="http://shopmyexchange.com" target="_blank"><img src="img/exchange.png" alt="Shop my Exchange online store" title="Air Force and Army Exchange Service"></a></div>
       <div class="column align-self-middle small-6 medium-3 text-center mtb15"><a href="http://mynavyexchange.com" target="_blank"><img src="img/nexcom.png" alt="Navy Exchange online store" title="US Navy Exchange Service"></a></div>
@@ -171,6 +231,32 @@
       <div class="column align-self-middle small-6 medium-3 text-center mtb15"><a href="http://rodiles.com.mx" target="_blank"><img src="img/rodiles.png" alt="Rodiles de Mexico corporate site" title="Rodiles de Mexico corporate site"></a></div>
       <div class="column align-self-middle small-6 medium-3 text-center mtb15"><a href="http://gruponafa.com" target="_blank"><img src="img/nafa.png" alt="Grupo Nafa corporate site" title="Grupo Nafa corporate site"></a></div>
       <div class="column align-self-middle small-6 medium-3 text-center mtb15"><a href="http://workngear.com" target="_blank"><img src="img/workngear.png" alt="Work N Gear online store" title="Work N Gear online store"></a></div>
+      <div class="column align-self-middle small-12">
+        <h2>iOS Development</h2>
+      </div>
+      <div class="column align-self-middle small-12 medium-4 text-center mtb15">
+        <a href="https://itunes.apple.com/mx/app/ecocktail/id515733229?l=en&mt=8" target="_blank" title="e-Cocktails screenshots from the Apple app store"><img class="app" src="img/app1.png" alt="e-Cocktails screenshots from the Apple app store"></a>
+        <p>Become the Ultimate Bartender mastering the recipes of the finest cocktails with <a target="_blank" href="https://itunes.apple.com/mx/app/ecocktail/id515733229?l=en&mt=8">eCocktail</a></p>
+      </div>
+      <div class="column align-self-middle small-12 medium-4 text-center mtb15">
+        <a href="https://itunes.apple.com/mx/app/iparking-meter/id653821953?l=en&mt=8" target="_blank" title="iParking Meter screenshots from the Apple app store"><img class="app" src="img/app2.png" alt="e-Cocktails screenshots from the Apple app store"></a>
+        <p>Schedule personal reminders according to the limit set by the city parking meters with <a target="_blank" href="https://itunes.apple.com/mx/app/iparking-meter/id653821953?l=en&mt=8">iParking Meter</a></p>
+      </div>
+      <div class="column align-self-middle small-12 medium-4 text-center mtb15">
+        <a href="https://itunes.apple.com/mx/app/iwines-spain/id466646858?l=en&mt=8" target="_blank" title="iWines Spain screenshots from the Apple app store"><img class="app" src="img/app3.png" alt="iWines Spain screenshots from the Apple app store"></a>
+        <p>Review the notes for your favorite Spanish wines prior to purchase them to enjoy them with total confidence. Download today <a target="_blank" href="https://itunes.apple.com/mx/app/iwines-spain/id466646858?l=en&mt=8">iWines Spain</a></p>
+      </div>
+      <div class="column align-self-middle small-12 medium-6 text-center mtb15">
+        <a href="https://itunes.apple.com/mx/app/emmas-coloring-book/id649170055?l=en&mt=8" target="_blank" title="Emma's coloring book screenshots from the Apple app store"><img class="app" src="img/app4.png" alt="e-Cocktails screenshots from the Apple app store"></a>
+        <p>Choose the template, the colors and spend as many hours as you like drawings and printing with <a target="_blank" href="https://itunes.apple.com/mx/app/emmas-coloring-book/id649170055?l=en&mt=8">Emma's Coloring Book</a></p>
+      </div>
+      <div class="column align-self-middle small-12 medium-6 text-center mtb15">
+        <a href="https://itunes.apple.com/mx/app/emmas-farm/id587280109?l=en&mt=8" target="_blank" title="Emma's farm screenshots from the Apple app store"><img class="app" src="img/app5.png" alt="e-Cocktails screenshots from the Apple app store"></a>
+        <p>Come and play at <a target="_blank" href="https://itunes.apple.com/mx/app/emmas-farm/id587280109?l=en&mt=8">Emma's Farm!</a></p>
+      </div>
+
+      <div class="colum align-self-middle small-12 text-center mtb15">
+      <a class="text-center" href="https://itunes.apple.com/us/artist/phiveleven-llc-mikerai/id461579017?l=en"><img class="crystal" src="img/appStoreBig2.png" width="320" height="95" alt="Miguel Angel Rodriguez Apple's App Store logo"></a></div>
     </section>
 
     <section class="row expanded contact" id="contact">
@@ -179,7 +265,7 @@
         <p>Please feel free to shoot me an email so we can start talking about your project.</p>
       </div>
       <div class="columns small-12">
-        <form class="row column" action="" data-abide novalidate>
+        <form class="row column" action="mailer.php" id="contact_form" method="post" data-abide novalidate>
           <div class="small-12 medium-4 medium-offset-4 columns">
             <label>Your name
               <input type="text" placeholder="Your Name goes here" aria-describedby="Please enter your name so I can know who I am addressing to" required pattern="text">
