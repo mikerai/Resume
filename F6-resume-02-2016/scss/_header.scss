@@ -371,4 +371,53 @@
 	#ha-header{
 		display: none !important;
 	}
+	#mobile{
+		position: fixed; 
+    z-index: 999999;
+    top: 0; 
+    left: 0;
+    width: 100%;
+    height: rem-calc(60);
+    padding: 0;
+		.mobile{
+			ul{
+				margin-bottom: 0;
+				background-color: $ka-4;
+				background: $ka-4;
+				border: none;
+				li{
+					list-style-type: none;
+					color: $white;
+					a{
+						color: $white;
+						font:{
+							size: rem-calc(18);
+							weight: bold;
+						}
+						&:hover, &:focus{
+							background-color: $ka-4;
+							background: $ka-4;
+						}
+					}
+					.accordion-content{
+						display: none;
+						padding: 0;
+					}
+					ul{
+						margin-left: 0;
+						li{
+							color: $white;
+							padding: rem-calc(15) 0;
+							text-align: center;
+						}
+					}
+				}
+			}
+		}
+	}
+	section{
+		&#home{
+			margin-top: rem-calc(60);
+		}
+	}
 }
