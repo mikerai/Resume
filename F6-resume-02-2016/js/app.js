@@ -287,20 +287,20 @@ $(document).ready(function () {
 
 //Contact error removal and success
 
-        $(document).on('submit', 'form#contact_form', function (e) {
-            e.preventDefault();
-            $('form#contact_form .error').remove();
-            var hasError = false;
-            if (!hasError) {
-                $('form#contact_form input.submit').fadeOut('normal', function () {
-                    $(this).parent().append('');
-                });
-                var formInput = $(this).serialize();
-                $.post($(this).attr('action'), formInput, function (data) {
-                    $('form#contact_form').slideUp("fast", function () {
-                        $(this).before('<p class="success">Thanks! Your message has been sent. I will reply to it as soon as possible.</p>');
-                    });
-                });
-            }
-            return false;
+  $(document).on('submit', 'form#contact_form', function (e) {
+      e.preventDefault();
+      $('form#contact_form .error').remove();
+      var hasError = false;
+      if (!hasError) {
+          $('form#contact_form input.submit').fadeOut('normal', function () {
+              $(this).parent().append('');
+          });
+          var formInput = $(this).serialize();
+          $.post($(this).attr('action'), formInput, function (data) {
+              $('form#contact_form').slideUp("fast", function () {
+                  $(this).before('<p class="success">Thanks! Your message has been sent. I will reply to it as soon as possible.</p>');
+              });
+          });
+      }
+      return false;
 });
