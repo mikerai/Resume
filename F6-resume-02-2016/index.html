@@ -310,8 +310,8 @@
               };
           </script>
           <div class="small-12 medium-4 medium-offset-4 columns">
-            <label>Your e-mail address
-              <textarea placeholder="Your message goes here"  aria-describedby="Please enter your message so I can know how I can assist you" required pattern="text"></textarea>
+            <label>Your message
+              <textarea form="contact_form" placeholder="Your message goes here"  aria-describedby="Please enter your message so I can know how I can assist you" required pattern="text"></textarea>
               <span class="form-error">
                 Please include something on your message.
               </span>
@@ -374,9 +374,12 @@
     <script src="js/jquery.min.js"></script>
     <script src="js/what-input.min.js"></script>
     <script src="js/foundation.min.js"></script>
-    <script src="js/foundation.util.mediaQuery.js"></script>
+    <script src="js/foundation.core.js"></script>
+    <script src="js/foundation.abide.js"></script>
     <script src="js/app-min.js"></script>
     <script src="js/header-min.js"></script>
+    <script src="js/app-min.js"></script>
+    <script src="js/validate.js"></script>
     <script>
       var $head = $( '#ha-header' );
       $( '.ha-waypoint' ).each( function(i) {

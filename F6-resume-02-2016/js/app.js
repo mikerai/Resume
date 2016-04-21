@@ -231,3 +231,76 @@ function scaleBannerVideoSize(element){
 
     });
 }
+
+//Contact Form
+
+$(document).ready(function () {
+    //$("button[type=submit]").attr("disabled", "disabled");
+    $("#contact_form").validate({
+        rules: {
+            name: { 
+              required: true,
+              minlength: 2
+            },
+            email: {
+              required: true,
+              email: true
+            },
+            comment: {
+                required: true,
+                minlength: 5
+            }
+          },
+          messages: {
+            name: {
+              required: "Por favor indicanos tu nombre",
+              minlength: "Al menos necesitamos 2 iniciales"
+            },
+            email: {
+              required: "Nos hace falta tu direccion de correo electronico para poder responderte",
+              email: "La direccion de correo electronico debe estar en formato nombre@dominio.com..."
+            },
+            comment: {
+              required: "Dejanos un mensaje",
+              minlength: "Por favor escribe algo en el campo de mensaje"
+            }
+          }, 
+    });
+
+    /*$('#commentForm').bind('change keyup', function() {
+        if($(this).validate().checkForm()) {
+            $('button[type=submit]').attr('disabled', false);
+        } else {
+            $('button[type=submit]').attr('disabled', true);
+        }
+    });*/
+
+    $("button.submit").click(function () {
+        if (!$("#contact_form").validate()) { // Not Valid
+            return false;
+        } else {
+            //$("button.submit").prop('disabled', false);
+            $("#contact_form").submit()
+        }
+    });
+});
+
+//Contact error removal and success
+
+        $(document).on('submit', 'form#contact_form', function (e) {
+            e.preventDefault();
+            $('form#contact_form .error').remove();
+            var hasError = false;
+            if (!hasError) {
+                $('form#contact_form input.submit').fadeOut('normal', function () {
+                    $(this).parent().append('');
+                });
+                var formInput = $(this).serialize();
+                $.post($(this).attr('action'), formInput, function (data) {
+                    $('form#contact_form').slideUp("fast", function () {
+                        $(this).before('<p class="success">Thanks! Your message has been sent. I will reply to it as soon as possible.</p>');
+                    });
+                });
+            }
+            return false;
+});
