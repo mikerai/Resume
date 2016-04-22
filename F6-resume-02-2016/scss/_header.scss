@@ -377,6 +377,7 @@
     top: 0; 
     left: 0;
     width: 100%;
+    max-width: 100vw;
     height: rem-calc(60);
     padding: 0;
 		.mobile{
@@ -400,7 +401,7 @@
 						}
 					}
 					.accordion-content{
-						display: none;
+						//display: none;
 						padding: 0;
 					}
 					ul{

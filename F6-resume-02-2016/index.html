@@ -284,7 +284,38 @@
         <p>Please feel free to shoot me an email so we can start talking about your project.</p>
       </div>
       <div class="columns small-12">
-        <form class="row column" action="mailer.php" id="contact_form" method="post" data-abide novalidate="novalidate">
+        <form class="row column" id="form">
+          <p class="thanks" id="returnmessage"></p>
+          <div class="small-12 medium-4 medium-offset-4 columns">
+            <label>Your Name: </label>
+              <input type="text" id="name" placeholder="Your name goes here"/>
+          </div>
+          <div class="small-12 medium-4 medium-offset-4 columns">
+            <label>Your email address: </label>
+              <input type="text" id="email" placeholder="Your email address goes here"/>
+          </div>
+          <div class="small-12 medium-4 medium-offset-4 columns">
+            <label>Your message:</label>
+              <textarea id="message" placeholder="Your message goes here"></textarea>
+          </div>
+          <div class="columns small-12 medium-4 medium-offset-4 action">
+            <!--<div class="row">
+              <div class="columns small-12 noCaptcha">
+                <div class="g-recaptcha" data-sitekey="6LfP2P0SAAAAAEQv19ZXrjY9GoxxnLulbQYAHDYF" data-callback="onValidate"></div>
+              </div>
+            </div>-->
+            <button class="submit large button" id="submit" type="submit">Send</button>
+            <!--<script>
+              onValidate = function ()
+              {
+                $("button.large.button").removeClass('disabled');
+                $("p.noCaptcha").fadeOut(1500);
+                $("div.g-recaptcha").fadeOut(1500);
+              };
+            </script>-->
+          </div>
+        </form>
+        <!--<form class="row column" action="mailer.php" id="contact_form" method="post" data-abide novalidate="novalidate">
           <div class="small-12 medium-4 medium-offset-4 columns">
             <label>Your name
               <input type="text" placeholder="Your Name goes here" aria-describedby="Please enter your name so I can know who I am addressing to" required pattern="text">
@@ -318,14 +349,14 @@
             </label>
           </div>
           <div class="columns small-12 medium-4 medium-offset-4 action">
-            <div class="row collapse">
+            <div class="row">
               <div class="columns small-12 noCaptcha">
                 <div class="g-recaptcha" data-sitekey="6LfP2P0SAAAAAEQv19ZXrjY9GoxxnLulbQYAHDYF" data-callback="onValidate"></div>
               </div>
             </div>
             <button class="submit large button disabled" type="submit">Send</button>
           </div>
-        </form>
+        </form>-->
       </div>     
     </section>
 
@@ -374,11 +405,8 @@
     <script src="js/jquery.min.js"></script>
     <script src="js/what-input.min.js"></script>
     <script src="js/foundation.min.js"></script>
-    <script src="js/foundation.core.js"></script>
-    <script src="js/foundation.abide.js"></script>
     <script src="js/app-min.js"></script>
     <script src="js/header-min.js"></script>
-    <script src="js/app-min.js"></script>
     <script src="js/validate.js"></script>
     <script>
       var $head = $( '#ha-header' );
