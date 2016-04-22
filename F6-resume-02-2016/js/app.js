@@ -128,6 +128,8 @@ $(document).ready(function () {
   
   //smoothscroll
   $('a[href^="#"]').on('click', function (e) {
+    $('.mobile .accordion .accordion-content').slideUp();
+    $('.mobile .accordion .accordion-item.is-active').removeClass('is-active');
       e.preventDefault();
       $(document).off("scroll");
       
@@ -144,8 +146,8 @@ $(document).ready(function () {
       }, 1000, 'swing', function () {
           window.location.hash = target;
           $(document).on("scroll", onScroll);
-          $('.mobile .accordion .accordion-content').slideUp();
-          $('.mobile .accordion .accordion-item.is-active').removeClass('is-active');
+          //$('.mobile .accordion .accordion-content').slideUp();
+          //$('.mobile .accordion .accordion-item.is-active').removeClass('is-active');
       });
   });
 });
