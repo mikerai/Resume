@@ -3884,45 +3884,12 @@
 		"outputPathIsSetByUser": 0,
 		"outputStyle": 1
 		},
-	"\/bower_components\/what-input\/gulpfile.js\/index.js": {
+	"\/bower_components\/what-input\/Gulpfile.js": {
 		"fileType": 64,
 		"ignore": 0,
 		"ignoreWasSetByUser": 0,
-		"inputAbbreviatedPath": "\/bower_components\/what-input\/gulpfile.js\/index.js",
-		"outputAbbreviatedPath": "\/bower_components\/what-input\/gulpfile.js\/min\/index-min.js",
-		"outputPathIsOutsideProject": 0,
-		"outputPathIsSetByUser": 0,
-		"outputStyle": 1,
-		"syntaxCheckerStyle": 1
-		},
-	"\/bower_components\/what-input\/gulpfile.js\/tasks\/clean.js": {
-		"fileType": 64,
-		"ignore": 0,
-		"ignoreWasSetByUser": 0,
-		"inputAbbreviatedPath": "\/bower_components\/what-input\/gulpfile.js\/tasks\/clean.js",
-		"outputAbbreviatedPath": "\/bower_components\/what-input\/gulpfile.js\/tasks\/min\/clean-min.js",
-		"outputPathIsOutsideProject": 0,
-		"outputPathIsSetByUser": 0,
-		"outputStyle": 1,
-		"syntaxCheckerStyle": 1
-		},
-	"\/bower_components\/what-input\/gulpfile.js\/tasks\/default.js": {
-		"fileType": 64,
-		"ignore": 0,
-		"ignoreWasSetByUser": 0,
-		"inputAbbreviatedPath": "\/bower_components\/what-input\/gulpfile.js\/tasks\/default.js",
-		"outputAbbreviatedPath": "\/bower_components\/what-input\/gulpfile.js\/tasks\/min\/default-min.js",
-		"outputPathIsOutsideProject": 0,
-		"outputPathIsSetByUser": 0,
-		"outputStyle": 1,
-		"syntaxCheckerStyle": 1
-		},
-	"\/bower_components\/what-input\/gulpfile.js\/tasks\/scripts.js": {
-		"fileType": 64,
-		"ignore": 0,
-		"ignoreWasSetByUser": 0,
-		"inputAbbreviatedPath": "\/bower_components\/what-input\/gulpfile.js\/tasks\/scripts.js",
-		"outputAbbreviatedPath": "\/bower_components\/what-input\/gulpfile.js\/tasks\/min\/scripts-min.js",
+		"inputAbbreviatedPath": "\/bower_components\/what-input\/Gulpfile.js",
+		"outputAbbreviatedPath": "\/bower_components\/what-input\/min\/Gulpfile-min.js",
 		"outputPathIsOutsideProject": 0,
 		"outputPathIsSetByUser": 0,
 		"outputStyle": 1,
@@ -4814,7 +4781,7 @@
 	},
 "hooks": [
 	],
-"lastSavedByUser": "Miguel Angel Rodriguez Alvarez Icaza",
+"lastSavedByUser": "Miguel Ángel Rodríguez Álvarez Icaza",
 "manualImportLinks": {
 	},
 "projectAttributes": {
