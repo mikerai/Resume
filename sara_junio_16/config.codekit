@@ -3763,45 +3763,45 @@
 		"outputPathIsSetByUser": 0,
 		"outputStyle": 1
 		},
-	"\/bower_components\/what-input\/gulpfile.js\/index.js": {
+	"\/bower_components\/what-input\/dist\/lte-IE8.js": {
 		"fileType": 64,
 		"ignore": 0,
 		"ignoreWasSetByUser": 0,
-		"inputAbbreviatedPath": "\/bower_components\/what-input\/gulpfile.js\/index.js",
-		"outputAbbreviatedPath": "\/bower_components\/what-input\/gulpfile.js\/min\/index-min.js",
+		"inputAbbreviatedPath": "\/bower_components\/what-input\/dist\/lte-IE8.js",
+		"outputAbbreviatedPath": "\/bower_components\/what-input\/dist\/min\/lte-IE8-min.js",
 		"outputPathIsOutsideProject": 0,
 		"outputPathIsSetByUser": 0,
 		"outputStyle": 1,
 		"syntaxCheckerStyle": 1
 		},
-	"\/bower_components\/what-input\/gulpfile.js\/tasks\/clean.js": {
+	"\/bower_components\/what-input\/dist\/what-input.js": {
 		"fileType": 64,
 		"ignore": 0,
 		"ignoreWasSetByUser": 0,
-		"inputAbbreviatedPath": "\/bower_components\/what-input\/gulpfile.js\/tasks\/clean.js",
-		"outputAbbreviatedPath": "\/bower_components\/what-input\/gulpfile.js\/tasks\/min\/clean-min.js",
+		"inputAbbreviatedPath": "\/bower_components\/what-input\/dist\/what-input.js",
+		"outputAbbreviatedPath": "\/bower_components\/what-input\/dist\/min\/what-input-min.js",
 		"outputPathIsOutsideProject": 0,
 		"outputPathIsSetByUser": 0,
 		"outputStyle": 1,
 		"syntaxCheckerStyle": 1
 		},
-	"\/bower_components\/what-input\/gulpfile.js\/tasks\/default.js": {
+	"\/bower_components\/what-input\/dist\/what-input.min.js": {
 		"fileType": 64,
 		"ignore": 0,
 		"ignoreWasSetByUser": 0,
-		"inputAbbreviatedPath": "\/bower_components\/what-input\/gulpfile.js\/tasks\/default.js",
-		"outputAbbreviatedPath": "\/bower_components\/what-input\/gulpfile.js\/tasks\/min\/default-min.js",
+		"inputAbbreviatedPath": "\/bower_components\/what-input\/dist\/what-input.min.js",
+		"outputAbbreviatedPath": "\/bower_components\/what-input\/dist\/min\/what-input.min-min.js",
 		"outputPathIsOutsideProject": 0,
 		"outputPathIsSetByUser": 0,
 		"outputStyle": 1,
 		"syntaxCheckerStyle": 1
 		},
-	"\/bower_components\/what-input\/gulpfile.js\/tasks\/scripts.js": {
+	"\/bower_components\/what-input\/Gulpfile.js": {
 		"fileType": 64,
 		"ignore": 0,
 		"ignoreWasSetByUser": 0,
-		"inputAbbreviatedPath": "\/bower_components\/what-input\/gulpfile.js\/tasks\/scripts.js",
-		"outputAbbreviatedPath": "\/bower_components\/what-input\/gulpfile.js\/tasks\/min\/scripts-min.js",
+		"inputAbbreviatedPath": "\/bower_components\/what-input\/Gulpfile.js",
+		"outputAbbreviatedPath": "\/bower_components\/what-input\/min\/Gulpfile-min.js",
 		"outputPathIsOutsideProject": 0,
 		"outputPathIsSetByUser": 0,
 		"outputStyle": 1,
@@ -3816,17 +3816,6 @@
 		"outputPathIsOutsideProject": 0,
 		"outputPathIsSetByUser": 0
 		},
-	"\/bower_components\/what-input\/lte-IE8.js": {
-		"fileType": 64,
-		"ignore": 0,
-		"ignoreWasSetByUser": 0,
-		"inputAbbreviatedPath": "\/bower_components\/what-input\/lte-IE8.js",
-		"outputAbbreviatedPath": "\/bower_components\/what-input\/min\/lte-IE8-min.js",
-		"outputPathIsOutsideProject": 0,
-		"outputPathIsSetByUser": 0,
-		"outputStyle": 1,
-		"syntaxCheckerStyle": 1
-		},
 	"\/bower_components\/what-input\/package.json": {
 		"fileType": 524288,
 		"ignore": 1,
@@ -3837,28 +3826,6 @@
 		"outputPathIsOutsideProject": 0,
 		"outputPathIsSetByUser": 0,
 		"outputStyle": 1
-		},
-	"\/bower_components\/what-input\/polyfills\/ie8\/EventListener.js": {
-		"fileType": 64,
-		"ignore": 0,
-		"ignoreWasSetByUser": 0,
-		"inputAbbreviatedPath": "\/bower_components\/what-input\/polyfills\/ie8\/EventListener.js",
-		"outputAbbreviatedPath": "\/bower_components\/what-input\/polyfills\/ie8\/min\/EventListener-min.js",
-		"outputPathIsOutsideProject": 0,
-		"outputPathIsSetByUser": 0,
-		"outputStyle": 1,
-		"syntaxCheckerStyle": 1
-		},
-	"\/bower_components\/what-input\/polyfills\/ie8\/indexOf.js": {
-		"fileType": 64,
-		"ignore": 0,
-		"ignoreWasSetByUser": 0,
-		"inputAbbreviatedPath": "\/bower_components\/what-input\/polyfills\/ie8\/indexOf.js",
-		"outputAbbreviatedPath": "\/bower_components\/what-input\/polyfills\/ie8\/min\/indexOf-min.js",
-		"outputPathIsOutsideProject": 0,
-		"outputPathIsSetByUser": 0,
-		"outputStyle": 1,
-		"syntaxCheckerStyle": 1
 		},
 	"\/bower_components\/what-input\/README.md": {
 		"criticStyle": 0,
@@ -3881,23 +3848,45 @@
 		"randomFootnoteNumbers": 0,
 		"useCompatibilityMode": 0
 		},
-	"\/bower_components\/what-input\/what-input.js": {
+	"\/bower_components\/what-input\/src\/polyfills\/ie8\/EventListener.js": {
 		"fileType": 64,
 		"ignore": 0,
 		"ignoreWasSetByUser": 0,
-		"inputAbbreviatedPath": "\/bower_components\/what-input\/what-input.js",
-		"outputAbbreviatedPath": "\/bower_components\/what-input\/min\/what-input-min.js",
+		"inputAbbreviatedPath": "\/bower_components\/what-input\/src\/polyfills\/ie8\/EventListener.js",
+		"outputAbbreviatedPath": "\/bower_components\/what-input\/src\/polyfills\/ie8\/min\/EventListener-min.js",
 		"outputPathIsOutsideProject": 0,
 		"outputPathIsSetByUser": 0,
 		"outputStyle": 1,
 		"syntaxCheckerStyle": 1
 		},
-	"\/bower_components\/what-input\/what-input.min.js": {
+	"\/bower_components\/what-input\/src\/polyfills\/ie8\/indexOf.js": {
 		"fileType": 64,
 		"ignore": 0,
 		"ignoreWasSetByUser": 0,
-		"inputAbbreviatedPath": "\/bower_components\/what-input\/what-input.min.js",
-		"outputAbbreviatedPath": "\/bower_components\/what-input\/min\/what-input.min-min.js",
+		"inputAbbreviatedPath": "\/bower_components\/what-input\/src\/polyfills\/ie8\/indexOf.js",
+		"outputAbbreviatedPath": "\/bower_components\/what-input\/src\/polyfills\/ie8\/min\/indexOf-min.js",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"outputStyle": 1,
+		"syntaxCheckerStyle": 1
+		},
+	"\/bower_components\/what-input\/src\/what-input.js": {
+		"fileType": 64,
+		"ignore": 0,
+		"ignoreWasSetByUser": 0,
+		"inputAbbreviatedPath": "\/bower_components\/what-input\/src\/what-input.js",
+		"outputAbbreviatedPath": "\/bower_components\/what-input\/src\/min\/what-input-min.js",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"outputStyle": 1,
+		"syntaxCheckerStyle": 1
+		},
+	"\/bower_components\/what-input\/webpack.config.js": {
+		"fileType": 64,
+		"ignore": 0,
+		"ignoreWasSetByUser": 0,
+		"inputAbbreviatedPath": "\/bower_components\/what-input\/webpack.config.js",
+		"outputAbbreviatedPath": "\/bower_components\/what-input\/min\/webpack.config-min.js",
 		"outputPathIsOutsideProject": 0,
 		"outputPathIsSetByUser": 0,
 		"outputStyle": 1,
@@ -3964,6 +3953,39 @@
 		"outputStyle": 1,
 		"syntaxCheckerStyle": 1
 		},
+	"\/js\/min\/foundation.min.js": {
+		"fileType": 64,
+		"ignore": 0,
+		"ignoreWasSetByUser": 0,
+		"inputAbbreviatedPath": "\/js\/min\/foundation.min.js",
+		"outputAbbreviatedPath": "\/js\/min\/min\/foundation.min-min.js",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"outputStyle": 1,
+		"syntaxCheckerStyle": 1
+		},
+	"\/js\/min\/jquery.min.js": {
+		"fileType": 64,
+		"ignore": 0,
+		"ignoreWasSetByUser": 0,
+		"inputAbbreviatedPath": "\/js\/min\/jquery.min.js",
+		"outputAbbreviatedPath": "\/js\/min\/min\/jquery.min-min.js",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"outputStyle": 1,
+		"syntaxCheckerStyle": 1
+		},
+	"\/js\/min\/what-input.min.js": {
+		"fileType": 64,
+		"ignore": 0,
+		"ignoreWasSetByUser": 0,
+		"inputAbbreviatedPath": "\/js\/min\/what-input.min.js",
+		"outputAbbreviatedPath": "\/js\/min\/min\/what-input.min-min.js",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"outputStyle": 1,
+		"syntaxCheckerStyle": 1
+		},
 	"\/package.json": {
 		"fileType": 524288,
 		"ignore": 1,
@@ -4012,6 +4034,22 @@
 		"shouldRunBless": 0,
 		"useLibsass": 0
 		},
+	"\/scss\/_styles.scss": {
+		"createSourceMap": 0,
+		"debugStyle": 0,
+		"decimalPrecision": 10,
+		"fileType": 4,
+		"ignore": 1,
+		"ignoreWasSetByUser": 0,
+		"inputAbbreviatedPath": "\/scss\/_styles.scss",
+		"outputAbbreviatedPath": "\/css\/_styles.css",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"outputStyle": 0,
+		"shouldRunAutoprefixer": 0,
+		"shouldRunBless": 0,
+		"useLibsass": 0
+		},
 	"\/scss\/app.scss": {
 		"createSourceMap": 0,
 		"debugStyle": 0,
@@ -4023,7 +4061,7 @@
 		"outputAbbreviatedPath": "css\/app.css",
 		"outputPathIsOutsideProject": 0,
 		"outputPathIsSetByUser": 0,
-		"outputStyle": 0,
+		"outputStyle": 3,
 		"shouldRunAutoprefixer": 0,
 		"shouldRunBless": 0,
 		"useLibsass": 1
