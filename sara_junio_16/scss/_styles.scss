@@ -93,7 +93,7 @@ section{
   }
   &#experience {
     .columns {
-      padding: rem-calc(10) 0;
+      padding: rem-calc(10);
       border-bottom: 1px solid $light-gray;
       &:last-of-type{
         border-bottom: none;
@@ -165,6 +165,9 @@ footer {
   }
   .heading{
     //padding-top: 0;
+    .arrow {
+      margin-left: 0;
+    }
   }
   .nav-menu{
     display: none !important;
