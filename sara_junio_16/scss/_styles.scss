@@ -186,12 +186,12 @@ footer {
     position: fixed;
     left: 0;
     right: 0;
-    button{
-      width: 100%;
+    .menu-button{
+      width: rem-calc(44);
       height: rem-calc(44);
+      display: block;
       margin-bottom: 0;
       background-color: transparent;
-      background-image: url('../img/menu-A.png');
       background-repeat: no-repeat;
       &:hover, &:active, &:focus{
         background-color: transparent;
