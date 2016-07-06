@@ -3884,6 +3884,39 @@
 		"outputPathIsSetByUser": 0,
 		"outputStyle": 1
 		},
+	"\/bower_components\/what-input\/dist\/lte-IE8.js": {
+		"fileType": 64,
+		"ignore": 0,
+		"ignoreWasSetByUser": 0,
+		"inputAbbreviatedPath": "\/bower_components\/what-input\/dist\/lte-IE8.js",
+		"outputAbbreviatedPath": "\/bower_components\/what-input\/dist\/min\/lte-IE8-min.js",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"outputStyle": 1,
+		"syntaxCheckerStyle": 1
+		},
+	"\/bower_components\/what-input\/dist\/what-input.js": {
+		"fileType": 64,
+		"ignore": 0,
+		"ignoreWasSetByUser": 0,
+		"inputAbbreviatedPath": "\/bower_components\/what-input\/dist\/what-input.js",
+		"outputAbbreviatedPath": "\/bower_components\/what-input\/dist\/min\/what-input-min.js",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"outputStyle": 1,
+		"syntaxCheckerStyle": 1
+		},
+	"\/bower_components\/what-input\/dist\/what-input.min.js": {
+		"fileType": 64,
+		"ignore": 0,
+		"ignoreWasSetByUser": 0,
+		"inputAbbreviatedPath": "\/bower_components\/what-input\/dist\/what-input.min.js",
+		"outputAbbreviatedPath": "\/bower_components\/what-input\/dist\/min\/what-input.min-min.js",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"outputStyle": 1,
+		"syntaxCheckerStyle": 1
+		},
 	"\/bower_components\/what-input\/Gulpfile.js": {
 		"fileType": 64,
 		"ignore": 0,
@@ -3904,17 +3937,6 @@
 		"outputPathIsOutsideProject": 0,
 		"outputPathIsSetByUser": 0
 		},
-	"\/bower_components\/what-input\/lte-IE8.js": {
-		"fileType": 64,
-		"ignore": 0,
-		"ignoreWasSetByUser": 0,
-		"inputAbbreviatedPath": "\/bower_components\/what-input\/lte-IE8.js",
-		"outputAbbreviatedPath": "\/bower_components\/what-input\/min\/lte-IE8-min.js",
-		"outputPathIsOutsideProject": 0,
-		"outputPathIsSetByUser": 0,
-		"outputStyle": 1,
-		"syntaxCheckerStyle": 1
-		},
 	"\/bower_components\/what-input\/package.json": {
 		"fileType": 524288,
 		"ignore": 1,
@@ -3925,28 +3947,6 @@
 		"outputPathIsOutsideProject": 0,
 		"outputPathIsSetByUser": 0,
 		"outputStyle": 1
-		},
-	"\/bower_components\/what-input\/polyfills\/ie8\/EventListener.js": {
-		"fileType": 64,
-		"ignore": 0,
-		"ignoreWasSetByUser": 0,
-		"inputAbbreviatedPath": "\/bower_components\/what-input\/polyfills\/ie8\/EventListener.js",
-		"outputAbbreviatedPath": "\/bower_components\/what-input\/polyfills\/ie8\/min\/EventListener-min.js",
-		"outputPathIsOutsideProject": 0,
-		"outputPathIsSetByUser": 0,
-		"outputStyle": 1,
-		"syntaxCheckerStyle": 1
-		},
-	"\/bower_components\/what-input\/polyfills\/ie8\/indexOf.js": {
-		"fileType": 64,
-		"ignore": 0,
-		"ignoreWasSetByUser": 0,
-		"inputAbbreviatedPath": "\/bower_components\/what-input\/polyfills\/ie8\/indexOf.js",
-		"outputAbbreviatedPath": "\/bower_components\/what-input\/polyfills\/ie8\/min\/indexOf-min.js",
-		"outputPathIsOutsideProject": 0,
-		"outputPathIsSetByUser": 0,
-		"outputStyle": 1,
-		"syntaxCheckerStyle": 1
 		},
 	"\/bower_components\/what-input\/README.md": {
 		"criticStyle": 0,
@@ -3969,23 +3969,45 @@
 		"randomFootnoteNumbers": 0,
 		"useCompatibilityMode": 0
 		},
-	"\/bower_components\/what-input\/what-input.js": {
+	"\/bower_components\/what-input\/src\/polyfills\/ie8\/EventListener.js": {
 		"fileType": 64,
 		"ignore": 0,
 		"ignoreWasSetByUser": 0,
-		"inputAbbreviatedPath": "\/bower_components\/what-input\/what-input.js",
-		"outputAbbreviatedPath": "\/bower_components\/what-input\/min\/what-input-min.js",
+		"inputAbbreviatedPath": "\/bower_components\/what-input\/src\/polyfills\/ie8\/EventListener.js",
+		"outputAbbreviatedPath": "\/bower_components\/what-input\/src\/polyfills\/ie8\/min\/EventListener-min.js",
 		"outputPathIsOutsideProject": 0,
 		"outputPathIsSetByUser": 0,
 		"outputStyle": 1,
 		"syntaxCheckerStyle": 1
 		},
-	"\/bower_components\/what-input\/what-input.min.js": {
+	"\/bower_components\/what-input\/src\/polyfills\/ie8\/indexOf.js": {
 		"fileType": 64,
 		"ignore": 0,
 		"ignoreWasSetByUser": 0,
-		"inputAbbreviatedPath": "\/bower_components\/what-input\/what-input.min.js",
-		"outputAbbreviatedPath": "\/bower_components\/what-input\/min\/what-input.min-min.js",
+		"inputAbbreviatedPath": "\/bower_components\/what-input\/src\/polyfills\/ie8\/indexOf.js",
+		"outputAbbreviatedPath": "\/bower_components\/what-input\/src\/polyfills\/ie8\/min\/indexOf-min.js",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"outputStyle": 1,
+		"syntaxCheckerStyle": 1
+		},
+	"\/bower_components\/what-input\/src\/what-input.js": {
+		"fileType": 64,
+		"ignore": 0,
+		"ignoreWasSetByUser": 0,
+		"inputAbbreviatedPath": "\/bower_components\/what-input\/src\/what-input.js",
+		"outputAbbreviatedPath": "\/bower_components\/what-input\/src\/min\/what-input-min.js",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"outputStyle": 1,
+		"syntaxCheckerStyle": 1
+		},
+	"\/bower_components\/what-input\/webpack.config.js": {
+		"fileType": 64,
+		"ignore": 0,
+		"ignoreWasSetByUser": 0,
+		"inputAbbreviatedPath": "\/bower_components\/what-input\/webpack.config.js",
+		"outputAbbreviatedPath": "\/bower_components\/what-input\/min\/webpack.config-min.js",
 		"outputPathIsOutsideProject": 0,
 		"outputPathIsSetByUser": 0,
 		"outputStyle": 1,
@@ -4160,6 +4182,28 @@
 		"initialSize": 104342,
 		"inputAbbreviatedPath": "\/img\/ford.png",
 		"outputAbbreviatedPath": "\/img\/ford.png",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"processed": 0
+		},
+	"\/img\/hero-banner-2.jpg": {
+		"fileType": 16384,
+		"ignore": 0,
+		"ignoreWasSetByUser": 0,
+		"initialSize": 407166,
+		"inputAbbreviatedPath": "\/img\/hero-banner-2.jpg",
+		"outputAbbreviatedPath": "\/img\/hero-banner-2.jpg",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"processed": 0
+		},
+	"\/img\/hero-banner-3.jpg": {
+		"fileType": 16384,
+		"ignore": 0,
+		"ignoreWasSetByUser": 0,
+		"initialSize": 501143,
+		"inputAbbreviatedPath": "\/img\/hero-banner-3.jpg",
+		"outputAbbreviatedPath": "\/img\/hero-banner-3.jpg",
 		"outputPathIsOutsideProject": 0,
 		"outputPathIsSetByUser": 0,
 		"processed": 0
