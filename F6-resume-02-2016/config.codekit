@@ -4624,12 +4624,34 @@
 		"outputStyle": 1,
 		"syntaxCheckerStyle": 1
 		},
+	"\/js\/min\/foundation.min-min.js": {
+		"fileType": 64,
+		"ignore": 1,
+		"ignoreWasSetByUser": 0,
+		"inputAbbreviatedPath": "\/js\/min\/foundation.min-min.js",
+		"outputAbbreviatedPath": "\/js\/min\/min\/foundation.min-min-min.js",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"outputStyle": 1,
+		"syntaxCheckerStyle": 1
+		},
 	"\/js\/min\/validate-min.js": {
 		"fileType": 64,
 		"ignore": 1,
 		"ignoreWasSetByUser": 0,
 		"inputAbbreviatedPath": "\/js\/min\/validate-min.js",
 		"outputAbbreviatedPath": "\/js\/min\/min\/validate-min-min.js",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"outputStyle": 1,
+		"syntaxCheckerStyle": 1
+		},
+	"\/js\/min\/what-input.min-min.js": {
+		"fileType": 64,
+		"ignore": 1,
+		"ignoreWasSetByUser": 0,
+		"inputAbbreviatedPath": "\/js\/min\/what-input.min-min.js",
+		"outputAbbreviatedPath": "\/js\/min\/min\/what-input.min-min-min.js",
 		"outputPathIsOutsideProject": 0,
 		"outputPathIsSetByUser": 0,
 		"outputStyle": 1,
@@ -4825,7 +4847,7 @@
 	},
 "hooks": [
 	],
-"lastSavedByUser": "Miguel Ángel Rodríguez Álvarez Icaza",
+"lastSavedByUser": "Miguel Angel Rodriguez Alvarez Icaza",
 "manualImportLinks": {
 	},
 "projectAttributes": {
