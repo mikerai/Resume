@@ -7,6 +7,13 @@ body {
   position: relative;
 }
 
+.row{
+	.row{
+		margin-right: 0 !important;
+		margin-left: 0 !important;
+	}
+}
+
 // Font-sizes from 10 through 30 
 @for $i from 10 through 30{
    .fsz#{$i} { font-size: rem-calc($i); }
@@ -231,20 +238,19 @@ section {
 	}
 	&.skills{
 		ul{
-			margin-left: rem-calc(17);
+			margin-left: rem-calc(10);
 			li{
 				list-style-type: none;
 				&::before{
 				  content: '\2022';
-				  display: inline;
+				  display: block;
 				  position: relative;
 				  max-width: 0;
 				  max-height: 0;
-				  margin-left: rem-calc(10);
 				  left: rem-calc(-10);
-				  top: rem-calc(-5);
-				  color: $ka-3;
-				  font-size: rem-calc(30);
+				  top: rem-calc(-1);
+				  color: $ka-4;
+				  font-size: inherit;
 				  vertical-align: middle;
 				}
 			}
@@ -383,6 +389,9 @@ section {
 		color: $ka-1;
 		h3, p{
 			text-align: center;
+			&.noCaptcha{
+				text-align: left;
+			}
 		}
 		p{
 			margin-top: rem-calc(15);
@@ -425,7 +434,9 @@ section {
 		}
 		.action{
 			.submit{
-				float: right;
+				//float: right;
+				display: none;
+				margin-top: rem-calc(15);
 				min-width: rem-calc(250);
 				background-color: $white;
 				border: 2px solid $white;

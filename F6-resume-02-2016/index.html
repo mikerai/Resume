@@ -298,9 +298,23 @@
             <label>Your message:</label>
               <textarea id="message" placeholder="Your message goes here"></textarea>
           </div>
-          <div class="columns small-12 medium-4 medium-offset-4 action">
+          <div class="small-12 medium-4 medium-offset-4 columns google-recaptcha">
+            <p class="noCaptcha">
+              <label for="captcha">¿Eres humano?</label>   
+            </p>
+            <div class="g-recaptcha" data-sitekey="6Lfr4v4SAAAAAG2uh-QBhK-4NVX1gtyaXt5z79BT" data-callback="onValidate"></div>
+          </div>
+          <div class="columns small-12 medium-4 medium-offset-4 action text-center">
             <button class="submit large button" id="submit" type="submit">Send</button>
           </div>
+          <script>
+            onValidate = function ()
+              {
+                $(".button.submit").slideToggle(150);
+                $("p.noCaptcha").fadeOut(1500);
+                $("div.g-recaptcha").fadeOut(1500);
+              };
+          </script>
         </form>
       </div>     
     </section>
@@ -347,12 +361,7 @@
       </filter>
     </svg>
 
-    <script src="js/jquery.min.js"></script>
-    <script src="js/what-input.min.js"></script>
-    <script src="js/foundation.min.js"></script>
-    <script src="js/app-min.js"></script>
-    <script src="js/header-min.js"></script>
-    <script src="js/validate.js"></script>
+    <script src="js/j.js"></script>
     <script>
       var $head = $( '#ha-header' );
       $( '.ha-waypoint' ).each( function(i) {
@@ -371,15 +380,7 @@
       } );
     </script>
     <script type='text/javascript' src='https://www.google.com/recaptcha/api.js'></script>
-    <script>
-      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
-      ga('create', 'UA-76762408-1', 'auto');
-      ga('send', 'pageview');
-
-    </script>
+    <script>_gaq=[['_setAccount','UA-76762408-1'],['_trackPageview']]</script>
+    <script src="https://www.google-analytics.com/ga.js"></script>
   </body>
 </html>
