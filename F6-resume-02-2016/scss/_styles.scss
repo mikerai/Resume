@@ -388,9 +388,12 @@ section {
 		background-color: $ka-3;
 		color: $ka-1;
 		h3, p{
-			text-align: center;
+			text-align:center;
 			&.noCaptcha{
 				text-align: left;
+				label{
+					color: $ka-4;
+				}
 			}
 		}
 		p{
