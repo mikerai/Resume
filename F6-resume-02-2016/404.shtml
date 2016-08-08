@@ -19,11 +19,11 @@
       </div>
       <div class="filter"></div>
       <video autoplay="" loop="" class="fillWidth fadeIn animated">
-        <source src="videos/Love-Coding.mp4" type="video/mp4">Your browser does not support the video tag. I suggest you upgrade your browser.
-        <source src="videos/Love-Coding.webm" type="video/webm">Your browser does not support the video tag. I suggest you upgrade your browser.
+        <source src="videos/Wall-Sketching.mp4" type="video/mp4">Your browser does not support the video tag. I suggest you upgrade your browser.
+        <source src="videos/Wall-Sketching.webm" type="video/webm">Your browser does not support the video tag. I suggest you upgrade your browser.
       </video>
       <div class="poster hidden">
-        <img src="videos/Love-Coding.jpg" alt="" >
+        <img src="videos/Wall-Sketching.jpg" alt="" >
       </div>
     </div>
   </div>
