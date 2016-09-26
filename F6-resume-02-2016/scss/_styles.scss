@@ -160,6 +160,9 @@ section {
 		  background: url('../img/hero-banner-2.jpg') 50% 0 no-repeat;
 		  background-size: cover;
 		  opacity: 1;
+		  &.ios-apps{
+		  	background: url('../img/apple-iphone-desk-office.jpg') 50% 0 no-repeat;
+		  }
 		}
 	}
 	&.resume,  &.skills, &.education, &.tools, &.portfolio, &.contact{
@@ -382,6 +385,15 @@ section {
 			font-weight: bold;
 			letter-spacing: 2px;
 			text-align: center;
+		}
+		.ios-support{
+			background-color: $ka-4;
+			color: $white;
+			border: 2px solid $ka-4;
+			&:hover{
+				background-color: $white;
+				color: $ka-4;
+			}
 		}
 	}
 	&.contact{
