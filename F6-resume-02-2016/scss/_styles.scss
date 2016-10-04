@@ -7,6 +7,13 @@ body {
   position: relative;
 }
 
+#breast-cancer-awareness{
+	position: fixed;
+	z-index: 99999;
+	top: 40%;
+	left: 2%;
+}
+
 .row{
 	.row{
 		margin-right: 0 !important;

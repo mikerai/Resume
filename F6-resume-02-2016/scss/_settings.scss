@@ -48,12 +48,21 @@ $global-font-size: 100%;
 $global-width: rem-calc(1240);
 $global-lineheight: 1.5;
 // Neutral blue palette from Kuler Adobe
-$ka-1: #FCFFF5; //white
-$ka-2: #D1DBBD; //pearl
-$ka-3: #91AA9D; //silk green
-$ka-4: #3E606F; //steel green-blue-gray
-$ka-4-trans: rgba(62,96,111,0.6);
-$ka-5: #193441; //sober blue
+//$ka-1: #FCFFF5; //white
+//$ka-2: #D1DBBD; //pearl
+//$ka-3: #91AA9D; //silk green
+//$ka-4: #3E606F; //steel green-blue-gray
+//$ka-4-trans: rgba(62,96,111,0.6);
+// Breast Cancer Pink Palette
+$ka-1: #F2AEBB;
+$ka-2: #F272A1;
+$ka-3: #F291B5;
+//$ka-4: rgb(234,128,176); 
+//$ka-4-trans: rgba(234,128,176,0.6);
+$ka-4: rgb(242,15,121); 
+$ka-4-trans: rgba(242,15,121,0.6);
+$ka-5: #F257A0; 
+//$ka-5: #193441; //sober blue
 $red: #BF2C37;
 $yellow: #FFE200;
 $light-blue: #4797D2;
