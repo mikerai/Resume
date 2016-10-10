@@ -57,7 +57,7 @@ body {
 
 section {
 	h3, h4, h5, h6{
-		font-family: 'montserratregular';
+		font-family: 'adam.cg_proregular';
 	}
 	&.hero{
 		.hero-content{
@@ -83,14 +83,14 @@ section {
 				border: 5px solid $white;
 				padding: rem-calc(15);
 				font:{
-					family:'montserratbold', sans-serif;
+					family:'adam.cg_proregular', sans-serif;
 					size: rem-calc(34);
 				}
 				margin: rem-calc(15) 0;
 			}
 			h2{
 				font: {
-					family: 'montserratlight', sans-serif;
+					family: 'adam.cg_proregular', sans-serif;
 					size: rem-calc(28);
 				}
 			}
