@@ -464,7 +464,8 @@ section {
 	}
 	&.contact{
 		background-color: $ka-3;
-		color: $ka-1;
+		//color: $ka-1;
+		color: $ultra-white;
 		h3, p{
 			text-align:center;
 			&.noCaptcha{
@@ -483,7 +484,8 @@ section {
 			margin-right: auto !important;
 			margin-left: auto !important;
 			label{
-				color: $ka-1 !important;
+				//color: $ka-1 !important;
+				color: $ultra-white !important;
 				font-size: rem-calc(15);
 			}
 			::-webkit-input-placeholder {
