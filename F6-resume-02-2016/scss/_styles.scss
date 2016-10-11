@@ -211,6 +211,7 @@ section {
 			padding: rem-calc(10);
 			&:nth-of-type(odd){
 				background-color: $light-gray;
+				padding: rem-calc(15);
 				//background-image: url("/img/bg-1.png") !important;
   			//background-repeat: repeat;
 			}
