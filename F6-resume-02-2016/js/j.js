@@ -80,6 +80,10 @@ $(function(){
         };
     }
 
+    if (isMobile()) {
+        $('.large.download.button').text('View My Resume');
+    };
+
   // ---- Back to top desktop and tablet 
 
   /*jQuery(document).ready(function($){

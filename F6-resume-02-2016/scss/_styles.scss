@@ -5,20 +5,20 @@ body {
 	overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
   position: relative;
+  background-image: url("/img/bg.png") !important;
+  background-repeat: repeat;
 }
 
-#breast-cancer-awareness{
-	position: fixed;
-	z-index: 99999;
-	top: 40%;
-	left: 2%;
+::-moz-selection {
+  background: $success-color;
+  color: white;
+  text-shadow: none;
 }
 
-.row{
-	.row{
-		margin-right: 0 !important;
-		margin-left: 0 !important;
-	}
+::selection {
+  background: $success-color;
+  color: white;
+  text-shadow: none;
 }
 
 // Font-sizes from 10 through 30 
@@ -36,16 +36,28 @@ body {
    .p#{$k} { padding: rem-calc($k); }.ptb#{$k} { padding-top: rem-calc($k); padding-bottom: rem-calc($k); }.plr#{$k} { padding-left: rem-calc($k); padding-right: rem-calc($k); }.pt#{$k} { padding-top: rem-calc($k); }.pb#{$k} { padding-bottom: rem-calc($k); }.pl#{$k} { padding-left: rem-calc($k); }.pr#{$k} { padding-right: rem-calc($k); }
 }
 
-::-moz-selection { 
-	background-color: #BEF6A8; 
+#breast-cancer-awareness{
+	position: fixed;
+	z-index: 99999;
+	top: 40%;
+	left: 2%;
+	background-color: transparent;
 }
 
-::selection {
-	background-color: #BEF6A8;
+.row{
+	.row{
+		margin-right: 0 !important;
+		margin-left: 0 !important;
+	}
 }
 
 .strong{
 	font-weight: 700;
+}
+
+.np{
+	padding-right: 0 !important;
+	padding-left: 0 !important;
 }
 
 .defs-only {
@@ -56,10 +68,15 @@ body {
 }
 
 section {
+	background-color: $ultra-white;
 	h3, h4, h5, h6{
 		font-family: 'adam.cg_proregular';
+		text-align: left;
 	}
 	&.hero{
+		background-color: $body-background;
+		background-image: url("/img/bg.png") !important;
+  	background-repeat: repeat;
 		.hero-content{
 			margin: 0 auto;
 			text-align: center;
@@ -174,6 +191,11 @@ section {
 	}
 	&.resume,  &.skills, &.education, &.tools, &.portfolio, &.contact{
 		padding: rem-calc(15) 0;
+		margin: rem-calc(20) auto;
+		border: rem-calc(1) solid $medium-gray;
+    -moz-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2), inset 0 0 10px rgba(0, 0, 0, 0.03);
+    -webkit-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2), inset 0 0 10px rgba(0, 0, 0, 0.03);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2), inset 0 0 10px rgba(0, 0, 0, 0.03);
 		h3{
 			font-size: rem-calc(25);
 			letter-spacing: rem-calc(2);
@@ -184,17 +206,30 @@ section {
 		.objective{
 			padding: rem-calc(15);
 		}
+		article{
+			margin: rem-calc(10) 0;
+			padding: rem-calc(10);
+			&:nth-of-type(odd){
+				background-color: $light-gray;
+				//background-image: url("/img/bg-1.png") !important;
+  			//background-repeat: repeat;
+			}
+			//&:last-of-type{
+				//border-bottom: rem-calc(1) solid $light-gray;
+			//}
+		}
 		ul{
 			margin-left: rem-calc(10);
 			li{
 				list-style-type: none;
+				padding-left: rem-calc(7);
 				&:before{
 				  content: '\2022';
 				  display: block;
 				  position: relative;
 				  max-width: 0;
 				  max-height: 0;
-				  left: rem-calc(-10);
+				  left: rem-calc(-13);
 				  top: rem-calc(-1);
 				  color: $ka-4;
 				  font-size: inherit;
@@ -203,13 +238,13 @@ section {
 			}
 		}
 		h2{
-			font-size: rem-calc(18);
+			font-size: rem-calc(20);
 			font-weight: bold;
 			letter-spacing: 2px;
 			text-align: center;
 		}
 		h4{
-			margin-bottom: rem-calc(10);
+			//margin-bottom: rem-calc(10);
 		}
 		h4, a{
 			font-size: rem-calc(16);
@@ -251,18 +286,39 @@ section {
 			margin-left: rem-calc(10);
 			li{
 				list-style-type: none;
+				padding-left: rem-calc(7);
 				&::before{
 				  content: '\2022';
 				  display: block;
 				  position: relative;
 				  max-width: 0;
 				  max-height: 0;
-				  left: rem-calc(-10);
+				  left: rem-calc(-13);
 				  top: rem-calc(-1);
 				  color: $ka-4;
 				  font-size: inherit;
 				  vertical-align: middle;
 				}
+			}
+		}
+		.has-tip{
+			border-bottom: none;
+		}
+		img{
+			border-radius: 50%;
+			border: rem-calc(7) solid $light-gray;
+			opacity: 1;
+			-webkit-transition: all 0.3s ease-in-out;
+		  -moz-transition: all 0.3s ease-in-out;
+		  -ms-transition: all 0.3s ease-in-out;
+		  -o-transition: all 0.3s ease-in-out;
+		  transition: all 0.3s ease-in-out;
+			&:hover{
+				opacity: 0.8;
+				-webkit-transform: scale(0.9); 
+		    -ms-transform: scale(0.9); 
+		    -moz-transform: scale(0.9);
+		    transform: scale(0.9);
 			}
 		}
 	}
@@ -271,6 +327,9 @@ section {
 		article{
 			padding-top: rem-calc(15);
 			padding-bottom: rem-calc(15);
+			h4{
+				text-align: center;
+			}
 			.logo{
 				//text-align: center;
 				height: rem-calc(180);
@@ -678,7 +737,10 @@ footer{
 		display: none !important;
 	}
 	section{
-		padding: 0 rem-calc(5) !important;
+		h3, h4, h5, h6{
+			text-align: center;
+		}
+		//padding: 0 rem-calc(5) !important;
 		&.hero{
 			margin-top: 0;
 			padding: 0 !important;
@@ -707,6 +769,9 @@ footer{
 		&.tools{
 			margin-top: rem-calc(5);
 			margin-bottom: rem-calc(5);
+		}
+		&.portfolio{
+			margin-top: rem-calc(10);
 		}
 		&.contact{
 			h3, p{

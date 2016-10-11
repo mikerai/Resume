@@ -102,6 +102,33 @@
 		"randomFootnoteNumbers": 0,
 		"useCompatibilityMode": 0
 		},
+	"\/bower_components\/foundation-sites\/css\/foundation-flex.css": {
+		"fileType": 16,
+		"ignore": 1,
+		"ignoreWasSetByUser": 0,
+		"inputAbbreviatedPath": "\/bower_components\/foundation-sites\/css\/foundation-flex.css",
+		"outputAbbreviatedPath": "No Output Path",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0
+		},
+	"\/bower_components\/foundation-sites\/css\/foundation-rtl.css": {
+		"fileType": 16,
+		"ignore": 1,
+		"ignoreWasSetByUser": 0,
+		"inputAbbreviatedPath": "\/bower_components\/foundation-sites\/css\/foundation-rtl.css",
+		"outputAbbreviatedPath": "No Output Path",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0
+		},
+	"\/bower_components\/foundation-sites\/css\/foundation.css": {
+		"fileType": 16,
+		"ignore": 1,
+		"ignoreWasSetByUser": 0,
+		"inputAbbreviatedPath": "\/bower_components\/foundation-sites\/css\/foundation.css",
+		"outputAbbreviatedPath": "No Output Path",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0
+		},
 	"\/bower_components\/foundation-sites\/customizer\/complete.json": {
 		"fileType": 524288,
 		"ignore": 1,
@@ -4140,6 +4167,28 @@
 		"outputPathIsSetByUser": 0,
 		"processed": 0
 		},
+	"\/img\/bg-1.png": {
+		"fileType": 32768,
+		"ignore": 0,
+		"ignoreWasSetByUser": 0,
+		"initialSize": 174,
+		"inputAbbreviatedPath": "\/img\/bg-1.png",
+		"outputAbbreviatedPath": "\/img\/bg-1.png",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"processed": 0
+		},
+	"\/img\/bg.png": {
+		"fileType": 32768,
+		"ignore": 0,
+		"ignoreWasSetByUser": 0,
+		"initialSize": 13961,
+		"inputAbbreviatedPath": "\/img\/bg.png",
+		"outputAbbreviatedPath": "\/img\/bg.png",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"processed": 0
+		},
 	"\/img\/design.jpg": {
 		"fileType": 16384,
 		"ignore": 0,
@@ -4378,6 +4427,28 @@
 		"initialSize": 4941,
 		"inputAbbreviatedPath": "\/img\/nexcom.png",
 		"outputAbbreviatedPath": "\/img\/nexcom.png",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"processed": 0
+		},
+	"\/img\/profile-picture.jpg": {
+		"fileType": 16384,
+		"ignore": 0,
+		"ignoreWasSetByUser": 0,
+		"initialSize": 7189,
+		"inputAbbreviatedPath": "\/img\/profile-picture.jpg",
+		"outputAbbreviatedPath": "\/img\/profile-picture.jpg",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"processed": 0
+		},
+	"\/img\/profile-picture@2x.jpg": {
+		"fileType": 16384,
+		"ignore": 0,
+		"ignoreWasSetByUser": 0,
+		"initialSize": 15743,
+		"inputAbbreviatedPath": "\/img\/profile-picture@2x.jpg",
+		"outputAbbreviatedPath": "\/img\/profile-picture@2x.jpg",
 		"outputPathIsOutsideProject": 0,
 		"outputPathIsSetByUser": 0,
 		"processed": 0
