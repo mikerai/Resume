@@ -204,7 +204,7 @@ section {
 	
 	&.resume{
 		.objective{
-			padding: rem-calc(15);
+			padding: 0 rem-calc(15) rem-calc(15) rem-calc(15);
 		}
 		article{
 			margin: rem-calc(10) 0;
