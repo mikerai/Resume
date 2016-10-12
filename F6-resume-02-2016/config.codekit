@@ -4189,6 +4189,17 @@
 		"outputPathIsSetByUser": 0,
 		"processed": 0
 		},
+	"\/img\/bg_products.png": {
+		"fileType": 32768,
+		"ignore": 0,
+		"ignoreWasSetByUser": 0,
+		"initialSize": 11215,
+		"inputAbbreviatedPath": "\/img\/bg_products.png",
+		"outputAbbreviatedPath": "\/img\/bg_products.png",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"processed": 0
+		},
 	"\/img\/design.jpg": {
 		"fileType": 16384,
 		"ignore": 0,
@@ -4372,6 +4383,17 @@
 		"initialSize": 29832,
 		"inputAbbreviatedPath": "\/img\/keyboard.jpg",
 		"outputAbbreviatedPath": "\/img\/keyboard.jpg",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"processed": 0
+		},
+	"\/img\/konvence.png": {
+		"fileType": 32768,
+		"ignore": 0,
+		"ignoreWasSetByUser": 0,
+		"initialSize": 6577,
+		"inputAbbreviatedPath": "\/img\/konvence.png",
+		"outputAbbreviatedPath": "\/img\/konvence.png",
 		"outputPathIsOutsideProject": 0,
 		"outputPathIsSetByUser": 0,
 		"processed": 0
