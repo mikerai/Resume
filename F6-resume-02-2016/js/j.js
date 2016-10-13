@@ -82,6 +82,8 @@ $(function(){
 
     if (isMobile()) {
         $('.large.download.button').text('View My Resume');
+        //$(".g-recaptcha").css({"transform":"scale(0.8)", "transform-origin":"0 0"});
+        $(".g-recaptcha").attr('data-size', 'compact');
     };
 
   // ---- Back to top desktop and tablet 
