@@ -43,7 +43,7 @@
               <span>Men&uacute;</span>
             </div>
           </div>
-          <section class="row heading align-middle align-center" id="heading">
+          <div class="row main-heading align-middle align-center hide-for-small">
             <div class="large-12 columns">
               <h1 class="text-center">Sara Mui&ntilde;o Murga</h1>
               <p>Maestra en Arquitectura y Nuevo Urbanismo.</p>
@@ -55,7 +55,33 @@
               </div>
             </div>
             <div class="arrow">
+              <a href="#education" alt="Ver más acerca de mi" title="Por favor da click aquí para saber más de mi"></a>
             </div>
+          </div>
+          <section class="homepage-hero-module">
+            <div class="video-container">
+                <div class="filter"></div>
+                <video autoplay loop class="fillWidth">
+                    <source src="videos/To-The-Left.mp4" type="video/mp4" />Your browser does not support the video tag. I suggest you upgrade your browser.
+                    <source src="videos/To-The-Left.webm" type="video/webm" />Your browser does not support the video tag. I suggest you upgrade your browser.
+                </video>
+                <div class="poster hidden">
+                    <img src="videos/To-The-Left.jpg" alt="The Boulevard">
+                </div>
+            </div>
+          </section>
+          <section class="row heading align-middle align-center show-for-small-only" id="heading">
+            <div class="large-12 columns">
+              <h1 class="text-center">Sara Mui&ntilde;o Murga</h1>
+              <p>Maestra en Arquitectura y Nuevo Urbanismo.</p>
+              <p>Arquitecto.</p>
+            </div>
+            <div class="columns small-12">
+              <div class="mtb40 text-center">
+                <a href="http://muino.net/CV.pdf" target="_blank" class="large button">Descargar mi CV</a>
+              </div>
+            </div>
+            <div class="arrow"></div>
           </section>
           
           <section class="row" id="education">
@@ -308,7 +334,7 @@
           
           <footer class="row align-center">
             <div class="columns small-12 text-center">
-              <p>&copy; 2016. muino.net. Todos los derechos reservados.</p>
+              <p>Copyright&copy; <script>document.write(new Date().getFullYear())</script>. muino.net. Todos los derechos reservados.</p>
             </div>
           </footer>
 
@@ -321,14 +347,6 @@
     <script src="js/min/foundation.min.js"></script>
     <script src="js/min/app-min.js"></script>
     <script type='text/javascript' src="https://www.google.com/recaptcha/api.js?hl=es"></script>
-    <script>
-      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-      })(window,document,'script','//www.muino.net/ga.js','ga');
-
-      ga('create', 'UA-49096652-2', 'auto');
-      ga('send', 'pageview');
-    </script>
+    <script>_gaq=[['_setAccount','UA-49096652-2'],['_trackPageview']]</script>
   </body>
 </html>
