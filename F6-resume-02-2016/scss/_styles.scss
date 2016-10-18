@@ -462,6 +462,35 @@ section {
 				color: $ka-4;
 			}
 		}
+		.github{
+			color: transparent;
+			background-color: transparent;
+			background-image: url('../img/GitHub_Logo.png');
+			height: rem-calc(123);
+			width: rem-calc(300);
+			opacity: 0.75;
+			-webkit-transition: all 0.3s ease-in-out;
+		  -moz-transition: all 0.3s ease-in-out;
+		  -ms-transition: all 0.3s ease-in-out;
+		  -o-transition: all 0.3s ease-in-out;
+		  transition: all 0.3s ease-in-out;
+		  -webkit-transform: scale(0.9); 
+	    -ms-transform: scale(0.9); 
+	    -moz-transform: scale(0.9);
+	    transform: scale(0.9);
+			&:hover{
+				color: transparent;
+				background-color: transparent;
+				background-image: url('../img/Octocat.png');
+				height: rem-calc(249);
+				width: rem-calc(300);
+				opacity: 1;
+				-webkit-transform: scale(1); 
+		    -ms-transform: scale(1); 
+		    -moz-transform: scale(1);
+		    transform: scale(1);
+			}
+		}
 	}
 	&.contact{
 		background-color: $ka-3;

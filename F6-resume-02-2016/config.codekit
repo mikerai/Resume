@@ -4277,6 +4277,17 @@
 		"outputPathIsSetByUser": 0,
 		"processed": 0
 		},
+	"\/img\/GitHub_Logo.png": {
+		"fileType": 32768,
+		"ignore": 0,
+		"ignoreWasSetByUser": 0,
+		"initialSize": 2677,
+		"inputAbbreviatedPath": "\/img\/GitHub_Logo.png",
+		"outputAbbreviatedPath": "\/img\/GitHub_Logo.png",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"processed": 0
+		},
 	"\/img\/hero-banner-2.jpg": {
 		"fileType": 16384,
 		"ignore": 0,
@@ -4449,6 +4460,17 @@
 		"initialSize": 4941,
 		"inputAbbreviatedPath": "\/img\/nexcom.png",
 		"outputAbbreviatedPath": "\/img\/nexcom.png",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"processed": 0
+		},
+	"\/img\/Octocat.png": {
+		"fileType": 32768,
+		"ignore": 0,
+		"ignoreWasSetByUser": 0,
+		"initialSize": 10247,
+		"inputAbbreviatedPath": "\/img\/Octocat.png",
+		"outputAbbreviatedPath": "\/img\/Octocat.png",
 		"outputPathIsOutsideProject": 0,
 		"outputPathIsSetByUser": 0,
 		"processed": 0
