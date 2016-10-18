@@ -3881,17 +3881,6 @@
 		"outputStyle": 1,
 		"syntaxCheckerStyle": 1
 		},
-	"\/bower_components\/what-input\/webpack.config.js": {
-		"fileType": 64,
-		"ignore": 0,
-		"ignoreWasSetByUser": 0,
-		"inputAbbreviatedPath": "\/bower_components\/what-input\/webpack.config.js",
-		"outputAbbreviatedPath": "\/bower_components\/what-input\/min\/webpack.config-min.js",
-		"outputPathIsOutsideProject": 0,
-		"outputPathIsSetByUser": 0,
-		"outputStyle": 1,
-		"syntaxCheckerStyle": 1
-		},
 	"\/CHANGELOG.md": {
 		"criticStyle": 0,
 		"enableFootnotes": 1,
@@ -4778,6 +4767,61 @@
 		"outputAbbreviatedPath": "No Output Path",
 		"outputPathIsOutsideProject": 0,
 		"outputPathIsSetByUser": 0
+		},
+	"\/videos\/Backyard.jpg": {
+		"fileType": 16384,
+		"ignore": 0,
+		"ignoreWasSetByUser": 0,
+		"initialSize": 353483,
+		"inputAbbreviatedPath": "\/videos\/Backyard.jpg",
+		"outputAbbreviatedPath": "\/videos\/Backyard.jpg",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"processed": 0
+		},
+	"\/videos\/Coverr-flowers.jpg": {
+		"fileType": 16384,
+		"ignore": 0,
+		"ignoreWasSetByUser": 0,
+		"initialSize": 373583,
+		"inputAbbreviatedPath": "\/videos\/Coverr-flowers.jpg",
+		"outputAbbreviatedPath": "\/videos\/Coverr-flowers.jpg",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"processed": 0
+		},
+	"\/videos\/Free-Parking.jpg": {
+		"fileType": 16384,
+		"ignore": 0,
+		"ignoreWasSetByUser": 0,
+		"initialSize": 925074,
+		"inputAbbreviatedPath": "\/videos\/Free-Parking.jpg",
+		"outputAbbreviatedPath": "\/videos\/Free-Parking.jpg",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"processed": 0
+		},
+	"\/videos\/The-Boulevard.jpg": {
+		"fileType": 16384,
+		"ignore": 0,
+		"ignoreWasSetByUser": 0,
+		"initialSize": 366178,
+		"inputAbbreviatedPath": "\/videos\/The-Boulevard.jpg",
+		"outputAbbreviatedPath": "\/videos\/The-Boulevard.jpg",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"processed": 0
+		},
+	"\/videos\/To-The-Left.jpg": {
+		"fileType": 16384,
+		"ignore": 0,
+		"ignoreWasSetByUser": 0,
+		"initialSize": 199714,
+		"inputAbbreviatedPath": "\/videos\/To-The-Left.jpg",
+		"outputAbbreviatedPath": "\/videos\/To-The-Left.jpg",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"processed": 0
 		}
 	},
 "hooks": [

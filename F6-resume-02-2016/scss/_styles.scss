@@ -9,13 +9,13 @@ body {
   background-repeat: repeat;
 }
 
-::-moz-selection {
+::selection {
   background: $success-color;
   color: white;
   text-shadow: none;
 }
 
-::selection {
+::-moz-selection {
   background: $success-color;
   color: white;
   text-shadow: none;
@@ -181,7 +181,7 @@ section {
 		  height: 100vh;
 		  top: 0;
 		  bottom: 0;
-		  background: url('../img/hero-banner-2.jpg') 50% 0 no-repeat;
+		  background: url('../img/hero-banner-3.jpg') 0 50% no-repeat;
 		  background-size: cover;
 		  opacity: 1;
 		  &.ios-apps{
