@@ -5021,6 +5021,17 @@
 		"outputPathIsSetByUser": 0,
 		"processed": 0
 		},
+	"\/videos\/Inbox-Zero.jpg": {
+		"fileType": 16384,
+		"ignore": 0,
+		"ignoreWasSetByUser": 0,
+		"initialSize": 203096,
+		"inputAbbreviatedPath": "\/videos\/Inbox-Zero.jpg",
+		"outputAbbreviatedPath": "\/videos\/Inbox-Zero.jpg",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"processed": 0
+		},
 	"\/videos\/Mock-up.jpg": {
 		"fileType": 16384,
 		"ignore": 0,
