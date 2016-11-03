@@ -237,6 +237,8 @@ section{
     z-index: 2;
     bottom: 0;
     top: 0;
+    width: auto !important;
+    height: 100%;
     &.fillWidth {
       width: 100%;
     }
@@ -280,15 +282,25 @@ footer {
     .filter{
       //background: none !important;
     }
-  }
-  video{
-    top: 0;
-    height: 100%;
-    width: auto !important;
+    video{
+      top: 0;
+      height: 100%;
+      width: auto !important;
+    }
   }
 }
 
 @include breakpoint(small only) {
+  .off-canvas-wrapper{
+    background-color: $primary-color !important;
+    .off-canvas{
+      background-color: $medium-gray !important;
+      &.is-open{
+        background-color: $white !important;
+      }
+    }
+  }
+  
   h1{
     color: $dark-gray;
     margin-top: rem-calc(40);
@@ -317,11 +329,11 @@ footer {
   }
   .menu.vertical{
     >li{
-      padding: rem-calc(14);
-      border-top: 1px solid $dark-gray;
+      padding: rem-calc(20) rem-calc(10);
+      border-top: 1px solid $light-gray;
       //border-bottom: 1px solid $dark-gray;
       &:last-of-type{
-        border-bottom: 1px solid $dark-gray;
+        border-bottom: 1px solid $light-gray;
       }
     }
   }
