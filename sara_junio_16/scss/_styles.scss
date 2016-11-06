@@ -1,15 +1,4 @@
-@font-face {
-  font-family: 'Open Sans';
-  font-style: normal;
-  font-weight: 400;
-  src: local('Open Sans'), local('OpenSans'), url(https://fonts.gstatic.com/s/opensans/v13/cJZKeOuBrn4kERxqtaUH3bO3LdcAZYWl9Si6vvxL-qU.woff) format('woff');
-}
-@font-face {
-  font-family: 'Open Sans';
-  font-style: normal;
-  font-weight: 700;
-  src: local('Open Sans Bold'), local('OpenSans-Bold'), url(https://fonts.gstatic.com/s/opensans/v13/k3k702ZOKiLJc3WVjuplzKRDOzjiPcYnFooOUGCOsRk.woff) format('woff');
-}
+@import url('https://fonts.googleapis.com/css?family=Gentium+Basic|Work+Sans');
 
 html {
   text-rendering: optimizeLegibility !important;
@@ -23,8 +12,12 @@ body {
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
   position: relative;
-  font-family: 'Open Sans', Helvetica, Arial, sans-serif;
+  font-family: 'Work Sans', Helvetica, Arial, sans-serif;
   letter-spacing: rem-calc(2);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Gentium Basic', serif;
 }
 
 h1{
