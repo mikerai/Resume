@@ -1,19 +1,26 @@
-RewriteEngine on
+RewriteEngine On
+RewriteCond %{HTTPS} !=on
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+# BEGIN Expire headers  
+<ifModule mod_expires.c>  
+        ExpiresActive On  
+        ExpiresDefault "access plus 1 month"  
+        ExpiresByType image/x-icon "access plus 1 month"  
+        ExpiresByType image/jpeg "access plus 1 month"  
+        ExpiresByType image/png "access plus 1 month"  
+        ExpiresByType image/gif "access plus 1 month"  
+        ExpiresByType application/x-shockwave-flash "access plus 1 month"  
+        ExpiresByType text/css "access plus 1 month"  
+        ExpiresByType text/javascript "access plus 1 month"  
+        ExpiresByType application/javascript "access plus 1 month"  
+        ExpiresByType application/x-javascript "access plus 1 month"  
+        ExpiresByType text/html "access plus 1 month"  
+        ExpiresByType application/xhtml+xml "access plus 1 month"  
+</ifModule>  
+# END Expire headers
 
-RewriteCond %{HTTP_REFERER} !^$
-RewriteCond %{HTTP_REFERER} !^http://mikerai.com/.*$      [NC]
-RewriteCond %{HTTP_REFERER} !^http://mikerai.com$      [NC]
-RewriteCond %{HTTP_REFERER} !^http://mikerai.com/demo/.*$      [NC]
-RewriteCond %{HTTP_REFERER} !^http://mikerai.com/demo$      [NC]
-RewriteCond %{HTTP_REFERER} !^http://violetaestudio.com/.*$      [NC]
-RewriteCond %{HTTP_REFERER} !^http://violetaestudio.com$      [NC]
-RewriteCond %{HTTP_REFERER} !^http://violetaestudio.mikerai.com/.*$      [NC]
-RewriteCond %{HTTP_REFERER} !^http://violetaestudio.mikerai.com$      [NC]
-RewriteCond %{HTTP_REFERER} !^http://www.mikerai.com/.*$      [NC]
-RewriteCond %{HTTP_REFERER} !^http://www.mikerai.com$      [NC]
-RewriteCond %{HTTP_REFERER} !^http://www.violetaestudio.com/.*$      [NC]
-RewriteCond %{HTTP_REFERER} !^http://www.violetaestudio.com$      [NC]
-RewriteCond %{HTTP_REFERER} !^http://www.violetaestudio.mikerai.com/.*$      [NC]
-RewriteCond %{HTTP_REFERER} !^http://www.violetaestudio.mikerai.com$      [NC]
-RewriteRule .*\.(jpg|jpeg|gif|png|bmp)$ - [F,NC]
-
+<IfModule mod_headers.c>
+   <FilesMatch "\.(js|css|xml|gz)$">
+     Header append Vary: Accept-Encoding
+   </FilesMatch>
+</IfModule>  
