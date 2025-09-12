@@ -1,0 +1,64 @@
+{
+  "name": "Typeform → AI → Telegram",
+  "nodes": [
+    {
+      "parameters": {
+        "triggerOn": "formResponse",
+        "formId": "<TU_FORM_ID_DE_TYPEFORM>"
+      },
+      "name": "Typeform Trigger",
+      "type": "n8n-nodes-base.typeformTrigger",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "agentType": "toolsAgent",
+        "input": "={{$json[\"What's the main reason for contacting me?\"]}}",
+        "memory": {
+          "mode": "simpleMemory",
+          "inputField": "={{$json[\"What's the main reason for contacting me?\"]}}"
+        }
+      },
+      "name": "AI Agent",
+      "type": "n8n-nodes-langchain.AgentV2",
+      "typeVersion": 1,
+      "position": [500, 300]
+    },
+    {
+      "parameters": {
+        "chatId": "={{$json[\"What is your telephone number?\"]}}",
+        "text": "={{$json[\"response\"]}}",
+        "options": {}
+      },
+      "name": "Telegram Send Message",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [750, 300]
+    }
+  ],
+  "connections": {
+    "Typeform Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Telegram Send Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}
