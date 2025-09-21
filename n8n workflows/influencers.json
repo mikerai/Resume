@@ -1,0 +1,55 @@
+"scene": "selfie casual de teléfono de los 2010; foto espontánea",
+ "subject": {
+ "type": "mujer adulta (vibra de idol)",
+ "age_range": "20s",
+ "hair": "liso o coleta sencilla",
+ "makeup": "labios brillantes, delineador resaltado",
+ "jewelry": "aros pequeños, cadena fina, pulseras"
+ },
+ "wardrobe": {
+ "top": "camiseta básica o tirantes",
+ "bottom": "shorts de mezclilla o minifalda",
+ "footwear": "zapatillas deportivas o botines",
+ "notes": "atuendo cotidiano, sin estilizar"
+ },
+ "pose": {
+ "angle": "selfie en espejo CUERPO ENTERO",
+ "body": "de pie, peso sobre una cadera",
+ "hands": "teléfono en una mano; la otra relajada o en el bolsillo",
+ "framing": "DE CABEZA A PIES, pies visibles, no recortado"
+ },
+ "camera": {
+ "device": "era iPhone 4/5",
+ "flash": "encendido (LED fuerte) con reflejo en el espejo",
+ "orientation": "vertical",
+ "aspect_ratio": "4:3",
+ "distance": "2–3 m del espejo para capturar cuerpo entero",
+ "focus": "suave; ligero desenfoque por movimiento de mano"
+ },
+ "look": {
+ "texture": "ruido digital granuloso; artefactos JPEG leves",
+ "sharpness": "baja; enfoque suave",
+ "color": "balance de blancos frío interior; reflejos quemados por el flash",
+ "effects": "viñeta sutil; vibra de filtro barato"
+ },
+ "background": {
+ "environment": "dormitorio o baño; desorden permitido; suelo visible",
+ "props": "espejo enmarcado; teléfono visible"
+ },
+ "style": {
+ "genre": "snapshot lo-fi Y2K/2010s",
+ "authenticity": "momento espontáneo imperfecto"
+ },
+ "ban": [
+ "iluminación de estudio",
+ "look DSLR/bokeh",
+ "corrección de color cinematográfica",
+ "habitación impecable y montada",
+ "logos/texto de marca",
+ "nsfw",
+ "pies recortados"
+ ],
+ "output": { "count": 1, "size": "1200x1600", "safety": "strict" },
+ "variants": [
+ { "name": "timer_fullbody", "angle": "cámara trasera sobre tocador, temporizador; sujeto centrado, ambas manos visibles" }
+ ]
