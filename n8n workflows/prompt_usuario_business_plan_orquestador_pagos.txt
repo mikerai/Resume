@@ -1,0 +1,51 @@
+Prompt n8n – Business Plan Orquestador de Pagos
+
+Quiero que generes un business plan profesional, con la profundidad técnica y financiera suficiente para que lo puedan evaluar fondos de inversión, VCs, perfiles financieros y técnicos, con el objetivo de levantar capital. No definas la estructura ni capítulos, concéntrate en el contenido y la narrativa estratégica.
+
+Contexto del negocio
+Somos un orquestador de pagos con plataforma para atender servicios financieros, iniciando operaciones en México y LATAM, con visión de expansión hacia productos cross-border (remesas, B2B, pagos internacionales) en USA y la región. Nuestra oferta se centra en empresas B2B que buscan modernizar sus pagos, incluyendo retail, comercio electrónico, cadenas de comercio grandes con poca tecnificación, distribuidores, marketplaces y algunas fintechs.
+
+Modelo de negocio
+	•	Ingresos principales: modelo SaaS (licencias anuales) + fees de implementación.
+	•	Ingresos adicionales: servicios premium de reportería e IA, motor anti-fraude propio, conciliación automática con IA como servicio mensual, comisión por transacción en casos específicos.
+
+Tecnología y roadmap
+	•	Fase 1 (time-to-market rápido): modelo híbrido, como reseller de Moneta y usando Beel como backbone white-label, principalmente para tarjeta no presente (e-commerce y ligas de pago).
+	•	Fase 2 (propia plataforma): construcción con switch Authentic en AWS como backend, sinergia con banco sponsor y certificación con PROSA/E-Global.
+	•	Exploración para transacciones con stablecoins y asociación con participante directo de SPEI a corto plazo.
+	•	Relaciones con procesadores internacionales como Unlimit (mediano plazo) y múltiples integraciones para ofrecer un portafolio amplio de servicios como Yuno.
+
+Metas 12–18 meses
+	•	12 meses: plataforma propia con 3 medios de pago operativos (tarjeta no presente, tarjeta presente, SPEI).
+	•	18 meses: plataforma propia con 4 medios de pago al 100% (incluyendo stablecoins).
+	•	Lograr presencia en LATAM medida por volumen transaccionado.
+	•	Capacidad de procesar transacciones con stablecoins.
+
+Equipo fundador y operativo inicial
+	•	Omar Canales (Co-founder): experto en medios de pago con más de 30 años en banca, procesadores, valeras y fintech.
+	•	Miguel Angel Rodríguez (Co-founder & CTO): responsable de la estrategia tecnológica y construcción de la plataforma.
+	•	Founding team complementario: talento con experiencia en plataformas de pago internacionales, SPEI y procesadores de pago.
+
+Visión de largo plazo
+Convertirse en la principal solución de orquestación de pagos B2B en México y LATAM, ofreciendo soluciones hiper especializadas para la relación cliente-proveedor de empresas con presencia en USA. Productos derivados como remesas forman parte del portafolio pero no son el objetivo central.
+
+Regulación y cumplimiento
+	•	Empresa constituida como SAPI en México.
+	•	Cumplimiento regulatorio enfocado en lo local (CNBV, Banco de México, SPEI) y estándares internacionales clave como PCI DSS, únicamente lo necesario para operar.
+
+Referentes estratégicos y comparables
+	•	Principal: Yuno: https://y.uno/ 
+	•	Otros: Adyen, Checkout.com, Stripe, con mención especial a Bridge de Stripe por su enfoque cripto.
+
+Genera la narrativa estratégica, técnica y financiera suficiente para convencer a VCs y fondos de inversión, incluyendo profundidad en:
+	•	modelo de ingresos y monetización,
+	•	escalabilidad tecnológica y roadmap,
+	•	integración con ecosistema financiero,
+	•	mercado objetivo y oportunidad de expansión,
+	•	visión de largo plazo y diferenciadores frente a competidores.
+
+Instrucciones adicionales:
+	•	No inventes información que no esté proporcionada.
+	•	Usa los datos disponibles para estructurar el documento.
+	•	Si falta información crítica, márcala como sección pendiente para completar con el usuario.
+	•	El resultado debe estar listo para ser usado como insumo en un proceso de levantamiento de capital.

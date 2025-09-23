@@ -1,0 +1,351 @@
+{
+  "name": "Travel Influencer",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "=https://external-api.arcads.ai/v1/videos/{{ $json.id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        0,
+        128
+      ],
+      "id": "3cb0284d-b947-4497-9a12-10f333a7c13e",
+      "name": "Get video from Arcads",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "OwvwaXIv0uuOefg9",
+          "name": "Dan travel influencers"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        0,
+        -64
+      ],
+      "id": "1238b2fb-c961-452b-96bb-ccec9832029f",
+      "name": "All videos are posted!"
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "Arcads Folder ID"
+            },
+            {
+              "name": "Blotato Instagram Account ID"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -896,
+        128
+      ],
+      "id": "9a131327-0203-40be-8d36-4e9eb53b335b",
+      "name": "Set workflow parameters"
+    },
+    {
+      "parameters": {
+        "url": "=https://external-api.arcads.ai/v1/folders/{{ $json[\"Arcads Folder ID\"] }}/scripts?pageSize=9999&page=1",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -672,
+        128
+      ],
+      "id": "d9bc3eee-8a19-454f-98a0-c7deb525c064",
+      "name": "Get Scripts in Arcads Folder",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "OwvwaXIv0uuOefg9",
+          "name": "Dan travel influencers"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -224,
+        128
+      ],
+      "id": "77ba723d-c1df-4112-a353-08987805f2ee",
+      "name": "Loop Over Videos"
+    },
+    {
+      "parameters": {
+        "jsCode": "let completedIds = [];\nlet i = 0;\nconst items = $input.first().json.items;\nconst startDate = new Date();\n\nfor (const item of items) {\n  const videos = item.videos || [];\n  const text = item.text;\n\n  for (const video of videos) {\n    if (video.videoStatus === \"completed\") {\n      const date = new Date(startDate);\n      date.setUTCDate(startDate.getUTCDate() + i); \n      date.setUTCMinutes(startDate.getUTCMinutes() + 1);\n      completedIds.push({ id: video.id, date: date, text });\n      i++;\n    }\n  }\n}\n\nreturn completedIds;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -448,
+        128
+      ],
+      "id": "50e4faa3-d215-4724-b4bf-f679ac5fc8f6",
+      "name": "List generated videos",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/responses",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"model\": \"gpt-4o-mini\",\n    \"input\": \"Write the Instagram description for a Reel. Respond only with the plain description, no titles, no markdown—just the description. Here's the spoken text in the reel : {{ $('Loop Over Videos').item.json.text.toJsonString().replaceAll('\"', \"\") }}\",\n    \"store\": true\n  }",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        448,
+        128
+      ],
+      "id": "ae548d0d-0431-4bc0-b331-d146b6032eed",
+      "name": "Generate description",
+      "alwaysOutputData": false,
+      "credentials": {
+        "openAiApi": {
+          "id": "tqK4dDkjqxiDaE7A",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.cloudinary.com/v1_1/dazxntn9b/video/upload",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "upload_preset",
+              "value": "ig_mp4"
+            },
+            {
+              "name": "file",
+              "value": "={{ $('Get video from Arcads').item.json.videoUrl }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        224,
+        128
+      ],
+      "id": "13f719bf-6382-4b32-8d26-40e52f49858f",
+      "name": "Transform Video"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://backend.blotato.com/v2/media",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "url",
+              "value": "={{ $('Transform Video').item.json.eager[0].secure_url }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        672,
+        128
+      ],
+      "id": "93f23b59-426a-4a5a-afae-fa083d69723e",
+      "name": "Upload on Blotato",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "PBegpVUIV2xQWRsS",
+          "name": "Blotato Account Dan"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://backend.blotato.com/v2/posts",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"scheduledTime\": \"{{ $('List generated videos').item.json.date }}\",\n  \"post\": {\n    \"accountId\": \"{{ $('Set workflow parameters').item.json['Blotato Instagram Account ID'] }}\",\n    \"content\": {\n      \"text\": \"{{ $('Generate description').item.json.output[0].content[0].text }}\",\n      \"mediaUrls\": [\n        \"{{ $json.url }}\"\n      ],\n      \"platform\": \"instagram\"\n    },\n    \"target\": {\n      \"targetType\": \"instagram\"\n    }\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        896,
+        208
+      ],
+      "id": "9db47691-30a2-493d-ac4c-5d8e270be4f5",
+      "name": "Post on Instagram",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "PBegpVUIV2xQWRsS",
+          "name": "Blotato Account Dan"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Set workflow parameters": [
+      {
+        "json": {
+          "Arcads Folder ID": "insert folder id here",
+          "Blotato Instagram Account ID": "insert blotato id here"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Get video from Arcads": {
+      "main": [
+        [
+          {
+            "node": "Transform Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set workflow parameters": {
+      "main": [
+        [
+          {
+            "node": "Get Scripts in Arcads Folder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Scripts in Arcads Folder": {
+      "main": [
+        [
+          {
+            "node": "List generated videos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Videos": {
+      "main": [
+        [
+          {
+            "node": "All videos are posted!",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get video from Arcads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "List generated videos": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Videos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate description": {
+      "main": [
+        [
+          {
+            "node": "Upload on Blotato",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transform Video": {
+      "main": [
+        [
+          {
+            "node": "Generate description",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload on Blotato": {
+      "main": [
+        [
+          {
+            "node": "Post on Instagram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Post on Instagram": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Videos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "567c6842-64fe-4880-af64-60eee6ed3f77",
+  "meta": {
+    "instanceId": "6e1f74bf4baf469f46629ab3702dda4f19a63fe71b4bf84b9a55f050fd19ba94"
+  },
+  "id": "c8Xg1CklfEKq7rmi",
+  "tags": []
+}

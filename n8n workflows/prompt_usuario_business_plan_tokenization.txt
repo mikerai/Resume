@@ -1,0 +1,48 @@
+Prompt afinado para tu Business Plan
+
+Quiero que generes un business plan profesional, con la profundidad técnica y financiera suficiente para que lo puedan evaluar fondos de inversión, VCs, perfiles financieros y técnicos, con el objetivo de levantar capital. No definas la estructura ni capítulos, concéntrate en el contenido y la narrativa estratégica.
+
+Contexto del negocio
+Estamos constituyendo una empresa internacional de tokenización de activos reales. Comenzaremos operaciones en México bajo una SAPI, utilizando fideicomisos como instrumentos legales. Usaremos tokens ERC-20 y ERC-3643 que representarán derechos económicos sobre la utilidad de las acciones o dividendos en proyectos de tokenización, como minería e inmobiliario.
+
+Alcance
+El negocio operará en México, LATAM, USA, Europa y Asia, en ese orden. La plataforma permitirá a dueños de activos y emisores crear proyectos de tokenización, definir reglas de inversión y levantar capital mediante rondas privadas en las que se invitan inversionistas acreditados.
+
+Público objetivo
+	•	Inversionistas: acreditados, family offices, inversionistas privados sofisticados.
+	•	Emisores iniciales: minas de oro, plata, cobre, carbón, desarrolladores de vivienda, real estate (tiempo compartido), fondos y family offices.
+
+Modelo de negocio
+	•	Ingresos principales:
+	•	Cuota de setup entre 20k y 100k USD por proyecto según complejidad.
+	•	Comisión entre 0.75% y 3% de lo recaudado (si se supera el soft cap).
+	•	Comisiones por transacción hacia wallets.
+	•	Ingresos adicionales:
+	•	Modelos de suscripción para emisores.
+	•	Servicios premium de reportería y regulatorios.
+	•	Tokenización de colaterales y certificación cobrados aparte.
+
+Tecnología
+	•	Fase 1: uso de plataforma de terceros (white-label) para aprender y acelerar time-to-market.
+	•	Fase 2: construcción de plataforma propia para eliminar costos de intermediarios.
+	•	Blockchain inicial: Ethereum (ERC-20 y ERC-3643), con compatibilidad EVM; posibles integraciones a futuro: Polygon, Solana.
+	•	Integraciones: wallets (Metamask, Coinbase, Bitso), KYC/AML providers, custodios digitales, cash-in con bancos, cuenta escrow para fondos, reportería avanzada, conexión a liquidez secundaria.
+
+Equipo
+	•	Fundadores:
+	•	Especialista en medios de pago (expertise fintech).
+	•	Abogado corporativo experto en fideicomisos y estructuras legales.
+	•	CTO con experiencia en tecnología fintech, AWS, AI, banca y alianzas estratégicas.
+	•	Un desarrollador de vivienda y un ejecutivo con contactos con fondos de inversión.
+	•	Estrategia: equipo operativo inicial muy pequeño, tercerizando la mayor parte del desarrollo y servicios legales/regulatorios.
+
+Metas (12–18 meses)
+	•	Lanzar 4 proyectos tokenizados exitosos, con rondas mayores a 5M USD y superando el soft cap.
+	•	Cubrir costos operativos con los primeros proyectos.
+	•	Tener la plataforma propia 100% operativa al final de este período.
+
+Instrucciones adicionales:
+	•	No inventes información que no esté proporcionada.
+	•	Usa los datos disponibles para estructurar el documento.
+	•	Si falta información crítica, márcala como sección pendiente para completar con el usuario.
+	•	El resultado debe estar listo para ser usado como insumo en un proceso de levantamiento de capital.
