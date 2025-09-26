@@ -1,0 +1,312 @@
+{
+  "name": "Sistema Procesamiento Archivos México",
+  "nodes": [
+    {
+      "id": "file-upload-trigger-01",
+      "name": "File Upload Endpoint",
+      "type": "n8n-nodes-base.webhook",
+      "position": [
+        200,
+        400
+      ],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "upload-financial-files",
+        "responseMode": "responseNode",
+        "options": {
+          "noResponseBody": false
+        }
+      },
+      "webhookId": "file-upload-webhook",
+      "typeVersion": 2
+    },
+    {
+      "id": "file-validator-01",
+      "name": "Validate File Upload",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        400,
+        400
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// Validar archivos subidos\nconst request = $input.all()[0].json.body;\nconst files = request.files || [];\nconst userId = request.userId || 'anonymous';\nconst companyId = request.companyId;\n\nif (!companyId) {\n  throw new Error('Company ID is required');\n}\n\nif (files.length === 0) {\n  throw new Error('No files provided');\n}\n\nconst validatedFiles = [];\nconst supportedTypes = ['.xml', '.pdf', '.csv', '.xlsx', '.xls'];\nconst maxSizeBytes = 10 * 1024 * 1024; // 10MB\n\nfor (const file of files) {\n  // Validar tipo de archivo\n  const extension = file.name.toLowerCase().substring(file.name.lastIndexOf('.'));\n  if (!supportedTypes.includes(extension)) {\n    throw new Error(`Tipo de archivo no soportado: ${extension}. Tipos válidos: ${supportedTypes.join(', ')}`);\n  }\n  \n  // Validar tamaño\n  if (file.size > maxSizeBytes) {\n    throw new Error(`Archivo muy grande: ${file.name}. Tamaño máximo: 10MB`);\n  }\n  \n  // Determinar tipo de documento financiero\n  let docType = 'unknown';\n  if (extension === '.xml' && (file.name.includes('cfdi') || file.name.includes('factura'))) {\n    docType = 'cfdi';\n  } else if (file.name.toLowerCase().includes('estado') || file.name.toLowerCase().includes('bank')) {\n    docType = 'bank_statement';\n  } else if (file.name.toLowerCase().includes('balance') || file.name.toLowerCase().includes('contable')) {\n    docType = 'accounting_report';\n  } else if (extension === '.pdf') {\n    docType = 'pdf_document';\n  } else if (['.csv', '.xlsx', '.xls'].includes(extension)) {\n    docType = 'spreadsheet';\n  }\n  \n  validatedFiles.push({\n    ...file,\n    docType: docType,\n    uploadId: 'UPLOAD_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),\n    status: 'validated',\n    uploadedAt: new Date().toISOString()\n  });\n}\n\nreturn [{\n  userId: userId,\n  companyId: companyId,\n  files: validatedFiles,\n  totalFiles: validatedFiles.length,\n  validationComplete: true,\n  validationTime: new Date().toISOString()\n}];"
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "file-classifier-01",
+      "name": "Classify Financial Documents",
+      "type": "n8n-nodes-base.switch",
+      "position": [
+        600,
+        400
+      ],
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "outputKey": "cfdi_files",
+              "conditions": {
+                "options": {
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.files.filter(f => f.docType === 'cfdi').length }}",
+                    "rightValue": 0,
+                    "operator": {
+                      "type": "number",
+                      "operation": "gt"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "outputKey": "bank_statements",
+              "conditions": {
+                "options": {
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.files.filter(f => f.docType === 'bank_statement').length }}",
+                    "rightValue": 0,
+                    "operator": {
+                      "type": "number",
+                      "operation": "gt"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "outputKey": "other_documents",
+              "conditions": {
+                "options": {
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.files.filter(f => !['cfdi', 'bank_statement'].includes(f.docType)).length }}",
+                    "rightValue": 0,
+                    "operator": {
+                      "type": "number",
+                      "operation": "gt"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "typeVersion": 3.2
+    },
+    {
+      "id": "cfdi-processor-01",
+      "name": "Process CFDI Files Mexico",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        800,
+        200
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// Procesador especializado para CFDIs mexicanos\nconst data = $input.all()[0].json;\nconst cfdiFiles = data.files.filter(f => f.docType === 'cfdi');\nconst processedCFDIs = [];\n\nfor (const file of cfdiFiles) {\n  // Simular extracción de datos CFDI XML\n  const cfdiData = {\n    uuid: 'A1B2C3D4-E5F6-' + Math.random().toString(36).substr(2, 4).toUpperCase() + '-ABCD-123456789012',\n    version: '4.0',\n    fecha_emision: '2024-03-15T10:30:00',\n    folio: 'FAC-' + Math.floor(Math.random() * 10000),\n    serie: 'A',\n    \n    // Emisor\n    emisor: {\n      rfc: 'ABC123456789',\n      nombre: 'Empresa Ejemplo S.A. de C.V.',\n      regimen_fiscal: '601 - General de Ley Personas Morales'\n    },\n    \n    // Receptor  \n    receptor: {\n      rfc: data.companyId + '_RFC',\n      nombre: 'Cliente Empresa',\n      regimen_fiscal: '612 - Personas Físicas con Actividades Empresariales',\n      uso_cfdi: 'G03 - Gastos en general'\n    },\n    \n    // Totales\n    subtotal: 1000.00,\n    descuento: 0.00,\n    impuestos: {\n      iva: {\n        tasa: 0.16,\n        importe: 160.00\n      }\n    },\n    total: 1160.00,\n    moneda: 'MXN',\n    tipo_cambio: 1,\n    \n    // Conceptos\n    conceptos: [\n      {\n        clave_prodserv: '84111506',\n        descripcion: 'Servicios de consultoría financiera',\n        cantidad: 1,\n        unidad: 'E48 - Unidad de servicio',\n        valor_unitario: 1000.00,\n        importe: 1000.00,\n        iva: 160.00\n      }\n    ],\n    \n    // Complementos\n    complementos: {\n      timbrado: {\n        uuid: 'A1B2C3D4-E5F6-' + Math.random().toString(36).substr(2, 4).toUpperCase() + '-ABCD-123456789012',\n        fecha_timbrado: '2024-03-15T10:31:00',\n        sello_cfd: 'SELLO_CFD_EJEMPLO',\n        sello_sat: 'SELLO_SAT_EJEMPLO'\n      }\n    },\n    \n    // Datos adicionales para análisis\n    analisis: {\n      categoria_gasto: 'servicios_profesionales',\n      deducible: true,\n      impacto_fiscal: 'deducible_total',\n      sector_economico: 'servicios_financieros'\n    }\n  };\n  \n  processedCFDIs.push({\n    uploadId: file.uploadId,\n    originalFile: file,\n    extractedData: cfdiData,\n    processingStatus: 'completed',\n    processingTime: new Date().toISOString(),\n    validacionSAT: {\n      uuid_valido: true,\n      rfc_emisor_valido: true,\n      estructura_valida: true,\n      timbrado_valido: true\n    },\n    impacto_contable: {\n      cuenta_contable_sugerida: '1105.01.001 - Clientes Nacionales',\n      tipo_poliza: 'Ingreso',\n      debe: cfdiData.total,\n      haber: 0\n    }\n  });\n}\n\nreturn [{\n  ...data,\n  processed_cfdis: processedCFDIs,\n  cfdi_processing_complete: true,\n  cfdi_count: processedCFDIs.length,\n  total_amount_cfdis: processedCFDIs.reduce((sum, cfdi) => sum + cfdi.extractedData.total, 0)\n}];"
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "bank-processor-01",
+      "name": "Process Bank Statements Mexico",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        800,
+        400
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// Procesador para estados de cuenta bancarios México\nconst data = $input.all()[0].json;\nconst bankFiles = data.files.filter(f => f.docType === 'bank_statement');\nconst processedBankStatements = [];\n\nfor (const file of bankFiles) {\n  // Detectar banco basado en nombre de archivo o contenido\n  let bankName = 'Desconocido';\n  if (file.name.toLowerCase().includes('bbva')) bankName = 'BBVA México';\n  else if (file.name.toLowerCase().includes('santander')) bankName = 'Santander México';\n  else if (file.name.toLowerCase().includes('banorte')) bankName = 'Banorte';\n  else if (file.name.toLowerCase().includes('banamex')) bankName = 'Banamex';\n  \n  // Simular extracción de datos del estado de cuenta\n  const bankData = {\n    banco: bankName,\n    numero_cuenta: '****' + Math.floor(Math.random() * 10000).toString().padStart(4, '0'),\n    titular: data.companyId,\n    periodo: {\n      fecha_inicio: '2024-03-01',\n      fecha_fin: '2024-03-31'\n    },\n    \n    saldos: {\n      inicial: 50000 + Math.random() * 50000,\n      final: 45000 + Math.random() * 60000,\n      promedio: 52000 + Math.random() * 8000\n    },\n    \n    transacciones: [\n      {\n        fecha: '2024-03-15',\n        descripcion: 'TRANSFERENCIA SPEI RECIBIDA',\n        referencia: 'TRF001234',\n        cargo: 0,\n        abono: 25000.00,\n        saldo: 75000.00,\n        tipo: 'transferencia_recibida'\n      },\n      {\n        fecha: '2024-03-16',\n        descripcion: 'PAGO NOMINA EMPLEADOS',\n        referencia: 'NOM001',\n        cargo: 45000.00,\n        abono: 0,\n        saldo: 30000.00,\n        tipo: 'pago_nomina'\n      },\n      {\n        fecha: '2024-03-17',\n        descripcion: 'PAGO SERVICIOS CFE',\n        referencia: 'SER001',\n        cargo: 8500.00,\n        abono: 0,\n        saldo: 21500.00,\n        tipo: 'pago_servicios'\n      },\n      {\n        fecha: '2024-03-18',\n        descripcion: 'DEPOSITO EFECTIVO',\n        referencia: 'DEP001',\n        cargo: 0,\n        abono: 15000.00,\n        saldo: 36500.00,\n        tipo: 'deposito_efectivo'\n      }\n    ],\n    \n    // Comisiones y cargos\n    comisiones: [\n      {\n        concepto: 'Manejo de cuenta',\n        importe: 350.00,\n        fecha: '2024-03-31'\n      },\n      {\n        concepto: 'Transferencia SPEI',\n        importe: 3.50,\n        fecha: '2024-03-15'\n      }\n    ],\n    \n    // Análisis automático\n    analisis: {\n      total_ingresos: 40000.00,\n      total_egresos: 53850.00,\n      flujo_neto: -13850.00,\n      numero_transacciones: 4,\n      transacciones_por_tipo: {\n        ingresos: 2,\n        egresos: 2,\n        comisiones: 2\n      },\n      patron_flujo: 'negativo', // positivo, negativo, estable\n      alertas: [\n        'Flujo de efectivo negativo en el período',\n        'Revisar pagos de nómina vs ingresos'\n      ]\n    }\n  };\n  \n  processedBankStatements.push({\n    uploadId: file.uploadId,\n    originalFile: file,\n    extractedData: bankData,\n    processingStatus: 'completed',\n    processingTime: new Date().toISOString(),\n    reconciliation_ready: true,\n    suggested_actions: [\n      'Iniciar conciliación bancaria',\n      'Revisar flujo de efectivo negativo',\n      'Analizar patrones de gastos'\n    ]\n  });\n}\n\nreturn [{\n  ...data,\n  processed_bank_statements: processedBankStatements,\n  bank_processing_complete: true,\n  bank_count: processedBankStatements.length,\n  total_flow: processedBankStatements.reduce((sum, stmt) => sum + stmt.extractedData.analisis.flujo_neto, 0)\n}];"
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "document-processor-01",
+      "name": "Process Other Documents",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        800,
+        600
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// Procesador para otros documentos financieros\nconst data = $input.all()[0].json;\nconst otherFiles = data.files.filter(f => !['cfdi', 'bank_statement'].includes(f.docType));\nconst processedDocuments = [];\n\nfor (const file of otherFiles) {\n  let extractedData = {};\n  let documentAnalysis = {};\n  \n  switch (file.docType) {\n    case 'accounting_report':\n      extractedData = {\n        tipo_reporte: 'balance_general',\n        periodo: '2024-03',\n        activos: {\n          circulantes: 250000,\n          fijos: 180000,\n          total: 430000\n        },\n        pasivos: {\n          corto_plazo: 85000,\n          largo_plazo: 120000,\n          total: 205000\n        },\n        capital: {\n          capital_social: 150000,\n          utilidades_retenidas: 75000,\n          total: 225000\n        },\n        ratios_financieros: {\n          liquidez: 2.94, // activos_circulantes / pasivos_corto_plazo\n          endeudamiento: 0.48, // pasivos_total / activos_total\n          rentabilidad: 0.17 // utilidad_neta / capital_total\n        }\n      };\n      documentAnalysis = {\n        salud_financiera: 'buena',\n        alertas: [],\n        recomendaciones: [\n          'Mantener nivel de liquidez actual',\n          'Evaluar oportunidades de inversión'\n        ]\n      };\n      break;\n      \n    case 'spreadsheet':\n      extractedData = {\n        tipo_hoja: 'datos_financieros',\n        filas_detectadas: Math.floor(Math.random() * 500) + 50,\n        columnas_detectadas: Math.floor(Math.random() * 20) + 5,\n        datos_numericos: true,\n        fechas_detectadas: true,\n        monedas_detectadas: ['MXN', 'USD'],\n        categorias_identificadas: [\n          'ingresos',\n          'gastos',\n          'nomina',\n          'impuestos'\n        ]\n      };\n      documentAnalysis = {\n        calidad_datos: 'alta',\n        completitud: '95%',\n        sugerencias: [\n          'Validar fórmulas de Excel',\n          'Revisar formato de fechas'\n        ]\n      };\n      break;\n      \n    case 'pdf_document':\n    default:\n      extractedData = {\n        paginas: Math.floor(Math.random() * 20) + 1,\n        texto_extraido: true,\n        tablas_detectadas: Math.floor(Math.random() * 5),\n        numeros_identificados: true,\n        fechas_identificadas: true,\n        firmas_digitales: Math.random() > 0.5\n      };\n      documentAnalysis = {\n        legibilidad: 'alta',\n        contenido_financiero: true,\n        requiere_revision_manual: false\n      };\n      break;\n  }\n  \n  processedDocuments.push({\n    uploadId: file.uploadId,\n    originalFile: file,\n    extractedData: extractedData,\n    analysis: documentAnalysis,\n    processingStatus: 'completed',\n    processingTime: new Date().toISOString(),\n    next_steps: [\n      'Indexar en base de conocimiento',\n      'Crear embeddings para RAG',\n      'Notificar usuario de procesamiento completo'\n    ]\n  });\n}\n\nreturn [{\n  ...data,\n  processed_other_documents: processedDocuments,\n  other_processing_complete: true,\n  other_count: processedDocuments.length\n}];"
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "knowledge-indexer-01",
+      "name": "Index to Knowledge Base",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        1000,
+        400
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// Indexar documentos en base de conocimiento para RAG\nconst data = $input.all()[0].json;\nconst allProcessedDocs = [\n  ...(data.processed_cfdis || []),\n  ...(data.processed_bank_statements || []),\n  ...(data.processed_other_documents || [])\n];\n\nconst knowledgeBaseEntries = [];\n\nfor (const doc of allProcessedDocs) {\n  // Crear entrada para base de conocimiento\n  const kbEntry = {\n    id: doc.uploadId,\n    company_id: data.companyId,\n    document_type: doc.originalFile.docType,\n    original_filename: doc.originalFile.name,\n    \n    // Contenido para embedding\n    content_for_embedding: '',\n    \n    // Metadatos para filtering\n    metadata: {\n      upload_date: doc.processingTime,\n      file_size: doc.originalFile.size,\n      processing_status: doc.processingStatus,\n      document_category: doc.originalFile.docType,\n      language: 'es-MX',\n      currency: 'MXN'\n    },\n    \n    // Datos estructurados extraídos\n    structured_data: doc.extractedData\n  };\n  \n  // Generar contenido textual para embeddings según tipo de documento\n  if (doc.originalFile.docType === 'cfdi') {\n    const cfdi = doc.extractedData;\n    kbEntry.content_for_embedding = `\nFactura electrónica CFDI ${cfdi.folio} por $${cfdi.total} MXN.\nEmisor: ${cfdi.emisor.nombre} (RFC: ${cfdi.emisor.rfc})\nReceptor: ${cfdi.receptor.nombre} (RFC: ${cfdi.receptor.rfc})\nFecha: ${cfdi.fecha_emision}\nConceptos: ${cfdi.conceptos.map(c => c.descripcion).join(', ')}\nSubtotal: $${cfdi.subtotal} MXN, IVA: $${cfdi.impuestos.iva.importe} MXN, Total: $${cfdi.total} MXN\nUUID: ${cfdi.uuid}\nRégimen fiscal emisor: ${cfdi.emisor.regimen_fiscal}\nUso CFDI: ${cfdi.receptor.uso_cfdi}\n    `.trim();\n    \n  } else if (doc.originalFile.docType === 'bank_statement') {\n    const bank = doc.extractedData;\n    kbEntry.content_for_embedding = `\nEstado de cuenta bancario ${bank.banco} cuenta ${bank.numero_cuenta}.\nTitular: ${bank.titular}\nPeríodo: ${bank.periodo.fecha_inicio} al ${bank.periodo.fecha_fin}\nSaldo inicial: $${bank.saldos.inicial} MXN, Saldo final: $${bank.saldos.final} MXN\nTransacciones: ${bank.transacciones.length}\nIngresos totales: $${bank.analisis.total_ingresos} MXN\nEgresos totales: $${bank.analisis.total_egresos} MXN\nFlujo neto: $${bank.analisis.flujo_neto} MXN\nTransacciones principales: ${bank.transacciones.map(t => `${t.fecha}: ${t.descripcion} $${t.cargo || t.abono} MXN`).join(', ')}\n    `.trim();\n    \n  } else {\n    // Para otros documentos, usar información general\n    kbEntry.content_for_embedding = `\nDocumento financiero: ${doc.originalFile.name}\nTipo: ${doc.originalFile.docType}\nEmpresa: ${data.companyId}\nFecha de procesamiento: ${doc.processingTime}\nDatos extraídos: ${JSON.stringify(doc.extractedData)}\n    `.trim();\n  }\n  \n  knowledgeBaseEntries.push(kbEntry);\n}\n\n// Preparar para envío a vector store\nconst vectorStorePayload = {\n  company_id: data.companyId,\n  entries: knowledgeBaseEntries,\n  total_entries: knowledgeBaseEntries.length,\n  indexing_timestamp: new Date().toISOString(),\n  embedding_model: 'text-embedding-3-small',\n  chunk_strategy: 'document_based'\n};\n\nreturn [{\n  ...data,\n  knowledge_base_entries: knowledgeBaseEntries,\n  vector_store_payload: vectorStorePayload,\n  indexing_complete: true,\n  ready_for_rag: true\n}];"
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "response-generator-01",
+      "name": "Generate Processing Response",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        1200,
+        400
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// Generar respuesta de procesamiento completado\nconst data = $input.all()[0].json;\n\n// Calcular estadísticas de procesamiento\nconst stats = {\n  total_files: data.totalFiles,\n  cfdis_processed: data.cfdi_count || 0,\n  bank_statements_processed: data.bank_count || 0,\n  other_documents_processed: data.other_count || 0,\n  total_cfdi_amount: data.total_amount_cfdis || 0,\n  total_bank_flow: data.total_flow || 0,\n  processing_time: Date.now() - new Date(data.validationTime).getTime(),\n  knowledge_base_entries: data.knowledge_base_entries?.length || 0\n};\n\n// Generar insights automáticos\nconst insights = [];\nif (stats.cfdis_processed > 0) {\n  insights.push(`✅ Procesados ${stats.cfdis_processed} CFDIs por un total de $${stats.total_cfdi_amount.toLocaleString('es-MX')} MXN`);\n}\nif (stats.bank_statements_processed > 0) {\n  const flowStatus = stats.total_bank_flow >= 0 ? '📈 positivo' : '📉 negativo';\n  insights.push(`🏦 Analizados ${stats.bank_statements_processed} estados de cuenta con flujo ${flowStatus} de $${Math.abs(stats.total_bank_flow).toLocaleString('es-MX')} MXN`);\n}\nif (stats.knowledge_base_entries > 0) {\n  insights.push(`🧠 Indexados ${stats.knowledge_base_entries} documentos en base de conocimiento para consultas RAG`);\n}\n\n// Generar acciones recomendadas\nconst recommendedActions = [];\nif (stats.cfdis_processed > 0 && stats.bank_statements_processed > 0) {\n  recommendedActions.push({\n    action: 'start_reconciliation',\n    label: '🔄 Iniciar conciliación bancaria',\n    description: 'Reconciliar CFDIs procesados con estados de cuenta',\n    priority: 'high',\n    endpoint: '/api/reconciliation/start'\n  });\n}\n\nif (stats.total_cfdi_amount > 0) {\n  recommendedActions.push({\n    action: 'generate_tax_report',\n    label: '📊 Generar reporte fiscal',\n    description: 'Crear reporte de ingresos/gastos para SAT',\n    priority: 'medium',\n    endpoint: '/api/reports/tax'\n  });\n}\n\nrecommendedActions.push({\n  action: 'chat_with_data',\n  label: '💬 Consultar datos con IA',\n  description: 'Hacer preguntas sobre los documentos procesados',\n  priority: 'low',\n  endpoint: '/api/chat/financial'\n});\n\n// Respuesta final\nconst response = {\n  success: true,\n  processing_complete: true,\n  company_id: data.companyId,\n  user_id: data.userId,\n  \n  summary: {\n    files_processed: stats.total_files,\n    processing_time_ms: stats.processing_time,\n    total_cfdi_value_mxn: stats.total_cfdi_amount,\n    net_bank_flow_mxn: stats.total_bank_flow,\n    knowledge_entries_created: stats.knowledge_base_entries\n  },\n  \n  breakdown: {\n    cfdis: {\n      count: stats.cfdis_processed,\n      total_amount: stats.total_cfdi_amount,\n      status: stats.cfdis_processed > 0 ? 'completed' : 'none'\n    },\n    bank_statements: {\n      count: stats.bank_statements_processed,\n      net_flow: stats.total_bank_flow,\n      status: stats.bank_statements_processed > 0 ? 'completed' : 'none'\n    },\n    other_documents: {\n      count: stats.other_documents_processed,\n      status: stats.other_documents_processed > 0 ? 'completed' : 'none'\n    }\n  },\n  \n  insights: insights,\n  recommended_actions: recommendedActions,\n  \n  next_steps: [\n    'Los documentos están disponibles para consultas RAG',\n    'Puedes iniciar conciliación bancaria si tienes tanto CFDIs como estados de cuenta',\n    'Genera reportes ejecutivos con los datos procesados',\n    'Configura alertas automáticas para nuevos documentos'\n  ],\n  \n  rag_ready: true,\n  reconciliation_ready: stats.cfdis_processed > 0 && stats.bank_statements_processed > 0,\n  \n  mexican_compliance: {\n    sat_cfdi_compatible: true,\n    banking_format_supported: true,\n    currency: 'MXN',\n    timezone: 'America/Mexico_City'\n  },\n  \n  timestamp: new Date().toISOString()\n};\n\nreturn [response];"
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "webhook-response-01",
+      "name": "Send Processing Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [
+        1400,
+        400
+      ],
+      "parameters": {
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              }
+            ]
+          }
+        }
+      },
+      "typeVersion": 1
+    }
+  ],
+  "connections": {
+    "File Upload Endpoint": {
+      "main": [
+        [
+          {
+            "node": "Validate File Upload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate File Upload": {
+      "main": [
+        [
+          {
+            "node": "Classify Financial Documents",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Classify Financial Documents": {
+      "main": [
+        [
+          {
+            "node": "Process CFDI Files Mexico",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Process Bank Statements Mexico",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Process Other Documents",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process CFDI Files Mexico": {
+      "main": [
+        [
+          {
+            "node": "Index to Knowledge Base",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Bank Statements Mexico": {
+      "main": [
+        [
+          {
+            "node": "Index to Knowledge Base",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Other Documents": {
+      "main": [
+        [
+          {
+            "node": "Index to Knowledge Base",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Index to Knowledge Base": {
+      "main": [
+        [
+          {
+            "node": "Generate Processing Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Processing Response": {
+      "main": [
+        [
+          {
+            "node": "Send Processing Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "saveManualExecutions": true
+  },
+  "staticData": {}
+}

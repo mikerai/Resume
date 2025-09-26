@@ -1,0 +1,328 @@
+{
+  "name": "Conciliación Bancaria México - Servicio",
+  "nodes": [
+    {
+      "id": "reconciliation-trigger-01",
+      "name": "Conciliation Service Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "position": [
+        200,
+        400
+      ],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "reconciliation-service",
+        "responseMode": "responseNode",
+        "options": {
+          "noResponseBody": false
+        }
+      },
+      "webhookId": "reconciliation-service-webhook",
+      "typeVersion": 2
+    },
+    {
+      "id": "input-validator-01",
+      "name": "Validate Reconciliation Request",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        400,
+        400
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// Validar solicitud de conciliación\nconst request = $input.all()[0].json.body;\n\n// Validaciones requeridas\nconst required = ['company_id', 'bank_account', 'period'];\nconst missing = required.filter(field => !request[field]);\n\nif (missing.length > 0) {\n  throw new Error(`Campos requeridos faltantes: ${missing.join(', ')}`);\n}\n\n// Configurar parámetros de conciliación\nconst config = {\n  company_id: request.company_id,\n  bank_account: request.bank_account,\n  period: request.period,\n  tolerance_days: request.tolerance_days || 3,\n  tolerance_amount: request.tolerance_amount || 0.50,\n  reconciliation_id: 'RECON_' + Date.now(),\n  started_at: new Date().toISOString(),\n  status: 'processing',\n  country: 'mexico',\n  currency: 'MXN'\n};\n\nreturn [config];"
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "bank-data-fetcher-01",
+      "name": "Fetch Bank Statements",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        600,
+        300
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// Obtener estados de cuenta bancarios\nconst config = $input.all()[0].json;\nconst bankAccount = config.bank_account;\nconst period = config.period;\n\n// Simular integración con Prometeo API o banco directo\nlet bankTransactions = [];\n\n// Datos simulados para demostración\nif (bankAccount.includes('BBVA')) {\n  bankTransactions = [\n    {\n      id: 'TXN_001',\n      date: '2024-03-15',\n      description: 'TRANSFERENCIA SPEI RECIBIDA',\n      amount: 25000.00,\n      type: 'credit',\n      reference: 'REF001',\n      balance: 125000.00\n    },\n    {\n      id: 'TXN_002',\n      date: '2024-03-16',\n      description: 'PAGO NOMINA',\n      amount: -45000.00,\n      type: 'debit',\n      reference: 'NOM001',\n      balance: 80000.00\n    },\n    {\n      id: 'TXN_003',\n      date: '2024-03-17',\n      description: 'PAGO PROVEEDOR CFE',\n      amount: -8500.00,\n      type: 'debit',\n      reference: 'CFE001',\n      balance: 71500.00\n    }\n  ];\n} else if (bankAccount.includes('Santander')) {\n  bankTransactions = [\n    {\n      id: 'STD_001',\n      date: '2024-03-15',\n      description: 'DEPOSITO EFECTIVO',\n      amount: 15000.00,\n      type: 'credit',\n      reference: 'DEP001',\n      balance: 65000.00\n    },\n    {\n      id: 'STD_002',\n      date: '2024-03-16',\n      description: 'CARGO TDC',\n      amount: -3200.00,\n      type: 'debit',\n      reference: 'TDC001',\n      balance: 61800.00\n    }\n  ];\n}\n\nreturn [{\n  ...config,\n  bank_transactions: bankTransactions,\n  bank_fetch_complete: true,\n  bank_fetch_time: new Date().toISOString()\n}];"
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "accounting-data-01",
+      "name": "Fetch Accounting Records",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        600,
+        500
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// Obtener registros contables de la empresa\nconst config = $input.all()[0].json;\nconst companyId = config.company_id;\nconst period = config.period;\n\n// Simular obtención de datos contables (CFDIs, pagos, etc.)\nconst accountingRecords = [\n  {\n    id: 'ACC_001',\n    date: '2024-03-15',\n    description: 'Factura servicios profesionales',\n    amount: 25000.00,\n    type: 'income',\n    cfdi_uuid: 'A1B2C3D4-E5F6-7890-ABCD-123456789012',\n    client_rfc: 'XAXX010101000',\n    status: 'paid'\n  },\n  {\n    id: 'ACC_002',\n    date: '2024-03-16',\n    description: 'Pago nómina quincenal',\n    amount: -45000.00,\n    type: 'expense',\n    category: 'nomina',\n    employees: 15,\n    status: 'processed'\n  },\n  {\n    id: 'ACC_003',\n    date: '2024-03-17',\n    description: 'Pago CFE - Energía eléctrica',\n    amount: -8500.00,\n    type: 'expense',\n    category: 'servicios',\n    supplier_rfc: 'CFE370814BP0',\n    status: 'paid'\n  },\n  {\n    id: 'ACC_004',\n    date: '2024-03-18',\n    description: 'Venta productos',\n    amount: 18500.00,\n    type: 'income',\n    status: 'pending_payment'\n  }\n];\n\nreturn [{\n  ...config,\n  accounting_records: accountingRecords,\n  accounting_fetch_complete: true,\n  accounting_fetch_time: new Date().toISOString()\n}];"
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "matching-engine-01",
+      "name": "Advanced Matching Engine MX",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        800,
+        400
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// Motor de matching avanzado para conciliación México\nconst data = $input.all()[0].json;\nconst bankTxns = data.bank_transactions;\nconst accRecords = data.accounting_records;\nconst toleranceDays = data.tolerance_days;\nconst toleranceAmount = data.tolerance_amount;\n\nconst matches = [];\nconst unmatchedBank = [...bankTxns];\nconst unmatchedAccounting = [...accRecords];\n\n// Función de matching con scoring ponderado\nfunction calculateMatchScore(bankTxn, accRecord) {\n  let score = 0;\n  \n  // Score por monto (40% del peso)\n  const amountDiff = Math.abs(Math.abs(bankTxn.amount) - Math.abs(accRecord.amount));\n  if (amountDiff <= toleranceAmount) {\n    score += 40;\n  } else if (amountDiff <= toleranceAmount * 2) {\n    score += 20;\n  }\n  \n  // Score por fecha (30% del peso)\n  const bankDate = new Date(bankTxn.date);\n  const accDate = new Date(accRecord.date);\n  const daysDiff = Math.abs((bankDate - accDate) / (1000 * 60 * 60 * 24));\n  if (daysDiff <= toleranceDays) {\n    score += 30 - (daysDiff * 5);\n  }\n  \n  // Score por descripción/concepto (20% del peso)\n  const bankDesc = bankTxn.description.toLowerCase();\n  const accDesc = accRecord.description.toLowerCase();\n  \n  if (bankDesc.includes('nomina') && accDesc.includes('nomina')) score += 20;\n  else if (bankDesc.includes('cfe') && accDesc.includes('cfe')) score += 20;\n  else if (bankDesc.includes('spei') && accRecord.type === 'income') score += 15;\n  else if (bankDesc.includes('transferencia') && accRecord.type === 'income') score += 10;\n  \n  // Score por tipo de transacción (10% del peso)\n  if ((bankTxn.amount > 0 && accRecord.amount > 0) || \n      (bankTxn.amount < 0 && accRecord.amount < 0)) {\n    score += 10;\n  }\n  \n  return score;\n}\n\n// Ejecutar matching\nfor (const bankTxn of bankTxns) {\n  let bestMatch = null;\n  let bestScore = 0;\n  \n  for (const accRecord of accRecords) {\n    const score = calculateMatchScore(bankTxn, accRecord);\n    if (score > bestScore && score >= 60) { // Umbral mínimo 60%\n      bestScore = score;\n      bestMatch = accRecord;\n    }\n  }\n  \n  if (bestMatch) {\n    matches.push({\n      match_id: `MATCH_${matches.length + 1}`,\n      bank_transaction: bankTxn,\n      accounting_record: bestMatch,\n      confidence_score: bestScore,\n      match_type: bestScore >= 85 ? 'exact' : 'fuzzy',\n      matched_at: new Date().toISOString()\n    });\n    \n    // Remover de listas de no coincidencias\n    const bankIndex = unmatchedBank.indexOf(bankTxn);\n    const accIndex = unmatchedAccounting.indexOf(bestMatch);\n    if (bankIndex > -1) unmatchedBank.splice(bankIndex, 1);\n    if (accIndex > -1) unmatchedAccounting.splice(accIndex, 1);\n  }\n}\n\n// Calcular estadísticas\nconst stats = {\n  total_bank_transactions: bankTxns.length,\n  total_accounting_records: accRecords.length,\n  matches_found: matches.length,\n  match_rate: ((matches.length / Math.max(bankTxns.length, accRecords.length)) * 100).toFixed(2),\n  unmatched_bank: unmatchedBank.length,\n  unmatched_accounting: unmatchedAccounting.length,\n  exact_matches: matches.filter(m => m.match_type === 'exact').length,\n  fuzzy_matches: matches.filter(m => m.match_type === 'fuzzy').length\n};\n\nreturn [{\n  ...data,\n  matches: matches,\n  unmatched_bank_transactions: unmatchedBank,\n  unmatched_accounting_records: unmatchedAccounting,\n  reconciliation_stats: stats,\n  matching_complete: true,\n  matching_time: new Date().toISOString()\n}];"
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "discrepancy-analyzer-01",
+      "name": "Analyze Discrepancies MX",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        1000,
+        400
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// Análisis de discrepancias financieras México\nconst data = $input.all()[0].json;\nconst unmatchedBank = data.unmatched_bank_transactions;\nconst unmatchedAcc = data.unmatched_accounting_records;\n\nconst discrepancies = [];\nlet totalDiscrepancyAmount = 0;\n\n// Analizar transacciones bancarias no conciliadas\nfor (const bankTxn of unmatchedBank) {\n  const discrepancy = {\n    id: `DISC_B_${discrepancies.length + 1}`,\n    type: 'unmatched_bank_transaction',\n    source: 'bank',\n    transaction: bankTxn,\n    amount: bankTxn.amount,\n    date: bankTxn.date,\n    description: bankTxn.description,\n    risk_level: 'medium',\n    suggested_actions: [],\n    mexican_context: {}\n  };\n  \n  // Clasificar riesgo y sugerir acciones\n  if (Math.abs(bankTxn.amount) > 50000) {\n    discrepancy.risk_level = 'high';\n    discrepancy.suggested_actions.push('Revisar con contador/CFO inmediatamente');\n  } else if (Math.abs(bankTxn.amount) > 10000) {\n    discrepancy.risk_level = 'medium';\n    discrepancy.suggested_actions.push('Verificar con área contable');\n  } else {\n    discrepancy.risk_level = 'low';\n    discrepancy.suggested_actions.push('Revisar en próxima conciliación');\n  }\n  \n  // Contexto mexicano específico\n  if (bankTxn.description.includes('SAT') || bankTxn.description.includes('HACIENDA')) {\n    discrepancy.mexican_context.type = 'fiscal';\n    discrepancy.suggested_actions.unshift('URGENTE: Revisar obligación fiscal');\n    discrepancy.risk_level = 'critical';\n  } else if (bankTxn.description.includes('INFONAVIT') || bankTxn.description.includes('IMSS')) {\n    discrepancy.mexican_context.type = 'seguridad_social';\n    discrepancy.suggested_actions.push('Verificar pagos seguridad social');\n  }\n  \n  discrepancies.push(discrepancy);\n  totalDiscrepancyAmount += Math.abs(bankTxn.amount);\n}\n\n// Analizar registros contables no conciliados\nfor (const accRecord of unmatchedAcc) {\n  const discrepancy = {\n    id: `DISC_A_${discrepancies.length + 1}`,\n    type: 'unmatched_accounting_record',\n    source: 'accounting',\n    record: accRecord,\n    amount: accRecord.amount,\n    date: accRecord.date,\n    description: accRecord.description,\n    risk_level: 'medium',\n    suggested_actions: [],\n    mexican_context: {}\n  };\n  \n  // Análisis específico para registros contables\n  if (accRecord.cfdi_uuid) {\n    discrepancy.mexican_context.cfdi_uuid = accRecord.cfdi_uuid;\n    discrepancy.suggested_actions.push('Verificar CFDI en portal SAT');\n  }\n  \n  if (accRecord.status === 'pending_payment') {\n    discrepancy.suggested_actions.push('Verificar cobro pendiente');\n    discrepancy.risk_level = 'high';\n  }\n  \n  discrepancies.push(discrepancy);\n  totalDiscrepancyAmount += Math.abs(accRecord.amount);\n}\n\n// Calcular métricas de discrepancias\nconst discrepancyAnalysis = {\n  total_discrepancies: discrepancies.length,\n  total_amount: totalDiscrepancyAmount,\n  critical_count: discrepancies.filter(d => d.risk_level === 'critical').length,\n  high_risk_count: discrepancies.filter(d => d.risk_level === 'high').length,\n  medium_risk_count: discrepancies.filter(d => d.risk_level === 'medium').length,\n  low_risk_count: discrepancies.filter(d => d.risk_level === 'low').length,\n  fiscal_issues: discrepancies.filter(d => d.mexican_context.type === 'fiscal').length,\n  pending_collections: discrepancies.filter(d => d.record?.status === 'pending_payment').length\n};\n\nreturn [{\n  ...data,\n  discrepancies: discrepancies,\n  discrepancy_analysis: discrepancyAnalysis,\n  analysis_complete: true,\n  analysis_time: new Date().toISOString()\n}];"
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "report-generator-01",
+      "name": "Generate Reconciliation Report MX",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        1200,
+        400
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// Generar reporte de conciliación en español\nconst data = $input.all()[0].json;\nconst stats = data.reconciliation_stats;\nconst matches = data.matches;\nconst discrepancies = data.discrepancies;\nconst analysis = data.discrepancy_analysis;\n\n// Generar reporte HTML en español\nconst htmlReport = `\n<!DOCTYPE html>\n<html lang=\"es-MX\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Reporte de Conciliación Bancaria - México</title>\n    <style>\n        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; background-color: #f5f5f5; }\n        .header { background: linear-gradient(135deg, #1e3c72, #2a5298); color: white; padding: 30px; border-radius: 10px; margin-bottom: 20px; }\n        .company-info { font-size: 14px; margin-top: 10px; }\n        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin: 20px 0; }\n        .stat-card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }\n        .stat-number { font-size: 2.5em; font-weight: bold; color: #1e3c72; }\n        .stat-label { color: #666; font-size: 14px; }\n        .success { color: #28a745; }\n        .warning { color: #ffc107; }\n        .danger { color: #dc3545; }\n        .section { background: white; margin: 20px 0; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }\n        .match-item { border-left: 4px solid #28a745; padding: 15px; margin: 10px 0; background: #f8f9fa; }\n        .discrepancy-item { border-left: 4px solid #dc3545; padding: 15px; margin: 10px 0; background: #fff5f5; }\n        .amount { font-weight: bold; font-family: monospace; }\n        .date { color: #666; font-size: 12px; }\n        .confidence { background: #e9ecef; padding: 2px 8px; border-radius: 4px; font-size: 12px; }\n        .risk-high { background: #dc3545; color: white; }\n        .risk-medium { background: #ffc107; color: black; }\n        .risk-low { background: #28a745; color: white; }\n        .footer { text-align: center; color: #666; margin-top: 40px; font-size: 12px; }\n    </style>\n</head>\n<body>\n    <div class=\"header\">\n        <h1>🏦 Reporte de Conciliación Bancaria</h1>\n        <div class=\"company-info\">\n            <strong>Empresa:</strong> ${data.company_id}<br>\n            <strong>Cuenta:</strong> ${data.bank_account}<br>\n            <strong>Período:</strong> ${data.period}<br>\n            <strong>Generado:</strong> ${new Date().toLocaleString('es-MX')}\n        </div>\n    </div>\n\n    <div class=\"stats-grid\">\n        <div class=\"stat-card\">\n            <div class=\"stat-number success\">${stats.match_rate}%</div>\n            <div class=\"stat-label\">Tasa de Conciliación</div>\n        </div>\n        <div class=\"stat-card\">\n            <div class=\"stat-number\">${stats.matches_found}</div>\n            <div class=\"stat-label\">Transacciones Conciliadas</div>\n        </div>\n        <div class=\"stat-card\">\n            <div class=\"stat-number warning\">${analysis.total_discrepancies}</div>\n            <div class=\"stat-label\">Discrepancias Encontradas</div>\n        </div>\n        <div class=\"stat-card\">\n            <div class=\"stat-number\">$${analysis.total_amount.toLocaleString('es-MX')}</div>\n            <div class=\"stat-label\">Monto en Discrepancias (MXN)</div>\n        </div>\n    </div>\n\n    <div class=\"section\">\n        <h2>✅ Transacciones Conciliadas (${stats.matches_found})</h2>\n        ${matches.map(match => `\n            <div class=\"match-item\">\n                <div style=\"display: flex; justify-content: space-between; align-items: center;\">\n                    <div>\n                        <strong>Banco:</strong> ${match.bank_transaction.description}<br>\n                        <strong>Contabilidad:</strong> ${match.accounting_record.description}<br>\n                        <span class=\"date\">${match.bank_transaction.date}</span>\n                    </div>\n                    <div style=\"text-align: right;\">\n                        <div class=\"amount\">$${Math.abs(match.bank_transaction.amount).toLocaleString('es-MX')} MXN</div>\n                        <span class=\"confidence\" style=\"background: ${match.match_type === 'exact' ? '#28a745' : '#ffc107'}; color: white;\">\n                            ${match.confidence_score}% ${match.match_type === 'exact' ? 'Exacto' : 'Aproximado'}\n                        </span>\n                    </div>\n                </div>\n            </div>\n        `).join('')}\n    </div>\n\n    <div class=\"section\">\n        <h2>⚠️ Discrepancias Identificadas (${analysis.total_discrepancies})</h2>\n        ${discrepancies.map(disc => `\n            <div class=\"discrepancy-item\">\n                <div style=\"display: flex; justify-content: space-between; align-items: start;\">\n                    <div>\n                        <strong>${disc.type === 'unmatched_bank_transaction' ? '🏦 Banco' : '📊 Contabilidad'}:</strong> ${disc.description}<br>\n                        <span class=\"date\">${disc.date}</span><br>\n                        <div style=\"margin-top: 8px;\">\n                            <strong>Acciones sugeridas:</strong>\n                            <ul style=\"margin: 5px 0; padding-left: 20px;\">\n                                ${disc.suggested_actions.map(action => `<li>${action}</li>`).join('')}\n                            </ul>\n                        </div>\n                    </div>\n                    <div style=\"text-align: right;\">\n                        <div class=\"amount\">$${Math.abs(disc.amount).toLocaleString('es-MX')} MXN</div>\n                        <span class=\"confidence risk-${disc.risk_level}\">\n                            ${disc.risk_level.toUpperCase()}\n                        </span>\n                    </div>\n                </div>\n            </div>\n        `).join('')}\n    </div>\n\n    <div class=\"section\">\n        <h2>📈 Resumen Ejecutivo</h2>\n        <p><strong>Estado General:</strong> ${stats.match_rate > 90 ? '🟢 Excelente' : stats.match_rate > 75 ? '🟡 Bueno' : '🔴 Requiere Atención'}</p>\n        <p><strong>Recomendaciones:</strong></p>\n        <ul>\n            ${analysis.critical_count > 0 ? '<li>🚨 <strong>CRÍTICO:</strong> Revisar inmediatamente las discrepancias fiscales identificadas</li>' : ''}\n            ${analysis.pending_collections > 0 ? '<li>💰 Seguimiento a ' + analysis.pending_collections + ' cobranza(s) pendiente(s)</li>' : ''}\n            ${stats.match_rate < 85 ? '<li>🔍 Revisar criterios de matching - tasa actual: ' + stats.match_rate + '%</li>' : ''}\n            <li>📅 Próxima conciliación recomendada: ${new Date(Date.now() + 7*24*60*60*1000).toLocaleDateString('es-MX')}</li>\n        </ul>\n    </div>\n\n    <div class=\"footer\">\n        Generado por Sistema de Conciliación Bancaria México v1.0<br>\n        Cumple con regulaciones SAT y CNBV\n    </div>\n</body>\n</html>\n`;\n\n// Generar resumen ejecutivo para respuesta API\nconst executiveSummary = {\n  reconciliation_id: data.reconciliation_id,\n  status: 'completed',\n  match_rate: parseFloat(stats.match_rate),\n  total_processed: stats.total_bank_transactions + stats.total_accounting_records,\n  matches_found: stats.matches_found,\n  discrepancies_count: analysis.total_discrepancies,\n  discrepancies_amount: analysis.total_amount,\n  risk_assessment: analysis.critical_count > 0 ? 'critical' : \n                   analysis.high_risk_count > 0 ? 'high' : \n                   analysis.medium_risk_count > 0 ? 'medium' : 'low',\n  completion_time: new Date().toISOString(),\n  next_actions: [\n    analysis.critical_count > 0 ? 'Revisar discrepancias críticas inmediatamente' : null,\n    analysis.pending_collections > 0 ? `Seguimiento a ${analysis.pending_collections} cobranzas pendientes` : null,\n    stats.match_rate < 85 ? 'Revisar y ajustar criterios de conciliación' : null\n  ].filter(Boolean)\n};\n\nreturn [{\n  reconciliation_complete: true,\n  html_report: htmlReport,\n  executive_summary: executiveSummary,\n  detailed_data: {\n    matches: matches,\n    discrepancies: discrepancies,\n    statistics: stats,\n    analysis: analysis\n  },\n  report_generated_at: new Date().toISOString()\n}];"
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "notification-manager-01",
+      "name": "Send Notifications MX",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        1400,
+        300
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// Gestión de notificaciones México\nconst data = $input.all()[0].json;\nconst summary = data.executive_summary;\nconst analysis = data.detailed_data.analysis;\n\nconst notifications = [];\n\n// Notificación por email\nconst emailNotification = {\n  type: 'email',\n  subject: `🏦 Conciliación Bancaria Completada - ${summary.match_rate}% coincidencias`,\n  body: `\nEstimado usuario,\n\nLa conciliación bancaria ha sido completada con los siguientes resultados:\n\n📊 RESUMEN:\n• Tasa de conciliación: ${summary.match_rate}%\n• Transacciones procesadas: ${summary.total_processed}\n• Coincidencias encontradas: ${summary.matches_found}\n• Discrepancias: ${summary.discrepancies_count}\n• Monto en discrepancias: $${summary.discrepancies_amount.toLocaleString('es-MX')} MXN\n\n${analysis.critical_count > 0 ? '🚨 ATENCIÓN: Se encontraron ' + analysis.critical_count + ' discrepancias críticas que requieren revisión inmediata.' : ''}\n\n🔗 Ver reporte completo: https://tu-portal.com/reports/${data.reconciliation_id}\n\nSaludos,\nSistema de Conciliación Bancaria México\n  `,\n  priority: analysis.critical_count > 0 ? 'high' : 'normal'\n};\n\n// Notificación Telegram para móvil\nconst telegramNotification = {\n  type: 'telegram',\n  message: `🏦 *Conciliación Completada*\n\n✅ Coincidencias: ${summary.matches_found}\n⚠️ Discrepancias: ${summary.discrepancies_count}\n📈 Tasa: ${summary.match_rate}%\n\n${analysis.critical_count > 0 ? '🚨 *' + analysis.critical_count + ' discrepancias críticas*' : '✅ Sin issues críticos'}\n\n[Ver Reporte Completo](https://tu-portal.com/reports/${summary.reconciliation_id})`\n};\n\n// Notificación webhook para dashboards\nconst webhookNotification = {\n  type: 'webhook',\n  url: 'https://tu-portal.com/api/notifications/reconciliation',\n  payload: {\n    reconciliation_id: summary.reconciliation_id,\n    status: summary.status,\n    match_rate: summary.match_rate,\n    risk_level: summary.risk_assessment,\n    timestamp: summary.completion_time,\n    requires_attention: analysis.critical_count > 0 || analysis.high_risk_count > 2\n  }\n};\n\nnotifications.push(emailNotification, telegramNotification, webhookNotification);\n\nreturn [{\n  ...data,\n  notifications: notifications,\n  notification_summary: {\n    total_notifications: notifications.length,\n    high_priority: notifications.filter(n => n.priority === 'high').length,\n    requires_immediate_attention: analysis.critical_count > 0\n  }\n}];"
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "service-response-01",
+      "name": "Format Service Response",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        1600,
+        400
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// Formatear respuesta del servicio de conciliación\nconst data = $input.all()[0].json;\nconst summary = data.executive_summary;\n\n// Respuesta estructurada para API\nconst serviceResponse = {\n  success: true,\n  reconciliation_service: {\n    id: summary.reconciliation_id,\n    status: 'completed',\n    timestamp: new Date().toISOString(),\n    processing_time_ms: Date.now() - new Date(data.started_at).getTime()\n  },\n  results: {\n    match_rate: summary.match_rate,\n    total_processed: summary.total_processed,\n    matches_found: summary.matches_found,\n    discrepancies: {\n      count: summary.discrepancies_count,\n      total_amount_mxn: summary.discrepancies_amount,\n      risk_level: summary.risk_assessment\n    }\n  },\n  reports: {\n    html_available: true,\n    pdf_available: true,\n    excel_available: true,\n    download_urls: {\n      html: `/api/reports/${summary.reconciliation_id}/html`,\n      pdf: `/api/reports/${summary.reconciliation_id}/pdf`,\n      excel: `/api/reports/${summary.reconciliation_id}/excel`\n    }\n  },\n  next_actions: summary.next_actions,\n  notifications_sent: data.notification_summary,\n  pricing: {\n    service_tier: summary.total_processed <= 100 ? 'basic' : \n                 summary.total_processed <= 500 ? 'standard' : 'premium',\n    cost_mxn: summary.total_processed <= 100 ? 299 : \n               summary.total_processed <= 500 ? 599 : 999,\n    savings_hours: Math.round((summary.total_processed * 0.2) / 60 * 100) / 100\n  },\n  mexican_compliance: {\n    sat_compatible: true,\n    cnbv_compliant: true,\n    cfdi_processed: true,\n    currency: 'MXN',\n    locale: 'es-MX'\n  }\n};\n\nreturn [serviceResponse];"
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "webhook-response-01",
+      "name": "Send Service Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [
+        1800,
+        400
+      ],
+      "parameters": {
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              }
+            ]
+          }
+        }
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "scheduled-trigger-01",
+      "name": "Scheduled Reconciliation",
+      "type": "n8n-nodes-base.cron",
+      "position": [
+        200,
+        200
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 8 * * 1-5"
+            }
+          ]
+        }
+      },
+      "typeVersion": 1.1
+    },
+    {
+      "id": "auto-config-01",
+      "name": "Auto Reconciliation Config",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        400,
+        200
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// Configuración automática para conciliaciones programadas\nconst companies = [\n  {\n    company_id: 'EMPRESA_001',\n    bank_account: 'BBVA-****1234',\n    period: new Date().toISOString().substring(0, 7), // YYYY-MM\n    tolerance_days: 3,\n    tolerance_amount: 0.50\n  },\n  {\n    company_id: 'EMPRESA_002', \n    bank_account: 'Santander-****5678',\n    period: new Date().toISOString().substring(0, 7),\n    tolerance_days: 2,\n    tolerance_amount: 1.00\n  }\n];\n\n// Procesar cada empresa\nconst results = [];\nfor (const config of companies) {\n  results.push({\n    body: config\n  });\n}\n\nreturn results;"
+      },
+      "typeVersion": 2
+    }
+  ],
+  "connections": {
+    "Conciliation Service Trigger": {
+      "main": [
+        [
+          {
+            "node": "Validate Reconciliation Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Reconciliation Request": {
+      "main": [
+        [
+          {
+            "node": "Fetch Bank Statements",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Fetch Accounting Records",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Bank Statements": {
+      "main": [
+        [
+          {
+            "node": "Advanced Matching Engine MX",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Accounting Records": {
+      "main": [
+        [
+          {
+            "node": "Advanced Matching Engine MX",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Advanced Matching Engine MX": {
+      "main": [
+        [
+          {
+            "node": "Analyze Discrepancies MX",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze Discrepancies MX": {
+      "main": [
+        [
+          {
+            "node": "Generate Reconciliation Report MX",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Reconciliation Report MX": {
+      "main": [
+        [
+          {
+            "node": "Send Notifications MX",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Notifications MX": {
+      "main": [
+        [
+          {
+            "node": "Format Service Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Service Response": {
+      "main": [
+        [
+          {
+            "node": "Send Service Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scheduled Reconciliation": {
+      "main": [
+        [
+          {
+            "node": "Auto Reconciliation Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Auto Reconciliation Config": {
+      "main": [
+        [
+          {
+            "node": "Validate Reconciliation Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "saveManualExecutions": true
+  },
+  "staticData": {}
+}

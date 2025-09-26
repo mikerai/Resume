@@ -1,0 +1,160 @@
+{
+  "id": "chatbot-agent-001",
+  "meta": {
+    "instanceId": "simple-chatbot-with-wikipedia",
+    "templateCredsSetupCompleted": false
+  },
+  "name": "Simple Chatbot Agent with Wikipedia",
+  "tags": [
+    {
+      "id": "chatbot-tag-1",
+      "name": "Chatbot",
+      "createdAt": "2025-09-25T13:39:00.000Z",
+      "updatedAt": "2025-09-25T13:39:00.000Z"
+    },
+    {
+      "id": "ai-tag-1",
+      "name": "AI",
+      "createdAt": "2025-09-25T13:39:00.000Z",
+      "updatedAt": "2025-09-25T13:39:00.000Z"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "chat-trigger-node",
+      "name": "When chat message received",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "position": [
+        100,
+        300
+      ],
+      "webhookId": "chatbot-webhook-001",
+      "parameters": {
+        "public": true,
+        "options": {}
+      },
+      "typeVersion": 1.1
+    },
+    {
+      "id": "openai-chat-model",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        500,
+        200
+      ],
+      "parameters": {
+        "model": "gpt-3.5-turbo",
+        "options": {
+          "temperature": 0.7,
+          "maxTokens": 1000
+        }
+      },
+      "credentials": {
+        "openAiApi": {
+          "id": "openai-credentials",
+          "name": "OpenAI API Key"
+        }
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "window-buffer-memory",
+      "name": "Window Buffer Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "sessionKey": "={{ 'chatbot-session-' + $json.sessionId }}",
+        "sessionIdType": "customKey",
+        "contextWindowLength": 10
+      },
+      "typeVersion": 1.2
+    },
+    {
+      "id": "wikipedia-tool",
+      "name": "Wikipedia Tool",
+      "type": "@n8n/n8n-nodes-langchain.toolWikipedia",
+      "position": [
+        500,
+        400
+      ],
+      "parameters": {
+        "name": "wikipedia_search",
+        "description": "Search Wikipedia for information about topics, people, places, events, and general knowledge questions."
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "ai-agent",
+      "name": "AI Chatbot Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        700,
+        300
+      ],
+      "parameters": {
+        "text": "={{ $json.chatInput }}",
+        "options": {
+          "systemMessage": "You are a helpful AI assistant with access to Wikipedia. You can engage in conversations and help users find information about various topics by searching Wikipedia when needed. Be friendly, informative, and concise in your responses. When you use Wikipedia information, briefly mention that you found the information on Wikipedia."
+        },
+        "promptType": "define"
+      },
+      "typeVersion": 1.9
+    }
+  ],
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Chatbot Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Chatbot Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Window Buffer Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Chatbot Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wikipedia Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Chatbot Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "versionId": "1.0.0",
+  "triggerCount": 1,
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

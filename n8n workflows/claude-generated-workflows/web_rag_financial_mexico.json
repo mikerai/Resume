@@ -1,0 +1,448 @@
+{
+  "name": "RAG Financiero México - Web Chatbot",
+  "nodes": [
+    {
+      "id": "web-trigger-01",
+      "name": "Web Chatbot Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "position": [400, 300],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "financial-chat",
+        "responseMode": "responseNode",
+        "options": {
+          "noResponseBody": false
+        }
+      },
+      "webhookId": "web-financial-chat-webhook",
+      "typeVersion": 2
+    },
+    {
+      "id": "input-processor-01",
+      "name": "Process User Input",
+      "type": "n8n-nodes-base.code",
+      "position": [600, 300],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// Procesar entrada del usuario web\nconst userMessage = $input.all()[0].json.body.message;\nconst sessionId = $input.all()[0].json.body.sessionId || 'web-session-' + Date.now();\nconst fileUploads = $input.all()[0].json.body.files || [];\nconst userId = $input.all()[0].json.body.userId || 'anonymous';\n\n// Clasificar tipo de consulta\nlet queryType = 'general';\nif (userMessage.toLowerCase().includes('conciliar') || userMessage.toLowerCase().includes('banco')) {\n  queryType = 'reconciliation';\n} else if (userMessage.toLowerCase().includes('reporte') || userMessage.toLowerCase().includes('gráfico')) {\n  queryType = 'reporting';\n} else if (userMessage.toLowerCase().includes('flujo') || userMessage.toLowerCase().includes('efectivo')) {\n  queryType = 'cashflow';\n}\n\nreturn [{\n  message: userMessage,\n  sessionId: sessionId,\n  userId: userId,\n  queryType: queryType,\n  files: fileUploads,\n  timestamp: new Date().toISOString(),\n  country: 'mexico'\n}];"
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "file-handler-01",
+      "name": "Handle File Uploads",
+      "type": "n8n-nodes-base.switch",
+      "position": [800, 300],
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "outputKey": "hasFiles",
+              "conditions": {
+                "options": {
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.files.length }}",
+                    "rightValue": 0,
+                    "operator": {
+                      "type": "number",
+                      "operation": "gt"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "outputKey": "noFiles",
+              "conditions": {
+                "options": {
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.files.length }}",
+                    "rightValue": 0,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "typeVersion": 3.2
+    },
+    {
+      "id": "cfdi-processor-01",
+      "name": "Process CFDI/Financial Files",
+      "type": "n8n-nodes-base.code",
+      "position": [1000, 200],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// Procesar archivos financieros mexicanos\nconst files = $input.all()[0].json.files;\nconst processedFiles = [];\n\nfor (const file of files) {\n  let fileType = 'unknown';\n  let extractedData = {};\n  \n  // Identificar tipo de archivo\n  if (file.name.endsWith('.xml')) {\n    fileType = 'cfdi';\n    // Simular extracción de datos CFDI\n    extractedData = {\n      rfc_emisor: 'XAXX010101000',\n      rfc_receptor: 'XEXX010101000',\n      total: 1160.00,\n      moneda: 'MXN',\n      fecha: '2024-03-15T10:30:00',\n      conceptos: ['Servicios profesionales'],\n      regimen_fiscal: '601'\n    };\n  } else if (file.name.includes('estado') || file.name.includes('bank')) {\n    fileType = 'bank_statement';\n    extractedData = {\n      banco: 'BBVA México',\n      cuenta: '****1234',\n      periodo: '2024-03',\n      saldo_inicial: 25000.00,\n      saldo_final: 28500.00,\n      transacciones: 45\n    };\n  }\n  \n  processedFiles.push({\n    original: file,\n    type: fileType,\n    data: extractedData,\n    processed_at: new Date().toISOString()\n  });\n}\n\nreturn [{\n  ...($input.all()[0].json),\n  processed_files: processedFiles,\n  file_processing_complete: true\n}];"
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "vector-embeddings-01",
+      "name": "Financial Embeddings MX",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "position": [1200, 500],
+      "parameters": {
+        "model": "text-embedding-3-small",
+        "options": {}
+      },
+      "credentials": {
+        "openAiApi": {
+          "id": "8gccIjcuf3gvaoEr",
+          "name": "OpenAi account"
+        }
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "vector-store-mx-01",
+      "name": "Knowledge Base Empresarial MX",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreInMemory",
+      "position": [1400, 500],
+      "parameters": {
+        "memoryKey": "financial-mx-kb",
+        "mode": "retrieve"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "vector-tool-01",
+      "name": "Financial Query Tool MX",
+      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+      "position": [1600, 500],
+      "parameters": {
+        "name": "consultar_base_conocimiento_financiero",
+        "description": "Consulta la base de conocimiento financiero de la empresa. Incluye facturas SAT, estados de cuenta, datos contables, y análisis financieros específicos para el mercado mexicano."
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "financial-llm-01",
+      "name": "Financial AI Model MX",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [1800, 400],
+      "parameters": {
+        "model": "gpt-4o-2024-08-06",
+        "options": {
+          "temperature": 0.3,
+          "maxTokens": 2000
+        }
+      },
+      "credentials": {
+        "openAiApi": {
+          "id": "8gccIjcuf3gvaoEr",
+          "name": "OpenAi account"
+        }
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "memory-mx-01",
+      "name": "Session Memory MX",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "position": [1800, 300],
+      "parameters": {
+        "sessionKey": "=financial-mx-{{ $json.sessionId }}",
+        "sessionIdType": "customKey",
+        "k": 10
+      },
+      "typeVersion": 1.2
+    },
+    {
+      "id": "financial-agent-mx-01",
+      "name": "Agente Financiero México",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [2000, 300],
+      "parameters": {
+        "text": "={{ $json.message }}",
+        "options": {
+          "systemMessage": "Eres un asistente financiero especializado para PyMEs y empresas medianas en México. Tu objetivo es ayudar con:\n\n🏢 ESPECIALIDADES:\n• Análisis financiero con datos mexicanos (SAT, Banxico, INEGI)\n• Conciliación bancaria automatizada\n• Reportes financieros en español\n• Cumplimiento fiscal mexicano (CFDI, SAT)\n• Análisis de flujo de efectivo en MXN\n• Benchmarking sectorial México\n\n📊 CAPACIDADES:\n• Procesar facturas electrónicas (CFDI)\n• Analizar estados de cuenta bancarios mexicanos\n• Generar gráficos y dashboards financieros\n• Crear reportes ejecutivos en español\n• Identificar discrepancias en conciliación\n\n🇲🇽 CONTEXTO MEXICANO:\n• Moneda: Pesos mexicanos (MXN)\n• Regulación: SAT, CNBV, Banxico\n• Bancos: BBVA, Santander, Banorte, etc.\n• Régimen fiscal y CFDIs\n\n💡 ESTILO:\n• Responde en español mexicano profesional\n• Usa ejemplos con empresas mexicanas\n• Incluye referencias a regulación local\n• Genera insights accionables\n• Sé conciso pero informativo\n\nSi necesitas datos específicos, usa la herramienta de consulta de base de conocimiento financiero."
+        },
+        "promptType": "define"
+      },
+      "typeVersion": 1.6
+    },
+    {
+      "id": "chart-generator-01",
+      "name": "Generate Financial Charts",
+      "type": "n8n-nodes-base.code",
+      "position": [2200, 200],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// Generar configuración de gráficos financieros\nconst agentResponse = $input.all()[0].json.output;\nconst queryType = $input.all()[0].json.queryType;\n\nlet chartConfig = null;\n\n// Detectar si se necesita un gráfico\nif (agentResponse.toLowerCase().includes('gráfico') || \n    agentResponse.toLowerCase().includes('chart') ||\n    queryType === 'reporting') {\n    \n  // Generar configuración Chart.js\n  if (queryType === 'cashflow') {\n    chartConfig = {\n      type: 'line',\n      data: {\n        labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],\n        datasets: [{\n          label: 'Flujo de Efectivo (MXN)',\n          data: [25000, 28000, 22000, 35000, 40000, 38000],\n          borderColor: 'rgb(75, 192, 192)',\n          backgroundColor: 'rgba(75, 192, 192, 0.1)',\n          tension: 0.4\n        }]\n      },\n      options: {\n        responsive: true,\n        plugins: {\n          title: {\n            display: true,\n            text: 'Flujo de Efectivo - Empresa México'\n          }\n        },\n        scales: {\n          y: {\n            ticks: {\n              callback: function(value) {\n                return '$' + value.toLocaleString('es-MX');\n              }\n            }\n          }\n        }\n      }\n    };\n  } else if (queryType === 'reporting') {\n    chartConfig = {\n      type: 'bar',\n      data: {\n        labels: ['Q1', 'Q2', 'Q3', 'Q4'],\n        datasets: [{\n          label: 'Ingresos (MXN)',\n          data: [120000, 150000, 135000, 180000],\n          backgroundColor: 'rgba(54, 162, 235, 0.8)'\n        }]\n      },\n      options: {\n        responsive: true,\n        plugins: {\n          title: {\n            display: true,\n            text: 'Ingresos Trimestrales 2024'\n          }\n        }\n      }\n    };\n  }\n}\n\nreturn [{\n  response: agentResponse,\n  chartConfig: chartConfig,\n  hasChart: chartConfig !== null,\n  timestamp: new Date().toISOString(),\n  queryType: queryType\n}];"
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "response-formatter-01",
+      "name": "Format Web Response",
+      "type": "n8n-nodes-base.code",
+      "position": [2400, 300],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// Formatear respuesta para chatbot web\nconst data = $input.all()[0].json;\n\nconst webResponse = {\n  success: true,\n  data: {\n    message: data.response,\n    timestamp: new Date().toISOString(),\n    session_id: data.sessionId || 'web-session',\n    has_chart: data.hasChart || false,\n    chart_config: data.chartConfig || null,\n    query_type: data.queryType || 'general',\n    suggestions: [\n      '📊 Ver dashboard financiero',\n      '🏦 Iniciar conciliación bancaria',\n      '📈 Generar reporte mensual',\n      '💰 Analizar flujo de efectivo'\n    ],\n    actions: [\n      {\n        type: 'download',\n        label: 'Descargar reporte PDF',\n        endpoint: '/api/reports/pdf'\n      },\n      {\n        type: 'upload',\n        label: 'Subir más archivos',\n        accept: '.xml,.pdf,.csv,.xlsx'\n      }\n    ]\n  }\n};\n\nreturn [webResponse];"
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "web-response-01",
+      "name": "Send Web Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [2600, 300],
+      "parameters": {
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              }
+            ]
+          }
+        }
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "telegram-backup-01",
+      "name": "Telegram Backup Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "position": [400, 500],
+      "parameters": {
+        "updates": ["messages", "documents", "photos"]
+      },
+      "credentials": {
+        "telegramApi": {
+          "id": "telegram-bot-mx",
+          "name": "Telegram Bot México"
+        }
+      },
+      "typeVersion": 1.1
+    },
+    {
+      "id": "telegram-processor-01",
+      "name": "Process Telegram Input",
+      "type": "n8n-nodes-base.code",
+      "position": [600, 500],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// Procesar entrada de Telegram con soporte completo para conversaciones\nconst message = $input.all()[0].json.message;\n\n// Manejar archivos de Telegram si existen\nlet files = [];\nif (message.document) {\n  files.push({\n    name: message.document.file_name || 'document',\n    type: message.document.mime_type || 'application/octet-stream',\n    file_id: message.document.file_id,\n    file_size: message.document.file_size,\n    platform: 'telegram'\n  });\n} else if (message.photo) {\n  const photo = message.photo[message.photo.length - 1]; // Get largest photo\n  files.push({\n    name: 'photo_' + Date.now() + '.jpg',\n    type: 'image/jpeg',\n    file_id: photo.file_id,\n    file_size: photo.file_size,\n    platform: 'telegram'\n  });\n}\n\n// Crear formato compatible con el flujo principal\nlet processedInput = {\n  message: message.text || 'Archivo enviado para análisis',\n  sessionId: 'telegram-' + message.from.id,\n  userId: message.from.id.toString(),\n  queryType: 'general',\n  files: files,\n  platform: 'telegram',\n  timestamp: new Date().toISOString(),\n  country: 'mexico',\n  userInfo: {\n    firstName: message.from.first_name || '',\n    lastName: message.from.last_name || '',\n    username: message.from.username || ''\n  }\n};\n\n// Análisis inteligente del tipo de consulta\nconst text = (message.text || '').toLowerCase();\nif (text.includes('conciliar') || text.includes('banco') || text.includes('reconcil')) {\n  processedInput.queryType = 'reconciliation';\n} else if (text.includes('reporte') || text.includes('gráfico') || text.includes('chart') || text.includes('dashboard')) {\n  processedInput.queryType = 'reporting';\n} else if (text.includes('flujo') || text.includes('efectivo') || text.includes('cash') || text.includes('liquidez')) {\n  processedInput.queryType = 'cashflow';\n} else if (text.includes('factura') || text.includes('cfdi') || text.includes('xml')) {\n  processedInput.queryType = 'invoice';\n} else if (text.includes('saldo') || text.includes('balance')) {\n  processedInput.queryType = 'balance';\n}\n\n// Manejar comandos especiales de Telegram\nif (message.text && message.text.startsWith('/')) {\n  const command = message.text.toLowerCase();\n  if (command.includes('start') || command.includes('ayuda') || command.includes('help')) {\n    processedInput.message = 'Hola, soy tu asistente financiero para México. ¿En qué puedo ayudarte hoy?';\n    processedInput.queryType = 'welcome';\n  } else if (command.includes('ventas')) {\n    processedInput.message = 'Mostrar resumen de ventas del día';\n    processedInput.queryType = 'reporting';\n  } else if (command.includes('saldo')) {\n    processedInput.message = 'Consultar saldo actual de cuentas';\n    processedInput.queryType = 'balance';\n  } else if (command.includes('alertas')) {\n    processedInput.message = 'Mostrar alertas financieras pendientes';\n    processedInput.queryType = 'alerts';\n  }\n}\n\nreturn [processedInput];"
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "telegram-response-01",
+      "name": "Send Telegram Response",
+      "type": "n8n-nodes-base.telegram",
+      "position": [2600, 500],
+      "parameters": {
+        "operation": "sendMessage",
+        "chatId": "={{ $('Process Telegram Input').item.json.userId }}",
+        "text": "{{ $json.data.message }}\n\n💡 *Opciones disponibles:*\n{{ $json.data.suggestions.join('\\n') }}\n\n🔄 Puedes continuar la conversación o usar:\n• /ventas - Resumen de ventas\n• /saldo - Consultar saldos  \n• /alertas - Ver alertas\n• Enviar archivos (XML, PDF, Excel)\n\n🖥️ Dashboard: https://tu-portal.com/dashboard",
+        "additionalFields": {
+          "parse_mode": "Markdown",
+          "disable_web_page_preview": true
+        }
+      },
+      "credentials": {
+        "telegramApi": {
+          "id": "telegram-bot-mx",
+          "name": "Telegram Bot México"
+        }
+      },
+      "typeVersion": 1.2
+    }
+  ],
+  "connections": {
+    "Web Chatbot Trigger": {
+      "main": [
+        [
+          {
+            "node": "Process User Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process User Input": {
+      "main": [
+        [
+          {
+            "node": "Handle File Uploads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Handle File Uploads": {
+      "main": [
+        [
+          {
+            "node": "Process CFDI/Financial Files",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Agente Financiero México",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process CFDI/Financial Files": {
+      "main": [
+        [
+          {
+            "node": "Agente Financiero México",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Financial Embeddings MX": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Knowledge Base Empresarial MX",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Knowledge Base Empresarial MX": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "Financial Query Tool MX",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Financial Query Tool MX": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente Financiero México",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Financial AI Model MX": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agente Financiero México",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Session Memory MX": {
+      "ai_memory": [
+        [
+          {
+            "node": "Agente Financiero México",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente Financiero México": {
+      "main": [
+        [
+          {
+            "node": "Generate Financial Charts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Financial Charts": {
+      "main": [
+        [
+          {
+            "node": "Format Web Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Web Response": {
+      "main": [
+        [
+          {
+            "node": "Send Web Response",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send Telegram Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Backup Trigger": {
+      "main": [
+        [
+          {
+            "node": "Process Telegram Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Telegram Input": {
+      "main": [
+        [
+          {
+            "node": "Handle File Uploads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "saveManualExecutions": true
+  },
+  "staticData": {},
+  "tags": [],
+  "triggerCount": 2,
+  "updatedAt": "2024-03-15T10:30:00.000Z",
+  "versionId": "1"
+}

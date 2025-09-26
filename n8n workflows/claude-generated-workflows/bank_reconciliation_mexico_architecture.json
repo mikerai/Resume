@@ -1,0 +1,748 @@
+{
+  "name": "Bank Reconciliation for Mexican PyMEs - Complete Architecture",
+  "meta": {
+    "instanceId": "bank-reconciliation-mexico-pymes",
+    "templateCredsSetupCompleted": false,
+    "description": "Comprehensive bank reconciliation automation for Mexican SMEs with multi-bank support (BBVA, Santander, Banorte), PDF/CSV processing, transaction matching, and accounting integration"
+  },
+  "tags": [
+    {
+      "name": "Banking",
+      "id": "banking-tag"
+    },
+    {
+      "name": "Reconciliation",
+      "id": "reconciliation-tag"
+    },
+    {
+      "name": "Mexico",
+      "id": "mexico-tag"
+    },
+    {
+      "name": "Finance",
+      "id": "finance-tag"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "webhook-trigger",
+      "name": "Bank Statement Upload",
+      "type": "n8n-nodes-base.webhook",
+      "position": [100, 300],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "bank-reconciliation",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*",
+          "rawBody": false
+        }
+      },
+      "typeVersion": 1.1,
+      "webhookId": "bank-reconciliation-webhook"
+    },
+    {
+      "id": "schedule-trigger",
+      "name": "Daily Reconciliation Schedule",
+      "type": "n8n-nodes-base.cron",
+      "position": [100, 200],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 6 * * MON-FRI"
+            }
+          ]
+        }
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "bank-api-bbva",
+      "name": "BBVA México API",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [300, 100],
+      "parameters": {
+        "url": "https://api.bbva.mx/v1/accounts/statements",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "method": "GET",
+        "options": {
+          "timeout": 30000,
+          "retry": {
+            "enabled": true,
+            "maxTries": 3
+          }
+        }
+      },
+      "credentials": {
+        "oAuth2Api": {
+          "id": "bbva-oauth-credentials",
+          "name": "BBVA OAuth2 Credentials"
+        }
+      },
+      "typeVersion": 4.2
+    },
+    {
+      "id": "bank-api-santander",
+      "name": "Santander México API",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [300, 200],
+      "parameters": {
+        "url": "https://openapi.santander.com.mx/v1/transactions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "method": "GET",
+        "options": {
+          "timeout": 30000,
+          "retry": {
+            "enabled": true,
+            "maxTries": 3
+          }
+        }
+      },
+      "credentials": {
+        "oAuth2Api": {
+          "id": "santander-oauth-credentials",
+          "name": "Santander OAuth2 Credentials"
+        }
+      },
+      "typeVersion": 4.2
+    },
+    {
+      "id": "bank-api-banorte",
+      "name": "Banorte API",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [300, 300],
+      "parameters": {
+        "url": "https://api.banorte.com/v2/statements",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "method": "GET",
+        "options": {
+          "timeout": 30000,
+          "retry": {
+            "enabled": true,
+            "maxTries": 3
+          }
+        }
+      },
+      "credentials": {
+        "oAuth2Api": {
+          "id": "banorte-oauth-credentials",
+          "name": "Banorte OAuth2 Credentials"
+        }
+      },
+      "typeVersion": 4.2
+    },
+    {
+      "id": "prometeo-api",
+      "name": "Prometeo Banking API (Multi-Bank)",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [300, 400],
+      "parameters": {
+        "url": "https://banking.prometeoapi.com/transaction/",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "method": "GET",
+        "headers": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "={{$credentials.prometeoApi.apiKey}}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000,
+          "retry": {
+            "enabled": true,
+            "maxTries": 3
+          }
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "prometeo-api-credentials",
+          "name": "Prometeo API Key"
+        }
+      },
+      "typeVersion": 4.2
+    },
+    {
+      "id": "file-format-detector",
+      "name": "Detect File Format",
+      "type": "n8n-nodes-base.function",
+      "position": [500, 300],
+      "parameters": {
+        "functionCode": "const items = $input.all();\nconst results = [];\n\nfor (const item of items) {\n  const fileName = item.binary?.data?.fileName || '';\n  const mimeType = item.binary?.data?.mimeType || '';\n  \n  let fileType = 'unknown';\n  let processor = 'manual';\n  \n  if (fileName.toLowerCase().endsWith('.pdf') || mimeType.includes('pdf')) {\n    fileType = 'pdf';\n    processor = 'pdf-extractor';\n  } else if (fileName.toLowerCase().endsWith('.csv') || mimeType.includes('csv')) {\n    fileType = 'csv';\n    processor = 'csv-parser';\n  } else if (fileName.toLowerCase().match(/\\.(xlsx?|xls)$/) || mimeType.includes('spreadsheet')) {\n    fileType = 'excel';\n    processor = 'excel-parser';\n  }\n  \n  results.push({\n    ...item,\n    json: {\n      ...item.json,\n      fileType,\n      processor,\n      fileName,\n      mimeType\n    }\n  });\n}\n\nreturn results;"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "pdf-extractor",
+      "name": "Extract PDF Bank Statement",
+      "type": "n8n-nodes-base.extractFromFile",
+      "position": [700, 200],
+      "parameters": {
+        "operation": "extractFromPDF",
+        "binaryPropertyName": "data",
+        "options": {
+          "password": "",
+          "maxPages": 50
+        }
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "ai-pdf-processor",
+      "name": "AI-Powered PDF Processing",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "position": [700, 100],
+      "parameters": {
+        "prompt": "Extract transaction data from this Mexican bank statement PDF. Return structured JSON with:\n- accountNumber\n- bankName (BBVA, Santander, Banorte, etc.)\n- statementDate\n- transactions array with: date, description, amount, balance, reference\n- currency (MXN assumed)\nEnsure dates are in YYYY-MM-DD format and amounts are numeric.",
+        "options": {
+          "temperature": 0.1,
+          "maxTokens": 4000
+        }
+      },
+      "credentials": {
+        "openAiApi": {
+          "id": "openai-credentials",
+          "name": "OpenAI API Key"
+        }
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "csv-parser",
+      "name": "Parse CSV Bank Statement",
+      "type": "n8n-nodes-base.extractFromFile",
+      "position": [700, 300],
+      "parameters": {
+        "operation": "extractFromCSV",
+        "binaryPropertyName": "data",
+        "options": {
+          "delimiter": ",",
+          "skipLinesFromTop": 1,
+          "encoding": "utf8"
+        }
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "excel-parser",
+      "name": "Parse Excel Bank Statement",
+      "type": "n8n-nodes-base.microsoftExcel",
+      "position": [700, 400],
+      "parameters": {
+        "operation": "readWorkbook",
+        "binaryPropertyName": "data",
+        "options": {
+          "sheetName": "Sheet1",
+          "range": "A:Z"
+        }
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "data-standardizer",
+      "name": "Standardize Transaction Data",
+      "type": "n8n-nodes-base.function",
+      "position": [900, 300],
+      "parameters": {
+        "functionCode": "const items = $input.all();\nconst standardized = [];\n\nfor (const item of items) {\n  const data = item.json;\n  \n  // Standardize date formats to YYYY-MM-DD\n  const standardizeDate = (dateStr) => {\n    if (!dateStr) return null;\n    \n    // Handle various Mexican date formats\n    const patterns = [\n      /^(\\d{1,2})\\/(\\d{1,2})\\/(\\d{4})$/, // DD/MM/YYYY\n      /^(\\d{4})-(\\d{1,2})-(\\d{1,2})$/, // YYYY-MM-DD\n      /^(\\d{1,2})-(\\d{1,2})-(\\d{4})$/, // DD-MM-YYYY\n    ];\n    \n    for (const pattern of patterns) {\n      const match = dateStr.match(pattern);\n      if (match) {\n        const [, p1, p2, p3] = match;\n        if (p3.length === 4) { // Year is last\n          return `${p3}-${p2.padStart(2, '0')}-${p1.padStart(2, '0')}`;\n        } else { // Year is first\n          return `${p1}-${p2.padStart(2, '0')}-${p3.padStart(2, '0')}`;\n        }\n      }\n    }\n    return dateStr;\n  };\n  \n  // Standardize amount to numeric\n  const standardizeAmount = (amountStr) => {\n    if (!amountStr) return 0;\n    return parseFloat(amountStr.toString().replace(/[,$]/g, '')) || 0;\n  };\n  \n  const standardizedTransaction = {\n    id: data.id || `${Date.now()}-${Math.random()}`,\n    date: standardizeDate(data.date || data.fecha || data.Date),\n    description: data.description || data.descripcion || data.concepto || data.Description || '',\n    amount: standardizeAmount(data.amount || data.monto || data.importe || data.Amount),\n    balance: standardizeAmount(data.balance || data.saldo || data.Balance),\n    reference: data.reference || data.referencia || data.Reference || '',\n    accountNumber: data.accountNumber || data.cuenta || data.Account || '',\n    bankName: data.bankName || data.banco || data.Bank || '',\n    currency: data.currency || 'MXN',\n    type: data.type || (data.amount > 0 ? 'credit' : 'debit'),\n    originalData: data\n  };\n  \n  standardized.push({ json: standardizedTransaction });\n}\n\nreturn standardized;"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "internal-records-fetch",
+      "name": "Fetch Internal Accounting Records",
+      "type": "n8n-nodes-base.postgres",
+      "position": [900, 500],
+      "parameters": {
+        "operation": "select",
+        "schema": "accounting",
+        "table": "transactions",
+        "where": {
+          "conditions": [
+            {
+              "column": "transaction_date",
+              "condition": ">=",
+              "value": "={{ $now.minus({days: 30}).toFormat('yyyy-MM-dd') }}"
+            }
+          ]
+        },
+        "options": {
+          "queryBatching": "independently"
+        }
+      },
+      "credentials": {
+        "postgres": {
+          "id": "accounting-db-credentials",
+          "name": "Accounting Database"
+        }
+      },
+      "typeVersion": 2.5
+    },
+    {
+      "id": "transaction-matcher",
+      "name": "Match Transactions",
+      "type": "n8n-nodes-base.compareDatasets",
+      "position": [1100, 400],
+      "parameters": {
+        "operation": "compare",
+        "fieldsToMatchData": [
+          {
+            "field1": "amount",
+            "field2": "amount"
+          },
+          {
+            "field1": "date",
+            "field2": "transaction_date"
+          }
+        ],
+        "options": {
+          "fuzzyCompare": true,
+          "tolerance": 0.01,
+          "skipFields": ["id", "originalData"],
+          "multipleMatches": "keepAll"
+        }
+      },
+      "typeVersion": 1.3
+    },
+    {
+      "id": "advanced-matcher",
+      "name": "Advanced Fuzzy Matching",
+      "type": "n8n-nodes-base.function",
+      "position": [1100, 300],
+      "parameters": {
+        "functionCode": "// Advanced matching algorithm for bank reconciliation\nconst bankTransactions = $input.first().json.bankTransactions || [];\nconst internalRecords = $input.first().json.internalRecords || [];\n\nconst matches = [];\nconst unmatchedBank = [];\nconst unmatchedInternal = [...internalRecords];\n\n// Matching criteria weights\nconst weights = {\n  exactAmount: 40,\n  exactDate: 30,\n  similarDescription: 20,\n  closeDate: 10 // within 3 days\n};\n\nconst calculateSimilarity = (bankTxn, internalTxn) => {\n  let score = 0;\n  \n  // Exact amount match\n  if (Math.abs(bankTxn.amount - internalTxn.amount) < 0.01) {\n    score += weights.exactAmount;\n  }\n  \n  // Date matching\n  const bankDate = new Date(bankTxn.date);\n  const internalDate = new Date(internalTxn.transaction_date);\n  const daysDiff = Math.abs(bankDate - internalDate) / (1000 * 60 * 60 * 24);\n  \n  if (daysDiff === 0) {\n    score += weights.exactDate;\n  } else if (daysDiff <= 3) {\n    score += weights.closeDate;\n  }\n  \n  // Description similarity (simple word matching)\n  const bankWords = (bankTxn.description || '').toLowerCase().split(/\\s+/);\n  const internalWords = (internalTxn.description || '').toLowerCase().split(/\\s+/);\n  const commonWords = bankWords.filter(word => internalWords.includes(word));\n  \n  if (commonWords.length > 0) {\n    score += (commonWords.length / Math.max(bankWords.length, internalWords.length)) * weights.similarDescription;\n  }\n  \n  return score;\n};\n\nfor (const bankTxn of bankTransactions) {\n  let bestMatch = null;\n  let bestScore = 0;\n  let bestIndex = -1;\n  \n  for (let i = 0; i < unmatchedInternal.length; i++) {\n    const internalTxn = unmatchedInternal[i];\n    const score = calculateSimilarity(bankTxn, internalTxn);\n    \n    if (score > bestScore && score >= 50) { // Minimum 50% confidence\n      bestMatch = internalTxn;\n      bestScore = score;\n      bestIndex = i;\n    }\n  }\n  \n  if (bestMatch) {\n    matches.push({\n      bankTransaction: bankTxn,\n      internalTransaction: bestMatch,\n      matchScore: bestScore,\n      status: 'matched',\n      matchType: bestScore >= 70 ? 'high_confidence' : 'medium_confidence'\n    });\n    unmatchedInternal.splice(bestIndex, 1);\n  } else {\n    unmatchedBank.push({\n      bankTransaction: bankTxn,\n      status: 'unmatched_bank',\n      reason: 'no_internal_match_found'\n    });\n  }\n}\n\n// Add remaining unmatched internal transactions\nconst unmatchedInternalFormatted = unmatchedInternal.map(txn => ({\n  internalTransaction: txn,\n  status: 'unmatched_internal',\n  reason: 'no_bank_match_found'\n}));\n\nreturn [\n  {\n    json: {\n      summary: {\n        totalBankTransactions: bankTransactions.length,\n        totalInternalRecords: internalRecords.length,\n        matchedCount: matches.length,\n        unmatchedBankCount: unmatchedBank.length,\n        unmatchedInternalCount: unmatchedInternalFormatted.length,\n        reconciliationRate: (matches.length / Math.max(bankTransactions.length, 1)) * 100\n      },\n      matches,\n      discrepancies: {\n        unmatchedBank,\n        unmatchedInternal: unmatchedInternalFormatted\n      },\n      processedAt: new Date().toISOString()\n    }\n  }\n];"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "discrepancy-analyzer",
+      "name": "Analyze Discrepancies",
+      "type": "n8n-nodes-base.function",
+      "position": [1300, 300],
+      "parameters": {
+        "functionCode": "const reconciliationData = $input.first().json;\nconst { matches, discrepancies, summary } = reconciliationData;\n\n// Analyze discrepancy patterns\nconst analysis = {\n  criticalIssues: [],\n  warnings: [],\n  recommendations: [],\n  riskLevel: 'low'\n};\n\n// Check for large unmatched amounts\nconst largeUnmatchedThreshold = 10000; // MXN\nconst unmatchedBankTotal = discrepancies.unmatchedBank.reduce((sum, item) => \n  sum + Math.abs(item.bankTransaction.amount), 0);\nconst unmatchedInternalTotal = discrepancies.unmatchedInternal.reduce((sum, item) => \n  sum + Math.abs(item.internalTransaction.amount), 0);\n\nif (unmatchedBankTotal > largeUnmatchedThreshold) {\n  analysis.criticalIssues.push({\n    type: 'large_unmatched_bank_amount',\n    amount: unmatchedBankTotal,\n    message: `Transacciones bancarias sin conciliar por $${unmatchedBankTotal.toLocaleString('es-MX')} MXN`\n  });\n  analysis.riskLevel = 'high';\n}\n\nif (unmatchedInternalTotal > largeUnmatchedThreshold) {\n  analysis.criticalIssues.push({\n    type: 'large_unmatched_internal_amount',\n    amount: unmatchedInternalTotal,\n    message: `Registros internos sin conciliar por $${unmatchedInternalTotal.toLocaleString('es-MX')} MXN`\n  });\n  analysis.riskLevel = 'high';\n}\n\n// Check reconciliation rate\nif (summary.reconciliationRate < 80) {\n  analysis.warnings.push({\n    type: 'low_reconciliation_rate',\n    rate: summary.reconciliationRate,\n    message: `Tasa de conciliación baja: ${summary.reconciliationRate.toFixed(1)}%`\n  });\n  if (analysis.riskLevel === 'low') analysis.riskLevel = 'medium';\n}\n\n// Check for duplicate patterns\nconst duplicateCheck = {};\ndiscrepancies.unmatchedBank.forEach(item => {\n  const key = `${item.bankTransaction.amount}_${item.bankTransaction.date}`;\n  duplicateCheck[key] = (duplicateCheck[key] || 0) + 1;\n});\n\nObject.entries(duplicateCheck).forEach(([key, count]) => {\n  if (count > 1) {\n    analysis.warnings.push({\n      type: 'potential_duplicates',\n      count,\n      message: `Posibles transacciones duplicadas detectadas: ${count} ocurrencias`\n    });\n  }\n});\n\n// Generate recommendations\nif (discrepancies.unmatchedBank.length > 0) {\n  analysis.recommendations.push('Revisar transacciones bancarias no conciliadas manualmente');\n}\nif (discrepancies.unmatchedInternal.length > 0) {\n  analysis.recommendations.push('Verificar registros internos faltantes en el estado bancario');\n}\nif (summary.reconciliationRate < 90) {\n  analysis.recommendations.push('Mejorar criterios de coincidencia de transacciones');\n}\n\nreturn [{\n  json: {\n    ...reconciliationData,\n    analysis,\n    processedAt: new Date().toISOString()\n  }\n}];"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "report-generator",
+      "name": "Generate Reconciliation Report",
+      "type": "n8n-nodes-base.function",
+      "position": [1500, 300],
+      "parameters": {
+        "functionCode": "const data = $input.first().json;\nconst { summary, matches, discrepancies, analysis } = data;\n\n// Generate HTML report\nconst htmlReport = `\n<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n    <meta charset=\"UTF-8\">\n    <title>Reporte de Conciliación Bancaria</title>\n    <style>\n        body { font-family: Arial, sans-serif; margin: 20px; }\n        .header { background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px; }\n        .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }\n        .metric { background: white; border: 1px solid #dee2e6; padding: 15px; border-radius: 5px; text-align: center; }\n        .metric-value { font-size: 24px; font-weight: bold; color: #007bff; }\n        .risk-high { color: #dc3545; }\n        .risk-medium { color: #ffc107; }\n        .risk-low { color: #28a745; }\n        .section { margin-bottom: 30px; }\n        .section h3 { border-bottom: 2px solid #007bff; padding-bottom: 5px; }\n        table { width: 100%; border-collapse: collapse; margin-top: 10px; }\n        th, td { padding: 8px; text-align: left; border-bottom: 1px solid #ddd; }\n        th { background-color: #f8f9fa; }\n        .amount { text-align: right; font-weight: bold; }\n        .positive { color: #28a745; }\n        .negative { color: #dc3545; }\n        .alert { padding: 10px; border-radius: 5px; margin: 10px 0; }\n        .alert-danger { background: #f8d7da; color: #721c24; }\n        .alert-warning { background: #fff3cd; color: #856404; }\n    </style>\n</head>\n<body>\n    <div class=\"header\">\n        <h1>Reporte de Conciliación Bancaria</h1>\n        <p><strong>Fecha de procesamiento:</strong> ${new Date().toLocaleString('es-MX')}</p>\n        <p><strong>Nivel de riesgo:</strong> <span class=\"risk-${analysis.riskLevel}\">${analysis.riskLevel.toUpperCase()}</span></p>\n    </div>\n\n    <div class=\"summary\">\n        <div class=\"metric\">\n            <div>Transacciones Bancarias</div>\n            <div class=\"metric-value\">${summary.totalBankTransactions}</div>\n        </div>\n        <div class=\"metric\">\n            <div>Registros Internos</div>\n            <div class=\"metric-value\">${summary.totalInternalRecords}</div>\n        </div>\n        <div class=\"metric\">\n            <div>Conciliadas</div>\n            <div class=\"metric-value\">${summary.matchedCount}</div>\n        </div>\n        <div class=\"metric\">\n            <div>Tasa de Conciliación</div>\n            <div class=\"metric-value ${summary.reconciliationRate >= 90 ? 'positive' : 'negative'}\">\n                ${summary.reconciliationRate.toFixed(1)}%\n            </div>\n        </div>\n    </div>\n\n    ${analysis.criticalIssues.length > 0 ? `\n    <div class=\"section\">\n        <h3>Problemas Críticos</h3>\n        ${analysis.criticalIssues.map(issue => `\n            <div class=\"alert alert-danger\">\n                <strong>${issue.type}:</strong> ${issue.message}\n            </div>\n        `).join('')}\n    </div>\n    ` : ''}\n\n    ${analysis.warnings.length > 0 ? `\n    <div class=\"section\">\n        <h3>Advertencias</h3>\n        ${analysis.warnings.map(warning => `\n            <div class=\"alert alert-warning\">\n                <strong>${warning.type}:</strong> ${warning.message}\n            </div>\n        `).join('')}\n    </div>\n    ` : ''}\n\n    ${discrepancies.unmatchedBank.length > 0 ? `\n    <div class=\"section\">\n        <h3>Transacciones Bancarias sin Conciliar</h3>\n        <table>\n            <thead>\n                <tr>\n                    <th>Fecha</th>\n                    <th>Descripción</th>\n                    <th class=\"amount\">Monto</th>\n                    <th>Referencia</th>\n                </tr>\n            </thead>\n            <tbody>\n                ${discrepancies.unmatchedBank.map(item => `\n                    <tr>\n                        <td>${item.bankTransaction.date}</td>\n                        <td>${item.bankTransaction.description}</td>\n                        <td class=\"amount ${item.bankTransaction.amount >= 0 ? 'positive' : 'negative'}\">\n                            $${Math.abs(item.bankTransaction.amount).toLocaleString('es-MX')}\n                        </td>\n                        <td>${item.bankTransaction.reference}</td>\n                    </tr>\n                `).join('')}\n            </tbody>\n        </table>\n    </div>\n    ` : ''}\n\n    ${discrepancies.unmatchedInternal.length > 0 ? `\n    <div class=\"section\">\n        <h3>Registros Internos sin Conciliar</h3>\n        <table>\n            <thead>\n                <tr>\n                    <th>Fecha</th>\n                    <th>Descripción</th>\n                    <th class=\"amount\">Monto</th>\n                    <th>Referencia</th>\n                </tr>\n            </thead>\n            <tbody>\n                ${discrepancies.unmatchedInternal.map(item => `\n                    <tr>\n                        <td>${item.internalTransaction.transaction_date}</td>\n                        <td>${item.internalTransaction.description}</td>\n                        <td class=\"amount ${item.internalTransaction.amount >= 0 ? 'positive' : 'negative'}\">\n                            $${Math.abs(item.internalTransaction.amount).toLocaleString('es-MX')}\n                        </td>\n                        <td>${item.internalTransaction.reference || 'N/A'}</td>\n                    </tr>\n                `).join('')}\n            </tbody>\n        </table>\n    </div>\n    ` : ''}\n\n    <div class=\"section\">\n        <h3>Recomendaciones</h3>\n        <ul>\n            ${analysis.recommendations.map(rec => `<li>${rec}</li>`).join('')}\n        </ul>\n    </div>\n\n    <div class=\"section\">\n        <h3>Transacciones Conciliadas (Muestra)</h3>\n        <table>\n            <thead>\n                <tr>\n                    <th>Fecha Banco</th>\n                    <th>Fecha Interna</th>\n                    <th>Descripción</th>\n                    <th class=\"amount\">Monto</th>\n                    <th>Confianza</th>\n                </tr>\n            </thead>\n            <tbody>\n                ${matches.slice(0, 10).map(match => `\n                    <tr>\n                        <td>${match.bankTransaction.date}</td>\n                        <td>${match.internalTransaction.transaction_date}</td>\n                        <td>${match.bankTransaction.description}</td>\n                        <td class=\"amount ${match.bankTransaction.amount >= 0 ? 'positive' : 'negative'}\">\n                            $${Math.abs(match.bankTransaction.amount).toLocaleString('es-MX')}\n                        </td>\n                        <td>${match.matchScore.toFixed(0)}%</td>\n                    </tr>\n                `).join('')}\n            </tbody>\n        </table>\n        ${matches.length > 10 ? `<p><em>Mostrando 10 de ${matches.length} transacciones conciliadas</em></p>` : ''}\n    </div>\n</body>\n</html>\n`;\n\n// Generate CSV export for detailed analysis\nconst csvData = [\n  ['Tipo', 'Fecha', 'Descripción', 'Monto', 'Referencia', 'Estado', 'Confianza'],\n  ...matches.map(m => [\n    'Conciliada',\n    m.bankTransaction.date,\n    m.bankTransaction.description,\n    m.bankTransaction.amount,\n    m.bankTransaction.reference,\n    m.status,\n    `${m.matchScore.toFixed(0)}%`\n  ]),\n  ...discrepancies.unmatchedBank.map(u => [\n    'Sin conciliar - Banco',\n    u.bankTransaction.date,\n    u.bankTransaction.description,\n    u.bankTransaction.amount,\n    u.bankTransaction.reference,\n    u.status,\n    'N/A'\n  ]),\n  ...discrepancies.unmatchedInternal.map(u => [\n    'Sin conciliar - Interno',\n    u.internalTransaction.transaction_date,\n    u.internalTransaction.description,\n    u.internalTransaction.amount,\n    u.internalTransaction.reference || 'N/A',\n    u.status,\n    'N/A'\n  ])\n];\n\nconst csvContent = csvData.map(row => row.map(cell => `\"${cell}\"`).join(',')).join('\\n');\n\nreturn [{\n  json: {\n    reportData: data,\n    htmlReport,\n    csvContent,\n    fileName: `conciliacion_bancaria_${new Date().toISOString().split('T')[0]}.html`,\n    csvFileName: `conciliacion_bancaria_detalle_${new Date().toISOString().split('T')[0]}.csv`\n  }\n}];"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "save-to-database",
+      "name": "Save Results to Database",
+      "type": "n8n-nodes-base.postgres",
+      "position": [1500, 500],
+      "parameters": {
+        "operation": "insert",
+        "schema": "reconciliation",
+        "table": "reconciliation_results",
+        "columns": {
+          "reconciliation_date": "={{ new Date().toISOString() }}",
+          "total_bank_transactions": "={{ $json.reportData.summary.totalBankTransactions }}",
+          "total_internal_records": "={{ $json.reportData.summary.totalInternalRecords }}",
+          "matched_count": "={{ $json.reportData.summary.matchedCount }}",
+          "reconciliation_rate": "={{ $json.reportData.summary.reconciliationRate }}",
+          "risk_level": "={{ $json.reportData.analysis.riskLevel }}",
+          "report_data": "={{ JSON.stringify($json.reportData) }}"
+        }
+      },
+      "credentials": {
+        "postgres": {
+          "id": "accounting-db-credentials",
+          "name": "Accounting Database"
+        }
+      },
+      "typeVersion": 2.5
+    },
+    {
+      "id": "email-report",
+      "name": "Send Email Report",
+      "type": "n8n-nodes-base.gmail",
+      "position": [1700, 200],
+      "parameters": {
+        "operation": "send",
+        "resource": "message",
+        "to": "contabilidad@empresa.com.mx",
+        "subject": "=Reporte de Conciliación Bancaria - {{ $now.toFormat('dd/MM/yyyy') }}",
+        "message": "={{ $json.htmlReport }}",
+        "options": {
+          "attachments": [
+            {
+              "binaryPropertyName": "csvData",
+              "fileName": "={{ $json.csvFileName }}"
+            }
+          ]
+        }
+      },
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "gmail-oauth-credentials",
+          "name": "Gmail OAuth2"
+        }
+      },
+      "typeVersion": 2.1
+    },
+    {
+      "id": "slack-notification",
+      "name": "Slack Risk Alert",
+      "type": "n8n-nodes-base.slack",
+      "position": [1700, 300],
+      "parameters": {
+        "operation": "postMessage",
+        "resource": "message",
+        "channel": "#finanzas",
+        "text": "🏦 *Reporte de Conciliación Bancaria*\\n\\n📊 *Resumen:*\\n• Tasa de conciliación: {{ $json.reportData.summary.reconciliationRate.toFixed(1) }}%\\n• Transacciones conciliadas: {{ $json.reportData.summary.matchedCount }}\\n• Sin conciliar (banco): {{ $json.reportData.discrepancies.unmatchedBank.length }}\\n• Sin conciliar (interno): {{ $json.reportData.discrepancies.unmatchedInternal.length }}\\n\\n⚠️ *Nivel de riesgo:* {{ $json.reportData.analysis.riskLevel.toUpperCase() }}",
+        "options": {
+          "includeLinkToWorkflow": true
+        }
+      },
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "slack-oauth-credentials",
+          "name": "Slack OAuth2"
+        }
+      },
+      "typeVersion": 2.1
+    },
+    {
+      "id": "quickbooks-sync",
+      "name": "Sync to QuickBooks",
+      "type": "n8n-nodes-base.quickbooksOnline",
+      "position": [1700, 400],
+      "parameters": {
+        "operation": "create",
+        "resource": "journalEntry",
+        "additionalFields": {
+          "Line": "={{ $json.reportData.matches.map(match => ({ Description: match.bankTransaction.description, Amount: Math.abs(match.bankTransaction.amount), DetailType: match.bankTransaction.amount > 0 ? 'CreditLineDetail' : 'DebitLineDetail' })) }}"
+        }
+      },
+      "credentials": {
+        "quickBooksOAuth2Api": {
+          "id": "quickbooks-oauth-credentials",
+          "name": "QuickBooks OAuth2"
+        }
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "error-handler",
+      "name": "Error Handler",
+      "type": "n8n-nodes-base.errorTrigger",
+      "position": [1900, 500],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "error-notification",
+      "name": "Error Notification",
+      "type": "n8n-nodes-base.gmail",
+      "position": [2100, 500],
+      "parameters": {
+        "operation": "send",
+        "resource": "message",
+        "to": "admin@empresa.com.mx",
+        "subject": "🚨 Error en Conciliación Bancaria",
+        "message": "Se ha producido un error en el proceso de conciliación bancaria:\\n\\n**Error:** {{ $json.error.message }}\\n**Nodo:** {{ $json.error.node.name }}\\n**Timestamp:** {{ $now.toISO() }}\\n\\nPor favor revisar el workflow inmediatamente.",
+        "options": {}
+      },
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "gmail-oauth-credentials",
+          "name": "Gmail OAuth2"
+        }
+      },
+      "typeVersion": 2.1
+    },
+    {
+      "id": "webhook-response",
+      "name": "Webhook Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [1900, 200],
+      "parameters": {
+        "options": {
+          "responseBody": "{{ JSON.stringify({ status: 'success', reconciliationRate: $json.reportData.summary.reconciliationRate, matchedCount: $json.reportData.summary.matchedCount, riskLevel: $json.reportData.analysis.riskLevel }) }}",
+          "responseContentType": "application/json",
+          "responseHeaders": {
+            "Content-Type": "application/json"
+          }
+        }
+      },
+      "typeVersion": 1
+    }
+  ],
+  "connections": {
+    "Bank Statement Upload": {
+      "main": [
+        [
+          {
+            "node": "Detect File Format",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Daily Reconciliation Schedule": {
+      "main": [
+        [
+          {
+            "node": "BBVA México API",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Santander México API",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Banorte API",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Prometeo Banking API (Multi-Bank)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "BBVA México API": {
+      "main": [
+        [
+          {
+            "node": "Standardize Transaction Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Santander México API": {
+      "main": [
+        [
+          {
+            "node": "Standardize Transaction Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Banorte API": {
+      "main": [
+        [
+          {
+            "node": "Standardize Transaction Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prometeo Banking API (Multi-Bank)": {
+      "main": [
+        [
+          {
+            "node": "Standardize Transaction Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Detect File Format": {
+      "main": [
+        [
+          {
+            "node": "Extract PDF Bank Statement",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "AI-Powered PDF Processing",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Parse CSV Bank Statement",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Parse Excel Bank Statement",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract PDF Bank Statement": {
+      "main": [
+        [
+          {
+            "node": "Standardize Transaction Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI-Powered PDF Processing": {
+      "main": [
+        [
+          {
+            "node": "Standardize Transaction Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse CSV Bank Statement": {
+      "main": [
+        [
+          {
+            "node": "Standardize Transaction Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Excel Bank Statement": {
+      "main": [
+        [
+          {
+            "node": "Standardize Transaction Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Standardize Transaction Data": {
+      "main": [
+        [
+          {
+            "node": "Advanced Fuzzy Matching",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Internal Accounting Records": {
+      "main": [
+        [
+          {
+            "node": "Advanced Fuzzy Matching",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Match Transactions": {
+      "main": [
+        [
+          {
+            "node": "Advanced Fuzzy Matching",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Advanced Fuzzy Matching": {
+      "main": [
+        [
+          {
+            "node": "Analyze Discrepancies",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze Discrepancies": {
+      "main": [
+        [
+          {
+            "node": "Generate Reconciliation Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Reconciliation Report": {
+      "main": [
+        [
+          {
+            "node": "Save Results to Database",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send Email Report",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Slack Risk Alert",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Sync to QuickBooks",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Webhook Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error Handler": {
+      "main": [
+        [
+          {
+            "node": "Error Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "versionId": "1.0.0",
+  "triggerCount": 2,
+  "settings": {
+    "executionOrder": "v1",
+    "errorWorkflow": {
+      "id": "error-workflow-001",
+      "name": "Bank Reconciliation Error Handler"
+    }
+  }
+}
