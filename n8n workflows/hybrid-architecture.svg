@@ -1,0 +1,259 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" xmlns="http://www.w3.org/2000/svg">
+<!-- Define Styles -->
+<defs>
+<style>
+.aws-domain { fill: #f0f0ff; stroke: #7D3C98; stroke-width: 2; rx: 8; ry: 8; }
+.hybrid-domain { fill: #f0f0ff; stroke: #333; stroke-width: 2; rx: 8; ry: 8; }
+.agnostic-domain { fill: #f0f0ff; stroke: #9CA3AF; stroke-width: 2; rx: 8; ry: 8; }
+.label { font-family: 'Inter', sans-serif; font-size: 14px; fill: #1F2937; font-weight: 600; }
+.sub-label { font-family: 'Inter', sans-serif; font-size: 12px; fill: #6B7280; font-weight: 500; }
+.flow-async { stroke: #34D399; stroke-width: 2; stroke-dasharray: 5,5; fill: none; marker-end: url(#arrowAsync); }
+.flow-sync { stroke: #3B82F6; stroke-width: 2; fill: none; marker-end: url(#arrowSync); }
+.flow-telemetry { stroke: #9CA3AF; stroke-width: 1; stroke-dasharray: 2,4; fill: none; marker-end: url(#arrowTelemetry); }
+.flow-exception { stroke: #EF4444; stroke-width: 2; stroke-dasharray: 7,3; fill: none; marker-end: url(#arrowException); }
+.annotation { font-family: 'Inter', sans-serif; font-size: 10px; fill: #6B7280; font-weight: 500; }
+.title { font-family: 'Inter', sans-serif; font-size: 24px; fill: #1F2937; font-weight: 700; }
+.compliance { font-family: 'Inter', sans-serif; font-size: 10px; fill: #EF4444; font-weight: 700; }
+.governance-label { font-family: 'Inter', sans-serif; font-size: 10px; fill: #10B981; font-weight: 700; }
+.aws-icon { font-size: 8px; font-weight: 700; fill: #7D3C98;}
+.on-prem-background { fill: #E5E7EB; }
+</style>
+
+<!-- Markers for arrows -->
+<marker id="arrowAsync" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+    <polygon points="0 0, 6 3, 0 6" fill="#34D399" />
+</marker>
+<marker id="arrowSync" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+    <polygon points="0 0, 6 3, 0 6" fill="#3B82F6" />
+</marker>
+<marker id="arrowTelemetry" markerWidth="4" markerHeight="4" refX="2" refY="2" orient="auto">
+    <polygon points="0 0, 4 2, 0 4" fill="#9CA3AF" />
+</marker>
+<marker id="arrowException" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+    <polygon points="0 0, 6 3, 0 6" fill="#EF4444" />
+</marker>
+
+
+</defs>
+
+<!-- Title -->
+
+<text x="600" y="40" class="title" text-anchor="middle">Hybrid Event-Driven Financial Platform Architecture</text>
+<text x="600" y="65" class="sub-label" text-anchor="middle">Showing Domains, Event Flows, and Operational Governance</text>
+
+<!-- 1. On-Premise/Agnostic Boundary (Gray Area) -->
+
+<rect x="50" y="80" width="1100" height="780" fill="none" stroke="#9CA3AF" stroke-dasharray="8,4" stroke-width="3" rx="10" ry="10"/>
+<text x="1140" y="105" class="sub-label" fill="#9CA3AF" font-weight="700" text-anchor="end">Hybrid Boundary</text>
+
+<rect x="50" y="80" width="300" height="250" class="on-prem-background" rx="10" ry="10" opacity="0.6"/>
+<text x="340" y="105" class="sub-label" fill="#6B7280" font-weight="700" text-anchor="end">ON-PREMISE / LEGACY ZONE</text>
+
+<!-- 2. AWS Cloud Boundary (Conceptual - Dashed line of the overall diagram) -->
+
+<text x="360" y="105" class="sub-label" fill="#7D3C98" font-weight="700" text-anchor="start">AWS MANAGED CLOUD DOMAINS</text>
+
+<!-- DOMAIN DEFINITIONS -->
+
+<!-- R1: Customer Experience & Apps (Multi-Cloud - Far Left) - Moved up -->
+
+<rect x="75" y="120" width="220" height="180" class="aws-domain" fill="#E6FFFA"/>
+<text x="185" y="145" class="label" text-anchor="middle">Customer Experience &amp; Apps</text>
+<text x="120" y="190" class="aws-icon">CloudFront</text><rect x="100" y="195" width="40" height="40" fill="#7D3C98" rx="5" ry="5" opacity="0.1"/>
+<text x="250" y="190" class="aws-icon">Amplify/FE</text><rect x="230" y="195" width="40" height="40" fill="#7D3C98" rx="5" ry="5" opacity="0.1"/>
+<text x="185" y="275" class="sub-label" text-anchor="middle">Mobile/Web Gateway</text>
+
+<!-- R1: Integrations & Ecosystem (AWS) - Moved up -->
+
+<rect x="600" y="120" width="220" height="180" class="aws-domain"/>
+<text x="710" y="145" class="label" text-anchor="middle">Integrations &amp; Ecosystem</text>
+<text x="650" y="190" class="aws-icon">API Gateway</text><rect x="630" y="195" width="40" height="40" fill="#7D3C98" rx="5" ry="5" opacity="0.1"/>
+<text x="770" y="190" class="aws-icon">EventBridge</text><rect x="750" y="195" width="40" height="40" fill="#7D3C98" rx="5" ry="5" opacity="0.1"/>
+<text x="710" y="275" class="sub-label" text-anchor="middle">Partner Gateways</text>
+
+<!-- R1: Governance & Observability (AWS) - Moved up -->
+
+<rect x="850" y="120" width="300" height="180" class="aws-domain"/>
+<text x="1000" y="145" class="label" text-anchor="middle">Governance &amp; Observability</text>
+<text x="900" y="190" class="aws-icon">CloudWatch</text><rect x="880" y="195" width="40" height="40" fill="#7D3C98" rx="5" ry="5" opacity="0.1"/>
+<text x="970" y="190" class="aws-icon">X-Ray</text><rect x="950" y="195" width="40" height="40" fill="#7D3C98" rx="5" ry="5" opacity="0.1"/>
+<text x="1060" y="190" class="aws-icon">CodePipeline</text><rect x="1040" y="195" width="40" height="40" fill="#7D3C98" rx="5" ry="5" opacity="0.1"/>
+<text x="1000" y="275" class="sub-label" text-anchor="middle">CI/CD &amp; Compliance Gates</text>
+
+<!-- R5: Schema Registry - Moved down to create space -->
+
+<rect x="580" y="330" width="200" height="40" fill="#CCFBF1" stroke="#14B8A6" rx="5" ry="5"/>
+<text x="680" y="355" class="governance-label" text-anchor="middle">Schema Registry (Event Contract / Version Control)</text>
+
+<!-- R1: Core Banking & Ledger (On-Prem / Agnostic - CENTRAL) - Moved down -->
+
+<rect x="340" y="320" width="220" height="150" class="agnostic-domain"/>
+<text x="450" y="345" class="label" text-anchor="middle">Core Banking &amp; Ledger</text>
+<text x="450" y="365" class="compliance" text-anchor="middle">CNBV Regulated</text>
+<rect x="420" y="390" width="60" height="60" fill="#E5E7EB" stroke="#6B7280" rx="5" ry="5"/>
+<text x="450" y="425" class="sub-label" text-anchor="middle">Immutable Ledger</text>
+
+<!-- R7: Reference Data Service (Shared Component) - Moved down -->
+
+<rect x="340" y="490" width="220" height="40" fill="#FFEDB3" stroke="#FBBF24" rx="5" ry="5"/>
+<text x="450" y="515" class="sub-label" text-anchor="middle">Reference Data Service (Read-Optimized, Eventually Consistent)</text>
+
+<!-- R1: Identity & Security (Hybrid) - Spanning boundary - Moved down -->
+
+<rect x="75" y="350" width="180" height="200" class="hybrid-domain"/>
+<text x="165" y="375" class="label" text-anchor="middle">Identity &amp; Security</text>
+<rect x="100" y="410" width="40" height="40" fill="#9CA3AF" stroke="#333" rx="5" ry="5"/>
+<text x="120" y="465" class="sub-label" text-anchor="middle">HSM/Key Mgmt</text>
+<rect x="190" y="410" width="40" height="40" fill="#7D3C98" stroke="#333" rx="5" ry="5"/>
+<text x="210" y="465" class="sub-label" text-anchor="middle">ID Provider (Cloud)</text>
+
+<!-- R1: Accounts & Financial Products (AWS) - Moved down -->
+
+<rect x="600" y="400" width="220" height="150" class="aws-domain"/>
+<text x="710" y="425" class="label" text-anchor="middle">Accounts &amp; Financial Products</text>
+<text x="650" y="475" class="aws-icon">DynamoDB</text><rect x="630" y="480" width="40" height="40" fill="#7D3C98" rx="5" ry="5" opacity="0.1"/>
+<text x="770" y="475" class="aws-icon">Step Functions</text><rect x="750" y="480" width="40" height="40" fill="#7D3C98" rx="5" ry="5" opacity="0.1"/>
+
+<!-- R1: Payments & Financial Movements (AWS – PCI Scoped) - Moved down -->
+
+<rect x="340" y="560" width="220" height="250" class="aws-domain" fill="#F3E8FF"/>
+<text x="450" y="585" class="label" text-anchor="middle">Payments &amp; Movements</text>
+<text x="450" y="605" class="compliance" fill="#1F2937" text-anchor="middle">PCI Scoped / High Latency</text>
+<text x="380" y="635" class="aws-icon">API Gateway</text><rect x="360" y="640" width="40" height="40" fill="#7D3C98" rx="5" ry="5" opacity="0.1"/>
+<text x="450" y="635" class="aws-icon">Lambda</text><rect x="430" y="640" width="40" height="40" fill="#7D3C98" rx="5" ry="5" opacity="0.1"/>
+<text x="520" y="635" class="aws-icon">RDS</text><rect x="500" y="640" width="40" height="40" fill="#7D3C98" rx="5" ry="5" opacity="0.1"/>
+<text x="450" y="715" class="aws-icon">KMS (Tokenization)</text><rect x="430" y="720" width="40" height="40" fill="#7D3C98" rx="5" ry="5" opacity="0.1"/>
+<text x="450" y="785" class="sub-label" text-anchor="middle">Payment Orchestration</text>
+
+<!-- R1: Data Platform (Data Mesh) (AWS) - Moved down -->
+
+<rect x="600" y="600" width="550" height="210" class="aws-domain" fill="#FFFBEB"/>
+<text x="875" y="625" class="label" text-anchor="middle">Data Platform (Data Mesh)</text>
+<text x="875" y="645" class="compliance" text-anchor="middle">CNBV Regulated / Audit Data Product</text>
+<text x="650" y="685" class="aws-icon">MSK (Kafka)</text><rect x="630" y="690" width="40" height="40" fill="#7D3C98" rx="5" ry="5" opacity="0.1"/>
+<text x="750" y="685" class="aws-icon">S3 Data Lake</text><rect x="730" y="690" width="40" height="40" fill="#7D3C98" rx="5" ry="5" opacity="0.1"/>
+<text x="850" y="685" class="aws-icon">Glue (Catalog)</text><rect x="830" y="690" width="40" height="40" fill="#7D3C98" rx="5" ry="5" opacity="0.1"/>
+<text x="950" y="685" class="aws-icon">Redshift</text><rect x="930" y="690" width="40" height="40" fill="#7D3C98" rx="5" ry="5" opacity="0.1"/>
+<text x="1050" y="685" class="aws-icon">SageMaker</text><rect x="1030" y="690" width="40" height="40" fill="#7D3C98" rx="5" ry="5" opacity="0.1"/>
+<text x="875" y="785" class="sub-label" text-anchor="middle">Data Products (Reporting, Analytics, ML)</text>
+
+<!-- GOVERNANCE COMPONENTS (R5, R11) -->
+
+<!-- R11: CI/CD Pipeline Node (in Governance) -->
+
+<rect x="880" y="220" width="200" height="40" fill="#F3E8FF" stroke="#A78BFA" rx="5" ry="5"/>
+<text x="980" y="245" class="sub-label" text-anchor="middle">CI/CD Pipeline (CodePipeline/ArgoCD)</text>
+
+<!-- FLOWS AND DEPENDENCIES -->
+
+<!-- R4, R8: Sync API Calls (Solid Blue) with Identity Context -->
+
+<!-- CE -> Ledger -->
+
+<path d="M 300 170 L 340 370" class="flow-sync"/>
+<!-- Payments -> Products -->
+<path d="M 560 670 L 600 480" class="flow-sync"/>
+<!-- Identity -> Core Systems (Horizontal) -->
+<path d="M 255 430 L 340 430" class="flow-sync"/>
+<text x="290" y="200" class="annotation" transform="rotate(0, 290, 200)">Sync API: JWT / Claims</text>
+<text x="580" y="520" class="annotation" transform="rotate(0, 580, 520)">Sync API: Auth Context</text>
+
+<!-- R4, R8: Async Event Flows (Dashed Green) with Identity Context -->
+
+<!-- CE to Integrations (Trigger) -->
+
+<path d="M 300 230 L 600 230" class="flow-async"/>
+<!-- Integrations to Payments (Event Notification) -->
+<path d="M 710 300 L 710 350 L 580 350 L 580 560" class="flow-async"/>
+<!-- Payments to Products (Event Notification) -->
+<path d="M 560 700 L 600 700" class="flow-async"/>
+<text x="450" y="240" class="annotation" transform="rotate(0, 450, 240)">Event Stream: Encrypted Context</text>
+
+<!-- R5: Schema Registry connections (connecting async flows) -->
+
+<path d="M 780 350 L 820 450 L 850 450" class="flow-sync" marker-end="url(#arrowSync)"/>
+<path d="M 780 350 L 820 700 L 850 700" class="flow-sync" marker-end="url(#arrowSync)"/>
+<text x="800" y="550" class="annotation" transform="rotate(90, 800, 550)">Schema Contract Check</text>
+
+<!-- R6: Reconciliation Feedback Loop (Payments <-> Ledger) -->
+
+<!-- Payments to Ledger (Reconciliation/Settlement Event) -->
+
+<path d="M 400 560 L 400 470 L 400 470 L 400 320" class="flow-async" marker-end="url(#arrowAsync)"/>
+<path d="M 480 320 L 480 470 L 480 470 L 480 560" class="flow-async" marker-end="url(#arrowAsync)"/>
+<text x="410" y="500" class="annotation" transform="rotate(90, 410, 500)">Reconciliation Events / Compensating Actions</text>
+
+<!-- R7: Reference Data Synchronization (Solid Blue, Read-Optimized) -->
+
+<!-- Ledger -> Reference Data -->
+
+<path d="M 450 470 L 450 490" class="flow-sync"/>
+<!-- Reference Data -> All Domains -->
+<path d="M 340 510 L 300 510" class="flow-sync"/>
+<path d="M 560 510 L 600 510 L 600 400" class="flow-sync"/>
+<path d="M 560 510 L 850 510 L 850 700" class="flow-sync"/>
+<text x="570" y="470" class="annotation" transform="rotate(0, 570, 470)">Reference Data Read</text>
+
+<!-- R9: Data Lineage and Ownership (Producing Domains -> Data Platform) -->
+
+<path d="M 560 780 L 600 780" class="flow-telemetry"/>
+<path d="M 820 520 L 980 520 L 980 600" class="flow-telemetry"/>
+<path d="M 450 470 L 450 600 L 600 600" class="flow-telemetry"/>
+<text x="560" y="580" class="annotation" fill="#9CA3AF" font-weight="700">Ownership Metadata + Lineage</text>
+
+<!-- R10: Operational Observability Flow (All Domains -> Governance) -->
+
+<path d="M 300 150 L 850 150" class="flow-telemetry"/>
+<path d="M 560 350 L 850 350" class="flow-telemetry"/>
+<path d="M 710 300 L 850 300" class="flow-telemetry"/>
+<path d="M 820 430 L 850 430 L 850 300" class="flow-telemetry"/>
+<path d="M 560 750 L 850 750 L 850 300" class="flow-telemetry"/>
+<text x="650" y="165" class="annotation" fill="#9CA3AF" font-weight="700">Telemetry Stream / Logs / Traces</text>
+
+<!-- R11: Deployment and Change Control (CI/CD -> All Domains) -->
+
+<!-- CI/CD to all boxes -->
+
+<path d="M 980 260 L 980 320 L 560 320" stroke="#A78BFA" stroke-width="2" fill="none" marker-end="url(#arrowSync)"/>
+<path d="M 980 260 L 850 260 L 850 400" stroke="#A78BFA" stroke-width="2" fill="none" marker-end="url(#arrowSync)"/>
+<path d="M 980 260 L 300 260" stroke="#A78BFA" stroke-width="2" fill="none" marker-end="url(#arrowSync)"/>
+<path d="M 980 260 L 600 260 L 600 120" stroke="#A78BFA" stroke-width="2" fill="none" marker-end="url(#arrowSync)"/>
+<path d="M 980 260 L 850 260 L 850 600" stroke="#A78BFA" stroke-width="2" fill="none" marker-end="url(#arrowSync)"/>
+<text x="950" y="300" class="annotation" fill="#A78BFA" font-weight="700">Compliance Gate / Deployment Approval</text>
+
+<!-- R12: Incident & Compensating Workflow Escalation (Red Dashed) -->
+
+<!-- Payments -> CE (Customer Notification) -->
+
+<path d="M 340 700 L 300 700 L 300 250" class="flow-exception"/>
+<text x="310" y="710" class="annotation" fill="#EF4444" font-weight="700">Exception / Customer Notification</text>
+
+<!-- Ledger -> Payments (Compensation Workflow Trigger) -->
+
+<path d="M 490 320 L 490 560" class="flow-exception"/>
+<text x="500" y="440" class="annotation" fill="#EF4444" font-weight="700" transform="rotate(90, 500, 440)">Compensation Workflow</text>
+
+<!-- LEGEND (R15) -->
+
+<rect x="50" y="850" width="1100" height="40" fill="#F9FAFB" stroke="#D1D5DB" rx="5" ry="5"/>
+<text x="80" y="875" class="sub-label" font-weight="700">LEGEND:</text>
+
+<rect x="150" y="865" width="10" height="10" fill="#E5E7EB" stroke="#6B7280"/>
+<text x="170" y="875" class="annotation">On-Prem / Agnostic</text>
+
+<rect x="290" y="865" width="10" height="10" fill="#f0f0ff" stroke="#7D3C98"/>
+<text x="310" y="875" class="annotation">AWS Cloud Domain</text>
+
+<line x1="440" y1="870" x2="470" y2="870" class="flow-async" marker-end="url(#arrowAsync)"/>
+<text x="480" y="875" class="annotation">Async Event Stream (Kafka/EventBridge)</text>
+
+<line x1="680" y1="870" x2="710" y2="870" class="flow-sync" marker-end="url(#arrowSync)"/>
+<text x="720" y="875" class="annotation">Synchronous API Call (REST/gRPC)</text>
+
+<line x1="880" y1="870" x2="910" y2="870" class="flow-exception" marker-end="url(#arrowException)"/>
+<text x="920" y="875" class="annotation">Compensation / Incident Flow</text>
+
+<line x1="1080" y1="870" x2="1110" y2="870" class="flow-telemetry" marker-end="url(#arrowTelemetry)"/>
+<text x="1120" y="875" class="annotation">Telemetry / Observability</text>
+
+</svg>

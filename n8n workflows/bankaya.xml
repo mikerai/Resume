@@ -1,0 +1,160 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="NorthStar_Decision_Credit">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- Boundary / Swimlane -->
+        <mxCell id="swim" value="North Star - Arquitectura de Decisión" style="rounded=1;strokeColor=#000000;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="20" y="20" width="1160" height="760" as="geometry"/>
+        </mxCell>
+
+        <!-- Ingesta Real-time -->
+        <mxCell id="rt_ingest" value="Ingesta Real-time (event streams)" style="rounded=1;fillColor=#E8F0FE;strokeColor=#6C8EBF;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="60" width="220" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- Ingesta Batch -->
+        <mxCell id="batch_ingest" value="Ingesta Batch (ETL/CDC)" style="rounded=1;fillColor=#E8F0FE;strokeColor=#6C8EBF;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="140" width="220" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- Data Lake / Catalog -->
+        <mxCell id="datalake" value="Data Lake (Almacenamiento objeto)&#10;Catálogo / Metadatos" style="rounded=1;fillColor=#DFF2E1;strokeColor=#2E8F3E;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="300" y="100" width="260" height="80" as="geometry"/>
+        </mxCell>
+
+        <!-- Feature Store -->
+        <mxCell id="feature_store" value="Feature Store (online / offline)" style="rounded=1;fillColor=#FFF4D6;strokeColor=#D1A000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="600" y="60" width="240" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- Cache -->
+        <mxCell id="cache" value="Cache en memoria (Redis)" style="rounded=1;fillColor=#FFF4D6;strokeColor=#D1A000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="600" y="140" width="240" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- Training / Experiments -->
+        <mxCell id="training" value="Entrenamiento / Experimentos" style="rounded=1;fillColor=#F3E8FF;strokeColor=#8A35A8;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="300" y="200" width="260" height="70" as="geometry"/>
+        </mxCell>
+
+        <!-- Model Registry -->
+        <mxCell id="model_registry" value="Model Registry (versionado)" style="rounded=1;fillColor=#F3E8FF;strokeColor=#8A35A8;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="600" y="220" width="240" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- Deployment / Serving -->
+        <mxCell id="serving" value="Despliegue / Serving (multimodel)" style="rounded=1;fillColor=#FFEFE0;strokeColor=#E06B00;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="860" y="140" width="240" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- API Gateway / LB -->
+        <mxCell id="api_gw" value="API Gateway / Load Balancer" style="rounded=1;fillColor=#FFEFE0;strokeColor=#E06B00;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="860" y="60" width="240" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- Decision API -->
+        <mxCell id="decision_api" value="API de Decisión (latencia P95 ≤ 30s)" style="rounded=1;fillColor=#FFEFE0;strokeColor=#E06B00;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="860" y="220" width="240" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- Decision Logs / Audit -->
+        <mxCell id="decision_logs" value="Decision Logs / Auditoría (S3 / Index)" style="rounded=1;fillColor=#DCEFFE;strokeColor=#2E7BBF;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="300" y="300" width="260" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- Observability / Monitoring -->
+        <mxCell id="observability" value="Observabilidad & Monitoreo (latencia, drift, data quality)" style="rounded=1;fillColor=#FDEDEC;strokeColor=#C94B3A;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="600" y="300" width="240" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- Seguridad / Gobernanza -->
+        <mxCell id="security" value="Seguridad & Gobernanza (IAM, KMS, VPC)" style="rounded=1;fillColor=#F2F2F2;strokeColor=#666666;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="300" width="220" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- Partner Apps block on right -->
+        <mxCell id="partners_group" value="Partner Apps (4)" style="rounded=1;fillColor=#FFFFFF;strokeColor=#000000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1120" y="40" width="60" height="320" as="geometry"/>
+        </mxCell>
+
+        <!-- Individual partner app icons (as small boxes) -->
+        <mxCell id="partner1" value="Partner A" style="rounded=1;fillColor=#FFFFFF;strokeColor=#2B7A78;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1128" y="60" width="44" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="partner2" value="Partner B" style="rounded=1;fillColor=#FFFFFF;strokeColor=#2B7A78;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1128" y="110" width="44" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="partner3" value="Partner C" style="rounded=1;fillColor=#FFFFFF;strokeColor=#2B7A78;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1128" y="160" width="44" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="partner4" value="Partner D" style="rounded=1;fillColor=#FFFFFF;strokeColor=#2B7A78;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1128" y="210" width="44" height="40" as="geometry"/>
+        </mxCell>
+
+        <!-- External systems: Credit bureau, Bank account source -->
+        <mxCell id="credit_bureau" value="Buro / Credit (3rd party API)" style="rounded=1;fillColor=#FFF2F0;strokeColor=#BF5A4A;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="40" y="380" width="220" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="bank_accounts" value="Cuentas débito / Transacciones (Batch source)" style="rounded=1;fillColor=#FFF2F0;strokeColor=#BF5A4A;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="300" y="380" width="260" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- Edges: ingests to datalake -->
+        <mxCell id="e_rt_datalake" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#6C8EBF;" edge="1" source="rt_ingest" target="datalake" parent="1"/>
+        <mxCell id="e_batch_datalake" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#6C8EBF;" edge="1" source="batch_ingest" target="datalake" parent="1"/>
+
+        <!-- datalake to feature store -->
+        <mxCell id="e_dl_fs" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#2E8F3E;" edge="1" source="datalake" target="feature_store" parent="1"/>
+
+        <!-- feature store to cache & training -->
+        <mxCell id="e_fs_cache" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#D1A000;" edge="1" source="feature_store" target="cache" parent="1"/>
+        <mxCell id="e_fs_training" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#D1A000;" edge="1" source="feature_store" target="training" parent="1"/>
+
+        <!-- training to model registry -->
+        <mxCell id="e_training_registry" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#8A35A8;" edge="1" source="training" target="model_registry" parent="1"/>
+
+        <!-- registry to serving -->
+        <mxCell id="e_registry_serving" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#E06B00;" edge="1" source="model_registry" target="serving" parent="1"/>
+
+        <!-- serving to decision api -->
+        <mxCell id="e_serving_api" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#E06B00;" edge="1" source="serving" target="decision_api" parent="1"/>
+
+        <!-- API gateway to partners (bidirectional) -->
+        <mxCell id="e_api_p1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=open;" edge="1" source="api_gw" target="partner1" parent="1"/>
+        <mxCell id="e_api_p2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=open;" edge="1" source="api_gw" target="partner2" parent="1"/>
+        <mxCell id="e_api_p3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=open;" edge="1" source="api_gw" target="partner3" parent="1"/>
+        <mxCell id="e_api_p4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#000000;endArrow=open;" edge="1" source="api_gw" target="partner4" parent="1"/>
+
+        <!-- decision api uses cache and feature store -->
+        <mxCell id="e_api_cache" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#D1A000;" edge="1" source="decision_api" target="cache" parent="1"/>
+        <mxCell id="e_api_fs" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#D1A000;" edge="1" source="decision_api" target="feature_store" parent="1"/>
+
+        <!-- decision to logs & observability -->
+        <mxCell id="e_api_logs" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#2E7BBF;" edge="1" source="decision_api" target="decision_logs" parent="1"/>
+        <mxCell id="e_obs" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#C94B3A;" edge="1" source="observability" target="decision_logs" parent="1"/>
+
+        <!-- observability connects to training and serving -->
+        <mxCell id="e_obs_training" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#C94B3A;" edge="1" source="observability" target="training" parent="1"/>
+        <mxCell id="e_obs_serving" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#C94B3A;" edge="1" source="observability" target="serving" parent="1"/>
+
+        <!-- security to datalake and decision logs -->
+        <mxCell id="e_security_dl" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#666666;" edge="1" source="security" target="datalake" parent="1"/>
+        <mxCell id="e_security_logs" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#666666;" edge="1" source="security" target="decision_logs" parent="1"/>
+
+        <!-- credit bureau & bank accounts to datalake / rt ingest -->
+        <mxCell id="e_bureau_rt" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#6C8EBF;" edge="1" source="credit_bureau" target="rt_ingest" parent="1"/>
+        <mxCell id="e_accounts_batch" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#6C8EBF;" edge="1" source="bank_accounts" target="batch_ingest" parent="1"/>
+
+        <!-- visual label: products block (bottom right) -->
+        <mxCell id="products" value="Productos: Bienes consumo / Personal / Nómina" style="rounded=1;fillColor=#FFFFFF;strokeColor=#000000;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="860" y="300" width="240" height="80" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
