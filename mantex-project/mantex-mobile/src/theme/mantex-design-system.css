@@ -1,0 +1,313 @@
+/* Mantex Design System - Mobile */
+
+:root {
+  /* === TYPOGRAPHY === */
+  /* Primary Font: Urbanist - Modern, clean, tech-focused */
+  --mantex-font-primary: 'Urbanist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* Secondary Font: Petrona - Professional, elegant for headings */
+  --mantex-font-secondary: 'Petrona', Georgia, serif;
+
+  /* Font Weights */
+  --mantex-font-weight-light: 300;
+  --mantex-font-weight-normal: 400;
+  --mantex-font-weight-medium: 500;
+  --mantex-font-weight-semibold: 600;
+  --mantex-font-weight-bold: 700;
+  --mantex-font-weight-black: 900;
+
+  /* === COLOR PALETTE === */
+  /* Mantex Brand Colors */
+  --mantex-primary: #0D9488;        /* Teal - Professional, trustworthy */
+  --mantex-primary-light: #14B8A6;  /* Lighter teal */
+  --mantex-primary-dark: #0F766E;   /* Darker teal */
+  --mantex-primary-50: #F0FDFA;     /* Very light teal background */
+  --mantex-primary-100: #CCFBF1;    /* Light teal background */
+  --mantex-primary-900: #134E4A;    /* Very dark teal */
+
+  /* Secondary Colors */
+  --mantex-secondary: #1E40AF;      /* Professional blue */
+  --mantex-secondary-light: #3B82F6;
+  --mantex-secondary-dark: #1E3A8A;
+
+  /* Accent Colors */
+  --mantex-accent: #F59E0B;         /* Amber for warnings/important */
+  --mantex-accent-light: #FCD34D;
+  --mantex-accent-dark: #D97706;
+
+  /* Status Colors */
+  --mantex-success: #10B981;        /* Emerald green */
+  --mantex-warning: #F59E0B;        /* Amber */
+  --mantex-danger: #EF4444;         /* Red */
+  --mantex-info: #3B82F6;           /* Blue */
+
+  /* Neutral Colors */
+  --mantex-gray-50: #F9FAFB;
+  --mantex-gray-100: #F3F4F6;
+  --mantex-gray-200: #E5E7EB;
+  --mantex-gray-300: #D1D5DB;
+  --mantex-gray-400: #9CA3AF;
+  --mantex-gray-500: #6B7280;
+  --mantex-gray-600: #4B5563;
+  --mantex-gray-700: #374151;
+  --mantex-gray-800: #1F2937;
+  --mantex-gray-900: #111827;
+
+  /* === SPACING === */
+  --mantex-space-xs: 0.25rem;    /* 4px */
+  --mantex-space-sm: 0.5rem;     /* 8px */
+  --mantex-space-md: 1rem;       /* 16px */
+  --mantex-space-lg: 1.5rem;     /* 24px */
+  --mantex-space-xl: 2rem;       /* 32px */
+  --mantex-space-2xl: 3rem;      /* 48px */
+  --mantex-space-3xl: 4rem;      /* 64px */
+
+  /* === BORDER RADIUS === */
+  --mantex-radius-sm: 0.25rem;   /* 4px */
+  --mantex-radius-md: 0.5rem;    /* 8px */
+  --mantex-radius-lg: 0.75rem;   /* 12px */
+  --mantex-radius-xl: 1rem;      /* 16px */
+  --mantex-radius-2xl: 1.5rem;   /* 24px */
+  --mantex-radius-full: 9999px;  /* Fully rounded */
+
+  /* === SHADOWS === */
+  --mantex-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --mantex-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --mantex-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --mantex-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+  /* === GRADIENTS === */
+  --mantex-gradient-primary: linear-gradient(135deg, var(--mantex-primary) 0%, var(--mantex-primary-dark) 100%);
+  --mantex-gradient-secondary: linear-gradient(135deg, var(--mantex-secondary) 0%, var(--mantex-secondary-dark) 100%);
+  --mantex-gradient-success: linear-gradient(135deg, var(--mantex-success) 0%, #059669 100%);
+
+  /* === IONIC OVERRIDES === */
+  /* Override Ionic CSS variables with Mantex colors */
+  --ion-color-primary: var(--mantex-primary);
+  --ion-color-primary-rgb: 13, 148, 136;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: var(--mantex-primary-dark);
+  --ion-color-primary-tint: var(--mantex-primary-light);
+
+  --ion-color-secondary: var(--mantex-secondary);
+  --ion-color-secondary-rgb: 30, 64, 175;
+  --ion-color-secondary-contrast: #ffffff;
+  --ion-color-secondary-contrast-rgb: 255, 255, 255;
+  --ion-color-secondary-shade: var(--mantex-secondary-dark);
+  --ion-color-secondary-tint: var(--mantex-secondary-light);
+
+  --ion-color-success: var(--mantex-success);
+  --ion-color-success-rgb: 16, 185, 129;
+  --ion-color-warning: var(--mantex-warning);
+  --ion-color-warning-rgb: 245, 158, 11;
+  --ion-color-danger: var(--mantex-danger);
+  --ion-color-danger-rgb: 239, 68, 68;
+
+  /* Typography overrides */
+  --ion-font-family: var(--mantex-font-primary);
+
+  /* Background colors */
+  --ion-background-color: #ffffff;
+  --ion-background-color-rgb: 255, 255, 255;
+
+  /* Text colors */
+  --ion-text-color: var(--mantex-gray-900);
+  --ion-text-color-rgb: 17, 24, 39;
+
+  /* Card and surface styling */
+  --ion-card-background: #ffffff;
+  --ion-card-color: var(--mantex-gray-900);
+
+  /* Toolbar styling */
+  --ion-toolbar-background: var(--mantex-primary);
+  --ion-toolbar-color: #ffffff;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ion-background-color: var(--mantex-gray-900);
+    --ion-background-color-rgb: 17, 24, 39;
+
+    --ion-text-color: var(--mantex-gray-100);
+    --ion-text-color-rgb: 243, 244, 246;
+
+    --ion-card-background: var(--mantex-gray-800);
+    --ion-card-color: var(--mantex-gray-100);
+
+    --ion-toolbar-background: var(--mantex-gray-800);
+    --ion-toolbar-color: var(--mantex-gray-100);
+  }
+}
+
+/* === GLOBAL BASE STYLES === */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--mantex-font-primary) !important;
+  font-weight: var(--mantex-font-weight-normal);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Headings use Petrona font */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--mantex-font-secondary) !important;
+  font-weight: var(--mantex-font-weight-semibold);
+  line-height: 1.2;
+  color: var(--mantex-gray-900);
+}
+
+h1 { font-size: 2.5rem; font-weight: var(--mantex-font-weight-bold); }
+h2 { font-size: 2rem; font-weight: var(--mantex-font-weight-bold); }
+h3 { font-size: 1.5rem; font-weight: var(--mantex-font-weight-semibold); }
+h4 { font-size: 1.25rem; font-weight: var(--mantex-font-weight-semibold); }
+h5 { font-size: 1.125rem; font-weight: var(--mantex-font-weight-medium); }
+h6 { font-size: 1rem; font-weight: var(--mantex-font-weight-medium); }
+
+/* === UTILITY CLASSES === */
+.mantex-text-primary { color: var(--mantex-primary) !important; }
+.mantex-text-secondary { color: var(--mantex-secondary) !important; }
+.mantex-text-success { color: var(--mantex-success) !important; }
+.mantex-text-warning { color: var(--mantex-warning) !important; }
+.mantex-text-danger { color: var(--mantex-danger) !important; }
+
+.mantex-bg-primary { background-color: var(--mantex-primary) !important; }
+.mantex-bg-primary-light { background-color: var(--mantex-primary-50) !important; }
+
+.mantex-font-primary { font-family: var(--mantex-font-primary) !important; }
+.mantex-font-secondary { font-family: var(--mantex-font-secondary) !important; }
+
+.mantex-weight-light { font-weight: var(--mantex-font-weight-light) !important; }
+.mantex-weight-normal { font-weight: var(--mantex-font-weight-normal) !important; }
+.mantex-weight-medium { font-weight: var(--mantex-font-weight-medium) !important; }
+.mantex-weight-semibold { font-weight: var(--mantex-font-weight-semibold) !important; }
+.mantex-weight-bold { font-weight: var(--mantex-font-weight-bold) !important; }
+
+.mantex-shadow-sm { box-shadow: var(--mantex-shadow-sm) !important; }
+.mantex-shadow-md { box-shadow: var(--mantex-shadow-md) !important; }
+.mantex-shadow-lg { box-shadow: var(--mantex-shadow-lg) !important; }
+
+.mantex-rounded-sm { border-radius: var(--mantex-radius-sm) !important; }
+.mantex-rounded-md { border-radius: var(--mantex-radius-md) !important; }
+.mantex-rounded-lg { border-radius: var(--mantex-radius-lg) !important; }
+.mantex-rounded-xl { border-radius: var(--mantex-radius-xl) !important; }
+
+/* === COMPONENT OVERRIDES === */
+
+/* Cards with Mantex styling */
+ion-card {
+  border-radius: var(--mantex-radius-lg) !important;
+  box-shadow: var(--mantex-shadow-md) !important;
+  border: 1px solid var(--mantex-gray-200);
+  overflow: hidden;
+  margin: var(--mantex-space-md);
+  background: var(--ion-card-background);
+}
+
+/* Buttons with Mantex styling */
+ion-button {
+  --border-radius: var(--mantex-radius-md);
+  font-family: var(--mantex-font-primary);
+  font-weight: var(--mantex-font-weight-medium);
+  text-transform: none;
+  letter-spacing: 0.025em;
+}
+
+ion-button.button-solid {
+  --box-shadow: var(--mantex-shadow-md);
+}
+
+/* Toolbar improvements */
+ion-toolbar {
+  --background: var(--mantex-gradient-primary);
+  --color: white;
+  --border-width: 0;
+  --min-height: 64px;
+  font-family: var(--mantex-font-primary);
+}
+
+ion-title {
+  font-family: var(--mantex-font-secondary);
+  font-weight: var(--mantex-font-weight-semibold);
+  font-size: 1.25rem;
+}
+
+/* Tab bar improvements */
+ion-tab-bar {
+  --background: white;
+  --border: 1px solid var(--mantex-gray-200);
+  box-shadow: var(--mantex-shadow-lg);
+  height: 70px;
+}
+
+ion-tab-button {
+  --color: var(--mantex-gray-500);
+  --color-selected: var(--mantex-primary);
+  font-family: var(--mantex-font-primary);
+  font-weight: var(--mantex-font-weight-medium);
+}
+
+ion-tab-button ion-icon {
+  font-size: 1.5rem;
+  margin-bottom: 4px;
+}
+
+ion-tab-button ion-label {
+  font-size: 0.75rem;
+  font-weight: var(--mantex-font-weight-medium);
+}
+
+/* Input styling */
+ion-item {
+  --background: transparent;
+  --border-width: 0;
+  --inner-border-width: 0;
+  --padding-start: var(--mantex-space-md);
+  --padding-end: var(--mantex-space-md);
+}
+
+ion-input, ion-textarea, ion-select {
+  font-family: var(--mantex-font-primary);
+  --padding-start: var(--mantex-space-md);
+  --padding-end: var(--mantex-space-md);
+}
+
+/* Loading indicators */
+ion-loading {
+  --background: rgba(0, 0, 0, 0.8);
+  --color: white;
+  font-family: var(--mantex-font-primary);
+}
+
+ion-spinner {
+  --color: var(--mantex-primary);
+}
+
+/* Toast notifications */
+ion-toast {
+  font-family: var(--mantex-font-primary);
+  --border-radius: var(--mantex-radius-lg);
+}
+
+/* Alert dialogs */
+ion-alert {
+  font-family: var(--mantex-font-primary);
+}
+
+ion-alert .alert-head {
+  font-family: var(--mantex-font-secondary);
+  font-weight: var(--mantex-font-weight-semibold);
+}
+
+/* Content padding */
+ion-content {
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
+}

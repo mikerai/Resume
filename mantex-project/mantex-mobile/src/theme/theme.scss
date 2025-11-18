@@ -1,0 +1,159 @@
+/* ============================================================
+   FONTS
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;500;600&family=Petrona:wght@400;600;700&display=swap');
+
+:root {
+  --ion-font-family: 'Urbanist', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Petrona', serif;
+}
+
+
+/* ============================================================
+   LIGHT MODE (DEFAULT)
+   ============================================================ */
+
+:root {
+  --primary: #011126;
+  --secondary: #4A8C8C;
+  --accent: #5BA6A6;
+  --success: #37A667;
+  --warning: #F2913D;
+  --danger: #D9483B;
+
+  --background: #E6F0F0;
+  --surface: #FFFFFF;
+
+  --ion-color-primary: var(--primary);
+  --ion-color-secondary: var(--secondary);
+  --ion-color-tertiary: var(--accent);
+  --ion-color-success: var(--success);
+  --ion-color-warning: var(--warning);
+  --ion-color-danger: var(--danger);
+
+  --ion-text-color: #111111;
+  --ion-background-color: var(--background);
+}
+
+
+/* ============================================================
+   DARK MODE
+   ============================================================ */
+
+:root.dark {
+  --primary: #011126;
+  --secondary: #4A8C8C;
+  --accent: #5BA6A6;
+
+  --success: #37A667;
+  --warning: #F2913D;
+  --danger: #D9483B;
+
+  --background: #285459;
+  --surface: #0F3740;
+
+  --ion-color-primary: var(--primary);
+  --ion-color-secondary: var(--secondary);
+  --ion-color-tertiary: var(--accent);
+
+  --ion-background-color: var(--background);
+  --ion-text-color: #FFFFFF;
+}
+
+/* System auto mode */
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {
+    --primary: #011126;
+    --secondary: #4A8C8C;
+    --accent: #5BA6A6;
+
+    --success: #37A667;
+    --warning: #F2913D;
+    --danger: #D9483B;
+
+    --background: #285459;
+    --surface: #0F3740;
+
+    --ion-color-primary: var(--primary);
+    --ion-color-secondary: var(--secondary);
+    --ion-color-tertiary: var(--accent);
+
+    --ion-background-color: var(--background);
+    --ion-text-color: #FFFFFF;
+  }
+}
+
+
+/* ============================================================
+   GLOBAL COMPONENT STYLING
+   ============================================================ */
+
+ion-content {
+  --background: var(--ion-background-color);
+  color: var(--ion-text-color);
+}
+
+ion-card {
+  --background: var(--surface);
+  color: var(--ion-text-color);
+}
+
+ion-button {
+  font-family: 'Urbanist', sans-serif;
+}
+
+
+/* Inputs */
+ion-input, ion-textarea, ion-select {
+  --color: var(--ion-text-color);
+  --background: var(--surface);
+  --placeholder-color: rgba(255,255,255,0.55);
+}
+
+
+/* Toolbar */
+ion-toolbar {
+  --background: var(--primary);
+  --color: #ffffff;
+}
+
+
+/* Tab bar */
+ion-tab-bar {
+  --background: var(--surface);
+  --color: var(--ion-text-color);
+  --color-selected: var(--primary);
+}
+
+
+/* ============================================================
+   TRANSITIONS
+   ============================================================ */
+
+:root {
+  --transition-fast: 120ms ease-out;
+  --transition-medium: 220ms ease;
+  --transition-slow: 340ms ease-in-out;
+}
+
+.fade-in {
+  opacity: 0;
+  transition: opacity var(--transition-medium);
+}
+.fade-in.loaded {
+  opacity: 1;
+}
+
+.slide-up {
+  transform: translateY(12px);
+  opacity: 0;
+  transition: transform var(--transition-medium), opacity var(--transition-medium);
+}
+.slide-up.enter {
+  transform: translateY(0);
+  opacity: 1;
+}

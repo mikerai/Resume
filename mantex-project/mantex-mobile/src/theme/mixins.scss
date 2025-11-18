@@ -1,0 +1,36 @@
+/* Buttons */
+@mixin btn-solid($color) {
+  --background: #{$color};
+  --background-activated: #{darken($color, 8%)};
+  --background-focused: #{darken($color, 4%)};
+  --border-radius: 8px;
+  color: #fff;
+}
+
+/* Surfaces */
+@mixin surface($color) {
+  background: #{$color};
+  color: var(--ion-text-color);
+  border-radius: 10px;
+}
+
+/* Text utilities */
+@mixin heading {
+  font-family: 'Petrona', serif;
+  font-weight: 600;
+}
+
+@mixin body {
+  font-family: 'Urbanist', sans-serif;
+  font-weight: 400;
+}
+
+/* Shadows */
+@mixin soft-shadow {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+/* Transitions */
+@mixin smooth {
+  transition: all var(--transition-medium);
+}

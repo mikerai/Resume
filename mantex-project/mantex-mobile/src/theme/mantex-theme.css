@@ -1,0 +1,424 @@
+/* ============================================================
+   MANTEX MOBILE THEME - IONIC NATIVE STYLES
+   ============================================================ */
+
+/* ============================================================
+   FONTS
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;500;600&family=Petrona:wght@400;600;700&display=swap');
+
+/* Ionic root font setup */
+:root {
+  --ion-font-family: 'Urbanist', sans-serif;
+}
+
+/* Headings override */
+h1, h2, h3, h4, h5, h6,
+ion-title,
+.ion-page h1, .ion-page h2, .ion-page h3, .ion-page h4, .ion-page h5, .ion-page h6 {
+  font-family: 'Petrona', serif;
+}
+
+/* ============================================================
+   COLOR SYSTEM
+   ============================================================ */
+
+:root {
+  --primary: #011126;
+  --secondary: #4A8C8C;
+  --accent: #5BA6A6;
+  --success: #37A667;
+  --warning: #F2913D;
+  --danger: #D9483B;
+
+  --background: #285459;
+  --surface: #0F3740;
+
+  /* Ionic token bindings */
+  --ion-color-primary: var(--primary);
+  --ion-color-primary-rgb: 1, 17, 38;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #010f21;
+  --ion-color-primary-tint: #1a2939;
+
+  --ion-color-secondary: var(--secondary);
+  --ion-color-secondary-rgb: 74, 140, 140;
+  --ion-color-secondary-contrast: #ffffff;
+  --ion-color-secondary-contrast-rgb: 255, 255, 255;
+  --ion-color-secondary-shade: #427b7b;
+  --ion-color-secondary-tint: #5d9595;
+
+  --ion-color-tertiary: var(--accent);
+  --ion-color-tertiary-rgb: 91, 166, 166;
+  --ion-color-tertiary-contrast: #ffffff;
+  --ion-color-tertiary-contrast-rgb: 255, 255, 255;
+  --ion-color-tertiary-shade: #509292;
+  --ion-color-tertiary-tint: #6bb0b0;
+
+  --ion-color-success: var(--success);
+  --ion-color-success-rgb: 55, 166, 103;
+  --ion-color-success-contrast: #ffffff;
+  --ion-color-success-contrast-rgb: 255, 255, 255;
+  --ion-color-success-shade: #309347;
+  --ion-color-success-tint: #4aaf6f;
+
+  --ion-color-warning: var(--warning);
+  --ion-color-warning-rgb: 242, 145, 61;
+  --ion-color-warning-contrast: #000000;
+  --ion-color-warning-contrast-rgb: 0, 0, 0;
+  --ion-color-warning-shade: #d38036;
+  --ion-color-warning-tint: #f49a4f;
+
+  --ion-color-danger: var(--danger);
+  --ion-color-danger-rgb: 217, 72, 59;
+  --ion-color-danger-contrast: #ffffff;
+  --ion-color-danger-contrast-rgb: 255, 255, 255;
+  --ion-color-danger-shade: #bf4734;
+  --ion-color-danger-tint: #db5e4d;
+
+  /* Background and text colors */
+  --ion-background-color: var(--background);
+  --ion-background-color-rgb: 40, 84, 89;
+  --ion-text-color: #ffffff;
+  --ion-text-color-rgb: 255, 255, 255;
+
+  /* Card and surface colors */
+  --ion-card-background: var(--surface);
+  --ion-item-background: var(--surface);
+
+  /* Border and divider colors */
+  --ion-border-color: rgba(255, 255, 255, 0.08);
+  --ion-item-border-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Surface levels */
+.ion-surface {
+  background: var(--surface);
+  color: #ffffff;
+}
+
+/* Cards, modals, sheets */
+ion-card,
+ion-modal,
+ion-content.surface {
+  --background: var(--surface);
+}
+
+/* ============================================================
+   GLOBAL COMPONENT BEHAVIOR
+   ============================================================ */
+
+/* Buttons */
+ion-button {
+  font-family: 'Urbanist', sans-serif;
+  font-weight: 500;
+
+  &[color="primary"] {
+    --background: var(--primary);
+    --background-activated: #010f21;
+    --background-hover: #1a2939;
+  }
+
+  &[color="secondary"] {
+    --background: var(--secondary);
+    --background-activated: #427b7b;
+    --background-hover: #5d9595;
+  }
+
+  &[color="tertiary"] {
+    --background: var(--accent);
+    --background-activated: #509292;
+    --background-hover: #6bb0b0;
+  }
+
+  &[color="danger"] {
+    --background: var(--danger);
+    --background-activated: #bf4734;
+    --background-hover: #db5e4d;
+  }
+
+  /* Custom button variants */
+  &.button-accent {
+    --background: var(--accent);
+    --background-activated: #509292;
+    --color: #ffffff;
+  }
+}
+
+/* Inputs */
+ion-input, ion-textarea, ion-select, ion-searchbar {
+  --color: #ffffff;
+  --background: var(--surface);
+  --placeholder-color: rgba(255, 255, 255, 0.55);
+  --placeholder-opacity: 1;
+  font-family: 'Urbanist', sans-serif;
+}
+
+ion-searchbar {
+  --background: var(--surface);
+  --color: #ffffff;
+  --placeholder-color: rgba(255, 255, 255, 0.55);
+  --icon-color: rgba(255, 255, 255, 0.7);
+  --clear-button-color: rgba(255, 255, 255, 0.7);
+}
+
+/* Toolbar / Header */
+ion-header,
+ion-toolbar {
+  --background: var(--primary);
+  --color: #ffffff;
+  --border-color: transparent;
+}
+
+ion-title {
+  font-family: 'Petrona', serif;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+/* Tabs */
+ion-tab-bar {
+  --background: var(--surface);
+  --color: #dbe3e3;
+  --color-selected: #ffffff;
+  --border: 1px solid rgba(255, 255, 255, 0.08);
+  font-family: 'Urbanist', sans-serif;
+}
+
+ion-tab-button {
+  font-family: 'Urbanist', sans-serif;
+  font-size: 0.8rem;
+}
+
+/* Lists */
+ion-list {
+  --background: transparent;
+}
+
+ion-item {
+  --background: var(--surface);
+  --color: #ffffff;
+  --border-color: rgba(255, 255, 255, 0.08);
+  --inner-border-width: 0 0 1px 0;
+  font-family: 'Urbanist', sans-serif;
+}
+
+ion-item-divider {
+  --background: var(--primary);
+  --color: #ffffff;
+  font-family: 'Petrona', serif;
+  font-weight: 600;
+}
+
+/* Cards */
+ion-card {
+  --background: var(--surface);
+  --color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
+  margin: 16px;
+}
+
+ion-card-header {
+  font-family: 'Petrona', serif;
+}
+
+ion-card-title {
+  font-family: 'Petrona', serif;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+ion-card-subtitle {
+  font-family: 'Urbanist', sans-serif;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+ion-card-content {
+  font-family: 'Urbanist', sans-serif;
+  color: #ffffff;
+}
+
+/* Chips */
+ion-chip {
+  font-family: 'Urbanist', sans-serif;
+  font-weight: 500;
+  font-size: 0.8rem;
+
+  &[color="primary"] {
+    --background: var(--primary);
+    --color: #ffffff;
+  }
+
+  &[color="secondary"] {
+    --background: var(--secondary);
+    --color: #ffffff;
+  }
+
+  &[color="warning"] {
+    --background: var(--warning);
+    --color: #000000;
+  }
+
+  &[color="danger"] {
+    --background: var(--danger);
+    --color: #ffffff;
+  }
+
+  &[color="success"] {
+    --background: var(--success);
+    --color: #ffffff;
+  }
+}
+
+/* Segments */
+ion-segment {
+  --background: var(--surface);
+  font-family: 'Urbanist', sans-serif;
+}
+
+ion-segment-button {
+  --color: rgba(255, 255, 255, 0.7);
+  --color-checked: #ffffff;
+  --background-checked: var(--primary);
+  font-family: 'Urbanist', sans-serif;
+  font-weight: 500;
+}
+
+/* Loading */
+ion-loading {
+  --background: var(--surface);
+  --color: #ffffff;
+  font-family: 'Urbanist', sans-serif;
+}
+
+/* Modals */
+ion-modal {
+  --background: var(--background);
+  --color: #ffffff;
+  font-family: 'Urbanist', sans-serif;
+}
+
+/* Toast */
+ion-toast {
+  --background: var(--surface);
+  --color: #ffffff;
+  font-family: 'Urbanist', sans-serif;
+}
+
+/* Alert */
+ion-alert {
+  --background: var(--surface);
+  --color: #ffffff;
+  font-family: 'Urbanist', sans-serif;
+}
+
+/* Progress Bar */
+ion-progress-bar {
+  --background: rgba(255, 255, 255, 0.2);
+  --progress-background: var(--accent);
+}
+
+/* Refresher */
+ion-refresher-content {
+  --color: #ffffff;
+}
+
+/* FAB */
+ion-fab-button {
+  --background: var(--accent);
+  --background-activated: #509292;
+  --color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* ============================================================
+   MOTION / TRANSITIONS
+   ============================================================ */
+
+:root {
+  --transition-fast: 120ms ease-out;
+  --transition-medium: 220ms ease;
+  --transition-slow: 340ms ease-in-out;
+}
+
+/* Page transitions */
+.ion-page {
+  transition: transform var(--transition-medium), opacity var(--transition-medium);
+}
+
+/* Fade animations */
+.fade-in {
+  opacity: 0;
+  transition: opacity var(--transition-medium);
+}
+
+.fade-in.loaded {
+  opacity: 1;
+}
+
+/* Slide animations */
+.slide-up {
+  transform: translateY(12px);
+  opacity: 0;
+  transition: transform var(--transition-medium), opacity var(--transition-medium);
+}
+
+.slide-up.enter {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* Button press animations */
+ion-button {
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+ion-button:active {
+  transform: scale(0.98);
+}
+
+/* Card hover/press animations */
+ion-card {
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+ion-card:active {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* ============================================================
+   UTILITY CLASSES
+   ============================================================ */
+
+/* Text utilities */
+.text-heading {
+  font-family: 'Petrona', serif;
+  font-weight: 600;
+}
+
+.text-body {
+  font-family: 'Urbanist', sans-serif;
+}
+
+/* Color utilities */
+.text-primary { color: var(--primary) !important; }
+.text-secondary { color: var(--secondary) !important; }
+.text-accent { color: var(--accent) !important; }
+.text-success { color: var(--success) !important; }
+.text-warning { color: var(--warning) !important; }
+.text-danger { color: var(--danger) !important; }
+
+/* Background utilities */
+.bg-surface { background: var(--surface) !important; }
+.bg-primary { background: var(--primary) !important; }
+.bg-secondary { background: var(--secondary) !important; }
+
+/* Status indicators */
+.status-pending { color: var(--warning) !important; }
+.status-progress { color: var(--accent) !important; }
+.status-completed { color: var(--success) !important; }
+.status-urgent { color: var(--danger) !important; }
