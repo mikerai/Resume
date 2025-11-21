@@ -35,16 +35,14 @@ async function getProfile(userId) {
 
     try {
         console.log('🔄 Ejecutando query a Supabase...');
-        const { data, error } = await Promise.race([
-            supabase
-                .from('profiles')
-                .select(`username, role, onboarding_complete`)
-                .eq('id', userId)
-                .single(),
-            new Promise((_, reject) =>
-                setTimeout(() => reject(new Error('getProfile timeout - 3 segundos')), 3000)
-            )
-        ]);
+
+        // SIN TIMEOUT - dejar que complete o falle naturalmente
+        const { data, error } = await supabase
+            .from('profiles')
+            .select(`username, role, onboarding_complete`)
+            .eq('id', userId)
+            .single();
+
         console.log('✅ Query completada');
 
         const duration = Date.now() - startTime;
@@ -165,7 +163,23 @@ async function logout() {
         isLoading.value = true;
         console.log('🚪 Cerrando sesión...');
 
-        // Llamada al logout de Supabase
+        // 1. LIMPIAR LOCALSTORAGE primero
+        console.log('🧹 Limpiando localStorage de Supabase...');
+        if (typeof localStorage !== 'undefined') {
+            const keysToRemove = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && (key.startsWith('sb-') || key.includes('supabase'))) {
+                    keysToRemove.push(key);
+                }
+            }
+            keysToRemove.forEach(key => {
+                console.log('  🗑️ Eliminando:', key);
+                localStorage.removeItem(key);
+            });
+        }
+
+        // 2. Llamada al logout de Supabase
         const { error } = await supabase.auth.signOut();
 
         if (error && !error.message.includes('timeout')) {
@@ -173,17 +187,17 @@ async function logout() {
             // Continúa con logout local aunque falle el servidor
         }
 
-        // Limpiar estado inmediatamente (no esperar al listener)
+        // 3. Limpiar estado inmediatamente (no esperar al listener)
         user.value = null;
         profile.value = { username: null, role: null, onboarding_complete: false };
         isLoading.value = false;
 
-        // Redirección inmediata
+        console.log('✅ Logout exitoso - sesión completamente limpiada');
+
+        // 4. Redirección inmediata
         if (typeof window !== 'undefined') {
             window.location.href = '/login';
         }
-
-        console.log('✅ Logout exitoso');
     } catch (error) {
         console.error('Error crítico en logout:', error);
         // Logout forzado en caso de error
@@ -276,39 +290,81 @@ async function signUp(email, password) {
 /**
  * Inicializa el estado de autenticación al cargar la aplicación.
  */
+// Flag para evitar auto-login durante inicialización
+let initializationComplete = false;
+
 async function initializeAuth() {
     try {
         console.log('🚀 Iniciando autenticación...');
 
-        // Force logout any existing session to ensure clean state
+        // 1. LIMPIAR LOCALSTORAGE COMPLETAMENTE
+        console.log('🧹 Limpiando localStorage de Supabase...');
+        if (typeof localStorage !== 'undefined') {
+            // Eliminar todas las keys de Supabase
+            const keysToRemove = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && (key.startsWith('sb-') || key.includes('supabase'))) {
+                    keysToRemove.push(key);
+                }
+            }
+            keysToRemove.forEach(key => {
+                console.log('  🗑️ Eliminando:', key);
+                localStorage.removeItem(key);
+            });
+        }
+
+        // 2. Force logout any existing session to ensure clean state
         await supabase.auth.signOut();
 
-        // Reset all auth state
+        // 3. Reset all auth state
         user.value = null;
         profile.value = { username: null, role: null, onboarding_complete: false };
 
         console.log('👤 Usuario actual: No autenticado (forzado)');
+        console.log('✅ Sesión completamente limpiada');
     } catch (e) {
         console.error('❌ Error crítico en initializeAuth:', e);
     } finally {
-        // 3. DESBLOQUEAR: Esto es CRÍTICO para el Router Guard.
+        // DESBLOQUEAR: Esto es CRÍTICO para el Router Guard
         console.log('✅ Autenticación inicializada (sin auto-login)');
         isLoading.value = false;
+
+        // IMPORTANTE: Activar listener DESPUÉS de signOut completo
+        setTimeout(() => {
+            initializationComplete = true;
+            console.log('✅ Listener de auth ahora activo');
+        }, 2000); // 2 segundos para asegurar que signOut terminó
     }
 }
 
 // Se ejecuta el inicializador al cargar el archivo
 initializeAuth();
 
-
 // Listener para cambios posteriores (login, logout, refresco de token)
 supabase.auth.onAuthStateChange(async (event, session) => {
+    console.log('📡 Auth state change:', event, 'initComplete:', initializationComplete);
+
+    // IGNORAR eventos durante inicialización para evitar auto-login
+    if (!initializationComplete) {
+        console.log('🚫 Ignorando auth state change durante inicialización:', event);
+        return;
+    }
+
+    // IGNORAR eventos de sesión inicial/recuperada (previene auto-login)
+    if (event === 'INITIAL_SESSION' || event === 'TOKEN_REFRESHED') {
+        console.log('🚫 Ignorando evento de sesión automática:', event);
+        return;
+    }
+
     try {
         if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
+            console.log('✅ Procesando login manual:', event);
             const currentUser = session.user;
             user.value = currentUser;
-            await getProfile(currentUser.id); 
+            await getProfile(currentUser.id);
         } else if (event === 'SIGNED_OUT') {
+            console.log('✅ Procesando logout');
             user.value = null;
             profile.value = { username: null, role: null, onboarding_complete: false };
         }
@@ -316,7 +372,7 @@ supabase.auth.onAuthStateChange(async (event, session) => {
         console.error("Error durante el cambio de estado de Auth:", e);
     } finally {
         // 🚀 Desbloqueo garantizado, sin importar el éxito de getProfile
-        isLoading.value = false; 
+        isLoading.value = false;
     }
 });
 

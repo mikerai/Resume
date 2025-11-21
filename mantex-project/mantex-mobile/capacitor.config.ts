@@ -24,6 +24,11 @@ const config: CapacitorConfig = {
       splashFullScreen: true,
       splashImmersive: true,
       backgroundColor: '#4A8C8C'
+    },
+    GoogleAuth: {
+      scopes: ['profile', 'email', 'https://www.googleapis.com/auth/calendar', 'https://www.googleapis.com/auth/calendar.events'],
+      serverClientId: '296798262114-cdbjd0iq3d0l48k63d94aeetghrcg4qm.apps.googleusercontent.com',
+      forceCodeForRefreshToken: true
     }
   }
 };

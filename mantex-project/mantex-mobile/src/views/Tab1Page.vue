@@ -205,7 +205,11 @@ const refreshData = async () => {
   } catch (error) {
     console.error('Error loading dashboard data:', error);
   } finally {
-    isLoading.value = false;
+    // Asegurar que el loading se quite en el siguiente ciclo de render
+    setTimeout(() => {
+      isLoading.value = false;
+      console.log('🔓 Loading overlay ocultado');
+    }, 100);
   }
 };
 

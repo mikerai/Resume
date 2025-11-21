@@ -1,0 +1,18 @@
+{
+  "name": "nubarium-webhook",
+  "version": "1.0.0",
+  "description": "Lambda webhook para recibir resultados de Nubarium SAT",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.js",
+    "deploy": "zip -r nubarium-webhook.zip . -x '*.zip' && aws lambda update-function-code --function-name nubarium-webhook --zip-file fileb://nubarium-webhook.zip"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.38.0"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "author": "Mantex",
+  "license": "MIT"
+}

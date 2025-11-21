@@ -1,0 +1,471 @@
+// ==========================================
+// MANTEX - DESIGN SYSTEM STANDARDS
+// ==========================================
+
+// ==========================================
+// SPACING SYSTEM (Based on Tailwind + Sakai)
+// ==========================================
+
+:root {
+  // Standard spacing scale (rem units)
+  --spacing-0: 0;
+  --spacing-1: 0.25rem;    // 4px
+  --spacing-2: 0.5rem;     // 8px
+  --spacing-3: 0.75rem;    // 12px
+  --spacing-4: 1rem;       // 16px
+  --spacing-5: 1.25rem;    // 20px
+  --spacing-6: 1.5rem;     // 24px
+  --spacing-8: 2rem;       // 32px
+  --spacing-10: 2.5rem;    // 40px
+  --spacing-12: 3rem;      // 48px
+  --spacing-16: 4rem;      // 64px
+  --spacing-20: 5rem;      // 80px
+  --spacing-24: 6rem;      // 96px
+
+  // Component-specific spacing
+  --card-padding: var(--spacing-6);
+  --card-padding-sm: var(--spacing-4);
+  --card-padding-lg: var(--spacing-8);
+
+  --section-gap: var(--spacing-8);
+  --section-gap-sm: var(--spacing-4);
+  --section-gap-lg: var(--spacing-12);
+
+  --content-max-width: 1200px;
+  --sidebar-width: 280px;
+  --topbar-height: 4rem;
+
+  // Animation durations
+  --transition-fast: 0.15s;
+  --transition-normal: 0.3s;
+  --transition-slow: 0.5s;
+
+  // Border radius scale
+  --radius-sm: 0.375rem;   // 6px
+  --radius-md: 0.5rem;     // 8px (default)
+  --radius-lg: 0.75rem;    // 12px
+  --radius-xl: 1rem;       // 16px
+  --radius-full: 9999px;
+
+  // Shadow scale
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+
+  // Z-index scale
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal-backdrop: 1040;
+  --z-modal: 1050;
+  --z-popover: 1060;
+  --z-tooltip: 1070;
+}
+
+// ==========================================
+// LAYOUT UTILITIES
+// ==========================================
+
+// Standard container
+.mantex-container {
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  padding: 0 var(--spacing-4);
+
+  @media (min-width: 768px) {
+    padding: 0 var(--spacing-6);
+  }
+}
+
+// Grid system
+.mantex-grid {
+  display: grid;
+  gap: var(--spacing-4);
+
+  &.mantex-grid--2 { grid-template-columns: repeat(2, 1fr); }
+  &.mantex-grid--3 { grid-template-columns: repeat(3, 1fr); }
+  &.mantex-grid--4 { grid-template-columns: repeat(4, 1fr); }
+
+  // Responsive variants
+  @media (max-width: 768px) {
+    &.mantex-grid--responsive {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (min-width: 768px) and (max-width: 1024px) {
+    &.mantex-grid--responsive.mantex-grid--3,
+    &.mantex-grid--responsive.mantex-grid--4 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+}
+
+// Flex utilities
+.mantex-flex {
+  display: flex;
+
+  &.mantex-flex--center {
+    justify-content: center;
+    align-items: center;
+  }
+
+  &.mantex-flex--between {
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &.mantex-flex--column {
+    flex-direction: column;
+  }
+
+  &.mantex-flex--wrap {
+    flex-wrap: wrap;
+  }
+}
+
+// ==========================================
+// CARD SYSTEM
+// ==========================================
+
+.mantex-card {
+  background: var(--surface-card);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-md);
+  padding: var(--card-padding);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-normal) ease;
+
+  &:hover {
+    box-shadow: var(--shadow-lg);
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+  }
+
+  // Size variants
+  &.mantex-card--sm {
+    padding: var(--card-padding-sm);
+  }
+
+  &.mantex-card--lg {
+    padding: var(--card-padding-lg);
+  }
+
+  // Style variants
+  &.mantex-card--elevated {
+    box-shadow: var(--shadow-lg);
+    border: none;
+  }
+
+  &.mantex-card--outlined {
+    border: 2px solid var(--surface-300);
+    box-shadow: none;
+  }
+
+  &.mantex-card--filled {
+    background: var(--surface-100);
+    border: none;
+    box-shadow: none;
+  }
+
+  // Interactive variants
+  &.mantex-card--clickable {
+    cursor: pointer;
+
+    &:active {
+      transform: translateY(0) scale(0.98);
+    }
+  }
+}
+
+.mantex-card__header {
+  margin-bottom: var(--spacing-4);
+  padding-bottom: var(--spacing-4);
+  border-bottom: 1px solid var(--surface-border);
+
+  &:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+}
+
+.mantex-card__footer {
+  margin-top: var(--spacing-4);
+  padding-top: var(--spacing-4);
+  border-top: 1px solid var(--surface-border);
+}
+
+// ==========================================
+// SECTION SPACING
+// ==========================================
+
+.mantex-section {
+  padding: var(--section-gap) 0;
+
+  &.mantex-section--sm {
+    padding: var(--section-gap-sm) 0;
+  }
+
+  &.mantex-section--lg {
+    padding: var(--section-gap-lg) 0;
+  }
+
+  // Remove top padding for first section
+  &:first-child {
+    padding-top: 0;
+  }
+
+  // Remove bottom padding for last section
+  &:last-child {
+    padding-bottom: 0;
+  }
+}
+
+// ==========================================
+// ANIMATION SYSTEM
+// ==========================================
+
+// Base animations
+@keyframes mantex-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes mantex-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes mantex-slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes mantex-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes mantex-shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+// Animation utility classes
+.mantex-animate {
+  &--fade-in {
+    animation: mantex-fade-in var(--transition-normal) ease-out;
+  }
+
+  &--slide-up {
+    animation: mantex-slide-up 0.6s ease-out;
+  }
+
+  &--slide-down {
+    animation: mantex-slide-down var(--transition-normal) ease-out;
+  }
+
+  &--scale-in {
+    animation: mantex-scale-in var(--transition-normal) ease-out;
+  }
+
+  &--shake {
+    animation: mantex-shake var(--transition-slow) ease-in-out;
+  }
+
+  // Staggered animations
+  &--stagger-1 { animation-delay: 0.1s; }
+  &--stagger-2 { animation-delay: 0.2s; }
+  &--stagger-3 { animation-delay: 0.3s; }
+  &--stagger-4 { animation-delay: 0.4s; }
+  &--stagger-5 { animation-delay: 0.5s; }
+}
+
+// ==========================================
+// INTERACTIVE ELEMENTS
+// ==========================================
+
+.mantex-interactive {
+  transition: all var(--transition-normal) ease;
+  cursor: pointer;
+
+  &:hover {
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0) scale(0.98);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+  }
+}
+
+// ==========================================
+// RESPONSIVE UTILITIES
+// ==========================================
+
+// Show/hide utilities
+@media (max-width: 768px) {
+  .mantex-hide-mobile { display: none !important; }
+}
+
+@media (min-width: 768px) {
+  .mantex-hide-desktop { display: none !important; }
+}
+
+// Responsive text alignment
+@media (max-width: 768px) {
+  .mantex-text-center-mobile { text-align: center; }
+  .mantex-text-left-mobile { text-align: left; }
+}
+
+// ==========================================
+// STATUS INDICATORS
+// ==========================================
+
+.mantex-status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-1) var(--spacing-3);
+  border-radius: var(--radius-full);
+  font-size: 0.875rem;
+  font-weight: 500;
+
+  &.mantex-status--success {
+    background: var(--green-100);
+    color: var(--green-700);
+  }
+
+  &.mantex-status--warning {
+    background: var(--yellow-100);
+    color: var(--yellow-700);
+  }
+
+  &.mantex-status--error {
+    background: var(--red-100);
+    color: var(--red-700);
+  }
+
+  &.mantex-status--info {
+    background: var(--blue-100);
+    color: var(--blue-700);
+  }
+}
+
+// ==========================================
+// TYPOGRAPHY SYSTEM
+// ==========================================
+
+.mantex-heading {
+  font-family: 'Petrona', serif;
+  font-weight: 700;
+  line-height: 1.3;
+  margin: 0 0 var(--spacing-4) 0;
+
+  &.mantex-heading--1 { font-size: 2.5rem; }
+  &.mantex-heading--2 { font-size: 2rem; }
+  &.mantex-heading--3 { font-size: 1.75rem; }
+  &.mantex-heading--4 { font-size: 1.5rem; }
+  &.mantex-heading--5 { font-size: 1.25rem; }
+  &.mantex-heading--6 { font-size: 1rem; }
+}
+
+.mantex-text {
+  font-family: 'Urbanist', sans-serif;
+  line-height: 1.6;
+
+  &.mantex-text--lead {
+    font-size: 1.125rem;
+    font-weight: 400;
+  }
+
+  &.mantex-text--small {
+    font-size: 0.875rem;
+  }
+
+  &.mantex-text--muted {
+    color: var(--text-color-secondary);
+  }
+}
+
+// ==========================================
+// PRINT STYLES
+// ==========================================
+
+@media print {
+  .mantex-no-print {
+    display: none !important;
+  }
+
+  .mantex-card {
+    box-shadow: none !important;
+    border: 1px solid #ddd !important;
+    transform: none !important;
+  }
+}
+
+// ==========================================
+// ACCESSIBILITY
+// ==========================================
+
+// Focus visible for interactive elements
+.mantex-focusable:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+// Reduced motion support
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+// High contrast mode support
+@media (prefers-contrast: high) {
+  .mantex-card {
+    border: 2px solid var(--text-color);
+  }
+}
+
+// ==========================================
+// DARK MODE ADJUSTMENTS
+// ==========================================
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.3);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.4), 0 8px 10px -6px rgb(0 0 0 / 0.3);
+  }
+}

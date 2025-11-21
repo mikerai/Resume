@@ -442,12 +442,14 @@ const changeAvatar = async () => {
 
       // 2. Preparar archivo para S3
       const fileBlob = await fetch(photo.webPath).then(r => r.blob());
-      const fileName = `profile-${user.value.id}-${Date.now()}.jpg`;
-      const s3Path = `users/${user.value.id}/profile-photos/${fileName}`;
+      const fileName = `avatar.jpg`;
 
-      // 3. Subir a S3
-      console.log('☁️ Uploading to S3:', s3Path);
-      const uploadResult = await uploadFileToS3(fileBlob, user.value.username, 'profile-photos', null);
+      // Crear File object con nombre correcto
+      const file = new File([fileBlob], fileName, { type: 'image/jpeg' });
+
+      // 3. Subir a S3 usando la estructura correcta: users/{username}/profile/
+      console.log('☁️ Uploading avatar to S3...');
+      const uploadResult = await uploadFileToS3(file, user.value.username, 'profile', user.value.id);
 
       if (uploadResult.success) {
         console.log('✅ Avatar uploaded to S3:', uploadResult.file_url);

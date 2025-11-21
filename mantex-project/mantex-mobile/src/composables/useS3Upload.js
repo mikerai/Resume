@@ -34,6 +34,9 @@ export function useS3Upload() {
      *
      * Tipos de documentos soportados:
      *
+     * 👤 PERFIL (Clients + Suppliers):
+     * - profile (foto de perfil/avatar del usuario)
+     *
      * 🆔 IDENTIFICACIÓN (Clients + Suppliers):
      * - ine_front, ine_back, ine_selfie
      *
