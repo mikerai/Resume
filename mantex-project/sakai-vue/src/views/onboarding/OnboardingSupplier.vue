@@ -917,6 +917,93 @@ const saveSupplierData = async () => {
 
         console.log('✅ Datos del proveedor guardados exitosamente:', data);
 
+        // Obtener datos completos de SAT e INE para tabla suppliers
+        const { data: satData } = await supabase
+            .from('sat_verifications')
+            .select('rfc, ciec, verification_response, tax_status')
+            .eq('user_id', user.value.id)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .single();
+
+        const { data: ineData } = await supabase
+            .from('ine_verifications')
+            .select('verification_response')
+            .eq('user_id', user.value.id)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .single();
+
+        const { data: documents } = await supabase
+            .from('documents')
+            .select('document_type, file_url')
+            .eq('user_id', user.value.id)
+            .in('document_type', ['ine_front', 'ine_back', 'selfie'])
+            .order('created_at', { ascending: false });
+
+        // Extraer nombre de contacto del INE
+        const ineNormalized = ineData?.verification_response?.normalized || ineData?.verification_response?.ocr_data;
+        const contactPerson = ineNormalized ?
+            `${ineNormalized.nombre || ''} ${ineNormalized.apellidoPaterno || ''} ${ineNormalized.apellidoMaterno || ''}`.trim()
+            : null;
+
+        // Extraer razón social del SAT
+        const companyName = satData?.tax_status?.nombreRazonSocial ||
+                           satData?.verification_response?.rfc_name_validation?.normalized?.nombre ||
+                           satData?.verification_response?.sat_validation?.normalized?.nombre ||
+                           `Proveedor ${user.value.email}`;
+
+        // Obtener URLs de documentos
+        const ineFrontUrl = documents?.find(d => d.document_type === 'ine_front')?.file_url || null;
+        const ineBackUrl = documents?.find(d => d.document_type === 'ine_back')?.file_url || null;
+        const selfieUrl = documents?.find(d => d.document_type === 'selfie')?.file_url || null;
+
+        // Extraer score de similitud facial
+        const faceSimilarityScore = ineData?.verification_response?.normalized?.comparacionFacial?.similitud || null;
+
+        // Guardar en tabla suppliers
+        const supplierMainData = {
+            user_id: user.value.id,
+            company_name: companyName,
+            contact_person: contactPerson,
+            phone: user.value.phone || null,
+            email: user.value.email,
+            address: null, // Suppliers no proporcionan dirección en onboarding
+            city: null,
+            state: null,
+            postal_code: null,
+            rfc: satData?.rfc || null,
+            ciec_validated: satData?.ciec ? true : false,
+            ine_front_url: ineFrontUrl,
+            ine_back_url: ineBackUrl,
+            selfie_url: selfieUrl,
+            face_similarity_score: faceSimilarityScore,
+            status: 'pending', // Suppliers inician como pending, deben ser aprobados
+            specialties: JSON.stringify(specialtiesPickList.value[1].map(s => ({ name: s.name, code: s.code }))),
+            service_radius_km: parseInt(formData.value.serviceRadius) || 50,
+            max_concurrent_jobs: 5,
+            rating: 0.00,
+            total_jobs: 0,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+        };
+
+        const { data: supplierRecord, error: supplierError } = await supabase
+            .from('suppliers')
+            .upsert(supplierMainData, {
+                onConflict: 'user_id',
+                ignoreDuplicates: false
+            })
+            .select()
+            .single();
+
+        if (supplierError) {
+            console.error('Error al guardar en tabla suppliers:', supplierError);
+            // No lanzar error, la tabla supplier_profiles ya se guardó
+        } else {
+            console.log('Proveedor guardado en tabla suppliers exitosamente');
+        }
+
         // TODO: En producción, implementar subida de archivos a Supabase Storage
         if (formData.value.insuranceFiles.length > 0 ||
             formData.value.legalDocuments.length > 0 ||
@@ -1059,9 +1146,7 @@ const goToDashboardDummy = () => {
             <!-- Header with Logo and Actions -->
             <div class="w-full flex justify-between items-center mb-8">
                 <div class="flex items-center gap-4">
-                    <svg viewBox="0 0 54 40" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-12 w-auto">
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M17.1637 19.2467C17.1566 19.4033 17.1529 19.561 17.1529 19.7194C17.1529 25.3503 21.7203 29.915 27.3546 29.915C32.9887 29.915 37.5561 25.3503 37.5561 19.7194C37.5561 19.5572 37.5524 19.3959 37.5449 19.2355C38.5617 19.0801 39.5759 18.9013 40.5867 18.6994L40.6926 18.6782C40.7191 19.0218 40.7326 19.369 40.7326 19.7194C40.7326 27.1036 34.743 33.0896 27.3546 33.0896C19.966 33.0896 13.9765 27.1036 13.9765 19.7194C13.9765 19.374 13.9896 19.0316 14.0154 18.6927L14.0486 18.6994C15.0837 18.9062 16.1223 19.0886 17.1637 19.2467Z" fill="var(--primary-color)" />
-                    </svg>
+                    <img src="/demo/images/logo.png" alt="Mantex Logo" class="h-12 w-auto" />
                     <div>
                         <h1 class="text-3xl font-bold text-surface-900 dark:text-surface-0 m-0">{{ onboardingData.title }}</h1>
                         <p class="text-surface-600 dark:text-surface-200 m-0 mt-2">Hola, {{ userName }}. Completa tu configuración de proveedor</p>
