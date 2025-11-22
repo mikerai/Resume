@@ -2,37 +2,133 @@
     <div class="grid grid-cols-12 gap-6">
         <!-- Profile Information Card -->
         <div class="col-span-12 xl:col-span-4">
-            <div class="card">
-                <div class="font-semibold text-xl mb-4">Información del Perfil</div>
-                <div class="flex flex-col items-center mb-6">
-                    <Avatar :label="profile?.username?.charAt(0).toUpperCase()" class="mr-2" size="xlarge" shape="circle" />
-                    <div class="text-center mt-3">
-                        <div class="font-medium text-lg">{{ profile?.username || 'Admin' }}</div>
-                        <div class="text-muted-color">{{ adminProfile?.full_name || 'Administrador Principal' }}</div>
-                        <div class="text-sm text-muted-color">{{ user?.email }}</div>
+            <div class="card mb-0">
+                <!-- Header con gradiente -->
+                <div class="surface-ground border-round-top p-5 mb-4" :class="isFlynn ? 'flynn-header' : adminProfile?.is_super_admin ? 'bg-gradient-to-r from-purple-500 to-blue-500' : 'bg-gradient-to-r from-blue-500 to-cyan-500'">
+                    <div class="flex flex-col items-center">
+                        <!-- Avatar con indicador de Super Admin -->
+                        <div class="relative">
+                            <Avatar
+                                :label="profile?.username?.charAt(0).toUpperCase()"
+                                class="border-4 border-white shadow-lg"
+                                :class="isFlynn ? 'flynn-avatar' : adminProfile?.is_super_admin ? 'bg-yellow-500' : 'bg-blue-600'"
+                                size="xlarge"
+                                shape="circle"
+                                style="width: 7rem; height: 7rem; font-size: 2.5rem;"
+                            />
+                            <!-- Badge especial para FLYNN -->
+                            <div
+                                v-if="isFlynn"
+                                class="flynn-mode-badge absolute -bottom-2 left-1/2 transform -translate-x-1/2 px-3 py-1 border-round-lg flex align-items-center gap-1"
+                                style="font-size: 0.7rem; font-weight: 700;"
+                            >
+                                <i class="pi pi-bolt" style="font-size: 0.7rem;"></i>
+                                <span>FLYNN MODE</span>
+                            </div>
+                            <!-- Badge especial para Super Admin -->
+                            <div
+                                v-else-if="adminProfile?.is_super_admin"
+                                class="absolute -bottom-2 left-1/2 transform -translate-x-1/2 bg-yellow-400 text-gray-900 px-3 py-1 border-round-lg shadow-md flex align-items-center gap-1"
+                                style="font-size: 0.7rem; font-weight: 700;"
+                            >
+                                <i class="pi pi-star-fill" style="font-size: 0.7rem;"></i>
+                                <span>GOD MODE</span>
+                            </div>
+                        </div>
+                        <div class="text-center mt-4 text-white">
+                            <div class="font-bold text-2xl mb-1">{{ profile?.username || 'Admin' }}</div>
+                            <div class="text-lg opacity-90">{{ adminProfile?.full_name || 'Administrador Principal' }}</div>
+                            <div class="text-sm opacity-80 mt-1">{{ user?.email }}</div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="space-y-4">
-                    <div class="field">
-                        <label class="font-medium text-sm">Departamento:</label>
-                        <p class="text-muted-color">{{ adminProfile?.department || 'Operations' }}</p>
-                    </div>
-                    <div class="field">
-                        <label class="font-medium text-sm">Estado:</label>
-                        <Tag :value="adminProfile?.status || 'active'" :severity="adminProfile?.status === 'active' ? 'success' : 'warn'" />
-                    </div>
-                    <div class="field">
-                        <label class="font-medium text-sm">Super Admin:</label>
-                        <Tag :value="adminProfile?.is_super_admin ? 'Sí' : 'No'" :severity="adminProfile?.is_super_admin ? 'info' : 'secondary'" />
-                    </div>
-                </div>
+                <!-- Información del perfil -->
+                <div class="px-5 pb-5">
+                    <div class="grid">
+                        <!-- Departamento - Row 1 (centered) -->
+                        <div class="col-12 mb-3">
+                            <div class="surface-100 border-round p-3 text-center">
+                                <div class="text-600 font-medium mb-2">
+                                    <i class="pi pi-briefcase mr-2"></i>
+                                    Departamento
+                                </div>
+                                <div class="text-900 font-semibold text-lg">
+                                    {{ getDepartmentLabel(adminProfile?.department) || 'Operations' }}
+                                </div>
+                            </div>
+                        </div>
 
-                <Divider />
+                        <!-- Estado y Privilegios - Row 2 (symmetrical) -->
+                        <div class="col-6">
+                            <div class="surface-100 border-round p-3">
+                                <div class="text-600 font-medium mb-2">
+                                    <i class="pi pi-check-circle mr-2"></i>
+                                    Estado
+                                </div>
+                                <Tag
+                                    :value="getStatusLabel(adminProfile?.status)"
+                                    :severity="adminProfile?.status === 'active' ? 'success' : 'warn'"
+                                    class="font-semibold"
+                                />
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="surface-100 border-round p-3">
+                                <div class="text-600 font-medium mb-2">
+                                    <i class="pi pi-shield mr-2"></i>
+                                    Privilegios
+                                </div>
+                                <div class="flex flex-wrap gap-1">
+                                    <!-- FLYNN Badge (solo para Mike) -->
+                                    <Tag
+                                        v-if="isFlynn"
+                                        value="FLYNN!"
+                                        severity="contrast"
+                                        class="font-bold flynn-tag"
+                                    >
+                                        <i class="pi pi-bolt mr-1"></i>
+                                    </Tag>
+                                    <!-- GOD Badge (Super Admin) -->
+                                    <Tag
+                                        v-if="adminProfile?.is_super_admin"
+                                        value="GOD"
+                                        severity="warning"
+                                        class="font-semibold"
+                                    >
+                                        <i class="pi pi-star-fill mr-1"></i>
+                                    </Tag>
+                                    <!-- Admin Badge -->
+                                    <Tag
+                                        value="Admin"
+                                        severity="info"
+                                        class="font-semibold"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-                <div class="space-y-2">
-                    <Button label="Cambiar Contraseña" icon="pi pi-key" severity="secondary" text class="w-full justify-start" @click="showPasswordDialog = true" />
-                    <Button label="Editar Perfil" icon="pi pi-user-edit" severity="secondary" text class="w-full justify-start" @click="editAdminProfile" />
+                    <Divider />
+
+                    <div class="flex flex-column gap-2">
+                        <Button
+                            label="Cambiar Contraseña"
+                            icon="pi pi-key"
+                            severity="secondary"
+                            outlined
+                            class="w-full"
+                            @click="showPasswordDialog = true"
+                        />
+                        <Button
+                            label="Editar Perfil"
+                            icon="pi pi-user-edit"
+                            severity="info"
+                            outlined
+                            class="w-full"
+                            @click="editAdminProfile"
+                        />
+                    </div>
                 </div>
             </div>
         </div>
@@ -538,6 +634,25 @@ const getStatusSeverity = (status) => {
     }
 };
 
+const getStatusLabel = (status) => {
+    switch (status) {
+        case 'active': return 'Activo';
+        case 'inactive': return 'Inactivo';
+        case 'suspended': return 'Suspendido';
+        default: return status;
+    }
+};
+
+const getDepartmentLabel = (department) => {
+    const dept = departments.value.find(d => d.value === department);
+    return dept ? dept.label : department;
+};
+
+// FLYNN mode - exclusivo para Flynn
+const isFlynn = computed(() => {
+    return user.value?.email?.toLowerCase() === 'm@511.mx';
+});
+
 // Navigation functions
 const navigateToSupplierApproval = () => router.push('/admin/suppliers-approval');
 const navigateToTickets = () => router.push('/admin/tickets');
@@ -550,3 +665,30 @@ onMounted(async () => {
     await loadAdmins();
 });
 </script>
+
+<style scoped>
+/* 🌌 FLYNN MODE - TRON AESTHETIC */
+.flynn-header {
+    background: rgba(0, 20, 40, 0.95) !important;
+    border: 1px solid #00d4ff !important;
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.3) !important;
+}
+
+.flynn-avatar {
+    background: linear-gradient(45deg, #00d4ff, #0099cc) !important;
+    color: #000 !important;
+}
+
+.flynn-mode-badge {
+    background: rgba(0, 20, 40, 0.95);
+    border: 1px solid #00d4ff;
+    color: #00d4ff !important;
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+}
+
+.flynn-tag {
+    background: linear-gradient(45deg, #00d4ff, #0099cc) !important;
+    color: #000 !important;
+    border: 1px solid #00d4ff !important;
+}
+</style>

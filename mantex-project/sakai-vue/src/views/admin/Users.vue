@@ -38,32 +38,57 @@
                 </template>
 
                 <Column selectionMode="multiple" style="width: 3rem" :exportable="false"></Column>
-                <Column field="username" header="Usuario" sortable style="min-width: 14rem"></Column>
-                <Column field="email" header="Email" sortable style="min-width: 16rem"></Column>
+                <Column field="full_name" header="Nombre" sortable style="min-width: 16rem">
+                    <template #body="slotProps">
+                        <div>
+                            <div class="font-medium">{{ slotProps.data.full_name || 'Sin nombre' }}</div>
+                            <div class="text-sm text-500">{{ slotProps.data.email }}</div>
+                        </div>
+                    </template>
+                </Column>
                 <Column field="role" header="Rol" sortable style="min-width: 10rem">
                     <template #body="slotProps">
-                        <Tag :value="slotProps.data.role" :severity="getRoleSeverity(slotProps.data.role)" />
+                        <Tag :value="getRoleLabel(slotProps.data.role)" :severity="getRoleSeverity(slotProps.data.role)" />
                     </template>
                 </Column>
-                <Column field="status" header="Estado" sortable style="min-width: 10rem">
+                <Column field="phone" header="Teléfono" sortable style="min-width: 12rem">
                     <template #body="slotProps">
-                        <Tag :value="slotProps.data.status" :severity="getStatusSeverity(slotProps.data.status)" />
+                        <div class="text-sm">{{ slotProps.data.phone || 'Sin teléfono' }}</div>
                     </template>
                 </Column>
-                <Column field="lastLogin" header="Último acceso" sortable style="min-width: 12rem">
+                <Column field="onboarding_status" header="Onboarding" sortable style="min-width: 12rem">
                     <template #body="slotProps">
-                        <div class="text-sm">{{ formatDate(slotProps.data.lastLogin) }}</div>
+                        <Tag
+                            :value="getOnboardingLabel(slotProps.data.onboarding_complete)"
+                            :severity="slotProps.data.onboarding_complete ? 'success' : 'warning'"
+                        />
                     </template>
                 </Column>
-                <Column field="createdAt" header="Creado" sortable style="min-width: 12rem">
+                <Column field="profile_status" header="Estado" sortable style="min-width: 10rem">
                     <template #body="slotProps">
-                        <div class="text-sm">{{ formatDate(slotProps.data.createdAt) }}</div>
+                        <Tag
+                            :value="getProfileStatusLabel(slotProps.data.profile_status)"
+                            :severity="getProfileStatusSeverity(slotProps.data.profile_status)"
+                        />
+                    </template>
+                </Column>
+                <Column field="created_at" header="Registro" sortable style="min-width: 12rem">
+                    <template #body="slotProps">
+                        <div class="text-sm">{{ formatDate(slotProps.data.created_at) }}</div>
                     </template>
                 </Column>
                 <Column :exportable="false" style="min-width: 12rem">
                     <template #body="slotProps">
-                        <Button icon="pi pi-pencil" severity="info" text rounded @click="editUser(slotProps.data)" class="mr-2" />
-                        <Button icon="pi pi-trash" severity="danger" text rounded @click="confirmDeleteUser(slotProps.data)" />
+                        <Button icon="pi pi-eye" severity="info" text rounded @click="viewUser(slotProps.data)" class="mr-2" v-tooltip="'Ver detalles'" />
+                        <Button
+                            v-if="slotProps.data.role !== 'admin'"
+                            icon="pi pi-ban"
+                            severity="danger"
+                            text
+                            rounded
+                            @click="confirmSuspendUser(slotProps.data)"
+                            v-tooltip="'Suspender'"
+                        />
                     </template>
                 </Column>
             </DataTable>
@@ -150,6 +175,7 @@
 import { FilterMatchMode } from '@primevue/core/api';
 import { useToast } from 'primevue/usetoast';
 import { onMounted, ref } from 'vue';
+import { supabase } from '@/lib/supabaseClient';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Button from 'primevue/button';
@@ -209,6 +235,15 @@ function formatDate(date) {
     });
 }
 
+function getRoleLabel(role) {
+    switch (role) {
+        case 'admin': return 'Administrador';
+        case 'supplier': return 'Proveedor';
+        case 'client': return 'Cliente';
+        default: return role;
+    }
+}
+
 function getRoleSeverity(role) {
     switch (role) {
         case 'admin': return 'danger';
@@ -218,12 +253,40 @@ function getRoleSeverity(role) {
     }
 }
 
-function getStatusSeverity(status) {
+function getOnboardingLabel(isComplete) {
+    return isComplete ? 'Completo' : 'Pendiente';
+}
+
+function getProfileStatusLabel(status) {
+    if (!status) return 'Sin perfil';
     switch (status) {
-        case 'active': return 'success';
-        case 'inactive': return 'warn';
-        case 'suspended': return 'danger';
-        default: return 'info';
+        case 'draft': return 'Borrador';
+        case 'submitted': return 'Enviado';
+        case 'under_review': return 'En revisión';
+        case 'approved': return 'Aprobado';
+        case 'rejected': return 'Rechazado';
+        case 'suspended': return 'Suspendido';
+        case 'active': return 'Activo';
+        default: return status;
+    }
+}
+
+function getProfileStatusSeverity(status) {
+    if (!status) return 'secondary';
+    switch (status) {
+        case 'approved':
+        case 'active':
+            return 'success';
+        case 'submitted':
+        case 'under_review':
+            return 'info';
+        case 'draft':
+            return 'warning';
+        case 'rejected':
+        case 'suspended':
+            return 'danger';
+        default:
+            return 'secondary';
     }
 }
 
@@ -313,55 +376,142 @@ function createId() {
     return id;
 }
 
-// Load mock data
-const loadMockData = () => {
-    const mockUsers = [
-        {
-            id: 'USR001',
-            username: 'admin',
-            email: 'admin@mantex.com',
-            role: 'admin',
-            status: 'active',
-            createdAt: new Date('2024-01-01T10:00:00Z'),
-            lastLogin: new Date('2024-01-15T14:30:00Z'),
-            permissions: ['manage_users', 'manage_tickets', 'view_analytics', 'manage_suppliers', 'manage_assets']
-        },
-        {
-            id: 'USR002',
-            username: 'juanperez',
-            email: 'juan.perez@email.com',
-            role: 'supplier',
-            status: 'active',
-            createdAt: new Date('2024-01-10T08:15:00Z'),
-            lastLogin: new Date('2024-01-14T16:45:00Z'),
-            permissions: ['manage_tickets']
-        },
-        {
-            id: 'USR003',
-            username: 'mariagarcia',
-            email: 'maria.garcia@empresa.com',
-            role: 'client',
-            status: 'active',
-            createdAt: new Date('2024-01-12T11:30:00Z'),
-            lastLogin: new Date('2024-01-13T09:20:00Z'),
-            permissions: ['view_analytics']
-        },
-        {
-            id: 'USR004',
-            username: 'carloslopez',
-            email: 'carlos.lopez@email.com',
-            role: 'supplier',
-            status: 'inactive',
-            createdAt: new Date('2024-01-05T15:20:00Z'),
-            lastLogin: new Date('2024-01-10T12:15:00Z'),
-            permissions: []
+// Load all users from Supabase
+const loadUsers = async () => {
+    loading.value = true;
+    try {
+        console.log('Cargando todos los usuarios de la plataforma...');
+
+        // Get all client profiles
+        const { data: clientProfiles, error: clientError } = await supabase
+            .from('client_profiles')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (clientError) throw clientError;
+
+        // Get all supplier profiles
+        const { data: supplierProfiles, error: supplierError } = await supabase
+            .from('supplier_profiles')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (supplierError) throw supplierError;
+
+        // Get all admins
+        const { data: adminProfiles, error: adminError } = await supabase
+            .from('admins')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (adminError) throw adminError;
+
+        console.log(`Clients: ${clientProfiles?.length || 0}, Suppliers: ${supplierProfiles?.length || 0}, Admins: ${adminProfiles?.length || 0}`);
+
+        // Combine all profiles into users array
+        const combinedUsers = [];
+
+        // Add clients
+        if (clientProfiles) {
+            clientProfiles.forEach(profile => {
+                combinedUsers.push({
+                    id: profile.user_id,
+                    email: profile.email || 'Sin email',
+                    role: 'client',
+                    full_name: profile.full_name,
+                    phone: profile.phone_number,
+                    onboarding_complete: profile.onboarding_complete,
+                    profile_status: profile.status,
+                    created_at: profile.created_at,
+                    last_sign_in_at: null,
+                    profile: profile
+                });
+            });
         }
-    ];
-    users.value = mockUsers;
+
+        // Add suppliers
+        if (supplierProfiles) {
+            supplierProfiles.forEach(profile => {
+                combinedUsers.push({
+                    id: profile.user_id,
+                    email: profile.email || 'Sin email',
+                    role: 'supplier',
+                    full_name: profile.contact_person,
+                    phone: profile.phone_number,
+                    onboarding_complete: profile.onboarding_complete,
+                    profile_status: profile.status,
+                    created_at: profile.created_at,
+                    last_sign_in_at: null,
+                    profile: profile
+                });
+            });
+        }
+
+        // Add admins
+        if (adminProfiles) {
+            adminProfiles.forEach(profile => {
+                combinedUsers.push({
+                    id: profile.user_id,
+                    email: profile.email || 'Sin email',
+                    role: 'admin',
+                    full_name: profile.full_name || 'Administrador',
+                    phone: null,
+                    onboarding_complete: true,
+                    profile_status: profile.status || 'active',
+                    created_at: profile.created_at,
+                    last_sign_in_at: null,
+                    profile: profile
+                });
+            });
+        }
+
+        // Sort by created_at desc
+        combinedUsers.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+        users.value = combinedUsers;
+
+        console.log('Usuarios cargados y combinados exitosamente');
+        console.log('Desglose por rol:', {
+            admins: combinedUsers.filter(u => u.role === 'admin').length,
+            clients: combinedUsers.filter(u => u.role === 'client').length,
+            suppliers: combinedUsers.filter(u => u.role === 'supplier').length
+        });
+
+    } catch (error) {
+        console.error('Error cargando usuarios:', error);
+        toast.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'No se pudieron cargar los usuarios',
+            life: 3000
+        });
+    } finally {
+        loading.value = false;
+    }
 };
 
+function viewUser(userData) {
+    console.log('Ver detalles de usuario:', userData);
+    toast.add({
+        severity: 'info',
+        summary: 'Detalles',
+        detail: `Ver detalles de ${userData.full_name}`,
+        life: 2000
+    });
+}
+
+function confirmSuspendUser(userData) {
+    console.log('Suspender usuario:', userData);
+    toast.add({
+        severity: 'warn',
+        summary: 'Suspender',
+        detail: `Funcionalidad de suspensión para ${userData.full_name} en desarrollo`,
+        life: 3000
+    });
+}
+
 onMounted(() => {
-    loadMockData();
+    loadUsers();
 });
 </script>
 

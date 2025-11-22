@@ -184,7 +184,7 @@
                         <h6 class="text-900 mb-3">Información de la Empresa</h6>
                         <div class="mb-3">
                             <label class="block text-600 mb-1">Empresa:</label>
-                            <p class="text-900 font-medium m-0">{{ selectedSupplier.company_name }}</p>
+                            <p class="text-900 font-medium m-0">{{ selectedSupplier.sat_data?.sat_validation?.rfc_name?.nombre || 'Razón social no encontrada, favor de verificar' }}</p>
                         </div>
                         <div class="mb-3">
                             <label class="block text-600 mb-1">RFC:</label>
@@ -287,8 +287,8 @@
                     <h6 class="text-900 mb-3">Listas de Bloqueo (PLD)</h6>
                     <div class="grid">
                         <div class="col-12 md:col-6">
-                            <label class="block text-600 mb-1">Identificador (CURP):</label>
-                            <p class="text-900 font-medium m-0">{{ selectedSupplier.sat_data.blacklist_results.normalized?.rfc || 'N/A' }}</p>
+                            <label class="block text-600 mb-1">Identificador (RFC):</label>
+                            <p class="text-900 font-medium m-0">{{ selectedSupplier.sat_data.blacklist_results?.[0]?.rfc || 'N/A' }}</p>
                         </div>
                         <div class="col-12 md:col-6">
                             <label class="block text-600 mb-1">En Lista Bloqueada:</label>
@@ -300,7 +300,20 @@
                         </div>
                         <div class="col-12">
                             <label class="block text-600 mb-1">Resumen:</label>
-                            <p class="text-900 m-0">{{ selectedSupplier.sat_data.blacklist_results.normalized?.resumen || 'N/A' }}</p>
+                            <div class="flex gap-2">
+                                <Tag
+                                    :value="`Presunto: ${selectedSupplier.sat_data.blacklist_results?.[0]?.esPresunto ? 'SÍ' : 'NO'}`"
+                                    :severity="selectedSupplier.sat_data.blacklist_results?.[0]?.esPresunto ? 'warning' : 'secondary'"
+                                />
+                                <Tag
+                                    :value="`Lista Negra: ${selectedSupplier.sat_data.blacklist_results?.[0]?.enListaNegra ? 'SÍ' : 'NO'}`"
+                                    :severity="selectedSupplier.sat_data.blacklist_results?.[0]?.enListaNegra ? 'danger' : 'secondary'"
+                                />
+                                <Tag
+                                    :value="`Definitivo: ${selectedSupplier.sat_data.blacklist_results?.[0]?.esDefinitivo ? 'SÍ' : 'NO'}`"
+                                    :severity="selectedSupplier.sat_data.blacklist_results?.[0]?.esDefinitivo ? 'danger' : 'secondary'"
+                                />
+                            </div>
                         </div>
                         <div class="col-12">
                             <label class="block text-600 mb-1">Mensaje:</label>
@@ -348,7 +361,7 @@
                     <div class="grid">
                         <div class="col-12 md:col-6">
                             <label class="block text-600 mb-1">RFC:</label>
-                            <p class="text-900 font-medium m-0">{{ selectedSupplier.sat_data.sat_validation.rfc.RFC || 'N/A' }}</p>
+                            <p class="text-900 font-medium m-0">{{ selectedSupplier.sat_data.sat_validation.rfc.rfc || 'N/A' }}</p>
                         </div>
                         <div class="col-12 md:col-6">
                             <label class="block text-600 mb-1">Tipo de Persona:</label>
