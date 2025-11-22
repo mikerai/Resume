@@ -465,7 +465,7 @@ const processINEValidationAsync = async (frontBase64, backBase64, selfieBase64, 
 
             toast.add({
                 severity: 'success',
-                summary: '✅ INE Validado',
+                summary: 'INE Validado',
                 detail: 'Identidad verificada exitosamente',
                 life: 4000
             });
@@ -477,7 +477,7 @@ const processINEValidationAsync = async (frontBase64, backBase64, selfieBase64, 
 
             toast.add({
                 severity: 'error',
-                summary: '❌ Validación INE Falló',
+                summary: 'Validación INE Falló',
                 detail: ineValidation.error || 'Error en la validación',
                 life: 6000
             });
@@ -608,7 +608,7 @@ const processSATValidationAsync = async () => {
 
             toast.add({
                 severity: 'error',
-                summary: '❌ Validación SAT Falló',
+                summary: 'Validación SAT Falló',
                 detail: satValidation.error || 'Error en la validación',
                 life: 6000
             });
@@ -775,7 +775,7 @@ const processDocumentUploads = async () => {
         if (allUploads.length > 0) {
             toast.add({
                 severity: 'success',
-                summary: '✅ Documentos Subidos',
+                summary: 'Documentos Subidos',
                 detail: `${allUploads.length} documentos subidos y guardados exitosamente`,
                 life: 4000
             });
@@ -1531,7 +1531,7 @@ const goToDashboardDummy = () => {
                                             </div>
                                             <div class="col-span-6 md:col-span-3">
                                                 <strong>Lista Nominal:</strong><br>
-                                                {{ formData.biometryResults.listaNominal?.valido ? '✅ Válido' : '❌ Inválido' }}
+                                                {{ formData.biometryResults.listaNominal?.valido ? 'Válido' : 'Inválido' }}
                                             </div>
                                         </div>
                                     </div>
@@ -1552,11 +1552,11 @@ const goToDashboardDummy = () => {
                                             </div>
                                             <div class="col-span-6 md:col-span-3">
                                                 <strong>Estado RFC:</strong><br>
-                                                {{ formData.satValidationResults.rfc?.valido ? '✅ Activo' : '❌ Inactivo' }}
+                                                {{ formData.satValidationResults.rfc?.valido ? 'Activo' : 'Inactivo' }}
                                             </div>
                                             <div class="col-span-12 md:col-span-6">
                                                 <strong>Validación CIEC:</strong><br>
-                                                {{ formData.satValidationResults.ciec ? '✅ Verificada' : 'En proceso...' }}
+                                                {{ formData.satValidationResults.ciec ? 'Verificada' : 'En proceso...' }}
                                             </div>
                                         </div>
                                     </div>
