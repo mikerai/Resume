@@ -871,6 +871,29 @@ const saveSupplierData = async () => {
         // Importar supabase aquí para evitar problemas de dependencias
         const { supabase } = await import('@/lib/supabaseClient.js');
 
+        // PRIMERO obtener las URLs de los documentos antes de guardar
+        const { data: documents } = await supabase
+            .from('documents')
+            .select('document_type, file_url')
+            .eq('user_id', user.value.id)
+            .in('document_type', ['ine_front', 'ine_back', 'ine_selfie'])
+            .order('created_at', { ascending: false });
+
+        // Obtener URLs de documentos
+        const ineFrontUrl = documents?.find(d => d.document_type === 'ine_front')?.file_url || null;
+        const ineBackUrl = documents?.find(d => d.document_type === 'ine_back')?.file_url || null;
+        const selfieUrl = documents?.find(d => d.document_type === 'ine_selfie')?.file_url || null;
+
+        // Extraer dirección del INE validation
+        const legalAddress = formData.value.ineData?.normalized?.domicilio ||
+                           formData.value.ineData?.ocr_data?.domicilio ||
+                           'Pendiente';
+
+        // Extraer score de similitud facial
+        const faceSimilarityScore = formData.value.biometryResults?.comparacionFacial?.similitudPorcentaje ||
+                                   formData.value.biometryResults?.comparacionFacial?.similitud ||
+                                   null;
+
         // Preparar datos para guardar en la tabla supplier_profiles (schema: client-supplier-profiles.sql)
         const supplierData = {
             user_id: user.value.id,
@@ -880,7 +903,7 @@ const saveSupplierData = async () => {
             company_name: formData.value.biometryResults?.nombreCompleto || 'Pending Validation',
             rfc: formData.value.rfc.toUpperCase(),
             sat_password_encrypted: formData.value.ciecPassword ? btoa(formData.value.ciecPassword) : '', // Campo requerido
-            legal_address: 'Pendiente', // TODO: Agregar campo en UI
+            legal_address: legalAddress,
 
             // Step 2: Información de Contacto
             contact_person: formData.value.biometryResults?.nombreCompleto || 'Pending',
@@ -894,13 +917,13 @@ const saveSupplierData = async () => {
             team_size: 1, // Por defecto
             certifications: [],
 
-            // Step 5: Documentación (URLs)
-            ine_front_url: null, // Se guarda por separado en documents
-            ine_back_url: null,
-            selfie_url: null,
+            // Step 5: Documentación (URLs) - AHORA CON URLS REALES
+            ine_front_url: ineFrontUrl,
+            ine_back_url: ineBackUrl,
+            selfie_url: selfieUrl,
 
             // Datos de Validación y Status
-            face_similarity_score: formData.value.biometryResults?.similarityScore || null,
+            face_similarity_score: faceSimilarityScore,
             ciec_validated: formData.value.ciecPassword ? true : false,
             documents_validated: false,
             status: 'submitted', // Cambiar de 'draft' a 'submitted' al completar
@@ -952,13 +975,6 @@ const saveSupplierData = async () => {
             .limit(1)
             .single();
 
-        const { data: documents } = await supabase
-            .from('documents')
-            .select('document_type, file_url')
-            .eq('user_id', user.value.id)
-            .in('document_type', ['ine_front', 'ine_back', 'selfie'])
-            .order('created_at', { ascending: false });
-
         // Extraer nombre de contacto del INE
         const ineNormalized = ineData?.verification_response?.normalized || ineData?.verification_response?.ocr_data;
         const contactPerson = ineNormalized ?
@@ -971,10 +987,7 @@ const saveSupplierData = async () => {
                            satData?.verification_response?.sat_validation?.normalized?.nombre ||
                            `Proveedor ${user.value.email}`;
 
-        // Obtener URLs de documentos
-        const ineFrontUrl = documents?.find(d => d.document_type === 'ine_front')?.file_url || null;
-        const ineBackUrl = documents?.find(d => d.document_type === 'ine_back')?.file_url || null;
-        const selfieUrl = documents?.find(d => d.document_type === 'selfie')?.file_url || null;
+        // URLs ya extraídas arriba, solo usar las variables existentes
 
         // Extraer score de similitud facial
         const faceSimilarityScore = ineData?.verification_response?.normalized?.comparacionFacial?.similitud || null;

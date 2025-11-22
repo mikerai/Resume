@@ -204,11 +204,11 @@
                 <h6>Ubicación y Servicios</h6>
                 <div class="field">
                     <label>Dirección:</label>
-                    <p>{{ selectedSupplier.legal_address || 'Sin dirección' }}</p>
+                    <p>{{ selectedSupplier.sat_data?.ine_validation?.normalized?.domicilio || selectedSupplier.legal_address || 'Sin dirección' }}</p>
                 </div>
                 <div class="field">
                     <label>Radio de Servicio:</label>
-                    <p>{{ selectedSupplier.service_radius_km }} km</p>
+                    <p>{{ selectedSupplier.sat_data?.service_radius_km || selectedSupplier.service_radius_km || 'N/A' }} km</p>
                 </div>
                 <div class="field">
                     <label>Especialidades:</label>
@@ -248,170 +248,134 @@
 
             <!-- Verification Data Section -->
             <div class="col-12" v-if="selectedSupplier.sat_data">
-                <h6>Resultados de Verificaciones Nubarium</h6>
+                <h6 class="mt-4 mb-3">Resultados de Verificaciones Nubarium</h6>
 
-                <!-- INE Validation -->
-                <div v-if="selectedSupplier.sat_data?.ine_validation" class="mb-4 p-3 border-round surface-border" style="border: 1px solid var(--surface-border);">
-                    <h6 class="text-primary mb-2">Validación INE</h6>
+                <!-- Blocklist / PLD Results -->
+                <div v-if="selectedSupplier.sat_data?.blacklist_results" class="mb-3 p-3 surface-card border-round">
+                    <h6 class="text-900 mb-3">Listas de Bloqueo (PLD)</h6>
                     <div class="grid">
-                        <div class="col-12 md:col-6">
-                            <div class="field">
-                                <label>Nombre Completo:</label>
-                                <p class="font-medium">{{ selectedSupplier.sat_data.ine_validation.normalized?.nombreCompleto || 'N/A' }}</p>
-                            </div>
-                            <div class="field">
-                                <label>CURP:</label>
-                                <p class="font-medium">{{ selectedSupplier.sat_data.ine_validation.normalized?.curp || 'N/A' }}</p>
-                            </div>
+                        <div class="col-12 md:col-3">
+                            <label class="block text-600 mb-2">Identificador (CURP):</label>
+                            <p class="text-900 font-medium">{{ selectedSupplier.sat_data.blacklist_results.normalized?.rfc || 'N/A' }}</p>
+                        </div>
+                        <div class="col-12 md:col-3">
+                            <label class="block text-600 mb-2">En Lista Bloqueada:</label>
+                            <Tag
+                                :value="selectedSupplier.sat_data.blacklist_results.normalized?.enAlgunListaBloqueada ? 'SÍ' : 'NO'"
+                                :severity="selectedSupplier.sat_data.blacklist_results.normalized?.enAlgunListaBloqueada ? 'danger' : 'success'"
+                                class="font-bold"
+                            />
                         </div>
                         <div class="col-12 md:col-6">
-                            <div class="field">
-                                <label>Fecha de Nacimiento:</label>
-                                <p>{{ selectedSupplier.sat_data.ine_validation.normalized?.fechaNacimiento || 'N/A' }}</p>
-                            </div>
-                            <div class="field">
-                                <label>Domicilio:</label>
-                                <p>{{ selectedSupplier.sat_data.ine_validation.normalized?.domicilio || 'N/A' }}</p>
-                            </div>
+                            <label class="block text-600 mb-2">Resumen:</label>
+                            <p class="text-900">{{ selectedSupplier.sat_data.blacklist_results.normalized?.resumen || 'N/A' }}</p>
+                        </div>
+                        <div class="col-12">
+                            <label class="block text-600 mb-2">Mensaje:</label>
+                            <p class="text-900">{{ selectedSupplier.sat_data.blacklist_results.normalized?.mensaje || 'Sin detalles' }}</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Biometry Results -->
-                <div v-if="selectedSupplier.sat_data?.biometry_results" class="mb-4 p-3 border-round surface-border" style="border: 1px solid var(--surface-border);">
-                    <h6 class="text-primary mb-2">Verificación Biométrica</h6>
+                <div v-if="selectedSupplier.sat_data?.biometry_results?.comparacionFacial" class="mb-3 p-3 surface-card border-round">
+                    <h6 class="text-900 mb-3">Verificación Biométrica</h6>
                     <div class="grid">
-                        <div class="col-12 md:col-4">
-                            <div class="field">
-                                <label>Similitud Facial:</label>
-                                <p class="font-medium">
-                                    <Tag
-                                        :value="`${selectedSupplier.sat_data.biometry_results.similarityScore || 0}%`"
-                                        :severity="(selectedSupplier.sat_data.biometry_results.similarityScore || 0) >= 80 ? 'success' : 'warning'"
-                                    />
-                                </p>
-                            </div>
+                        <div class="col-12 md:col-3">
+                            <label class="block text-600 mb-2">Similitud Facial:</label>
+                            <Tag
+                                :value="`${selectedSupplier.sat_data.biometry_results.comparacionFacial.similitudPorcentaje || selectedSupplier.sat_data.biometry_results.comparacionFacial.similitud || 0}%`"
+                                :severity="(selectedSupplier.sat_data.biometry_results.comparacionFacial.similitudPorcentaje || selectedSupplier.sat_data.biometry_results.comparacionFacial.similitud || 0) >= 80 ? 'success' : 'warning'"
+                                class="font-bold text-lg"
+                            />
                         </div>
-                        <div class="col-12 md:col-4">
-                            <div class="field">
-                                <label>Prueba de Vida:</label>
-                                <p>
-                                    <Tag
-                                        :value="selectedSupplier.sat_data.biometry_results.livenessCheck ? 'Aprobada' : 'Rechazada'"
-                                        :severity="selectedSupplier.sat_data.biometry_results.livenessCheck ? 'success' : 'danger'"
-                                    />
-                                </p>
-                            </div>
+                        <div class="col-12 md:col-3">
+                            <label class="block text-600 mb-2">Válido:</label>
+                            <Tag
+                                :value="selectedSupplier.sat_data.biometry_results.comparacionFacial.valido ? 'SÍ' : 'NO'"
+                                :severity="selectedSupplier.sat_data.biometry_results.comparacionFacial.valido ? 'success' : 'danger'"
+                            />
                         </div>
-                        <div class="col-12 md:col-4">
-                            <div class="field">
-                                <label>Detección de Spoofing:</label>
-                                <p>
-                                    <Tag
-                                        :value="selectedSupplier.sat_data.biometry_results.spoofingDetected ? 'Detectado' : 'Sin Spoofing'"
-                                        :severity="selectedSupplier.sat_data.biometry_results.spoofingDetected ? 'danger' : 'success'"
-                                    />
-                                </p>
-                            </div>
+                        <div class="col-12 md:col-3">
+                            <label class="block text-600 mb-2">Pasa Límite:</label>
+                            <Tag
+                                :value="selectedSupplier.sat_data.biometry_results.comparacionFacial.pasaLimite ? 'SÍ' : 'NO'"
+                                :severity="selectedSupplier.sat_data.biometry_results.comparacionFacial.pasaLimite ? 'success' : 'danger'"
+                            />
                         </div>
-                    </div>
-                </div>
-
-                <!-- Blocklist / PLD Results -->
-                <div v-if="selectedSupplier.sat_data?.blacklist_results" class="mb-4 p-3 border-round surface-border" style="border: 1px solid var(--surface-border);">
-                    <h6 class="text-primary mb-2">Resultados de Listas de Bloqueo (PLD)</h6>
-                    <div class="grid">
-                        <div class="col-12 md:col-6">
-                            <div class="field">
-                                <label>Estado en Lista Negra:</label>
-                                <p>
-                                    <Tag
-                                        :value="selectedSupplier.sat_data.blacklist_results.normalized?.enListaNegra ? 'EN LISTA NEGRA' : 'Limpio'"
-                                        :severity="selectedSupplier.sat_data.blacklist_results.normalized?.enListaNegra ? 'danger' : 'success'"
-                                        class="font-bold"
-                                    />
-                                </p>
-                            </div>
-                        </div>
-                        <div class="col-12 md:col-6">
-                            <div class="field">
-                                <label>Tipo de Consulta:</label>
-                                <p>{{ selectedSupplier.sat_data.blacklist_results.normalized?.tipoConsulta || 'N/A' }}</p>
-                            </div>
-                        </div>
-                        <div class="col-12" v-if="selectedSupplier.sat_data.blacklist_results.normalized?.mensaje">
-                            <div class="field">
-                                <label>Detalles:</label>
-                                <p class="text-sm">{{ selectedSupplier.sat_data.blacklist_results.normalized.mensaje }}</p>
-                            </div>
+                        <div class="col-12 md:col-3">
+                            <label class="block text-600 mb-2">Mensaje:</label>
+                            <p class="text-900">{{ selectedSupplier.sat_data.biometry_results.comparacionFacial.mensaje || 'N/A' }}</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- SAT Validation -->
-                <div v-if="selectedSupplier.sat_data?.sat_validation" class="mb-4 p-3 border-round surface-border" style="border: 1px solid var(--surface-border);">
-                    <h6 class="text-primary mb-2">Validación SAT</h6>
+                <div v-if="selectedSupplier.sat_data?.sat_validation?.rfc" class="mb-3 p-3 surface-card border-round">
+                    <h6 class="text-900 mb-3">Validación SAT</h6>
                     <div class="grid">
-                        <div class="col-12 md:col-6">
-                            <div class="field">
-                                <label>RFC Validado:</label>
-                                <p class="font-medium">{{ selectedSupplier.sat_data.sat_validation.normalized?.rfc || selectedSupplier.rfc }}</p>
-                            </div>
-                            <div class="field">
-                                <label>Razón Social:</label>
-                                <p>{{ selectedSupplier.sat_data.sat_validation.normalized?.razonSocial || 'N/A' }}</p>
-                            </div>
+                        <div class="col-12 md:col-4">
+                            <label class="block text-600 mb-2">RFC:</label>
+                            <p class="text-900 font-medium">{{ selectedSupplier.sat_data.sat_validation.rfc.RFC || 'N/A' }}</p>
                         </div>
-                        <div class="col-12 md:col-6">
-                            <div class="field">
-                                <label>Régimen Fiscal:</label>
-                                <p>{{ selectedSupplier.sat_data.sat_validation.normalized?.regimenFiscal || 'N/A' }}</p>
-                            </div>
-                            <div class="field">
-                                <label>Estado SAT:</label>
-                                <p>
-                                    <Tag
-                                        :value="selectedSupplier.sat_data.sat_validation.normalized?.estadoSAT || 'Desconocido'"
-                                        :severity="selectedSupplier.sat_data.sat_validation.normalized?.estadoSAT === 'Activo' ? 'success' : 'warning'"
-                                    />
-                                </p>
-                            </div>
+                        <div class="col-12 md:col-4">
+                            <label class="block text-600 mb-2">Tipo de Persona:</label>
+                            <p class="text-900">{{ selectedSupplier.sat_data.sat_validation.rfc.tipoPersona || 'N/A' }}</p>
+                        </div>
+                        <div class="col-12 md:col-4">
+                            <label class="block text-600 mb-2">Es Persona Moral:</label>
+                            <Tag
+                                :value="selectedSupplier.sat_data.sat_validation.rfc.esPersonaMoral ? 'SÍ' : 'NO'"
+                                :severity="selectedSupplier.sat_data.sat_validation.rfc.esPersonaMoral ? 'info' : 'secondary'"
+                            />
+                        </div>
+                        <div class="col-12 md:col-4">
+                            <label class="block text-600 mb-2">Puede Recibir Facturas:</label>
+                            <Tag
+                                :value="selectedSupplier.sat_data.sat_validation.rfc.puedeRecibirFacturas ? 'SÍ' : 'NO'"
+                                :severity="selectedSupplier.sat_data.sat_validation.rfc.puedeRecibirFacturas ? 'success' : 'warning'"
+                            />
+                        </div>
+                        <div class="col-12 md:col-8">
+                            <label class="block text-600 mb-2">Información Adicional:</label>
+                            <p class="text-900">{{ selectedSupplier.sat_data.sat_validation.rfc.informacionAdicional || 'N/A' }}</p>
+                        </div>
+                        <div class="col-12">
+                            <label class="block text-600 mb-2">Mensaje:</label>
+                            <p class="text-900">{{ selectedSupplier.sat_data.sat_validation.rfc.mensaje || 'Sin mensaje' }}</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Overall Assessment -->
                 <div class="p-3 border-round" :class="{
-                    'bg-green-50': !selectedSupplier.sat_data?.blacklist_results?.normalized?.enListaNegra,
-                    'bg-red-50': selectedSupplier.sat_data?.blacklist_results?.normalized?.enListaNegra
+                    'surface-green-100': !selectedSupplier.sat_data?.blacklist_results?.normalized?.enAlgunListaBloqueada,
+                    'surface-red-100': selectedSupplier.sat_data?.blacklist_results?.normalized?.enAlgunListaBloqueada
                 }">
-                    <h6 class="mb-2">Evaluación General</h6>
+                    <h6 class="text-900 mb-3">Evaluación General</h6>
                     <div class="grid">
                         <div class="col-12 md:col-6">
-                            <div class="field">
-                                <label>Nivel de Riesgo:</label>
-                                <p>
-                                    <Tag
-                                        :value="selectedSupplier.sat_data?.blacklist_results?.normalized?.enListaNegra ? 'ALTO' :
-                                               (selectedSupplier.sat_data?.biometry_results?.similarityScore || 0) < 80 ? 'MEDIO' : 'BAJO'"
-                                        :severity="selectedSupplier.sat_data?.blacklist_results?.normalized?.enListaNegra ? 'danger' :
-                                                  (selectedSupplier.sat_data?.biometry_results?.similarityScore || 0) < 80 ? 'warning' : 'success'"
-                                        class="font-bold text-lg"
-                                    />
-                                </p>
-                            </div>
+                            <label class="block text-600 mb-2">Nivel de Riesgo:</label>
+                            <Tag
+                                :value="selectedSupplier.sat_data?.blacklist_results?.normalized?.enAlgunListaBloqueada ? 'ALTO' :
+                                       (selectedSupplier.sat_data?.biometry_results?.comparacionFacial?.similitudPorcentaje ||
+                                        selectedSupplier.sat_data?.biometry_results?.comparacionFacial?.similitud || 0) < 80 ? 'MEDIO' : 'BAJO'"
+                                :severity="selectedSupplier.sat_data?.blacklist_results?.normalized?.enAlgunListaBloqueada ? 'danger' :
+                                          (selectedSupplier.sat_data?.biometry_results?.comparacionFacial?.similitudPorcentaje ||
+                                           selectedSupplier.sat_data?.biometry_results?.comparacionFacial?.similitud || 0) < 80 ? 'warning' : 'success'"
+                                class="font-bold text-xl"
+                            />
                         </div>
                         <div class="col-12 md:col-6">
-                            <div class="field">
-                                <label>Recomendación:</label>
-                                <p class="font-medium">
-                                    {{ selectedSupplier.sat_data?.blacklist_results?.normalized?.enListaNegra ?
-                                       'RECHAZAR - Aparece en lista negra' :
-                                       (selectedSupplier.sat_data?.biometry_results?.similarityScore || 0) >= 80 ?
-                                       'APROBAR - Todas las validaciones correctas' :
-                                       'REVISAR - Verificar manualmente biometría' }}
-                                </p>
-                            </div>
+                            <label class="block text-600 mb-2">Recomendación:</label>
+                            <p class="text-900 font-medium">
+                                {{ selectedSupplier.sat_data?.blacklist_results?.normalized?.enAlgunListaBloqueada ?
+                                   'RECHAZAR - Aparece en lista de bloqueo' :
+                                   (selectedSupplier.sat_data?.biometry_results?.comparacionFacial?.similitudPorcentaje ||
+                                    selectedSupplier.sat_data?.biometry_results?.comparacionFacial?.similitud || 0) >= 80 ?
+                                   'APROBAR - Todas las validaciones correctas' :
+                                   'REVISAR - Verificar manualmente biometría' }}
+                            </p>
                         </div>
                     </div>
                 </div>
