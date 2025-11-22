@@ -250,6 +250,40 @@
             <div class="col-12" v-if="selectedSupplier.sat_data">
                 <h6 class="mt-4 mb-3">Resultados de Verificaciones Nubarium</h6>
 
+                <!-- Overall Assessment Banner - MOVED TO TOP -->
+                <Message
+                    :severity="selectedSupplier.sat_data?.blacklist_results?.normalized?.enAlgunListaBloqueada ? 'error' :
+                              (selectedSupplier.sat_data?.biometry_results?.comparacionFacial?.similitudPorcentaje ||
+                               selectedSupplier.sat_data?.biometry_results?.comparacionFacial?.similitud || 0) < 80 ? 'warn' : 'success'"
+                    :closable="false"
+                    class="mb-3"
+                >
+                    <div class="flex align-items-center justify-content-between w-full">
+                        <div>
+                            <strong class="text-lg">Evaluación General</strong>
+                            <p class="mt-2 mb-0">
+                                <Tag
+                                    :value="selectedSupplier.sat_data?.blacklist_results?.normalized?.enAlgunListaBloqueada ? 'RIESGO ALTO' :
+                                           (selectedSupplier.sat_data?.biometry_results?.comparacionFacial?.similitudPorcentaje ||
+                                            selectedSupplier.sat_data?.biometry_results?.comparacionFacial?.similitud || 0) < 80 ? 'RIESGO MEDIO' : 'RIESGO BAJO'"
+                                    :severity="selectedSupplier.sat_data?.blacklist_results?.normalized?.enAlgunListaBloqueada ? 'danger' :
+                                              (selectedSupplier.sat_data?.biometry_results?.comparacionFacial?.similitudPorcentaje ||
+                                               selectedSupplier.sat_data?.biometry_results?.comparacionFacial?.similitud || 0) < 80 ? 'warning' : 'success'"
+                                    class="font-bold text-xl mr-3"
+                                />
+                                <span class="font-medium">
+                                    {{ selectedSupplier.sat_data?.blacklist_results?.normalized?.enAlgunListaBloqueada ?
+                                       'RECHAZAR - Aparece en lista de bloqueo' :
+                                       (selectedSupplier.sat_data?.biometry_results?.comparacionFacial?.similitudPorcentaje ||
+                                        selectedSupplier.sat_data?.biometry_results?.comparacionFacial?.similitud || 0) >= 80 ?
+                                       'APROBAR - Todas las validaciones correctas' :
+                                       'REVISAR - Verificar manualmente biometría' }}
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                </Message>
+
                 <!-- Blocklist / PLD Results -->
                 <div v-if="selectedSupplier.sat_data?.blacklist_results" class="mb-3 p-3 surface-card border-round">
                     <h6 class="text-900 mb-3">Listas de Bloqueo (PLD)</h6>
@@ -346,39 +380,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Overall Assessment -->
-                <div class="p-3 border-round" :class="{
-                    'surface-green-100': !selectedSupplier.sat_data?.blacklist_results?.normalized?.enAlgunListaBloqueada,
-                    'surface-red-100': selectedSupplier.sat_data?.blacklist_results?.normalized?.enAlgunListaBloqueada
-                }">
-                    <h6 class="text-900 mb-3">Evaluación General</h6>
-                    <div class="grid">
-                        <div class="col-12 md:col-6">
-                            <label class="block text-600 mb-2">Nivel de Riesgo:</label>
-                            <Tag
-                                :value="selectedSupplier.sat_data?.blacklist_results?.normalized?.enAlgunListaBloqueada ? 'ALTO' :
-                                       (selectedSupplier.sat_data?.biometry_results?.comparacionFacial?.similitudPorcentaje ||
-                                        selectedSupplier.sat_data?.biometry_results?.comparacionFacial?.similitud || 0) < 80 ? 'MEDIO' : 'BAJO'"
-                                :severity="selectedSupplier.sat_data?.blacklist_results?.normalized?.enAlgunListaBloqueada ? 'danger' :
-                                          (selectedSupplier.sat_data?.biometry_results?.comparacionFacial?.similitudPorcentaje ||
-                                           selectedSupplier.sat_data?.biometry_results?.comparacionFacial?.similitud || 0) < 80 ? 'warning' : 'success'"
-                                class="font-bold text-xl"
-                            />
-                        </div>
-                        <div class="col-12 md:col-6">
-                            <label class="block text-600 mb-2">Recomendación:</label>
-                            <p class="text-900 font-medium">
-                                {{ selectedSupplier.sat_data?.blacklist_results?.normalized?.enAlgunListaBloqueada ?
-                                   'RECHAZAR - Aparece en lista de bloqueo' :
-                                   (selectedSupplier.sat_data?.biometry_results?.comparacionFacial?.similitudPorcentaje ||
-                                    selectedSupplier.sat_data?.biometry_results?.comparacionFacial?.similitud || 0) >= 80 ?
-                                   'APROBAR - Todas las validaciones correctas' :
-                                   'REVISAR - Verificar manualmente biometría' }}
-                            </p>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
 
@@ -455,6 +456,8 @@ import Tag from 'primevue/tag';
 import Dialog from 'primevue/dialog';
 import Textarea from 'primevue/textarea';
 import Chip from 'primevue/chip';
+import Image from 'primevue/image';
+import Message from 'primevue/message';
 import Toast from 'primevue/toast';
 import ConfirmDialog from 'primevue/confirmdialog';
 
