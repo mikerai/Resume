@@ -250,29 +250,18 @@
 
                 <!-- Banner de Evaluación General -->
                 <Message
-                    :severity="selectedSupplier.sat_data?.blacklist_results?.normalized?.enAlgunListaBloqueada ? 'error' :
-                              (selectedSupplier.sat_data?.biometry_results?.comparacionFacial?.similitudPorcentaje ||
-                               selectedSupplier.sat_data?.biometry_results?.comparacionFacial?.similitud || 0) < 80 ? 'warn' : 'success'"
+                    :severity="getRiskAssessment(selectedSupplier).severity"
                     :closable="false"
                     class="mb-3"
                 >
                     <div class="flex align-items-center">
                         <Tag
-                            :value="selectedSupplier.sat_data?.blacklist_results?.normalized?.enAlgunListaBloqueada ? 'RIESGO ALTO' :
-                                   (selectedSupplier.sat_data?.biometry_results?.comparacionFacial?.similitudPorcentaje ||
-                                    selectedSupplier.sat_data?.biometry_results?.comparacionFacial?.similitud || 0) < 80 ? 'RIESGO MEDIO' : 'RIESGO BAJO'"
-                            :severity="selectedSupplier.sat_data?.blacklist_results?.normalized?.enAlgunListaBloqueada ? 'danger' :
-                                      (selectedSupplier.sat_data?.biometry_results?.comparacionFacial?.similitudPorcentaje ||
-                                       selectedSupplier.sat_data?.biometry_results?.comparacionFacial?.similitud || 0) < 80 ? 'warning' : 'success'"
+                            :value="getRiskAssessment(selectedSupplier).level"
+                            :severity="getRiskAssessment(selectedSupplier).severity"
                             class="font-bold text-xl mr-3"
                         />
                         <span class="font-medium text-lg">
-                            {{ selectedSupplier.sat_data?.blacklist_results?.normalized?.enAlgunListaBloqueada ?
-                               'RECHAZAR - Aparece en lista de bloqueo' :
-                               (selectedSupplier.sat_data?.biometry_results?.comparacionFacial?.similitudPorcentaje ||
-                                selectedSupplier.sat_data?.biometry_results?.comparacionFacial?.similitud || 0) >= 80 ?
-                               'APROBAR - Todas las validaciones correctas' :
-                               'REVISAR - Verificar manualmente biometría' }}
+                            {{ getRiskAssessment(selectedSupplier).recommendation }}
                         </span>
                     </div>
                 </Message>
@@ -473,6 +462,44 @@ const showRejectDialog = ref(false);
 const selectedSupplier = ref(null);
 const rejectionReason = ref('');
 const supplierToReject = ref(null);
+
+// Risk assessment function
+const getRiskAssessment = (supplier) => {
+    if (!supplier?.sat_data) {
+        return { level: 'DESCONOCIDO', severity: 'secondary', recommendation: 'Sin datos de validación' };
+    }
+
+    // Check blocklist first (highest priority)
+    if (supplier.sat_data.blacklist_results?.normalized?.enAlgunListaBloqueada) {
+        return {
+            level: 'RIESGO ALTO',
+            severity: 'danger',
+            recommendation: 'RECHAZAR - Aparece en lista de bloqueo'
+        };
+    }
+
+    // Check biometry score
+    const similitud = supplier.sat_data.biometry_results?.comparacionFacial?.similitudPorcentaje ||
+                     supplier.sat_data.biometry_results?.comparacionFacial?.similitud ||
+                     0;
+
+    // Parse if it's a string with %
+    const similitudNum = typeof similitud === 'string' ? parseFloat(similitud.replace('%', '')) : similitud;
+
+    if (similitudNum >= 80) {
+        return {
+            level: 'RIESGO BAJO',
+            severity: 'success',
+            recommendation: 'APROBAR - Todas las validaciones correctas'
+        };
+    } else {
+        return {
+            level: 'RIESGO MEDIO',
+            severity: 'warning',
+            recommendation: 'REVISAR - Verificar manualmente biometría'
+        };
+    }
+};
 
 // Options
 const statusOptions = [
