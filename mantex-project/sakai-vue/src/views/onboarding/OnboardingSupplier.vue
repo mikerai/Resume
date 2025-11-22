@@ -824,11 +824,13 @@ const completeStep = async () => {
     }
 
     if (currentStep.value < onboardingData.steps.length - 1) {
+        console.log(`✅ Avanzando de paso ${currentStep.value} a paso ${currentStep.value + 1}`);
         currentStep.value++;
+        console.log(`📍 CurrentStep ahora es: ${currentStep.value}`);
         toast.add({
             severity: 'success',
             summary: 'Paso Completado',
-            detail: `Paso ${currentStep.value} completado exitosamente`,
+            detail: `Paso ${currentStep.value + 1} de ${onboardingData.steps.length} completado`,
             life: 2000
         });
     } else {
