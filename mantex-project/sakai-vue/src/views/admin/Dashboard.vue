@@ -88,7 +88,9 @@
                     user-role="admin"
                     :height="400"
                     :show-all-suppliers="true"
-                    :auto-refresh="true"
+                    :auto-refresh="false"
+                    :suppliers-data="suppliers"
+                    :clients-data="clients"
                     class="admin-map"
                 />
             </div>
@@ -97,7 +99,7 @@
         <!-- Supplier Status Summary -->
         <div class="col-span-12 lg:col-span-4">
             <div class="card h-fit">
-                <div class="font-semibold text-xl mb-4">Estado de Suppliers</div>
+                <div class="font-semibold text-xl mb-4">Estado de Proveedores</div>
 
                 <!-- Online Suppliers -->
                 <div class="mb-4">
@@ -137,7 +139,7 @@
                 <div class="mb-4">
                     <div class="flex justify-between items-center mb-2">
                         <span class="font-medium">Ocupados</span>
-                        <Tag :value="supplierStats.busy" severity="warning" />
+                        <Tag :value="supplierStats.busy" severity="danger" />
                     </div>
                     <div class="space-y-2" v-if="busySuppliers.length > 0">
                         <div
@@ -145,11 +147,11 @@
                             :key="supplier.id"
                             class="flex items-center gap-2 p-2 bg-surface-50 rounded-lg"
                         >
-                            <div class="w-2 h-2 bg-orange-500 rounded-full"></div>
+                            <div class="w-2 h-2 bg-red-500 rounded-full"></div>
                             <Avatar
                                 :label="supplier.name.charAt(0)"
                                 size="small"
-                                style="background-color: #f59e0b; color: white"
+                                style="background-color: #ef4444; color: white"
                             />
                             <div class="flex-1 min-w-0">
                                 <div class="font-medium text-sm truncate">{{ supplier.name }}</div>
@@ -163,7 +165,25 @@
                 <div class="mb-4">
                     <div class="flex justify-between items-center mb-2">
                         <span class="font-medium">Desconectados</span>
-                        <Tag :value="supplierStats.offline" severity="secondary" />
+                        <Tag :value="offlineSuppliers.length" severity="secondary" />
+                    </div>
+                    <div class="space-y-2" v-if="offlineSuppliers.length > 0">
+                        <div
+                            v-for="supplier in offlineSuppliers.slice(0, 2)"
+                            :key="supplier.id"
+                            class="flex items-center gap-2 p-2 bg-surface-50 rounded-lg opacity-60"
+                        >
+                            <div class="w-2 h-2 bg-gray-400 rounded-full"></div>
+                            <Avatar
+                                :label="supplier.name.charAt(0)"
+                                size="small"
+                                style="background-color: #9ca3af; color: white"
+                            />
+                            <div class="flex-1 min-w-0">
+                                <div class="font-medium text-sm truncate">{{ supplier.name }}</div>
+                                <div class="text-xs text-muted-color">{{ supplier.lastSeen }}</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -246,6 +266,7 @@ import Button from 'primevue/button';
 import Tag from 'primevue/tag';
 import Avatar from 'primevue/avatar';
 import RealTimeMap from '@/components/maps/RealTimeMap.vue';
+import { supabase } from '@/lib/supabaseClient';
 
 const router = useRouter();
 const recent = ref([]);
@@ -259,10 +280,14 @@ const metrics = ref({
 // Supplier tracking data
 const refreshingMap = ref(false);
 const suppliers = ref([]);
+const clients = ref([]);
 const supplierStats = ref({
     online: 0,
     busy: 0,
-    offline: 0
+    offline: 0,
+    approved: 0,
+    pending: 0,
+    clients: 0
 });
 
 const openPercentage = computed(() => {
@@ -273,16 +298,38 @@ const completedPercentage = computed(() => {
     return metrics.value.total > 0 ? Math.round((metrics.value.completed / metrics.value.total) * 100) : 0;
 });
 
+const approvedSuppliers = computed(() => {
+    return suppliers.value.filter(s => s.status === 'approved');
+});
+
+const pendingSuppliers = computed(() => {
+    return suppliers.value.filter(s => s.status === 'pending');
+});
+
 const onlineSuppliers = computed(() => {
-    return suppliers.value.filter(s => s.status === 'available' || s.status === 'en_ruta');
+    // Para compatibilidad con el template existente
+    return approvedSuppliers.value;
 });
 
 const busySuppliers = computed(() => {
-    return suppliers.value.filter(s => s.status === 'busy' || s.status === 'working');
+    // Para compatibilidad con el template existente
+    return pendingSuppliers.value;
 });
 
 const offlineSuppliers = computed(() => {
-    return suppliers.value.filter(s => s.status === 'offline');
+    // Suppliers desconectados (ejemplo con datos dummy)
+    return [
+        {
+            id: 'offline-1',
+            name: 'Juan Martínez',
+            lastSeen: 'Hace 2 horas'
+        },
+        {
+            id: 'offline-2',
+            name: 'Ana Sánchez',
+            lastSeen: 'Hace 1 día'
+        }
+    ];
 });
 
 const getPrioritySeverity = (priority) => {
@@ -324,10 +371,8 @@ const editTicket = (id) => {
 const refreshSupplierLocations = async () => {
     refreshingMap.value = true;
     try {
-        // Simulate API call to refresh locations
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        loadMockSuppliers();
-        console.log('✅ Supplier locations refreshed');
+        await loadRealData();
+        console.log('[OK] Supplier locations refreshed');
     } catch (error) {
         console.error('❌ Error refreshing supplier locations:', error);
     } finally {
@@ -353,59 +398,139 @@ const viewAllSuppliers = () => {
     router.push('/admin/suppliers');
 };
 
-// Mock data loaders
-const loadMockSuppliers = () => {
-    const mockSuppliers = [
-        {
-            id: 'sup1',
-            name: 'María García',
-            status: 'available',
-            location: { lat: 19.4326, lng: -99.1332 },
-            specialty: 'Plomería',
-            currentJob: null
-        },
-        {
-            id: 'sup2',
-            name: 'Juan Pérez',
-            status: 'working',
-            location: { lat: 19.4284, lng: -99.1276 },
-            specialty: 'Electricidad',
-            currentJob: 'Instalación en Torre Central'
-        },
-        {
-            id: 'sup3',
-            name: 'Carlos López',
-            status: 'en_ruta',
-            location: { lat: 19.4205, lng: -99.1390 },
-            specialty: 'HVAC',
-            currentJob: null
-        },
-        {
-            id: 'sup4',
-            name: 'Ana Martínez',
-            status: 'busy',
-            location: { lat: 19.4351, lng: -99.1289 },
-            specialty: 'Mantenimiento',
-            currentJob: 'Reparación urgente'
-        },
-        {
-            id: 'sup5',
-            name: 'Roberto Silva',
-            status: 'offline',
-            location: null,
-            specialty: 'General',
-            currentJob: null
+// Load real suppliers and clients from database
+const loadRealData = async () => {
+    try {
+        console.log('[INFO] Cargando datos reales de suppliers y clientes...');
+
+        // Load suppliers (approved and pending)
+        const { data: suppliersData, error: suppliersError } = await supabase
+            .from('suppliers')
+            .select('*')
+            .in('status', ['approved', 'pending'])
+            .order('created_at', { ascending: false });
+
+        if (suppliersError) {
+            console.error('[ERROR] Error loading suppliers:', suppliersError);
+            throw suppliersError;
         }
-    ];
 
-    suppliers.value = mockSuppliers;
+        // Load clients
+        const { data: clientsData, error: clientsError } = await supabase
+            .from('clients')
+            .select('*')
+            .order('created_at', { ascending: false });
 
-    // Update stats
-    supplierStats.value = {
-        online: onlineSuppliers.value.length,
-        busy: busySuppliers.value.length,
-        offline: offlineSuppliers.value.length
-    };
+        if (clientsError) {
+            console.error('[ERROR] Error loading clients:', clientsError);
+            throw clientsError;
+        }
+
+        // Transform suppliers data
+        const suppliersList = (suppliersData || []).map(supplier => ({
+            id: supplier.id,
+            name: supplier.contact_person || supplier.company_name,
+            company: supplier.company_name,
+            status: supplier.status,
+            address: supplier.address,
+            latitude: supplier.latitude,
+            longitude: supplier.longitude,
+            location: getCoordinates(supplier),
+            phone: supplier.phone_number,
+            email: supplier.email,
+            rfc: supplier.rfc,
+            type: 'supplier'
+        }));
+
+        // Transform clients data
+        const clientsList = (clientsData || []).map(client => ({
+            id: client.id,
+            name: client.full_name,
+            status: 'client',
+            address: client.address,
+            latitude: client.latitude,
+            longitude: client.longitude,
+            location: getCoordinates(client),
+            phone: client.phone_number,
+            email: client.email,
+            type: 'client'
+        }));
+
+        // Deduplicate by address
+        const allItems = [...suppliersList, ...clientsList];
+        const deduplicated = deduplicateByAddress(allItems);
+
+        // Store original lists
+        suppliers.value = suppliersList;
+        clients.value = clientsList;
+
+        console.log(`📍 Direcciones únicas: ${deduplicated.length} (de ${allItems.length} total)`);
+        deduplicated.forEach(location => {
+            if (location.items.length > 1) {
+                console.log(`  📌 ${location.address}: ${location.items.length} personas/empresas`);
+            }
+        });
+
+        // Update stats
+        supplierStats.value = {
+            online: approvedSuppliers.value.length,  // En línea = aprobados
+            busy: pendingSuppliers.value.length,     // Ocupados = pendientes
+            offline: 2,                               // Desconectados (dummy)
+            approved: approvedSuppliers.value.length,
+            pending: pendingSuppliers.value.length,
+            clients: clients.value.length
+        };
+
+        console.log(`✅ Cargados: ${suppliers.value.length} suppliers (${supplierStats.value.approved} aprobados, ${supplierStats.value.pending} pendientes), ${clients.value.length} clientes`);
+
+    } catch (error) {
+        console.error('❌ Error loading real data:', error);
+        // Fallback to empty arrays
+        suppliers.value = [];
+        clients.value = [];
+        supplierStats.value = {
+            online: 0,
+            busy: 0,
+            offline: 0,
+            approved: 0,
+            pending: 0,
+            clients: 0
+        };
+    }
+};
+
+// Helper function to get coordinates from supplier/client
+const getCoordinates = (item) => {
+    if (item.latitude && item.longitude) {
+        return { lat: parseFloat(item.latitude), lng: parseFloat(item.longitude) };
+    }
+    return null;
+};
+
+// Deduplicate by address - group items with same address
+const deduplicateByAddress = (items) => {
+    const addressMap = new Map();
+
+    items.forEach(item => {
+        const address = item.address?.trim().toLowerCase();
+        if (!address) return;
+
+        if (!addressMap.has(address)) {
+            addressMap.set(address, {
+                address: item.address,
+                coordinates: getCoordinates(item),
+                items: []
+            });
+        }
+        addressMap.get(address).items.push(item);
+    });
+
+    return Array.from(addressMap.values());
+};
+
+// Helper function to parse address string to coordinates (will be replaced by geocoding)
+const parseAddress = (address, item) => {
+    return getCoordinates(item);
 };
 
 const loadMockData = () => {
@@ -466,20 +591,20 @@ onMounted(async () => {
         // const data = await res.json();
         // recent.value = data;
 
-        // Por ahora usar datos de ejemplo
+        // Cargar datos reales
         loadMockData();
-        loadMockSuppliers();
+        await loadRealData();
 
         // Start real-time updates for suppliers (every 30 seconds)
         setInterval(() => {
             if (!refreshingMap.value) {
-                loadMockSuppliers();
+                loadRealData();
             }
         }, 30000);
     } catch (error) {
         console.error('Error loading dashboard data:', error);
         loadMockData();
-        loadMockSuppliers();
+        await loadRealData();
     }
 });
 </script>

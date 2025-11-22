@@ -1,13 +1,13 @@
 // src/composables/useGoogleMaps.js
 
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, shallowRef, onMounted, onUnmounted } from 'vue';
 
 export function useGoogleMaps() {
     // Estados reactivos
     const map = ref(null);
     const isMapLoaded = ref(false);
     const currentLocation = ref(null);
-    const markers = ref(new Map());
+    const markers = ref({}); // Objeto simple en lugar de Map
     const directionsService = ref(null);
     const directionsRenderer = ref(null);
     const watchId = ref(null);
@@ -37,12 +37,12 @@ export function useGoogleMaps() {
             script.defer = true;
 
             script.onload = () => {
-                console.log('✅ Google Maps API cargado exitosamente');
+                console.log('[OK] Google Maps API cargado exitosamente');
                 resolve();
             };
 
             script.onerror = (error) => {
-                console.error('❌ Error cargando Google Maps API:', error);
+                console.error('[ERROR] Error cargando Google Maps API:', error);
                 reject(error);
             };
 
@@ -57,7 +57,7 @@ export function useGoogleMaps() {
      */
     const initializeMap = async (mapContainer, options = {}) => {
         try {
-            console.log('🗺️ Inicializando Google Maps...');
+            console.log('[INFO] Inicializando Google Maps...');
 
             // Cargar API si no está cargada
             if (!window.google || !window.google.maps) {
@@ -108,12 +108,12 @@ export function useGoogleMaps() {
             }
 
             isMapLoaded.value = true;
-            console.log('✅ Mapa inicializado correctamente');
+            console.log('[OK] Mapa inicializado correctamente');
 
             return map.value;
 
         } catch (error) {
-            console.error('💥 Error inicializando mapa:', error);
+            console.error('[ERROR] Error inicializando mapa:', error);
             throw error;
         }
     };
@@ -124,12 +124,12 @@ export function useGoogleMaps() {
     const getCurrentLocation = () => {
         return new Promise((resolve, reject) => {
             if (!navigator.geolocation) {
-                console.warn('⚠️ Geolocation no soportado por este navegador');
+                console.warn('[WARN] Geolocation no soportado por este navegador');
                 resolve(null);
                 return;
             }
 
-            console.log('📍 Obteniendo ubicación actual...');
+            console.log('[INFO] Obteniendo ubicación actual...');
 
             navigator.geolocation.getCurrentPosition(
                 (position) => {
@@ -139,11 +139,11 @@ export function useGoogleMaps() {
                     };
 
                     currentLocation.value = location;
-                    console.log('✅ Ubicación obtenida:', location);
+                    console.log('[OK] Ubicación obtenida:', location);
                     resolve(location);
                 },
                 (error) => {
-                    console.warn('⚠️ Error obteniendo ubicación:', error.message);
+                    console.warn('[WARN] Error obteniendo ubicación:', error.message);
                     resolve(null); // No fallar, usar ubicación por defecto
                 },
                 {
@@ -161,11 +161,11 @@ export function useGoogleMaps() {
      */
     const startLocationTracking = (callback) => {
         if (!navigator.geolocation) {
-            console.error('❌ Geolocation no disponible');
+            console.error('[ERROR] Geolocation no disponible');
             return;
         }
 
-        console.log('🔄 Iniciando tracking de ubicación...');
+        console.log('[INFO] Iniciando tracking de ubicación...');
 
         watchId.value = navigator.geolocation.watchPosition(
             (position) => {
@@ -179,8 +179,8 @@ export function useGoogleMaps() {
                 currentLocation.value = location;
 
                 // Actualizar marcador de ubicación actual
-                if (markers.value.has('current-location')) {
-                    markers.value.get('current-location').setPosition(location);
+                if (markers.value['current-location']) {
+                    markers.value['current-location'].setPosition(location);
                 }
 
                 // Llamar callback personalizado
@@ -188,10 +188,10 @@ export function useGoogleMaps() {
                     callback(location);
                 }
 
-                console.log('📍 Ubicación actualizada:', location);
+                console.log('[INFO] Ubicación actualizada:', location);
             },
             (error) => {
-                console.error('❌ Error en tracking:', error.message);
+                console.error('[ERROR] Error en tracking:', error.message);
             },
             {
                 enableHighAccuracy: true,
@@ -208,7 +208,7 @@ export function useGoogleMaps() {
         if (watchId.value) {
             navigator.geolocation.clearWatch(watchId.value);
             watchId.value = null;
-            console.log('🛑 Tracking de ubicación detenido');
+            console.log('[INFO] Tracking de ubicación detenido');
         }
     };
 
@@ -220,13 +220,13 @@ export function useGoogleMaps() {
      */
     const addMarker = (id, position, options = {}) => {
         if (!map.value) {
-            console.error('❌ Mapa no inicializado');
+            console.error('[ERROR] Mapa no inicializado');
             return;
         }
 
         // Eliminar marcador existente si existe
-        if (markers.value.has(id)) {
-            markers.value.get(id).setMap(null);
+        if (markers.value[id]) {
+            markers.value[id].setMap(null);
         }
 
         // Crear nuevo marcador
@@ -250,7 +250,7 @@ export function useGoogleMaps() {
             });
         }
 
-        markers.value.set(id, marker);
+        markers.value[id] = marker;
         return marker;
     };
 
@@ -259,9 +259,9 @@ export function useGoogleMaps() {
      * @param {string} id - ID del marcador a eliminar
      */
     const removeMarker = (id) => {
-        if (markers.value.has(id)) {
-            markers.value.get(id).setMap(null);
-            markers.value.delete(id);
+        if (markers.value[id]) {
+            markers.value[id].setMap(null);
+            delete markers.value[id];
         }
     };
 
@@ -273,12 +273,12 @@ export function useGoogleMaps() {
      */
     const calculateRoute = async (origin, destination, options = {}) => {
         if (!directionsService.value || !directionsRenderer.value) {
-            console.error('❌ Servicios de direcciones no inicializados');
+            console.error('[ERROR] Servicios de direcciones no inicializados');
             return;
         }
 
         try {
-            console.log('🧭 Calculando ruta...', { origin, destination });
+            console.log('[INFO] Calculando ruta...', { origin, destination });
 
             const request = {
                 origin: origin,
@@ -320,11 +320,11 @@ export function useGoogleMaps() {
                 }))
             };
 
-            console.log('✅ Ruta calculada:', routeInfo);
+            console.log('[OK] Ruta calculada:', routeInfo);
             return routeInfo;
 
         } catch (error) {
-            console.error('💥 Error calculando ruta:', error);
+            console.error('[ERROR] Error calculando ruta:', error);
             throw error;
         }
     };
@@ -336,7 +336,7 @@ export function useGoogleMaps() {
      */
     const centerMap = (location, zoom = null) => {
         if (!map.value) {
-            console.error('❌ Mapa no inicializado');
+            console.error('[ERROR] Mapa no inicializado');
             return;
         }
 
@@ -350,12 +350,13 @@ export function useGoogleMaps() {
      * Ajusta el mapa para mostrar todos los marcadores
      */
     const fitMarkersInView = () => {
-        if (!map.value || markers.value.size === 0) {
+        const markersList = Object.values(markers.value);
+        if (!map.value || markersList.length === 0) {
             return;
         }
 
         const bounds = new window.google.maps.LatLngBounds();
-        markers.value.forEach(marker => {
+        markersList.forEach(marker => {
             bounds.extend(marker.getPosition());
         });
 
@@ -369,7 +370,7 @@ export function useGoogleMaps() {
      */
     const searchPlaces = async (query, location = null) => {
         if (!window.google || !window.google.maps.places) {
-            console.error('❌ Google Places API no cargada');
+            console.error('[ERROR] Google Places API no cargada');
             return [];
         }
 
@@ -407,7 +408,7 @@ export function useGoogleMaps() {
             }));
 
         } catch (error) {
-            console.error('💥 Error buscando lugares:', error);
+            console.error('[ERROR] Error buscando lugares:', error);
             return [];
         }
     };
@@ -419,7 +420,7 @@ export function useGoogleMaps() {
      */
     const calculateDistance = (point1, point2) => {
         if (!window.google || !window.google.maps.geometry) {
-            console.error('❌ Google Maps Geometry API no cargada');
+            console.error('[ERROR] Google Maps Geometry API no cargada');
             return null;
         }
 
@@ -437,15 +438,104 @@ export function useGoogleMaps() {
         };
     };
 
+    /**
+     * Geocodifica una dirección a coordenadas lat/lng
+     * @param {string} address - Dirección a geocodificar
+     * @returns {Promise<Object>} Objeto con lat, lng, y dirección formateada
+     */
+    const geocodeAddress = async (address) => {
+        if (!address || typeof address !== 'string' || address.trim().length === 0) {
+            throw new Error('Dirección inválida');
+        }
+
+        try {
+            // Cargar API si no está cargada
+            if (!window.google || !window.google.maps) {
+                await loadGoogleMapsScript();
+            }
+
+            console.log('[INFO] Geocodificando dirección:', address);
+
+            const geocoder = new window.google.maps.Geocoder();
+
+            const result = await new Promise((resolve, reject) => {
+                geocoder.geocode({ address }, (results, status) => {
+                    if (status === 'OK' && results && results.length > 0) {
+                        const location = results[0].geometry.location;
+                        resolve({
+                            lat: location.lat(),
+                            lng: location.lng(),
+                            formatted_address: results[0].formatted_address,
+                            place_id: results[0].place_id,
+                            address_components: results[0].address_components
+                        });
+                    } else if (status === 'ZERO_RESULTS') {
+                        reject(new Error('No se encontraron resultados para esta dirección'));
+                    } else if (status === 'OVER_QUERY_LIMIT') {
+                        reject(new Error('Límite de consultas excedido. Intenta de nuevo más tarde.'));
+                    } else {
+                        reject(new Error(`Error en geocodificación: ${status}`));
+                    }
+                });
+            });
+
+            console.log('[OK] Dirección geocodificada:', result);
+            return result;
+
+        } catch (error) {
+            console.error('[ERROR] Error geocodificando dirección:', error);
+            throw error;
+        }
+    };
+
+    /**
+     * Geocodificación inversa: convierte coordenadas a dirección
+     * @param {Object} location - Objeto con lat y lng
+     * @returns {Promise<string>} Dirección formateada
+     */
+    const reverseGeocode = async (location) => {
+        if (!location || !location.lat || !location.lng) {
+            throw new Error('Ubicación inválida');
+        }
+
+        try {
+            // Cargar API si no está cargada
+            if (!window.google || !window.google.maps) {
+                await loadGoogleMapsScript();
+            }
+
+            console.log('[INFO] Geocodificación inversa:', location);
+
+            const geocoder = new window.google.maps.Geocoder();
+
+            const result = await new Promise((resolve, reject) => {
+                geocoder.geocode({ location }, (results, status) => {
+                    if (status === 'OK' && results && results.length > 0) {
+                        resolve(results[0].formatted_address);
+                    } else {
+                        reject(new Error(`Error en geocodificación inversa: ${status}`));
+                    }
+                });
+            });
+
+            console.log('[OK] Dirección obtenida:', result);
+            return result;
+
+        } catch (error) {
+            console.error('[ERROR] Error en geocodificación inversa:', error);
+            throw error;
+        }
+    };
+
     // Cleanup al desmontar el componente
     onUnmounted(() => {
         stopLocationTracking();
 
         // Limpiar marcadores
-        markers.value.forEach(marker => {
+        Object.values(markers.value).forEach(marker => {
             marker.setMap(null);
         });
-        markers.value.clear();
+        markers.value = {};
     });
 
     return {
@@ -475,6 +565,10 @@ export function useGoogleMaps() {
 
         // Búsqueda y utilidades
         searchPlaces,
-        calculateDistance
+        calculateDistance,
+
+        // Geocodificación
+        geocodeAddress,
+        reverseGeocode
     };
 }

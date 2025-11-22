@@ -80,16 +80,22 @@
                     >
                         <div class="supplier-avatar">
                             <Avatar
-                                :label="supplier.username.charAt(0).toUpperCase()"
+                                :label="(supplier.name || supplier.company || 'S').charAt(0).toUpperCase()"
                                 size="small"
-                                style="background-color: #2196F3; color: white"
+                                :style="{
+                                    backgroundColor: supplier.status === 'approved' ? '#2196F3' : '#FF9800',
+                                    color: 'white'
+                                }"
                             />
                         </div>
                         <div class="supplier-details">
-                            <div class="supplier-name">{{ supplier.username }}</div>
+                            <div class="supplier-name">{{ supplier.name || supplier.company }}</div>
                             <div class="supplier-status">
-                                <i class="pi pi-circle-fill text-green-500" />
-                                Activo - {{ formatLastUpdate(supplier.timestamp) }}
+                                <i
+                                    class="pi pi-circle-fill"
+                                    :class="supplier.status === 'approved' ? 'text-blue-500' : 'text-orange-500'"
+                                />
+                                {{ supplier.status === 'approved' ? 'Aprobado' : 'Pendiente' }}
                             </div>
                         </div>
                         <div class="supplier-actions">
@@ -147,6 +153,14 @@ const props = defineProps({
     trackingInterval: {
         type: Number,
         default: 30000 // 30 segundos
+    },
+    suppliersData: {
+        type: Array,
+        default: () => []
+    },
+    clientsData: {
+        type: Array,
+        default: () => []
     }
 });
 
@@ -181,40 +195,61 @@ const isTrackingActive = computed(() => googleIntegration.tracking.isTrackingAct
 const initializeMap = async () => {
     try {
         isLoading.value = true;
-        loadingMessage.value = 'Inicializando Google APIs...';
+        loadingMessage.value = 'Cargando Google Maps...';
 
-        // Inicializar integración completa
-        const success = await googleIntegration.initializeGoogleIntegration();
+        // Para admin/client: inicialización simple, solo mapa
+        if (!isSupplier.value) {
+            // Solo cargar Google Maps API
+            await googleIntegration.maps.loadGoogleMapsScript();
 
-        if (!success) {
-            throw new Error('Error inicializando Google APIs');
-        }
+            loadingMessage.value = 'Configurando mapa...';
 
-        loadingMessage.value = 'Configurando mapa...';
+            // Inicializar mapa
+            const map = await googleIntegration.maps.initializeMap(mapContainer.value, {
+                zoom: 13,
+                mapTypeControl: true,
+                streetViewControl: false,
+                fullscreenControl: true
+            });
 
-        // Inicializar mapa
-        const map = await googleIntegration.maps.initializeMap(mapContainer.value, {
-            zoom: 13,
-            mapTypeControl: true,
-            streetViewControl: false,
-            fullscreenControl: true
-        });
+            if (!map) {
+                throw new Error('Error inicializando mapa');
+            }
 
-        if (!map) {
-            throw new Error('Error inicializando mapa');
-        }
-
-        // Configurar según rol del usuario
-        if (isSupplier.value) {
-            await setupSupplierMap();
-        } else {
+            // Configurar mapa para admin/client
             await setupClientAdminMap();
-        }
 
-        console.log('✅ Mapa inicializado correctamente');
+            console.log('[OK] Mapa inicializado correctamente');
+        } else {
+            // Para suppliers: inicialización completa con tracking
+            loadingMessage.value = 'Inicializando servicios...';
+
+            const success = await googleIntegration.initializeGoogleIntegration();
+
+            if (!success) {
+                throw new Error('Error inicializando Google APIs');
+            }
+
+            loadingMessage.value = 'Configurando mapa...';
+
+            const map = await googleIntegration.maps.initializeMap(mapContainer.value, {
+                zoom: 13,
+                mapTypeControl: true,
+                streetViewControl: false,
+                fullscreenControl: true
+            });
+
+            if (!map) {
+                throw new Error('Error inicializando mapa');
+            }
+
+            await setupSupplierMap();
+
+            console.log('[OK] Mapa inicializado correctamente');
+        }
 
     } catch (err) {
-        console.error('💥 Error inicializando mapa:', err);
+        console.error('[ERROR] Error inicializando mapa:', err);
         error.value = `Error inicializando mapa: ${err.message}`;
     } finally {
         isLoading.value = false;
@@ -227,7 +262,7 @@ const initializeMap = async () => {
  */
 const setupSupplierMap = async () => {
     try {
-        console.log('🔧 Configurando mapa para supplier...');
+        console.log('[INFO] Configurando mapa para supplier...');
 
         // Escuchar cambios de ubicación
         googleIntegration.geolocation.startTracking((location) => {
@@ -255,7 +290,7 @@ const setupSupplierMap = async () => {
         });
 
     } catch (error) {
-        console.error('❌ Error configurando mapa supplier:', error);
+        console.error('[ERROR] Error configurando mapa supplier:', error);
         throw error;
     }
 };
@@ -265,7 +300,7 @@ const setupSupplierMap = async () => {
  */
 const setupClientAdminMap = async () => {
     try {
-        console.log('👥 Configurando mapa para client/admin...');
+        console.log('[INFO] Configurando mapa para client/admin...');
 
         // Cargar suppliers activos inicialmente
         await loadActiveSuppliers();
@@ -286,7 +321,7 @@ const setupClientAdminMap = async () => {
         }
 
     } catch (error) {
-        console.error('❌ Error configurando mapa client/admin:', error);
+        console.error('[ERROR] Error configurando mapa client/admin:', error);
         throw error;
     }
 };
@@ -296,14 +331,22 @@ const setupClientAdminMap = async () => {
  */
 const loadActiveSuppliers = async () => {
     try {
-        const suppliers = await googleIntegration.getActiveSuppliersWithLocations();
-        activeSuppliers.value = suppliers;
-
-        // Actualizar marcadores en el mapa
-        updateSuppliersOnMap(suppliers);
+        // Si hay datos pasados por props, usarlos
+        if (props.suppliersData && props.suppliersData.length > 0) {
+            // Filtrar solo suppliers con coordenadas
+            const suppliersWithCoords = props.suppliersData.filter(s => s.location && s.location.lat && s.location.lng);
+            activeSuppliers.value = suppliersWithCoords;
+            updateSuppliersOnMap(suppliersWithCoords);
+            console.log('[INFO] Loaded', suppliersWithCoords.length, 'suppliers with coordinates');
+        } else {
+            // Fallback a google integration si no hay props
+            const suppliers = await googleIntegration.getActiveSuppliersWithLocations();
+            activeSuppliers.value = suppliers;
+            updateSuppliersOnMap(suppliers);
+        }
 
     } catch (error) {
-        console.error('❌ Error cargando suppliers:', error);
+        console.error('[ERROR] Error cargando suppliers:', error);
     }
 };
 
@@ -332,35 +375,48 @@ const handleSuppliersUpdate = (locations) => {
  */
 const updateSuppliersOnMap = (suppliers) => {
     // Limpiar marcadores existentes (excepto ubicación propia)
-    googleIntegration.maps.markers.value.forEach((marker, id) => {
+    Object.entries(googleIntegration.maps.markers.value).forEach(([id, marker]) => {
         if (id !== 'my-location') {
             marker.setMap(null);
-            googleIntegration.maps.markers.value.delete(id);
+            delete googleIntegration.maps.markers.value[id];
         }
     });
 
     // Agregar nuevos marcadores
     suppliers.forEach((supplier) => {
-        googleIntegration.maps.addMarker(`supplier-${supplier.id}`, supplier, {
-            title: supplier.username,
+        if (!supplier.location || !supplier.location.lat || !supplier.location.lng) {
+            console.warn('[WARN] Supplier sin coordenadas:', supplier.id, supplier.name);
+            return;
+        }
+
+        const displayName = supplier.name || supplier.company || 'Supplier';
+        const statusText = supplier.status === 'approved' ? 'Aprobado' : supplier.status === 'pending' ? 'Pendiente' : supplier.status;
+        const initial = displayName.charAt(0).toUpperCase();
+
+        // Color según status: azul para aprobados, naranja para pendientes
+        const markerColor = supplier.status === 'approved' ? '#2196F3' : '#FF9800';
+
+        googleIntegration.maps.addMarker(`supplier-${supplier.id}`, supplier.location, {
+            title: displayName,
             icon: {
                 url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
                     <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="16" cy="16" r="12" fill="#2196F3"/>
+                        <circle cx="16" cy="16" r="12" fill="${markerColor}"/>
                         <circle cx="16" cy="16" r="6" fill="white"/>
-                        <text x="16" y="20" text-anchor="middle" fill="#2196F3" font-size="10" font-weight="bold">
-                            ${supplier.username.charAt(0).toUpperCase()}
+                        <text x="16" y="20" text-anchor="middle" fill="${markerColor}" font-size="10" font-weight="bold">
+                            ${initial}
                         </text>
                     </svg>
                 `),
                 scaledSize: new window.google.maps.Size(32, 32)
             },
             infoContent: `
-                <div style="padding: 10px; min-width: 200px;">
-                    <h4 style="margin: 0 0 8px 0;">${supplier.username}</h4>
-                    <p style="margin: 4px 0;"><strong>Estado:</strong> ${supplier.status === 'active' ? 'Activo' : 'Inactivo'}</p>
-                    <p style="margin: 4px 0;"><strong>Velocidad:</strong> ${supplier.speed || 0} km/h</p>
-                    <p style="margin: 4px 0;"><strong>Última actualización:</strong> ${formatLastUpdate(supplier.timestamp)}</p>
+                <div style="padding: 10px; min-width: 250px;">
+                    <h4 style="margin: 0 0 8px 0;">${displayName}</h4>
+                    ${supplier.company ? `<p style="margin: 4px 0;"><strong>Empresa:</strong> ${supplier.company}</p>` : ''}
+                    <p style="margin: 4px 0;"><strong>Estado:</strong> ${statusText}</p>
+                    ${supplier.address ? `<p style="margin: 4px 0;"><strong>Dirección:</strong> ${supplier.address}</p>` : ''}
+                    ${supplier.phone ? `<p style="margin: 4px 0;"><strong>Teléfono:</strong> ${supplier.phone}</p>` : ''}
                 </div>
             `
         });
@@ -395,7 +451,7 @@ const startTracking = async () => {
         }
 
     } catch (error) {
-        console.error('❌ Error iniciando tracking:', error);
+        console.error('[ERROR] Error iniciando tracking:', error);
 
         toast.add({
             severity: 'error',
@@ -429,7 +485,7 @@ const stopTracking = async () => {
         }
 
     } catch (error) {
-        console.error('❌ Error deteniendo tracking:', error);
+        console.error('[ERROR] Error deteniendo tracking:', error);
 
         toast.add({
             severity: 'error',
@@ -446,7 +502,11 @@ const stopTracking = async () => {
  * Centra el mapa en un supplier específico
  */
 const centerOnSupplier = (supplier) => {
-    googleIntegration.maps.centerMap({ lat: supplier.lat, lng: supplier.lng }, 16);
+    if (supplier.location) {
+        googleIntegration.maps.centerMap(supplier.location, 16);
+    } else {
+        console.warn('[WARN] Supplier sin ubicación:', supplier.id);
+    }
 };
 
 /**
@@ -489,6 +549,12 @@ const formatLastUpdate = (timestamp) => {
     }
 };
 
+// Watch for changes in suppliers/clients data
+watch(() => [props.suppliersData, props.clientsData], () => {
+    console.log('[INFO] Suppliers/Clients data updated, reloading map...');
+    loadActiveSuppliers();
+}, { deep: true });
+
 // Lifecycle
 onMounted(() => {
     initializeMap();
@@ -510,7 +576,7 @@ onUnmounted(() => {
 // Watchers
 watch(() => googleIntegration.isFullyInitialized.value, (isInitialized) => {
     if (isInitialized) {
-        console.log('🎉 Google Integration completamente inicializada');
+        console.log('[OK] Google Integration completamente inicializada');
     }
 });
 </script>

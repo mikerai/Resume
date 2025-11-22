@@ -15,9 +15,11 @@ import RadioButton from 'primevue/radiobutton';
 import Select from 'primevue/select';
 import nubariumService from '@/lib/nubariumService.js';
 import { useS3Upload } from '@/composables/useS3Upload.js';
+import { useGoogleMaps } from '@/composables/useGoogleMaps';
 
 const { user, profile, completeOnboarding, logout } = useAuth();
 const { uploadINEFiles, fileToBase64: s3FileToBase64 } = useS3Upload();
+const { geocodeAddress } = useGoogleMaps();
 const router = useRouter();
 const toast = useToast();
 
@@ -739,8 +741,25 @@ const saveClientData = async () => {
             formData.value.address.street,
             formData.value.address.exteriorNumber,
             formData.value.address.interiorNumber,
-            formData.value.address.neighborhood
-        ].filter(Boolean).join(' ');
+            formData.value.address.neighborhood,
+            formData.value.address.city,
+            formData.value.address.state,
+            formData.value.address.postalCode
+        ].filter(Boolean).join(', ');
+
+        // Geocodificar dirección
+        let latitude = null;
+        let longitude = null;
+        try {
+            console.log('[GEOCODE] Geocodificando dirección del cliente:', fullAddress);
+            const geocodeResult = await geocodeAddress(fullAddress);
+            latitude = geocodeResult.lat;
+            longitude = geocodeResult.lng;
+            console.log('[OK] Dirección geocodificada:', { latitude, longitude });
+        } catch (error) {
+            console.warn('[WARN] No se pudo geocodificar la dirección:', error.message);
+            // No fallar el onboarding si falla geocoding
+        }
 
         // Extraer nombre de contacto del INE
         const ineNormalized = ineData?.verification_response?.normalized || ineData?.verification_response?.ocr_data;
@@ -765,6 +784,8 @@ const saveClientData = async () => {
             phone: formData.value.phoneNumber,
             email: user.value.email,
             address: fullAddress,
+            latitude: latitude,
+            longitude: longitude,
             city: formData.value.address.city || null,
             state: formData.value.address.state || null,
             postal_code: formData.value.address.postalCode || null,
