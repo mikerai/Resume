@@ -1223,7 +1223,7 @@ const goToDashboardDummy = () => {
                             <div v-if="currentStep === 0" class="grid grid-cols-12 gap-4">
                                 <div class="col-span-12">
                                     <div class="mb-6 p-4 bg-blue-50 dark:bg-blue-400/10 border border-blue-200 dark:border-blue-600 rounded-md">
-                                        <h5 class="font-semibold text-blue-700 dark:text-blue-400 mb-2">🆔 Identificación Oficial</h5>
+                                        <h5 class="font-semibold text-blue-700 dark:text-blue-400 mb-2">Identificación Oficial</h5>
                                         <p class="text-sm text-blue-600 dark:text-blue-300">
                                             Sube las imágenes de tu INE (frontal y trasera) y toma una selfie para validación biométrica
                                         </p>
@@ -1262,7 +1262,7 @@ const goToDashboardDummy = () => {
 
                                 <div class="col-span-12">
                                     <div class="mb-4 p-4 bg-orange-50 dark:bg-orange-400/10 border border-orange-200 dark:border-orange-600 rounded-md">
-                                        <h5 class="font-semibold text-orange-700 dark:text-orange-400 mb-2">🤳 Selfie Biométrica</h5>
+                                        <h5 class="font-semibold text-orange-700 dark:text-orange-400 mb-2">Selfie Biométrica</h5>
                                         <p class="text-sm text-orange-600 dark:text-orange-300">
                                             Toma una selfie para comparar con la foto del INE y validar tu identidad
                                         </p>
@@ -1298,7 +1298,7 @@ const goToDashboardDummy = () => {
                             <div v-if="currentStep === 1" class="grid grid-cols-12 gap-4">
                                 <div class="col-span-12">
                                     <div class="mb-6 p-4 bg-red-50 dark:bg-red-400/10 border border-red-200 dark:border-red-600 rounded-md">
-                                        <h5 class="font-semibold text-red-700 dark:text-red-400 mb-2">📊 Validación Fiscal SAT</h5>
+                                        <h5 class="font-semibold text-red-700 dark:text-red-400 mb-2">Validación Fiscal SAT</h5>
                                         <p class="text-sm text-red-600 dark:text-red-300">
                                             Ingresa tu RFC y contraseña CIEC para validar tu situación fiscal
                                         </p>
@@ -1509,56 +1509,6 @@ const goToDashboardDummy = () => {
                                         <p class="text-sm text-green-600 dark:text-green-300">
                                             Revisa todos los datos antes de enviar para aprobación
                                         </p>
-                                    </div>
-                                </div>
-
-                                <!-- INE Validation Results -->
-                                <div v-if="formData.biometryResults" class="col-span-12">
-                                    <div class="card">
-                                        <h6 class="font-semibold mb-3">Validación de Identidad</h6>
-                                        <div class="grid grid-cols-12 gap-4 text-sm">
-                                            <div class="col-span-6 md:col-span-3">
-                                                <strong>Nombre:</strong><br>
-                                                {{ formData.biometryResults.nombreCompleto || 'N/A' }}
-                                            </div>
-                                            <div class="col-span-6 md:col-span-3">
-                                                <strong>CURP:</strong><br>
-                                                {{ formData.biometryResults.curp || 'N/A' }}
-                                            </div>
-                                            <div class="col-span-6 md:col-span-3">
-                                                <strong>Similitud Facial:</strong><br>
-                                                {{ formData.biometryResults.comparacionFacial?.similitudPorcentaje || 'N/A' }}
-                                            </div>
-                                            <div class="col-span-6 md:col-span-3">
-                                                <strong>Lista Nominal:</strong><br>
-                                                {{ formData.biometryResults.listaNominal?.valido ? 'Válido' : 'Inválido' }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- SAT Validation Results -->
-                                <div v-if="formData.satValidationResults" class="col-span-12">
-                                    <div class="card">
-                                        <h6 class="font-semibold mb-3">Validación Fiscal</h6>
-                                        <div class="grid grid-cols-12 gap-4 text-sm">
-                                            <div class="col-span-12 md:col-span-6" v-if="formData.satValidationResults.nombreRazonSocial?.nombre">
-                                                <strong>Razón Social:</strong><br>
-                                                {{ formData.satValidationResults.nombreRazonSocial.nombre }}
-                                            </div>
-                                            <div class="col-span-6 md:col-span-3">
-                                                <strong>RFC:</strong><br>
-                                                {{ formData.satValidationResults.rfc?.rfc || 'N/A' }}
-                                            </div>
-                                            <div class="col-span-6 md:col-span-3">
-                                                <strong>Estado RFC:</strong><br>
-                                                {{ formData.satValidationResults.rfc?.valido ? 'Activo' : 'Inactivo' }}
-                                            </div>
-                                            <div class="col-span-12 md:col-span-6">
-                                                <strong>Validación CIEC:</strong><br>
-                                                {{ formData.satValidationResults.ciec ? 'Verificada' : 'En proceso...' }}
-                                            </div>
-                                        </div>
                                     </div>
                                 </div>
 
