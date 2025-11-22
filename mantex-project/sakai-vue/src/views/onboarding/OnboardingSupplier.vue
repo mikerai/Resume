@@ -114,28 +114,36 @@ const availableSpecialties = ref([
 // PickList data: [source, target]
 const specialtiesPickList = ref([availableSpecialties.value, []]);
 
-// Options for dropdowns
-const serviceAreaOptions = [
-    { label: 'HVAC (Climatización)', value: 'hvac' },
-    { label: 'Eléctrico', value: 'electrical' },
-    { label: 'Plomería', value: 'plumbing' },
-    { label: 'Seguridad', value: 'security' },
-    { label: 'Limpieza & Mantenimiento', value: 'cleaning' },
-    { label: 'Jardinería & Paisajismo', value: 'landscaping' },
-    { label: 'Tecnología & IT', value: 'technology' },
-    { label: 'Mobiliario & Equipamiento', value: 'furniture' },
-    { label: 'Construcción & Obra Civil', value: 'construction' },
-    { label: 'Otros', value: 'others' }
+// Working hours options
+const workingDaysOptions = [
+    { label: 'Lunes a Viernes', value: 'weekdays' },
+    { label: 'Lunes a Sábado', value: 'weekdays_saturday' },
+    { label: 'Todos los días', value: 'everyday' },
+    { label: 'Personalizado', value: 'custom' }
 ];
 
-const specialtyOptions = [
-    { label: 'Mantenimiento Preventivo', value: 'preventive' },
-    { label: 'Reparaciones de Emergencia', value: 'emergency' },
-    { label: 'Instalaciones Nuevas', value: 'installations' },
-    { label: 'Inspecciones Técnicas', value: 'inspections' },
-    { label: 'Consultoría Especializada', value: 'consulting' },
-    { label: 'Capacitación y Entrenamiento', value: 'training' }
+const workingHoursStartOptions = [
+    { label: '06:00', value: '06:00' },
+    { label: '07:00', value: '07:00' },
+    { label: '08:00', value: '08:00' },
+    { label: '09:00', value: '09:00' },
+    { label: '10:00', value: '10:00' }
 ];
+
+const workingHoursEndOptions = [
+    { label: '15:00', value: '15:00' },
+    { label: '16:00', value: '16:00' },
+    { label: '17:00', value: '17:00' },
+    { label: '18:00', value: '18:00' },
+    { label: '19:00', value: '19:00' },
+    { label: '20:00', value: '20:00' },
+    { label: '24/7', value: '24/7' }
+];
+
+// Form fields for working hours
+const workingDays = ref('weekdays');
+const workingHoursStart = ref('08:00');
+const workingHoursEnd = ref('18:00');
 
 // Estado
 const userName = computed(() => profile.value?.username || user.value?.email?.split('@')[0] || 'Proveedor');
@@ -199,11 +207,12 @@ const validateStep2 = () => {
         return false;
     }
 
-    if (!formData.value.ciecPassword || formData.value.ciecPassword.length < 8) {
+    // CIEC es opcional
+    if (formData.value.ciecPassword && formData.value.ciecPassword.length > 0 && formData.value.ciecPassword.length < 8) {
         toast.add({
             severity: 'warn',
-            summary: 'Contraseña CIEC Requerida',
-            detail: 'La contraseña CIEC del SAT es obligatoria y debe tener al menos 8 caracteres',
+            summary: 'Contraseña CIEC Inválida',
+            detail: 'La contraseña CIEC debe tener al menos 8 caracteres si la proporcionas',
             life: 3000
         });
         return false;
@@ -226,11 +235,12 @@ const validateStep3 = () => {
 };
 
 const validateStep4 = () => {
-    if (formData.value.selectedSpecialties.length === 0) {
+    // Verificar el PickList target (índice 1)
+    if (!specialtiesPickList.value[1] || specialtiesPickList.value[1].length === 0) {
         toast.add({
             severity: 'warn',
             summary: 'Especialidades Requeridas',
-            detail: 'Debe seleccionar al menos una especialidad usando el PickList',
+            detail: 'Debe seleccionar al menos una especialidad',
             life: 3000
         });
         return false;
@@ -586,7 +596,7 @@ const processSATValidationAsync = async () => {
 
             toast.add({
                 severity: 'success',
-                summary: '✅ SAT Validado',
+                summary: 'SAT Validado',
                 detail: 'Datos fiscales verificados correctamente',
                 life: 4000
             });
@@ -877,7 +887,7 @@ const saveSupplierData = async () => {
             // Servicios y especialidades
             service_areas: formData.value.serviceAreas,
             specialties: specialtiesPickList.value[1].map(s => s.code), // Selected specialties
-            working_hours: formData.value.workingHours,
+            working_hours: `${workingDays.value} ${workingHoursStart.value}-${workingHoursEnd.value}`,
             service_radius_km: parseInt(formData.value.serviceRadius) || 50,
             business_description: formData.value.businessDescription,
 
@@ -1268,7 +1278,7 @@ const goToDashboardDummy = () => {
 
                                 <div v-if="formData.biometryResults" class="col-span-12 mt-4">
                                     <div class="p-4 bg-green-50 dark:bg-green-400/10 border border-green-200 dark:border-green-600 rounded-md">
-                                        <h6 class="font-semibold text-green-700 dark:text-green-400 mb-2">✅ Validación Completada</h6>
+                                        <h6 class="font-semibold text-green-700 dark:text-green-400 mb-2">Validación Completada</h6>
                                         <p class="text-sm text-green-600 dark:text-green-300">
                                             Identidad verificada exitosamente con Nubarium
                                         </p>
@@ -1318,7 +1328,7 @@ const goToDashboardDummy = () => {
 
                                 <div v-if="formData.satValidationResults" class="col-span-12 mt-4">
                                     <div class="p-4 bg-green-50 dark:bg-green-400/10 border border-green-200 dark:border-green-600 rounded-md">
-                                        <h6 class="font-semibold text-green-700 dark:text-green-400 mb-2">✅ SAT Validado</h6>
+                                        <h6 class="font-semibold text-green-700 dark:text-green-400 mb-2">SAT Validado</h6>
                                         <p class="text-sm text-green-600 dark:text-green-300">
                                             Datos fiscales verificados correctamente
                                         </p>
@@ -1379,86 +1389,107 @@ const goToDashboardDummy = () => {
                                 </div>
                             </div>
 
-                            <!-- Step 4: Specialties with PickList -->
-                            <div v-if="currentStep === 3" class="p-fluid grid formgrid">
-                                <div class="col-12">
+                            <!-- Step 4: Specialties and Services -->
+                            <div v-if="currentStep === 3" class="grid grid-cols-12 gap-6">
+                                <div class="col-span-12">
                                     <div class="mb-6 p-4 bg-purple-50 dark:bg-purple-400/10 border border-purple-200 dark:border-purple-600 rounded-md">
-                                        <h5 class="font-semibold text-purple-700 dark:text-purple-400 mb-2">🔧 Especialidades y Servicios</h5>
+                                        <h5 class="font-semibold text-purple-700 dark:text-purple-400 mb-2">Especialidades y Servicios</h5>
                                         <p class="text-sm text-purple-600 dark:text-purple-300">
-                                            Usa el PickList para seleccionar las especialidades que ofreces
+                                            Configura tus especialidades, horarios y área de cobertura
                                         </p>
                                     </div>
                                 </div>
 
-                                <div class="col-12">
-                                    <div class="mb-4">
-                                        <label class="font-semibold mb-3 block">Especialidades *</label>
-                                        <p class="text-sm text-color-secondary mb-3">Selecciona las especialidades que ofreces arrastrándolas a la derecha</p>
-                                        <PickList
-                                            v-model="specialtiesPickList"
-                                            dataKey="code"
-                                            @move-to-target="onPickListChange"
-                                            @move-to-source="onPickListChange"
-                                        >
-                                            <template #sourceheader>
-                                                Especialidades Disponibles
-                                            </template>
-                                            <template #targetheader>
-                                                Mis Especialidades
-                                            </template>
-                                            <template #item="slotProps">
-                                                <div class="flex items-center p-2">
-                                                    <span>{{ slotProps.item.name }}</span>
-                                                </div>
-                                            </template>
-                                        </PickList>
-                                    </div>
+                                <!-- Especialidades PickList -->
+                                <div class="col-span-12">
+                                    <label class="block font-semibold mb-2">Especialidades *</label>
+                                    <p class="text-sm text-surface-500 mb-3">Selecciona las especialidades que ofreces</p>
+                                    <PickList
+                                        v-model="specialtiesPickList"
+                                        dataKey="code"
+                                        breakpoint="960px"
+                                        @move-to-target="onPickListChange"
+                                        @move-to-source="onPickListChange"
+                                    >
+                                        <template #sourceheader>
+                                            <span class="font-semibold">Disponibles</span>
+                                        </template>
+                                        <template #targetheader>
+                                            <span class="font-semibold">Mis Especialidades</span>
+                                        </template>
+                                        <template #item="slotProps">
+                                            <div class="p-2">
+                                                <span>{{ slotProps.item.name }}</span>
+                                            </div>
+                                        </template>
+                                    </PickList>
                                 </div>
 
-                                <div class="col-12">
-                                    <div class="mb-4">
-                                        <label class="font-semibold mb-3 block">Áreas de Servicio</label>
-                                        <MultiSelect
-                                            v-model="formData.serviceAreas"
-                                            :options="serviceAreaOptions"
-                                            option-label="label"
-                                            option-value="value"
-                                            placeholder="Seleccionar áreas de servicio"
-                                            class="w-full"
-                                        />
-                                    </div>
+                                <!-- Horario de Trabajo -->
+                                <div class="col-span-12">
+                                    <h6 class="font-semibold mb-4">Horario de Trabajo</h6>
                                 </div>
 
-                                <div class="col-12 md:col-6">
-                                    <label for="workingHours" class="block font-semibold mb-2">Horario de Trabajo</label>
-                                    <InputText
-                                        id="workingHours"
-                                        v-model="formData.workingHours"
+                                <div class="col-span-12 md:col-span-4">
+                                    <label class="block font-medium mb-2">Días de operación</label>
+                                    <Dropdown
+                                        v-model="workingDays"
+                                        :options="workingDaysOptions"
+                                        optionLabel="label"
+                                        optionValue="value"
+                                        placeholder="Seleccionar días"
                                         class="w-full"
-                                        placeholder="Ej: Lun-Vie 8:00-18:00"
                                     />
                                 </div>
 
-                                <div class="col-12 md:col-6">
-                                    <label for="serviceRadius" class="block font-semibold mb-2">Radio de Servicio</label>
+                                <div class="col-span-12 md:col-span-4">
+                                    <label class="block font-medium mb-2">Hora de inicio</label>
+                                    <Dropdown
+                                        v-model="workingHoursStart"
+                                        :options="workingHoursStartOptions"
+                                        optionLabel="label"
+                                        optionValue="value"
+                                        placeholder="Inicio"
+                                        class="w-full"
+                                    />
+                                </div>
+
+                                <div class="col-span-12 md:col-span-4">
+                                    <label class="block font-medium mb-2">Hora de cierre</label>
+                                    <Dropdown
+                                        v-model="workingHoursEnd"
+                                        :options="workingHoursEndOptions"
+                                        optionLabel="label"
+                                        optionValue="value"
+                                        placeholder="Cierre"
+                                        class="w-full"
+                                    />
+                                </div>
+
+                                <!-- Radio de Servicio -->
+                                <div class="col-span-12 md:col-span-6">
+                                    <label for="serviceRadius" class="block font-medium mb-2">Radio de servicio (km)</label>
                                     <InputText
                                         id="serviceRadius"
                                         v-model="formData.serviceRadius"
+                                        type="number"
                                         class="w-full"
-                                        placeholder="Ej: 50 km, Ciudad de México, Nacional"
+                                        placeholder="50"
                                     />
+                                    <small class="text-surface-500">Distancia máxima en kilómetros desde tu ubicación</small>
                                 </div>
 
-                                <div class="col-12">
-                                    <label for="businessDescription" class="block font-semibold mb-2">Descripción del Negocio</label>
+                                <!-- Descripción del Negocio -->
+                                <div class="col-span-12">
+                                    <label for="businessDescription" class="block font-medium mb-2">Descripción de tu negocio (opcional)</label>
                                     <Textarea
                                         id="businessDescription"
                                         v-model="formData.businessDescription"
                                         rows="4"
                                         class="w-full"
-                                        placeholder="Describe tu empresa, experiencia, valores diferenciadores y cualquier información relevante para tus clientes..."
+                                        placeholder="Describe tu empresa, experiencia y servicios..."
                                     />
-                                    <small class="text-surface-500">Esta información será visible para los clientes potenciales</small>
+                                    <small class="text-surface-500">Esta información será visible para clientes potenciales</small>
                                 </div>
                             </div>
 
@@ -1466,7 +1497,7 @@ const goToDashboardDummy = () => {
                             <div v-if="currentStep === 4" class="grid grid-cols-12 gap-4">
                                 <div class="col-span-12">
                                     <div class="mb-6 p-4 bg-green-50 dark:bg-green-400/10 border border-green-200 dark:border-green-600 rounded-md">
-                                        <h5 class="font-semibold text-green-700 dark:text-green-400 mb-2">📝 Revisión Final</h5>
+                                        <h5 class="font-semibold text-green-700 dark:text-green-400 mb-2">Revisión Final</h5>
                                         <p class="text-sm text-green-600 dark:text-green-300">
                                             Revisa todos los datos antes de enviar para aprobación
                                         </p>
