@@ -248,7 +248,23 @@
             <div v-if="selectedSupplier.sat_data">
                 <h6 class="text-900 mb-3">Resultados de Verificaciones Nubarium</h6>
 
-                <!-- Banner de Evaluación General -->
+                <!-- ALERTA DE BLOCKLIST (Independiente) -->
+                <Message
+                    v-if="selectedSupplier.sat_data?.blacklist_results?.normalized?.enAlgunListaBloqueada"
+                    severity="error"
+                    :closable="false"
+                    class="mb-3"
+                >
+                    <div class="flex align-items-center">
+                        <i class="pi pi-exclamation-triangle text-3xl mr-3"></i>
+                        <div>
+                            <strong class="text-lg">¡ALERTA! Aparece en Lista de Bloqueo</strong>
+                            <p class="m-0 mt-1">Este proveedor está registrado en listas de bloqueo o prevención de lavado de dinero.</p>
+                        </div>
+                    </div>
+                </Message>
+
+                <!-- EVALUACIÓN DE BIOMETRÍA (Separada) -->
                 <Message
                     :severity="getRiskAssessment(selectedSupplier).severity"
                     :closable="false"
@@ -463,40 +479,38 @@ const selectedSupplier = ref(null);
 const rejectionReason = ref('');
 const supplierToReject = ref(null);
 
-// Risk assessment function
+// Biometry risk assessment function (SOLO evalúa similitud facial, NO blocklist)
 const getRiskAssessment = (supplier) => {
-    if (!supplier?.sat_data) {
-        return { level: 'DESCONOCIDO', severity: 'secondary', recommendation: 'Sin datos de validación' };
+    if (!supplier?.sat_data?.biometry_results?.comparacionFacial) {
+        return { level: 'SIN DATOS', severity: 'secondary', recommendation: 'Sin datos de biometría' };
     }
 
-    // Check blocklist first (highest priority)
-    if (supplier.sat_data.blacklist_results?.normalized?.enAlgunListaBloqueada) {
-        return {
-            level: 'RIESGO ALTO',
-            severity: 'danger',
-            recommendation: 'RECHAZAR - Aparece en lista de bloqueo'
-        };
-    }
-
-    // Check biometry score
-    const similitud = supplier.sat_data.biometry_results?.comparacionFacial?.similitudPorcentaje ||
-                     supplier.sat_data.biometry_results?.comparacionFacial?.similitud ||
+    // Get biometry score
+    const similitud = supplier.sat_data.biometry_results.comparacionFacial.similitudPorcentaje ||
+                     supplier.sat_data.biometry_results.comparacionFacial.similitud ||
                      0;
 
     // Parse if it's a string with %
     const similitudNum = typeof similitud === 'string' ? parseFloat(similitud.replace('%', '')) : similitud;
 
+    // Risk assessment based ONLY on facial similarity
     if (similitudNum >= 80) {
         return {
             level: 'RIESGO BAJO',
             severity: 'success',
-            recommendation: 'APROBAR - Todas las validaciones correctas'
+            recommendation: 'APROBAR - Biometría validada correctamente'
         };
-    } else {
+    } else if (similitudNum >= 60) {
         return {
             level: 'RIESGO MEDIO',
             severity: 'warning',
-            recommendation: 'REVISAR - Verificar manualmente biometría'
+            recommendation: 'REVISAR - Similitud facial por debajo del umbral recomendado'
+        };
+    } else {
+        return {
+            level: 'RIESGO ALTO',
+            severity: 'danger',
+            recommendation: 'RECHAZAR - Similitud facial muy baja, posible suplantación'
         };
     }
 };
