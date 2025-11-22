@@ -245,6 +245,177 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Verification Data Section -->
+            <div class="col-12" v-if="selectedSupplier.sat_data">
+                <h6>Resultados de Verificaciones Nubarium</h6>
+
+                <!-- INE Validation -->
+                <div v-if="selectedSupplier.sat_data?.ine_validation" class="mb-4 p-3 border-round surface-border" style="border: 1px solid var(--surface-border);">
+                    <h6 class="text-primary mb-2">Validación INE</h6>
+                    <div class="grid">
+                        <div class="col-12 md:col-6">
+                            <div class="field">
+                                <label>Nombre Completo:</label>
+                                <p class="font-medium">{{ selectedSupplier.sat_data.ine_validation.normalized?.nombreCompleto || 'N/A' }}</p>
+                            </div>
+                            <div class="field">
+                                <label>CURP:</label>
+                                <p class="font-medium">{{ selectedSupplier.sat_data.ine_validation.normalized?.curp || 'N/A' }}</p>
+                            </div>
+                        </div>
+                        <div class="col-12 md:col-6">
+                            <div class="field">
+                                <label>Fecha de Nacimiento:</label>
+                                <p>{{ selectedSupplier.sat_data.ine_validation.normalized?.fechaNacimiento || 'N/A' }}</p>
+                            </div>
+                            <div class="field">
+                                <label>Domicilio:</label>
+                                <p>{{ selectedSupplier.sat_data.ine_validation.normalized?.domicilio || 'N/A' }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Biometry Results -->
+                <div v-if="selectedSupplier.sat_data?.biometry_results" class="mb-4 p-3 border-round surface-border" style="border: 1px solid var(--surface-border);">
+                    <h6 class="text-primary mb-2">Verificación Biométrica</h6>
+                    <div class="grid">
+                        <div class="col-12 md:col-4">
+                            <div class="field">
+                                <label>Similitud Facial:</label>
+                                <p class="font-medium">
+                                    <Tag
+                                        :value="`${selectedSupplier.sat_data.biometry_results.similarityScore || 0}%`"
+                                        :severity="(selectedSupplier.sat_data.biometry_results.similarityScore || 0) >= 80 ? 'success' : 'warning'"
+                                    />
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-12 md:col-4">
+                            <div class="field">
+                                <label>Prueba de Vida:</label>
+                                <p>
+                                    <Tag
+                                        :value="selectedSupplier.sat_data.biometry_results.livenessCheck ? 'Aprobada' : 'Rechazada'"
+                                        :severity="selectedSupplier.sat_data.biometry_results.livenessCheck ? 'success' : 'danger'"
+                                    />
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-12 md:col-4">
+                            <div class="field">
+                                <label>Detección de Spoofing:</label>
+                                <p>
+                                    <Tag
+                                        :value="selectedSupplier.sat_data.biometry_results.spoofingDetected ? 'Detectado' : 'Sin Spoofing'"
+                                        :severity="selectedSupplier.sat_data.biometry_results.spoofingDetected ? 'danger' : 'success'"
+                                    />
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Blocklist / PLD Results -->
+                <div v-if="selectedSupplier.sat_data?.blacklist_results" class="mb-4 p-3 border-round surface-border" style="border: 1px solid var(--surface-border);">
+                    <h6 class="text-primary mb-2">Resultados de Listas de Bloqueo (PLD)</h6>
+                    <div class="grid">
+                        <div class="col-12 md:col-6">
+                            <div class="field">
+                                <label>Estado en Lista Negra:</label>
+                                <p>
+                                    <Tag
+                                        :value="selectedSupplier.sat_data.blacklist_results.normalized?.enListaNegra ? 'EN LISTA NEGRA' : 'Limpio'"
+                                        :severity="selectedSupplier.sat_data.blacklist_results.normalized?.enListaNegra ? 'danger' : 'success'"
+                                        class="font-bold"
+                                    />
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-12 md:col-6">
+                            <div class="field">
+                                <label>Tipo de Consulta:</label>
+                                <p>{{ selectedSupplier.sat_data.blacklist_results.normalized?.tipoConsulta || 'N/A' }}</p>
+                            </div>
+                        </div>
+                        <div class="col-12" v-if="selectedSupplier.sat_data.blacklist_results.normalized?.mensaje">
+                            <div class="field">
+                                <label>Detalles:</label>
+                                <p class="text-sm">{{ selectedSupplier.sat_data.blacklist_results.normalized.mensaje }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SAT Validation -->
+                <div v-if="selectedSupplier.sat_data?.sat_validation" class="mb-4 p-3 border-round surface-border" style="border: 1px solid var(--surface-border);">
+                    <h6 class="text-primary mb-2">Validación SAT</h6>
+                    <div class="grid">
+                        <div class="col-12 md:col-6">
+                            <div class="field">
+                                <label>RFC Validado:</label>
+                                <p class="font-medium">{{ selectedSupplier.sat_data.sat_validation.normalized?.rfc || selectedSupplier.rfc }}</p>
+                            </div>
+                            <div class="field">
+                                <label>Razón Social:</label>
+                                <p>{{ selectedSupplier.sat_data.sat_validation.normalized?.razonSocial || 'N/A' }}</p>
+                            </div>
+                        </div>
+                        <div class="col-12 md:col-6">
+                            <div class="field">
+                                <label>Régimen Fiscal:</label>
+                                <p>{{ selectedSupplier.sat_data.sat_validation.normalized?.regimenFiscal || 'N/A' }}</p>
+                            </div>
+                            <div class="field">
+                                <label>Estado SAT:</label>
+                                <p>
+                                    <Tag
+                                        :value="selectedSupplier.sat_data.sat_validation.normalized?.estadoSAT || 'Desconocido'"
+                                        :severity="selectedSupplier.sat_data.sat_validation.normalized?.estadoSAT === 'Activo' ? 'success' : 'warning'"
+                                    />
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Overall Assessment -->
+                <div class="p-3 border-round" :class="{
+                    'bg-green-50': !selectedSupplier.sat_data?.blacklist_results?.normalized?.enListaNegra,
+                    'bg-red-50': selectedSupplier.sat_data?.blacklist_results?.normalized?.enListaNegra
+                }">
+                    <h6 class="mb-2">Evaluación General</h6>
+                    <div class="grid">
+                        <div class="col-12 md:col-6">
+                            <div class="field">
+                                <label>Nivel de Riesgo:</label>
+                                <p>
+                                    <Tag
+                                        :value="selectedSupplier.sat_data?.blacklist_results?.normalized?.enListaNegra ? 'ALTO' :
+                                               (selectedSupplier.sat_data?.biometry_results?.similarityScore || 0) < 80 ? 'MEDIO' : 'BAJO'"
+                                        :severity="selectedSupplier.sat_data?.blacklist_results?.normalized?.enListaNegra ? 'danger' :
+                                                  (selectedSupplier.sat_data?.biometry_results?.similarityScore || 0) < 80 ? 'warning' : 'success'"
+                                        class="font-bold text-lg"
+                                    />
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-12 md:col-6">
+                            <div class="field">
+                                <label>Recomendación:</label>
+                                <p class="font-medium">
+                                    {{ selectedSupplier.sat_data?.blacklist_results?.normalized?.enListaNegra ?
+                                       'RECHAZAR - Aparece en lista negra' :
+                                       (selectedSupplier.sat_data?.biometry_results?.similarityScore || 0) >= 80 ?
+                                       'APROBAR - Todas las validaciones correctas' :
+                                       'REVISAR - Verificar manualmente biometría' }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <template #footer>
