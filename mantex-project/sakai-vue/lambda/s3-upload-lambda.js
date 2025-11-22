@@ -64,8 +64,14 @@ exports.handler = async (event) => {
 
         console.log('Archivo subido exitosamente:', result.Location);
 
-        // Construir URL pública (asumiendo que el bucket es público)
-        const fileUrl = `https://${bucket}.s3.amazonaws.com/${key}`;
+        // Generar URL firmada con 7 días de expiración (bucket privado)
+        const fileUrl = s3.getSignedUrl('getObject', {
+            Bucket: bucket,
+            Key: key,
+            Expires: 604800 // 7 días en segundos
+        });
+
+        console.log('URL firmada generada:', fileUrl);
 
         return {
             statusCode: 200,
