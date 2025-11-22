@@ -55,14 +55,14 @@ exports.handler = async (event) => {
             StorageClass: 'STANDARD_IA' // Más económico para documentos
         };
 
-        console.log(`📤 Subiendo archivo a S3: ${bucket}/${key}`);
+        console.log(`Subiendo archivo a S3: ${bucket}/${key}`);
         console.log('Content Type:', contentType);
         console.log('Buffer Size:', buffer.length, 'bytes');
 
         // Subir archivo a S3
         const result = await s3.upload(s3Params).promise();
 
-        console.log('✅ Archivo subido exitosamente:', result.Location);
+        console.log('Archivo subido exitosamente:', result.Location);
 
         // Construir URL pública (asumiendo que el bucket es público)
         const fileUrl = `https://${bucket}.s3.amazonaws.com/${key}`;
@@ -85,7 +85,7 @@ exports.handler = async (event) => {
         };
 
     } catch (error) {
-        console.error('❌ Error uploading to S3:', error);
+        console.error('Error uploading to S3:', error);
 
         return {
             statusCode: 500,

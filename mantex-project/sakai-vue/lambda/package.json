@@ -1,0 +1,19 @@
+{
+  "name": "mantex-s3-lambdas",
+  "version": "1.0.0",
+  "description": "Lambda functions for S3 operations - Mantex",
+  "main": "index.js",
+  "scripts": {
+    "deploy": "serverless deploy",
+    "deploy:prod": "serverless deploy --stage prod",
+    "deploy:dev": "serverless deploy --stage dev",
+    "remove": "serverless remove"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.1691.0"
+  },
+  "devDependencies": {
+    "serverless": "^3.38.0",
+    "serverless-offline": "^13.3.0"
+  }
+}

@@ -11,14 +11,31 @@ import Textarea from 'primevue/textarea';
 import Password from 'primevue/password';
 import FileUpload from 'primevue/fileupload';
 import ProgressSpinner from 'primevue/progressspinner';
+import RadioButton from 'primevue/radiobutton';
+import Select from 'primevue/select';
 import nubariumService from '@/lib/nubariumService.js';
+import { useS3Upload } from '@/composables/useS3Upload.js';
 
 const { user, profile, completeOnboarding, logout } = useAuth();
+const { uploadINEFiles, fileToBase64: s3FileToBase64 } = useS3Upload();
 const router = useRouter();
 const toast = useToast();
 
 const loading = ref(false);
 const currentStep = ref(0);
+
+// Tipos de activos (temporal - después será catálogo desde admin)
+const assetTypes = ref([
+    { label: 'Aire Acondicionado', value: 'aire_acondicionado' },
+    { label: 'Caldera', value: 'caldera' },
+    { label: 'Sistema Eléctrico', value: 'sistema_electrico' },
+    { label: 'Plomería', value: 'plomeria' },
+    { label: 'Elevador', value: 'elevador' },
+    { label: 'Sistema de Seguridad', value: 'sistema_seguridad' },
+    { label: 'Equipo de Cómputo', value: 'equipo_computo' },
+    { label: 'Mobiliario', value: 'mobiliario' },
+    { label: 'Otro', value: 'otro' }
+]);
 
 // Form data for each step - CLIENT SPECIFICATION
 const formData = ref({
@@ -34,16 +51,22 @@ const formData = ref({
     ineData: null, // Extracted OCR data from Nubarium
     biometryResults: null, // Face comparison results
 
-    // Step 3: Asset and contact data
-    companyName: '',
-    contactPerson: '',
+    // Step 3: Contact and address data
     phoneNumber: '',
-    email: '',
-    businessAddress: '',
+    sameAsINE: null, // null = no seleccionado, true = misma dirección, false = diferente
+    address: {
+        street: '',
+        exteriorNumber: '',
+        interiorNumber: '',
+        neighborhood: '',
+        city: '',
+        state: '',
+        postalCode: ''
+    },
     assets: [
         {
             name: '',
-            type: '',
+            type: '', // Will be dropdown
             location: '',
             description: ''
         }
@@ -135,23 +158,50 @@ const validateStep2 = () => {
 };
 
 const validateStep3 = () => {
-    const requiredFields = ['companyName', 'contactPerson', 'phoneNumber'];
+    // Validar teléfono
+    if (!formData.value.phoneNumber || formData.value.phoneNumber.trim() === '') {
+        toast.add({
+            severity: 'warn',
+            summary: 'Campo Requerido',
+            detail: 'El teléfono es obligatorio',
+            life: 3000
+        });
+        return false;
+    }
 
-    for (const field of requiredFields) {
-        if (!formData.value[field] || formData.value[field].trim() === '') {
-            const fieldNames = {
-                'companyName': 'Nombre de la empresa',
-                'contactPerson': 'Persona de contacto',
-                'phoneNumber': 'Teléfono'
-            };
+    // Validar que haya seleccionado si es misma dirección o no
+    if (formData.value.sameAsINE === null) {
+        toast.add({
+            severity: 'warn',
+            summary: 'Selección Requerida',
+            detail: 'Indica si la dirección es la misma que tu INE',
+            life: 3000
+        });
+        return false;
+    }
 
-            toast.add({
-                severity: 'warn',
-                summary: 'Campo Requerido',
-                detail: `${fieldNames[field]} es obligatorio`,
-                life: 3000
-            });
-            return false;
+    // Validar campos de dirección si no es la misma del INE
+    if (!formData.value.sameAsINE) {
+        const requiredAddressFields = ['street', 'exteriorNumber', 'neighborhood', 'city', 'state', 'postalCode'];
+        const fieldNames = {
+            'street': 'Calle',
+            'exteriorNumber': 'Número exterior',
+            'neighborhood': 'Colonia',
+            'city': 'Ciudad',
+            'state': 'Estado',
+            'postalCode': 'Código postal'
+        };
+
+        for (const field of requiredAddressFields) {
+            if (!formData.value.address[field] || formData.value.address[field].trim() === '') {
+                toast.add({
+                    severity: 'warn',
+                    summary: 'Campo Requerido',
+                    detail: `${fieldNames[field]} es obligatorio`,
+                    life: 3000
+                });
+                return false;
+            }
         }
     }
 
@@ -171,6 +221,67 @@ const validateCurrentStep = () => {
     }
 };
 
+// Función para copiar dirección del INE
+const copyAddressFromINE = async () => {
+    if (formData.value.sameAsINE === true) {
+        try {
+            const { supabase } = await import('@/lib/supabaseClient.js');
+
+            // Obtener datos del INE del usuario
+            const { data, error } = await supabase
+                .from('ine_verifications')
+                .select('verification_response')
+                .eq('user_id', user.value.id)
+                .order('created_at', { ascending: false })
+                .limit(1)
+                .single();
+
+            if (error) {
+                console.error('Error obteniendo datos del INE:', error);
+                return;
+            }
+
+            if (data && data.verification_response) {
+                const ineData = data.verification_response;
+                const ocrData = ineData.ocr_data || ineData.normalized;
+
+                // Copiar dirección del INE al formulario
+                if (ocrData) {
+                    formData.value.address = {
+                        street: ocrData.calle || '',
+                        exteriorNumber: '', // No viene del INE
+                        interiorNumber: '',
+                        neighborhood: ocrData.colonia || '',
+                        city: ocrData.ciudad || ocrData.municipio || '',
+                        state: ocrData.estado || '',
+                        postalCode: '' // No viene del INE
+                    };
+
+                    toast.add({
+                        severity: 'info',
+                        summary: 'Dirección Copiada',
+                        detail: 'Verifica y completa los datos faltantes',
+                        life: 3000
+                    });
+                }
+            }
+        } catch (error) {
+            console.error('Error copiando dirección del INE:', error);
+        }
+    } else if (formData.value.sameAsINE === false) {
+        // Limpiar formulario si selecciona "diferente"
+        formData.value.address = {
+            street: '',
+            exteriorNumber: '',
+            interiorNumber: '',
+            neighborhood: '',
+            city: '',
+            state: '',
+            postalCode: ''
+        };
+    }
+};
+
 // Real Nubarium API integration functions
 const fileToBase64 = (file) => {
     return new Promise((resolve, reject) => {
@@ -182,6 +293,157 @@ const fileToBase64 = (file) => {
         };
         reader.onerror = error => reject(error);
     });
+};
+
+// Database persistence functions
+const saveSATValidationToDB = async (rfcNameResult, rfcValidation, ciecValidation = null) => {
+    try {
+        console.log('Guardando validacion SAT en base de datos...');
+        const { supabase } = await import('@/lib/supabaseClient.js');
+
+        const satVerificationData = {
+            user_id: user.value.id,
+            rfc: formData.value.rfc.toUpperCase(),
+            ciec: formData.value.ciecPassword || null,
+            verification_status: 'completed',
+            tax_status: {
+                valido: rfcValidation.normalized?.valido || false,
+                nombreRazonSocial: rfcNameResult.success ? rfcNameResult.normalized?.nombre : null,
+                situacion_fiscal: rfcValidation.normalized
+            },
+            verification_response: {
+                rfc_name: rfcNameResult.success ? rfcNameResult.data : null,
+                rfc_validation: rfcValidation.data,
+                ciec_validation: ciecValidation?.data || null
+            },
+            verified_at: new Date().toISOString(),
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+        };
+
+        const { data, error } = await supabase
+            .from('sat_verifications')
+            .insert(satVerificationData)
+            .select();
+
+        if (error) {
+            console.error('Error al guardar validacion SAT:', error);
+            throw error;
+        }
+
+        console.log('Validacion SAT guardada exitosamente:', data);
+        return data[0];
+    } catch (error) {
+        console.error('Error critico al guardar validacion SAT:', error);
+        throw error;
+    }
+};
+
+const saveINEValidationToDB = async (ineValidation, frontFile, backFile, selfieFile) => {
+    try {
+        console.log('Guardando validacion INE en base de datos...');
+        const { supabase } = await import('@/lib/supabaseClient.js');
+
+        // Extraer CURP y número de INE del resultado de validación
+        const curp = ineValidation.normalized?.curp || ineValidation.data?.ocr?.curp || null;
+        const ineNumber = ineValidation.normalized?.claveElector || ineValidation.data?.ocr?.claveElector || null;
+
+        // Insertar el registro de verificacion
+        const ineVerificationData = {
+            user_id: user.value.id,
+            curp: curp,
+            ine_number: ineNumber,
+            verification_status: 'verified',
+            verification_response: {
+                ocr_data: ineValidation.data?.ocr || null,
+                nominal_list: ineValidation.data?.nominalList || null,
+                face_comparison: ineValidation.data?.faceComparison || null,
+                normalized: ineValidation.normalized,
+                lista_nominal_valido: ineValidation.normalized?.listaNominal?.valido || false,
+                face_match_score: ineValidation.normalized?.comparacionFacial?.similitud || null
+            },
+            verified_at: new Date().toISOString(),
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+        };
+
+        const { data, error } = await supabase
+            .from('ine_verifications')
+            .insert(ineVerificationData)
+            .select();
+
+        if (error) {
+            console.error('Error al guardar validacion INE:', error);
+            throw error;
+        }
+
+        const verificationRecord = data[0];
+        console.log('Validacion INE guardada exitosamente:', verificationRecord);
+
+        // Subir imagenes a S3 usando el composable
+        try {
+            console.log('Subiendo imagenes de INE a S3...');
+            const uploadResult = await uploadINEFiles(
+                frontFile,
+                backFile,
+                selfieFile,
+                profile.value?.username || user.value.email.split('@')[0],
+                verificationRecord.id
+            );
+
+            // Guardar las URLs en la tabla documents
+            const documentsToInsert = [
+                {
+                    user_id: user.value.id,
+                    document_type: 'ine_front',
+                    document_name: uploadResult.front.filename,
+                    file_url: uploadResult.front.file_url,
+                    s3_key: uploadResult.front.s3_key,
+                    file_size: uploadResult.front.file_size,
+                    mime_type: uploadResult.front.mime_type,
+                    verification_id: verificationRecord.id
+                },
+                {
+                    user_id: user.value.id,
+                    document_type: 'ine_back',
+                    document_name: uploadResult.back.filename,
+                    file_url: uploadResult.back.file_url,
+                    s3_key: uploadResult.back.s3_key,
+                    file_size: uploadResult.back.file_size,
+                    mime_type: uploadResult.back.mime_type,
+                    verification_id: verificationRecord.id
+                },
+                {
+                    user_id: user.value.id,
+                    document_type: 'selfie',
+                    document_name: uploadResult.selfie.filename,
+                    file_url: uploadResult.selfie.file_url,
+                    s3_key: uploadResult.selfie.s3_key,
+                    file_size: uploadResult.selfie.file_size,
+                    mime_type: uploadResult.selfie.mime_type,
+                    verification_id: verificationRecord.id
+                }
+            ];
+
+            const { error: docsError } = await supabase
+                .from('documents')
+                .insert(documentsToInsert);
+
+            if (docsError) {
+                console.error('Error al guardar documentos:', docsError);
+            } else {
+                console.log('Documentos guardados en base de datos');
+            }
+        } catch (s3Error) {
+            console.error('Error al subir imagenes a S3:', s3Error);
+            // No lanzar error, las imagenes son secundarias
+        }
+
+        return verificationRecord;
+    } catch (error) {
+        console.error('Error critico al guardar validacion INE:', error);
+        throw error;
+    }
 };
 
 const processSATValidation = async () => {
@@ -220,6 +482,7 @@ const processSATValidation = async () => {
         };
 
         // Paso 3: Optional CIEC validation
+        let ciecValidation = null;
         if (formData.value.ciecPassword && formData.value.ciecPassword.length >= 8) {
             toast.add({
                 severity: 'info',
@@ -228,7 +491,7 @@ const processSATValidation = async () => {
                 life: 3000
             });
 
-            const ciecValidation = await nubariumService.validateClientCIEC({
+            ciecValidation = await nubariumService.validateClientCIEC({
                 rfc: formData.value.rfc,
                 password: formData.value.ciecPassword
             });
@@ -238,10 +501,13 @@ const processSATValidation = async () => {
             }
         }
 
+        // Guardar inmediatamente en base de datos
+        await saveSATValidationToDB(rfcNameResult, rfcValidation, ciecValidation);
+
         toast.add({
             severity: 'success',
             summary: 'SAT Validado',
-            detail: 'RFC verificado correctamente',
+            detail: 'RFC verificado correctamente y guardado',
             life: 3000
         });
 
@@ -291,10 +557,18 @@ const processINEValidation = async () => {
         formData.value.ineData = ineValidation.data;
         formData.value.biometryResults = ineValidation.normalized;
 
+        // Guardar inmediatamente en base de datos y subir imagenes a S3
+        await saveINEValidationToDB(
+            ineValidation,
+            formData.value.ineFrontFile,
+            formData.value.ineBackFile,
+            formData.value.selfieFile
+        );
+
         toast.add({
             severity: 'success',
             summary: 'INE Validado',
-            detail: 'Identidad verificada exitosamente (sin blacklist)',
+            detail: 'Identidad verificada exitosamente y guardada',
             life: 3000
         });
 
@@ -378,68 +652,177 @@ const completeStep = async () => {
 };
 
 const saveClientData = async () => {
-    console.log('🔄 Guardando datos del cliente en Supabase...');
+    console.log('Guardando datos del cliente en Supabase...');
 
     try {
-        // Importar supabase aquí para evitar problemas de dependencias
         const { supabase } = await import('@/lib/supabaseClient.js');
 
-        // Preparar datos para guardar en la tabla client_profiles
-        const clientData = {
+        // Obtener IDs de las verificaciones previas
+        const { data: ineVerif } = await supabase
+            .from('ine_verifications')
+            .select('id')
+            .eq('user_id', user.value.id)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .single();
+
+        const { data: satVerif } = await supabase
+            .from('sat_verifications')
+            .select('id')
+            .eq('user_id', user.value.id)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .single();
+
+        // Guardar perfil del cliente
+        const clientProfileData = {
             user_id: user.value.id,
-            username: profile.value?.username || user.value?.email?.split('@')[0],
-
-            // Datos de identificación (extraidos del INE)
-            full_name: formData.value.biometryResults?.nombreCompleto || 'Pending Validation',
-            curp: formData.value.biometryResults?.curp || null,
-
-            // Datos fiscales y SAT
-            rfc: formData.value.rfc.toUpperCase(),
-
-            // Datos de contacto y empresa
-            company_name: formData.value.companyName,
-            contact_person: formData.value.contactPerson,
             phone_number: formData.value.phoneNumber,
-            email: formData.value.email || user.value.email,
-            business_address: formData.value.businessAddress,
-
-            // Assets
-            assets: formData.value.assets.filter(asset => asset.name.trim() !== ''),
-
-            // Nubarium validation results
-            nubarium_validations: {
-                ine_validation: formData.value.ineData,
-                biometry_results: formData.value.biometryResults,
-                sat_validation: formData.value.satValidationResults
-            },
-
-            // Metadatos
-            submitted_at: new Date().toISOString(),
-            status: 'submitted',
+            same_as_ine: formData.value.sameAsINE,
+            street: formData.value.address.street || null,
+            exterior_number: formData.value.address.exteriorNumber || null,
+            interior_number: formData.value.address.interiorNumber || null,
+            neighborhood: formData.value.address.neighborhood || null,
+            city: formData.value.address.city || null,
+            state: formData.value.address.state || null,
+            postal_code: formData.value.address.postalCode || null,
+            ine_verification_id: ineVerif?.id || null,
+            sat_verification_id: satVerif?.id || null,
+            onboarding_completed_at: new Date().toISOString(),
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
         };
 
-        // UPSERT en la tabla client_profiles
-        const { data, error } = await supabase
+        const { data: profileData, error: profileError } = await supabase
             .from('client_profiles')
+            .upsert(clientProfileData, {
+                onConflict: 'user_id',
+                ignoreDuplicates: false
+            })
+            .select()
+            .single();
+
+        if (profileError) {
+            console.error('Error al guardar perfil del cliente:', profileError);
+            throw new Error(`Error de base de datos: ${profileError.message}`);
+        }
+
+        console.log('Perfil del cliente guardado exitosamente');
+
+        // Obtener datos completos de SAT e INE para tabla clients
+        const { data: satData } = await supabase
+            .from('sat_verifications')
+            .select('rfc, ciec, verification_response, tax_status')
+            .eq('user_id', user.value.id)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .single();
+
+        const { data: ineData } = await supabase
+            .from('ine_verifications')
+            .select('verification_response')
+            .eq('user_id', user.value.id)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .single();
+
+        const { data: documents } = await supabase
+            .from('documents')
+            .select('document_type, file_url')
+            .eq('user_id', user.value.id)
+            .in('document_type', ['ine_front', 'selfie'])
+            .order('created_at', { ascending: false });
+
+        // Construir dirección completa
+        const fullAddress = [
+            formData.value.address.street,
+            formData.value.address.exteriorNumber,
+            formData.value.address.interiorNumber,
+            formData.value.address.neighborhood
+        ].filter(Boolean).join(' ');
+
+        // Extraer nombre de contacto del INE
+        const ineNormalized = ineData?.verification_response?.normalized || ineData?.verification_response?.ocr_data;
+        const contactPerson = ineNormalized ?
+            `${ineNormalized.nombre || ''} ${ineNormalized.apellidoPaterno || ''} ${ineNormalized.apellidoMaterno || ''}`.trim()
+            : null;
+
+        // Extraer razón social del SAT
+        const companyName = satData?.tax_status?.nombreRazonSocial ||
+                           satData?.verification_response?.rfc_name?.normalized?.nombre ||
+                           `Cliente ${user.value.email}`;
+
+        // Obtener URLs de documentos
+        const ineFrontUrl = documents?.find(d => d.document_type === 'ine_front')?.file_url || null;
+        const selfieUrl = documents?.find(d => d.document_type === 'selfie')?.file_url || null;
+
+        // Guardar en tabla clients
+        const clientData = {
+            user_id: user.value.id,
+            company_name: companyName,
+            contact_person: contactPerson,
+            phone: formData.value.phoneNumber,
+            email: user.value.email,
+            address: fullAddress,
+            city: formData.value.address.city || null,
+            state: formData.value.address.state || null,
+            postal_code: formData.value.address.postalCode || null,
+            rfc: satData?.rfc || null,
+            ciec_validated: satData?.ciec ? true : false,
+            ine_front_url: ineFrontUrl,
+            selfie_url: selfieUrl,
+            status: 'active',
+            auto_assign_preventive: true,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+        };
+
+        const { data: clientRecord, error: clientError } = await supabase
+            .from('clients')
             .upsert(clientData, {
                 onConflict: 'user_id',
                 ignoreDuplicates: false
             })
-            .select();
+            .select()
+            .single();
 
-        if (error) {
-            console.error('❌ Error al guardar datos del cliente:', error);
-            throw new Error(`Error de base de datos: ${error.message}`);
+        if (clientError) {
+            console.error('Error al guardar en tabla clients:', clientError);
+            // No lanzar error, la tabla client_profiles ya se guardó
+        } else {
+            console.log('Cliente guardado en tabla clients exitosamente');
         }
 
-        console.log('✅ Datos del cliente guardados exitosamente:', data);
+        // Guardar activos si hay alguno
+        const validAssets = formData.value.assets.filter(asset => asset.name.trim() !== '');
 
-        return data;
+        if (validAssets.length > 0) {
+            const assetsData = validAssets.map(asset => ({
+                client_profile_id: profileData.id,
+                name: asset.name,
+                asset_type: asset.type,
+                location: asset.location || null,
+                description: asset.description || null,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+            }));
+
+            const { error: assetsError } = await supabase
+                .from('client_assets')
+                .insert(assetsData);
+
+            if (assetsError) {
+                console.error('Error al guardar activos:', assetsError);
+                // No lanzar error, los activos son opcionales
+            } else {
+                console.log(`${validAssets.length} activos guardados exitosamente`);
+            }
+        }
+
+        return profileData;
 
     } catch (error) {
-        console.error('💥 Error crítico al guardar datos del cliente:', error);
+        console.error('Error critico al guardar datos del cliente:', error);
         throw error;
     }
 };
@@ -532,9 +915,7 @@ onMounted(() => {
             <!-- Header with Logo and Actions -->
             <div class="w-full flex justify-between items-center mb-8">
                 <div class="flex items-center gap-4">
-                    <svg viewBox="0 0 54 40" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-12 w-auto">
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M17.1637 19.2467C17.1566 19.4033 17.1529 19.561 17.1529 19.7194C17.1529 25.3503 21.7203 29.915 27.3546 29.915C32.9887 29.915 37.5561 25.3503 37.5561 19.7194C37.5561 19.5572 37.5524 19.3959 37.5449 19.2355C38.5617 19.0801 39.5759 18.9013 40.5867 18.6994L40.6926 18.6782C40.7191 19.0218 40.7326 19.369 40.7326 19.7194C40.7326 27.1036 34.743 33.0896 27.3546 33.0896C19.966 33.0896 13.9765 27.1036 13.9765 19.7194C13.9765 19.374 13.9896 19.0316 14.0154 18.6927L14.0486 18.6994C15.0837 18.9062 16.1223 19.0886 17.1637 19.2467Z" fill="var(--primary-color)" />
-                    </svg>
+                    <img src="/demo/images/logo.png" alt="Mantex Logo" class="mb-8 w-16 mx-auto"/>
                     <div>
                         <h1 class="text-3xl font-bold text-surface-900 dark:text-surface-0 m-0">{{ onboardingData.title }}</h1>
                         <p class="text-surface-600 dark:text-surface-200 m-0 mt-2">Hola, {{ userName }}. Completa tu configuración de cliente</p>
@@ -593,9 +974,9 @@ onMounted(() => {
                             <div v-if="currentStep === 0" class="grid grid-cols-12 gap-4">
                                 <div class="col-span-12">
                                     <div class="mb-6 p-4 bg-blue-50 dark:bg-blue-400/10 border border-blue-200 dark:border-blue-600 rounded-md">
-                                        <h5 class="font-semibold text-blue-700 dark:text-blue-400 mb-2">📊 Validación Fiscal SAT</h5>
+                                        <h5 class="font-semibold text-blue-700 dark:text-blue-400 mb-2">Validación datos del SAT</h5>
                                         <p class="text-sm text-blue-600 dark:text-blue-300">
-                                            Ingresa tu RFC y opcionalmente tu contraseña CIEC para validación completa
+                                            Ingresa tu RFC y opcionalmente tu contraseña CIEC para validación más rápida y precisa.
                                         </p>
                                     </div>
                                 </div>
@@ -625,18 +1006,18 @@ onMounted(() => {
 
                                 <div class="col-span-12">
                                     <small class="text-surface-500">
-                                        La contraseña CIEC es opcional para clientes pero permite una validación más completa de tu situación fiscal
+                                        La contraseña CIEC es opcional pero nos permite hacer una validación más rápida y precisa.
                                     </small>
                                 </div>
 
                                 <div v-if="formData.satValidationResults" class="col-span-12 mt-4">
                                     <div class="p-4 bg-green-50 dark:bg-green-400/10 border border-green-200 dark:border-green-600 rounded-md">
-                                        <h6 class="font-semibold text-green-700 dark:text-green-400 mb-2">✅ SAT Validado</h6>
+                                        <h6 class="font-semibold text-green-700 dark:text-green-400 mb-2">Datos del SAT validados correctamente</h6>
                                         <p class="text-sm text-green-600 dark:text-green-300">
                                             RFC verificado correctamente: {{ formData.satValidationResults.valido ? 'Activo' : 'Inactivo' }}
                                         </p>
                                         <div v-if="formData.satValidationResults.nombreRazonSocial?.nombre" class="mt-2 text-sm">
-                                            <strong>Razón Social:</strong> {{ formData.satValidationResults.nombreRazonSocial.nombre }}
+                                            <strong>Razón social:</strong> {{ formData.satValidationResults.nombreRazonSocial.nombre }}
                                         </div>
                                     </div>
                                 </div>
@@ -646,9 +1027,9 @@ onMounted(() => {
                             <div v-if="currentStep === 1" class="grid grid-cols-12 gap-4">
                                 <div class="col-span-12">
                                     <div class="mb-6 p-4 bg-green-50 dark:bg-green-400/10 border border-green-200 dark:border-green-600 rounded-md">
-                                        <h5 class="font-semibold text-green-700 dark:text-green-400 mb-2">🆔 Identificación Oficial (Cliente)</h5>
+                                        <h5 class="font-semibold text-green-700 dark:text-green-400 mb-2">Identificación Oficial</h5>
                                         <p class="text-sm text-green-600 dark:text-green-300">
-                                            Sube las imágenes de tu INE y toma una selfie. No se verifican listas de bloqueo para clientes.
+                                            Sube las imágenes de tu INE y toma una selfie.
                                         </p>
                                     </div>
                                 </div>
@@ -700,45 +1081,26 @@ onMounted(() => {
 
                                 <div v-if="formData.biometryResults" class="col-span-12 mt-4">
                                     <div class="p-4 bg-green-50 dark:bg-green-400/10 border border-green-200 dark:border-green-600 rounded-md">
-                                        <h6 class="font-semibold text-green-700 dark:text-green-400 mb-2">✅ Identidad Validada</h6>
+                                        <h6 class="font-semibold text-green-700 dark:text-green-400 mb-2">Identidad validada exitosamente</h6>
                                         <p class="text-sm text-green-600 dark:text-green-300">
-                                            Identidad verificada exitosamente sin verificación de blacklist
+                                            Identidad verificada exitosamente
                                         </p>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Step 3: Company and Assets Data -->
+                            <!-- Step 3: Contact and Address Data -->
                             <div v-if="currentStep === 2" class="grid grid-cols-12 gap-4">
                                 <div class="col-span-12">
                                     <div class="mb-6 p-4 bg-purple-50 dark:bg-purple-400/10 border border-purple-200 dark:border-purple-600 rounded-md">
-                                        <h5 class="font-semibold text-purple-700 dark:text-purple-400 mb-2">🏢 Datos de Contacto y Activos</h5>
+                                        <h5 class="font-semibold text-purple-700 dark:text-purple-400 mb-2">Datos de contacto y ubicación</h5>
                                         <p class="text-sm text-purple-600 dark:text-purple-300">
-                                            Información de tu empresa y los activos que requieren mantenimiento
+                                            Información de contacto y dirección de tu empresa
                                         </p>
                                     </div>
                                 </div>
 
-                                <div class="col-span-12 md:col-span-6">
-                                    <label for="companyName" class="block font-semibold mb-2">Nombre de la Empresa *</label>
-                                    <InputText
-                                        id="companyName"
-                                        v-model="formData.companyName"
-                                        class="w-full"
-                                        placeholder="Ej: Mi Empresa S.A. de C.V."
-                                    />
-                                </div>
-
-                                <div class="col-span-12 md:col-span-6">
-                                    <label for="contactPerson" class="block font-semibold mb-2">Persona de Contacto *</label>
-                                    <InputText
-                                        id="contactPerson"
-                                        v-model="formData.contactPerson"
-                                        class="w-full"
-                                        placeholder="Nombre del responsable"
-                                    />
-                                </div>
-
+                                <!-- Phone Number -->
                                 <div class="col-span-12 md:col-span-6">
                                     <label for="phoneNumber" class="block font-semibold mb-2">Teléfono *</label>
                                     <InputText
@@ -750,35 +1112,82 @@ onMounted(() => {
                                     />
                                 </div>
 
-                                <div class="col-span-12 md:col-span-6">
-                                    <label for="email" class="block font-semibold mb-2">Email de Contacto</label>
-                                    <InputText
-                                        id="email"
-                                        v-model="formData.email"
-                                        type="email"
-                                        class="w-full"
-                                        placeholder="contacto@empresa.com"
-                                    />
-                                    <small class="text-surface-500">Si es diferente al email de registro</small>
+                                <!-- Address Same as INE Radio -->
+                                <div class="col-span-12">
+                                    <label class="block font-semibold mb-3">¿La dirección de tu empresa es la misma que tu INE? *</label>
+                                    <div class="flex gap-4">
+                                        <div class="flex items-center">
+                                            <RadioButton
+                                                v-model="formData.sameAsINE"
+                                                inputId="sameYes"
+                                                :value="true"
+                                                @change="copyAddressFromINE"
+                                            />
+                                            <label for="sameYes" class="ml-2">Sí, es la misma</label>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <RadioButton
+                                                v-model="formData.sameAsINE"
+                                                inputId="sameNo"
+                                                :value="false"
+                                                @change="copyAddressFromINE"
+                                            />
+                                            <label for="sameNo" class="ml-2">No, es diferente</label>
+                                        </div>
+                                    </div>
                                 </div>
 
-                                <div class="col-span-12">
-                                    <label for="businessAddress" class="block font-semibold mb-2">Dirección del Negocio</label>
-                                    <Textarea
-                                        id="businessAddress"
-                                        v-model="formData.businessAddress"
-                                        rows="3"
-                                        class="w-full"
-                                        placeholder="Calle, Número, Colonia, C.P., Ciudad, Estado"
-                                    />
-                                </div>
+                                <!-- Address Form (shown if selection made) -->
+                                <template v-if="formData.sameAsINE !== null">
+                                    <div class="col-span-12">
+                                        <h5 class="font-semibold mb-4">Dirección de la empresa</h5>
+                                    </div>
+
+                                    <div class="col-span-12 md:col-span-8">
+                                        <label class="block font-medium mb-2">Calle *</label>
+                                        <InputText v-model="formData.address.street" class="w-full" placeholder="Nombre de la calle" />
+                                    </div>
+
+                                    <div class="col-span-12 md:col-span-2">
+                                        <label class="block font-medium mb-2">Núm. Exterior *</label>
+                                        <InputText v-model="formData.address.exteriorNumber" class="w-full" placeholder="123" />
+                                    </div>
+
+                                    <div class="col-span-12 md:col-span-2">
+                                        <label class="block font-medium mb-2">Núm. Interior</label>
+                                        <InputText v-model="formData.address.interiorNumber" class="w-full" placeholder="A" />
+                                    </div>
+
+                                    <div class="col-span-12 md:col-span-6">
+                                        <label class="block font-medium mb-2">Colonia *</label>
+                                        <InputText v-model="formData.address.neighborhood" class="w-full" placeholder="Colonia" />
+                                    </div>
+
+                                    <div class="col-span-12 md:col-span-6">
+                                        <label class="block font-medium mb-2">Ciudad *</label>
+                                        <InputText v-model="formData.address.city" class="w-full" placeholder="Ciudad" />
+                                    </div>
+
+                                    <div class="col-span-12 md:col-span-6">
+                                        <label class="block font-medium mb-2">Estado *</label>
+                                        <InputText v-model="formData.address.state" class="w-full" placeholder="Estado" />
+                                    </div>
+
+                                    <div class="col-span-12 md:col-span-6">
+                                        <label class="block font-medium mb-2">Código Postal *</label>
+                                        <InputText v-model="formData.address.postalCode" class="w-full" placeholder="12345" />
+                                    </div>
+                                </template>
 
                                 <!-- Assets Section -->
-                                <div class="col-span-12">
+                                <div class="col-span-12 mt-4">
                                     <div class="flex justify-between items-center mb-4">
-                                        <h5 class="font-semibold">Activos para Mantenimiento</h5>
+                                        <h5 class="font-semibold">Activos para mantenimiento</h5>
                                         <Button label="Agregar Activo" icon="pi pi-plus" size="small" @click="addAsset" />
                                     </div>
+                                    <p class="text-sm text-surface-500 mb-4">
+                                        Registra los activos de esta ubicación. Podrás agregar más sucursales y activos desde tu dashboard.
+                                    </p>
                                 </div>
 
                                 <div v-for="(asset, index) in formData.assets" :key="index" class="col-span-12">
@@ -796,7 +1205,7 @@ onMounted(() => {
                                         </div>
                                         <div class="grid grid-cols-12 gap-4">
                                             <div class="col-span-12 md:col-span-6">
-                                                <label class="block font-medium mb-2">Nombre del Activo</label>
+                                                <label class="block font-medium mb-2">Nombre del activo</label>
                                                 <InputText
                                                     v-model="asset.name"
                                                     class="w-full"
@@ -805,10 +1214,13 @@ onMounted(() => {
                                             </div>
                                             <div class="col-span-12 md:col-span-6">
                                                 <label class="block font-medium mb-2">Tipo</label>
-                                                <InputText
+                                                <Select
                                                     v-model="asset.type"
+                                                    :options="assetTypes"
+                                                    optionLabel="label"
+                                                    optionValue="value"
+                                                    placeholder="Selecciona el tipo"
                                                     class="w-full"
-                                                    placeholder="Ej: HVAC, Eléctrico, Plomería"
                                                 />
                                             </div>
                                             <div class="col-span-12">
@@ -818,6 +1230,7 @@ onMounted(() => {
                                                     class="w-full"
                                                     placeholder="Ej: Planta Baja, Oficina Principal"
                                                 />
+                                                <small class="text-surface-500">Ubicación específica dentro de la dirección registrada</small>
                                             </div>
                                             <div class="col-span-12">
                                                 <label class="block font-medium mb-2">Descripción</label>

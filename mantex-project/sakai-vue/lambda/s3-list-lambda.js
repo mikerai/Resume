@@ -48,7 +48,7 @@ exports.handler = async (event) => {
             MaxKeys: Math.min(maxKeys, 1000) // Límite máximo de 1000
         };
 
-        console.log(`📋 Listando archivos de S3: ${bucket}/${prefix || '(root)'}`);
+        console.log(`Listando archivos de S3: ${bucket}/${prefix || '(root)'}`);
 
         // Listar objetos de S3
         const result = await s3.listObjectsV2(s3Params).promise();
@@ -63,7 +63,7 @@ exports.handler = async (event) => {
             url: `https://${bucket}.s3.amazonaws.com/${obj.Key}`
         }));
 
-        console.log(`✅ Encontrados ${files.length} archivos`);
+        console.log(`Encontrados ${files.length} archivos`);
 
         return {
             statusCode: 200,
@@ -82,7 +82,7 @@ exports.handler = async (event) => {
         };
 
     } catch (error) {
-        console.error('❌ Error listing S3 objects:', error);
+        console.error('Error listing S3 objects:', error);
 
         return {
             statusCode: 500,

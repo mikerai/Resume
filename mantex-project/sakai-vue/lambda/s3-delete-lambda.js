@@ -52,7 +52,7 @@ exports.handler = async (event) => {
         // Eliminar archivo de S3
         await s3.deleteObject(s3Params).promise();
 
-        console.log('✅ Archivo eliminado exitosamente');
+        console.log('Archivo eliminado exitosamente');
 
         return {
             statusCode: 200,
@@ -67,7 +67,7 @@ exports.handler = async (event) => {
         };
 
     } catch (error) {
-        console.error('❌ Error deleting from S3:', error);
+        console.error('Error deleting from S3:', error);
 
         return {
             statusCode: 500,
