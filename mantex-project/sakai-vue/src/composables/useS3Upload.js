@@ -57,9 +57,22 @@ export function useS3Upload() {
      * - payments (comprobantes de pago)
      * - budgets (presupuestos)
      */
+    /**
+     * Sanitiza un nombre de archivo para ser usado en headers HTTP
+     * Remueve acentos, caracteres especiales y espacios
+     */
+    const sanitizeFilename = (filename) => {
+        return filename
+            .normalize('NFD') // Descomponer caracteres con acentos
+            .replace(/[\u0300-\u036f]/g, '') // Remover marcas diacríticas (acentos)
+            .replace(/[^a-zA-Z0-9._-]/g, '_') // Reemplazar caracteres especiales con _
+            .replace(/_{2,}/g, '_') // Reemplazar múltiples _ con uno solo
+            .toLowerCase();
+    };
+
     const generateS3Key = (username, documentType, filename) => {
         const timestamp = Date.now();
-        const sanitizedFilename = filename.replace(/[^a-zA-Z0-9.-]/g, '_');
+        const sanitizedFilename = sanitizeFilename(filename);
         return `users/${username}/${documentType}/${timestamp}_${sanitizedFilename}`;
     };
 
@@ -91,7 +104,7 @@ export function useS3Upload() {
                     username: username,
                     documentType: documentType,
                     verificationId: verificationId || '',
-                    originalFilename: file.name,
+                    originalFilename: sanitizeFilename(file.name), // Sanitizar para evitar errores en headers HTTP
                     uploadTimestamp: new Date().toISOString()
                 }
             };
