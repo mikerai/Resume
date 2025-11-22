@@ -175,82 +175,80 @@
 
     <!-- Dialog para ver detalles del proveedor -->
     <Dialog v-model:visible="showSupplierDialog" modal :style="{ width: '80vw' }" header="Detalles del Proveedor">
-        <div v-if="selectedSupplier" class="grid">
-            <div class="col-12 md:col-6">
-                <h6>Información de la Empresa</h6>
-                <div class="field">
-                    <label>Empresa:</label>
-                    <p class="font-medium">{{ selectedSupplier.company_name }}</p>
-                </div>
-                <div class="field">
-                    <label>Persona de Contacto:</label>
-                    <p>{{ selectedSupplier.contact_person }}</p>
-                </div>
-                <div class="field">
-                    <label>Email:</label>
-                    <p>{{ selectedSupplier.email }}</p>
-                </div>
-                <div class="field">
-                    <label>Teléfono:</label>
-                    <p>{{ selectedSupplier.phone_number }}</p>
-                </div>
-                <div class="field">
-                    <label>RFC:</label>
-                    <p>{{ selectedSupplier.rfc }}</p>
-                </div>
-            </div>
+        <div v-if="selectedSupplier">
 
-            <div class="col-12 md:col-6">
-                <h6>Ubicación y Servicios</h6>
-                <div class="field">
-                    <label>Dirección:</label>
-                    <p>{{ selectedSupplier.sat_data?.ine_validation?.normalized?.domicilio || selectedSupplier.legal_address || 'Sin dirección' }}</p>
-                </div>
-                <div class="field">
-                    <label>Radio de Servicio:</label>
-                    <p>{{ selectedSupplier.sat_data?.service_radius_km || selectedSupplier.service_radius_km || 'N/A' }} km</p>
-                </div>
-                <div class="field">
-                    <label>Especialidades:</label>
-                    <div class="flex flex-wrap gap-1 mt-1">
-                        <Chip
-                            v-for="specialty in selectedSupplier.specialties"
-                            :key="specialty"
-                            :label="specialty"
-                        />
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-12" v-if="selectedSupplier.ine_front_url || selectedSupplier.ine_back_url">
-                <h6>Documentos</h6>
+            <!-- Información Básica -->
+            <div class="surface-card p-4 border-round mb-3">
                 <div class="grid">
-                    <div class="col-12 md:col-4" v-if="selectedSupplier.ine_front_url">
-                        <div class="field">
-                            <label>INE Frontal:</label>
-                            <Image :src="selectedSupplier.ine_front_url" alt="INE Frontal" width="200" preview />
+                    <div class="col-12 md:col-6">
+                        <h6 class="text-900 mb-3">Información de la Empresa</h6>
+                        <div class="mb-3">
+                            <label class="block text-600 mb-1">Empresa:</label>
+                            <p class="text-900 font-medium m-0">{{ selectedSupplier.company_name }}</p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="block text-600 mb-1">RFC:</label>
+                            <p class="text-900 m-0">{{ selectedSupplier.rfc }}</p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="block text-600 mb-1">Persona de Contacto:</label>
+                            <p class="text-900 m-0">{{ selectedSupplier.contact_person }}</p>
                         </div>
                     </div>
-                    <div class="col-12 md:col-4" v-if="selectedSupplier.ine_back_url">
-                        <div class="field">
-                            <label>INE Trasera:</label>
-                            <Image :src="selectedSupplier.ine_back_url" alt="INE Trasera" width="200" preview />
+                    <div class="col-12 md:col-6">
+                        <h6 class="text-900 mb-3">Ubicación y Contacto</h6>
+                        <div class="mb-3">
+                            <label class="block text-600 mb-1">Email:</label>
+                            <p class="text-900 m-0">{{ selectedSupplier.email }}</p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="block text-600 mb-1">Teléfono:</label>
+                            <p class="text-900 m-0">{{ selectedSupplier.phone_number }}</p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="block text-600 mb-1">Dirección:</label>
+                            <p class="text-900 m-0">{{ selectedSupplier.sat_data?.ine_validation?.normalized?.domicilio || selectedSupplier.legal_address || 'Sin dirección' }}</p>
                         </div>
                     </div>
-                    <div class="col-12 md:col-4" v-if="selectedSupplier.selfie_url">
-                        <div class="field">
-                            <label>Selfie ({{ selectedSupplier.face_similarity_score }}% similitud):</label>
-                            <Image :src="selectedSupplier.selfie_url" alt="Selfie" width="200" preview />
+                    <div class="col-12">
+                        <div class="mb-3">
+                            <label class="block text-600 mb-2">Especialidades:</label>
+                            <div class="flex flex-wrap gap-2">
+                                <Chip
+                                    v-for="specialty in selectedSupplier.specialties"
+                                    :key="specialty"
+                                    :label="specialty"
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Verification Data Section -->
-            <div class="col-12" v-if="selectedSupplier.sat_data">
-                <h6 class="mt-4 mb-3">Resultados de Verificaciones Nubarium</h6>
+            <!-- Documentos INE -->
+            <div class="surface-card p-4 border-round mb-3" v-if="selectedSupplier.ine_front_url || selectedSupplier.ine_back_url || selectedSupplier.selfie_url">
+                <h6 class="text-900 mb-3">Documentos de Identificación</h6>
+                <div class="grid">
+                    <div class="col-12 md:col-4 text-center" v-if="selectedSupplier.ine_front_url">
+                        <label class="block text-600 mb-2">INE Frontal</label>
+                        <Image :src="selectedSupplier.ine_front_url" alt="INE Frontal" width="250" preview />
+                    </div>
+                    <div class="col-12 md:col-4 text-center" v-if="selectedSupplier.ine_back_url">
+                        <label class="block text-600 mb-2">INE Trasera</label>
+                        <Image :src="selectedSupplier.ine_back_url" alt="INE Trasera" width="250" preview />
+                    </div>
+                    <div class="col-12 md:col-4 text-center" v-if="selectedSupplier.selfie_url">
+                        <label class="block text-600 mb-2">Selfie ({{ selectedSupplier.face_similarity_score }}% similitud)</label>
+                        <Image :src="selectedSupplier.selfie_url" alt="Selfie" width="250" preview />
+                    </div>
+                </div>
+            </div>
 
-                <!-- Overall Assessment Banner - MOVED TO TOP -->
+            <!-- Verificaciones Nubarium -->
+            <div v-if="selectedSupplier.sat_data">
+                <h6 class="text-900 mb-3">Resultados de Verificaciones Nubarium</h6>
+
+                <!-- Banner de Evaluación General -->
                 <Message
                     :severity="selectedSupplier.sat_data?.blacklist_results?.normalized?.enAlgunListaBloqueada ? 'error' :
                               (selectedSupplier.sat_data?.biometry_results?.comparacionFacial?.similitudPorcentaje ||
@@ -258,125 +256,120 @@
                     :closable="false"
                     class="mb-3"
                 >
-                    <div class="flex align-items-center justify-content-between w-full">
-                        <div>
-                            <strong class="text-lg">Evaluación General</strong>
-                            <p class="mt-2 mb-0">
-                                <Tag
-                                    :value="selectedSupplier.sat_data?.blacklist_results?.normalized?.enAlgunListaBloqueada ? 'RIESGO ALTO' :
-                                           (selectedSupplier.sat_data?.biometry_results?.comparacionFacial?.similitudPorcentaje ||
-                                            selectedSupplier.sat_data?.biometry_results?.comparacionFacial?.similitud || 0) < 80 ? 'RIESGO MEDIO' : 'RIESGO BAJO'"
-                                    :severity="selectedSupplier.sat_data?.blacklist_results?.normalized?.enAlgunListaBloqueada ? 'danger' :
-                                              (selectedSupplier.sat_data?.biometry_results?.comparacionFacial?.similitudPorcentaje ||
-                                               selectedSupplier.sat_data?.biometry_results?.comparacionFacial?.similitud || 0) < 80 ? 'warning' : 'success'"
-                                    class="font-bold text-xl mr-3"
-                                />
-                                <span class="font-medium">
-                                    {{ selectedSupplier.sat_data?.blacklist_results?.normalized?.enAlgunListaBloqueada ?
-                                       'RECHAZAR - Aparece en lista de bloqueo' :
-                                       (selectedSupplier.sat_data?.biometry_results?.comparacionFacial?.similitudPorcentaje ||
-                                        selectedSupplier.sat_data?.biometry_results?.comparacionFacial?.similitud || 0) >= 80 ?
-                                       'APROBAR - Todas las validaciones correctas' :
-                                       'REVISAR - Verificar manualmente biometría' }}
-                                </span>
-                            </p>
-                        </div>
+                    <div class="flex align-items-center">
+                        <Tag
+                            :value="selectedSupplier.sat_data?.blacklist_results?.normalized?.enAlgunListaBloqueada ? 'RIESGO ALTO' :
+                                   (selectedSupplier.sat_data?.biometry_results?.comparacionFacial?.similitudPorcentaje ||
+                                    selectedSupplier.sat_data?.biometry_results?.comparacionFacial?.similitud || 0) < 80 ? 'RIESGO MEDIO' : 'RIESGO BAJO'"
+                            :severity="selectedSupplier.sat_data?.blacklist_results?.normalized?.enAlgunListaBloqueada ? 'danger' :
+                                      (selectedSupplier.sat_data?.biometry_results?.comparacionFacial?.similitudPorcentaje ||
+                                       selectedSupplier.sat_data?.biometry_results?.comparacionFacial?.similitud || 0) < 80 ? 'warning' : 'success'"
+                            class="font-bold text-xl mr-3"
+                        />
+                        <span class="font-medium text-lg">
+                            {{ selectedSupplier.sat_data?.blacklist_results?.normalized?.enAlgunListaBloqueada ?
+                               'RECHAZAR - Aparece en lista de bloqueo' :
+                               (selectedSupplier.sat_data?.biometry_results?.comparacionFacial?.similitudPorcentaje ||
+                                selectedSupplier.sat_data?.biometry_results?.comparacionFacial?.similitud || 0) >= 80 ?
+                               'APROBAR - Todas las validaciones correctas' :
+                               'REVISAR - Verificar manualmente biometría' }}
+                        </span>
                     </div>
                 </Message>
 
-                <!-- Blocklist / PLD Results -->
-                <div v-if="selectedSupplier.sat_data?.blacklist_results" class="mb-3 p-3 surface-card border-round">
+                <!-- Listas de Bloqueo -->
+                <div v-if="selectedSupplier.sat_data?.blacklist_results" class="surface-card p-4 border-round mb-3">
                     <h6 class="text-900 mb-3">Listas de Bloqueo (PLD)</h6>
                     <div class="grid">
-                        <div class="col-12 md:col-3">
-                            <label class="block text-600 mb-2">Identificador (CURP):</label>
-                            <p class="text-900 font-medium">{{ selectedSupplier.sat_data.blacklist_results.normalized?.rfc || 'N/A' }}</p>
+                        <div class="col-12 md:col-6">
+                            <label class="block text-600 mb-1">Identificador (CURP):</label>
+                            <p class="text-900 font-medium m-0">{{ selectedSupplier.sat_data.blacklist_results.normalized?.rfc || 'N/A' }}</p>
                         </div>
-                        <div class="col-12 md:col-3">
-                            <label class="block text-600 mb-2">En Lista Bloqueada:</label>
+                        <div class="col-12 md:col-6">
+                            <label class="block text-600 mb-1">En Lista Bloqueada:</label>
                             <Tag
                                 :value="selectedSupplier.sat_data.blacklist_results.normalized?.enAlgunListaBloqueada ? 'SÍ' : 'NO'"
                                 :severity="selectedSupplier.sat_data.blacklist_results.normalized?.enAlgunListaBloqueada ? 'danger' : 'success'"
                                 class="font-bold"
                             />
                         </div>
-                        <div class="col-12 md:col-6">
-                            <label class="block text-600 mb-2">Resumen:</label>
-                            <p class="text-900">{{ selectedSupplier.sat_data.blacklist_results.normalized?.resumen || 'N/A' }}</p>
+                        <div class="col-12">
+                            <label class="block text-600 mb-1">Resumen:</label>
+                            <p class="text-900 m-0">{{ selectedSupplier.sat_data.blacklist_results.normalized?.resumen || 'N/A' }}</p>
                         </div>
                         <div class="col-12">
-                            <label class="block text-600 mb-2">Mensaje:</label>
-                            <p class="text-900">{{ selectedSupplier.sat_data.blacklist_results.normalized?.mensaje || 'Sin detalles' }}</p>
+                            <label class="block text-600 mb-1">Mensaje:</label>
+                            <p class="text-900 m-0">{{ selectedSupplier.sat_data.blacklist_results.normalized?.mensaje || 'Sin detalles' }}</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Biometry Results -->
-                <div v-if="selectedSupplier.sat_data?.biometry_results?.comparacionFacial" class="mb-3 p-3 surface-card border-round">
+                <!-- Verificación Biométrica -->
+                <div v-if="selectedSupplier.sat_data?.biometry_results?.comparacionFacial" class="surface-card p-4 border-round mb-3">
                     <h6 class="text-900 mb-3">Verificación Biométrica</h6>
                     <div class="grid">
-                        <div class="col-12 md:col-3">
-                            <label class="block text-600 mb-2">Similitud Facial:</label>
+                        <div class="col-12 md:col-6">
+                            <label class="block text-600 mb-1">Similitud Facial:</label>
                             <Tag
                                 :value="`${selectedSupplier.sat_data.biometry_results.comparacionFacial.similitudPorcentaje || selectedSupplier.sat_data.biometry_results.comparacionFacial.similitud || 0}%`"
                                 :severity="(selectedSupplier.sat_data.biometry_results.comparacionFacial.similitudPorcentaje || selectedSupplier.sat_data.biometry_results.comparacionFacial.similitud || 0) >= 80 ? 'success' : 'warning'"
                                 class="font-bold text-lg"
                             />
                         </div>
-                        <div class="col-12 md:col-3">
-                            <label class="block text-600 mb-2">Válido:</label>
+                        <div class="col-12 md:col-6">
+                            <label class="block text-600 mb-1">Válido:</label>
                             <Tag
                                 :value="selectedSupplier.sat_data.biometry_results.comparacionFacial.valido ? 'SÍ' : 'NO'"
                                 :severity="selectedSupplier.sat_data.biometry_results.comparacionFacial.valido ? 'success' : 'danger'"
                             />
                         </div>
-                        <div class="col-12 md:col-3">
-                            <label class="block text-600 mb-2">Pasa Límite:</label>
+                        <div class="col-12 md:col-6">
+                            <label class="block text-600 mb-1">Pasa Límite:</label>
                             <Tag
                                 :value="selectedSupplier.sat_data.biometry_results.comparacionFacial.pasaLimite ? 'SÍ' : 'NO'"
                                 :severity="selectedSupplier.sat_data.biometry_results.comparacionFacial.pasaLimite ? 'success' : 'danger'"
                             />
                         </div>
-                        <div class="col-12 md:col-3">
-                            <label class="block text-600 mb-2">Mensaje:</label>
-                            <p class="text-900">{{ selectedSupplier.sat_data.biometry_results.comparacionFacial.mensaje || 'N/A' }}</p>
+                        <div class="col-12 md:col-6">
+                            <label class="block text-600 mb-1">Mensaje:</label>
+                            <p class="text-900 m-0">{{ selectedSupplier.sat_data.biometry_results.comparacionFacial.mensaje || 'N/A' }}</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- SAT Validation -->
-                <div v-if="selectedSupplier.sat_data?.sat_validation?.rfc" class="mb-3 p-3 surface-card border-round">
+                <!-- Validación SAT -->
+                <div v-if="selectedSupplier.sat_data?.sat_validation?.rfc" class="surface-card p-4 border-round mb-3">
                     <h6 class="text-900 mb-3">Validación SAT</h6>
                     <div class="grid">
-                        <div class="col-12 md:col-4">
-                            <label class="block text-600 mb-2">RFC:</label>
-                            <p class="text-900 font-medium">{{ selectedSupplier.sat_data.sat_validation.rfc.RFC || 'N/A' }}</p>
+                        <div class="col-12 md:col-6">
+                            <label class="block text-600 mb-1">RFC:</label>
+                            <p class="text-900 font-medium m-0">{{ selectedSupplier.sat_data.sat_validation.rfc.RFC || 'N/A' }}</p>
                         </div>
-                        <div class="col-12 md:col-4">
-                            <label class="block text-600 mb-2">Tipo de Persona:</label>
-                            <p class="text-900">{{ selectedSupplier.sat_data.sat_validation.rfc.tipoPersona || 'N/A' }}</p>
+                        <div class="col-12 md:col-6">
+                            <label class="block text-600 mb-1">Tipo de Persona:</label>
+                            <p class="text-900 m-0">{{ selectedSupplier.sat_data.sat_validation.rfc.tipoPersona || 'N/A' }}</p>
                         </div>
-                        <div class="col-12 md:col-4">
-                            <label class="block text-600 mb-2">Es Persona Moral:</label>
+                        <div class="col-12 md:col-6">
+                            <label class="block text-600 mb-1">Es Persona Moral:</label>
                             <Tag
                                 :value="selectedSupplier.sat_data.sat_validation.rfc.esPersonaMoral ? 'SÍ' : 'NO'"
                                 :severity="selectedSupplier.sat_data.sat_validation.rfc.esPersonaMoral ? 'info' : 'secondary'"
                             />
                         </div>
-                        <div class="col-12 md:col-4">
-                            <label class="block text-600 mb-2">Puede Recibir Facturas:</label>
+                        <div class="col-12 md:col-6">
+                            <label class="block text-600 mb-1">Puede Recibir Facturas:</label>
                             <Tag
                                 :value="selectedSupplier.sat_data.sat_validation.rfc.puedeRecibirFacturas ? 'SÍ' : 'NO'"
                                 :severity="selectedSupplier.sat_data.sat_validation.rfc.puedeRecibirFacturas ? 'success' : 'warning'"
                             />
                         </div>
-                        <div class="col-12 md:col-8">
-                            <label class="block text-600 mb-2">Información Adicional:</label>
-                            <p class="text-900">{{ selectedSupplier.sat_data.sat_validation.rfc.informacionAdicional || 'N/A' }}</p>
+                        <div class="col-12">
+                            <label class="block text-600 mb-1">Información Adicional:</label>
+                            <p class="text-900 m-0">{{ selectedSupplier.sat_data.sat_validation.rfc.informacionAdicional || 'N/A' }}</p>
                         </div>
                         <div class="col-12">
-                            <label class="block text-600 mb-2">Mensaje:</label>
-                            <p class="text-900">{{ selectedSupplier.sat_data.sat_validation.rfc.mensaje || 'Sin mensaje' }}</p>
+                            <label class="block text-600 mb-1">Mensaje:</label>
+                            <p class="text-900 m-0">{{ selectedSupplier.sat_data.sat_validation.rfc.mensaje || 'Sin mensaje' }}</p>
                         </div>
                     </div>
                 </div>
