@@ -1141,7 +1141,7 @@ const loadDraft = () => {
 const goToDashboard = () => {
     // Limpiar el borrador al completar exitosamente
     localStorage.removeItem('supplier_onboarding_draft');
-    router.replace(`/${userRole}/dashboard`);
+    router.replace('/supplier/dashboard');
 };
 
 // Load draft on component mount
@@ -1153,7 +1153,7 @@ onMounted(() => {
  * Simula la acción de ir al dashboard sin completar el flujo (Botón DUMMY)
  */
 const goToDashboardDummy = () => {
-    router.replace(`/${userRole}/dashboard`);
+    router.replace('/supplier/dashboard');
 };
 </script>
 
