@@ -434,7 +434,7 @@ const processINEValidationAsync = async (frontBase64, backBase64, selfieBase64, 
                 // 💾 GUARDAR RESPONSE COMPLETO DE BLOCKLIST 💾
                 try {
                     await saveBlocklistVerification(user.value.id, {
-                        rfc: ineValidation.normalized.curp || 'UNKNOWN',
+                        identifier_value: ineValidation.normalized.curp || 'UNKNOWN',
                         query_type: '69', // Tipo de consulta
                         verification_status: blacklistValidation.success ? 'verified' : 'rejected',
                         is_blocked: blacklistValidation.normalized?.enListaNegra || false,
@@ -451,7 +451,7 @@ const processINEValidationAsync = async (frontBase64, backBase64, selfieBase64, 
                 // Guardar error también
                 try {
                     await saveBlocklistVerification(user.value.id, {
-                        rfc: ineValidation.normalized.curp || 'UNKNOWN',
+                        identifier_value: ineValidation.normalized.curp || 'UNKNOWN',
                         query_type: '69',
                         verification_status: 'error',
                         is_blocked: false,

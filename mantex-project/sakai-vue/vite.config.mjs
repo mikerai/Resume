@@ -33,45 +33,33 @@ export default defineConfig({
     server: {
         port: 5173,
         proxy: {
-            '/api/nubarium/ocr': {
+            // Proxy para OCR de Nubarium
+            '^/api/nubarium/ocr': {
                 target: 'https://ocr.nubarium.com',
                 changeOrigin: true,
-                rewrite: (path) => path.replace(/^\/api\/nubarium\/ocr/, ''),
-                configure: (proxy, options) => {
-                    proxy.on('proxyReq', (proxyReq, req, res) => {
-                        proxyReq.setHeader('Authorization', 'Basic ' + Buffer.from('mantex:M#tifk_#c').toString('base64'));
-                    });
-                }
+                secure: false,
+                rewrite: (path) => path.replace(/^\/api\/nubarium\/ocr/, '')
             },
-            '/api/nubarium/sat': {
+            // Proxy para SAT de Nubarium
+            '^/api/nubarium/sat': {
                 target: 'https://sat.nubarium.com',
                 changeOrigin: true,
-                rewrite: (path) => path.replace(/^\/api\/nubarium\/sat/, ''),
-                configure: (proxy, options) => {
-                    proxy.on('proxyReq', (proxyReq, req, res) => {
-                        proxyReq.setHeader('Authorization', 'Basic ' + Buffer.from('mantex:M#tifk_#c').toString('base64'));
-                    });
-                }
+                secure: false,
+                rewrite: (path) => path.replace(/^\/api\/nubarium\/sat/, '')
             },
-            '/api/nubarium/biometrics': {
+            // Proxy para Biometrics de Nubarium
+            '^/api/nubarium/biometrics': {
                 target: 'https://biometrics.nubarium.com',
                 changeOrigin: true,
-                rewrite: (path) => path.replace(/^\/api\/nubarium\/biometrics/, ''),
-                configure: (proxy, options) => {
-                    proxy.on('proxyReq', (proxyReq, req, res) => {
-                        proxyReq.setHeader('Authorization', 'Basic ' + Buffer.from('mantex:M#tifk_#c').toString('base64'));
-                    });
-                }
+                secure: false,
+                rewrite: (path) => path.replace(/^\/api\/nubarium\/biometrics/, '')
             },
-            '/api/nubarium/ine': {
+            // Proxy para INE de Nubarium
+            '^/api/nubarium/ine': {
                 target: 'https://ine.nubarium.com',
                 changeOrigin: true,
-                rewrite: (path) => path.replace(/^\/api\/nubarium\/ine/, ''),
-                configure: (proxy, options) => {
-                    proxy.on('proxyReq', (proxyReq, req, res) => {
-                        proxyReq.setHeader('Authorization', 'Basic ' + Buffer.from('mantex:M#tifk_#c').toString('base64'));
-                    });
-                }
+                secure: false,
+                rewrite: (path) => path.replace(/^\/api\/nubarium\/ine/, '')
             }
         }
     }

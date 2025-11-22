@@ -41,7 +41,7 @@
             <!-- Información y metadatos -->
             <div class="col-12 md:col-6">
                 <div class="card h-full">
-                    <h6>ℹ️ Información</h6>
+                    <h6>Información</h6>
 
                     <div class="field-group">
                         <div class="field">
@@ -86,12 +86,12 @@
             <!-- Comentarios y notas -->
             <div class="col-12">
                 <div class="card">
-                    <h6>💬 Comentarios y Notas</h6>
+                    <h6>Comentarios y Notas</h6>
 
                     <!-- Descripción del proveedor -->
                     <div v-if="evidence.description" class="mb-4">
                         <div class="field">
-                            <label>📝 Descripción del Proveedor:</label>
+                            <label>Descripción del Proveedor:</label>
                             <div class="p-3 bg-blue-50 border-round">
                                 {{ evidence.description }}
                             </div>
@@ -101,7 +101,7 @@
                     <!-- Comentarios del cliente -->
                     <div v-if="evidence.client_comments" class="mb-4">
                         <div class="field">
-                            <label>🗣️ Comentarios del Cliente:</label>
+                            <label>Comentarios del Cliente:</label>
                             <div class="p-3 bg-orange-50 border-round">
                                 {{ evidence.client_comments }}
                             </div>
@@ -111,7 +111,7 @@
                     <!-- Notas de administrador -->
                     <div class="mb-4">
                         <div class="field">
-                            <label for="admin-notes">🛡️ Notas de Administrador:</label>
+                            <label for="admin-notes">Notas de Administrador:</label>
                             <Textarea
                                 id="admin-notes"
                                 v-model="adminNotes"
@@ -133,7 +133,7 @@
 
                     <!-- Historial de cambios -->
                     <div v-if="evidence.approval_status !== 'pending'" class="mb-4">
-                        <h6>📋 Historial de Cambios</h6>
+                        <h6>Historial de Cambios</h6>
                         <Timeline :value="statusHistory" class="w-full">
                             <template #content="slotProps">
                                 <div class="p-2">
@@ -153,7 +153,7 @@
             <div class="col-12">
                 <div class="card">
                     <div class="flex align-items-center justify-content-between mb-4">
-                        <h6 class="m-0">🎫 Información del Ticket</h6>
+                        <h6 class="m-0">Información del Ticket</h6>
                         <Button
                             label="Ver Ticket Completo"
                             icon="pi pi-external-link"
@@ -200,7 +200,7 @@
             <!-- Acciones de administrador -->
             <div v-if="isAdmin" class="col-12">
                 <div class="card">
-                    <h6>⚙️ Acciones de Administrador</h6>
+                    <h6>Acciones de Administrador</h6>
                     <div class="flex flex-wrap gap-2">
                         <Button
                             v-if="evidence.approval_status === 'rejected' && evidence.client_comments"

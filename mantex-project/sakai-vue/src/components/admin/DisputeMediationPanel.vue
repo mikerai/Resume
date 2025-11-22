@@ -36,7 +36,7 @@
         <div class="grid mb-4">
             <div class="col-12 md:col-6">
                 <div class="card">
-                    <h6>🖼️ Evidencia en Disputa</h6>
+                    <h6>Evidencia en Disputa</h6>
                     <div v-if="evidence.file_type === 'image'" class="text-center">
                         <img
                             :src="evidence.url"
@@ -53,7 +53,7 @@
 
             <div class="col-12 md:col-6">
                 <div class="card">
-                    <h6>📋 Detalles de la Disputa</h6>
+                    <h6>Detalles de la Disputa</h6>
                     <div class="field">
                         <label>Tipo de Evidencia:</label>
                         <Tag :value="getEvidenceTypeLabel(evidence.evidence_type)" />
@@ -72,7 +72,7 @@
 
         <!-- Comentarios de las partes -->
         <div class="card mb-4">
-            <h6>💬 Posiciones de las Partes</h6>
+            <h6>Posiciones de las Partes</h6>
             <div class="grid">
                 <!-- Comentarios del proveedor -->
                 <div class="col-12 md:col-6">
@@ -102,7 +102,7 @@
 
         <!-- Análisis y evaluación del administrador -->
         <div class="card mb-4">
-            <h6>🔍 Análisis de la Disputa</h6>
+            <h6>Análisis de la Disputa</h6>
 
             <!-- Criterios de evaluación -->
             <div class="grid mb-4">
@@ -131,7 +131,7 @@
 
             <!-- Notas del análisis -->
             <div class="field">
-                <label for="analysis-notes">📝 Notas del Análisis:</label>
+                <label for="analysis-notes">Notas del Análisis:</label>
                 <Textarea
                     id="analysis-notes"
                     v-model="evaluation.analysisNotes"
@@ -149,7 +149,7 @@
                 <div class="flex align-items-start gap-3">
                     <RadioButton v-model="resolution.type" value="approve-evidence" />
                     <div>
-                        <label class="font-medium text-green-700">✅ Aprobar Evidencia</label>
+                        <label class="font-medium text-green-700">Aprobar Evidencia</label>
                         <div class="text-sm text-500">La evidencia cumple con los estándares. Anular rechazo del cliente.</div>
                     </div>
                 </div>
@@ -157,7 +157,7 @@
                 <div class="flex align-items-start gap-3">
                     <RadioButton v-model="resolution.type" value="uphold-rejection" />
                     <div>
-                        <label class="font-medium text-red-700">❌ Mantener Rechazo</label>
+                        <label class="font-medium text-red-700">Mantener Rechazo</label>
                         <div class="text-sm text-500">El rechazo del cliente es válido. Solicitar nueva evidencia al proveedor.</div>
                     </div>
                 </div>
@@ -165,7 +165,7 @@
                 <div class="flex align-items-start gap-3">
                     <RadioButton v-model="resolution.type" value="partial-resolution" />
                     <div>
-                        <label class="font-medium text-orange-700">🤝 Resolución Parcial</label>
+                        <label class="font-medium text-orange-700">Resolución Parcial</label>
                         <div class="text-sm text-500">Aceptar evidencia con condiciones o solicitar complemento.</div>
                     </div>
                 </div>
@@ -173,7 +173,7 @@
                 <div class="flex align-items-start gap-3">
                     <RadioButton v-model="resolution.type" value="escalate" />
                     <div>
-                        <label class="font-medium text-purple-700">📞 Escalamiento</label>
+                        <label class="font-medium text-purple-700">Escalamiento</label>
                         <div class="text-sm text-500">Requiere mediación directa con las partes o revisión superior.</div>
                     </div>
                 </div>
@@ -182,7 +182,7 @@
 
         <!-- Resolución detallada -->
         <div v-if="resolution.type" class="card mb-4">
-            <h6>📄 Detalles de la Resolución</h6>
+            <h6>Detalles de la Resolución</h6>
 
             <div class="field">
                 <label for="resolution-summary">Resumen de la Decisión:</label>

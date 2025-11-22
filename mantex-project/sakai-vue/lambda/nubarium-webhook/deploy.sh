@@ -1,10 +1,10 @@
 #!/bin/bash
-# 🚀 Deploy Nubarium Webhook to AWS Lambda
+#  Deploy Nubarium Webhook to AWS Lambda
 # Execute: chmod +x deploy.sh && ./deploy.sh
 
 set -e
 
-echo "🚀 Deploying Nubarium Webhook to AWS Lambda..."
+echo " Deploying Nubarium Webhook to AWS Lambda..."
 
 # Colors
 RED='\033[0;31m'
@@ -14,17 +14,17 @@ NC='\033[0m' # No Color
 
 # Check required environment variables
 if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_SERVICE_KEY" ]; then
-    echo -e "${RED}❌ Missing required environment variables:${NC}"
+    echo -e "${RED} Missing required environment variables:${NC}"
     echo "export SUPABASE_URL=\"https://your-project.supabase.co\""
     echo "export SUPABASE_SERVICE_KEY=\"your_service_role_key\""
     echo ""
-    echo -e "${YELLOW}💡 You can also create a .env file with these variables${NC}"
+    echo -e "${YELLOW} You can also create a .env file with these variables${NC}"
     exit 1
 fi
 
 # Check if AWS CLI is configured
 if ! aws sts get-caller-identity &> /dev/null; then
-    echo -e "${RED}❌ AWS CLI not configured. Run:${NC}"
+    echo -e "${RED} AWS CLI not configured. Run:${NC}"
     echo "aws configure"
     exit 1
 fi
@@ -34,25 +34,25 @@ FUNCTION_NAME="nubarium-webhook"
 REGION="us-east-1"
 ROLE_NAME="mantex-lambda-execution-role"
 
-echo -e "${GREEN}✅ Environment variables configured${NC}"
+echo -e "${GREEN} Environment variables configured${NC}"
 
 # Install dependencies
-echo -e "${YELLOW}📦 Installing dependencies...${NC}"
+echo -e "${YELLOW} Installing dependencies...${NC}"
 npm install --production
 
 # Create deployment package
-echo -e "${YELLOW}📦 Creating deployment package...${NC}"
+echo -e "${YELLOW} Creating deployment package...${NC}"
 zip -r webhook-deployment.zip . -x "*.zip" "deploy.sh" "test.js" ".git/*" "node_modules/.cache/*"
 
 # Get account ID and role ARN
 ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
 ROLE_ARN="arn:aws:iam::$ACCOUNT_ID:role/$ROLE_NAME"
 
-echo -e "${YELLOW}🚀 Deploying function: $FUNCTION_NAME${NC}"
+echo -e "${YELLOW} Deploying function: $FUNCTION_NAME${NC}"
 
 # Try to create or update function
 if aws lambda get-function --function-name $FUNCTION_NAME &> /dev/null; then
-    echo -e "${YELLOW}⚠️ Function exists, updating code...${NC}"
+    echo -e "${YELLOW} Function exists, updating code...${NC}"
 
     # Update function code
     aws lambda update-function-code \
@@ -64,9 +64,9 @@ if aws lambda get-function --function-name $FUNCTION_NAME &> /dev/null; then
         --function-name $FUNCTION_NAME \
         --environment Variables="{SUPABASE_URL=$SUPABASE_URL,SUPABASE_SERVICE_KEY=$SUPABASE_SERVICE_KEY}"
 
-    echo -e "${GREEN}✅ Function updated successfully!${NC}"
+    echo -e "${GREEN} Function updated successfully!${NC}"
 else
-    echo -e "${YELLOW}🆕 Creating new function...${NC}"
+    echo -e "${YELLOW} Creating new function...${NC}"
 
     # Create function
     aws lambda create-function \
@@ -80,25 +80,25 @@ else
         --environment Variables="{SUPABASE_URL=$SUPABASE_URL,SUPABASE_SERVICE_KEY=$SUPABASE_SERVICE_KEY}" \
         --region $REGION
 
-    echo -e "${GREEN}✅ Function created successfully!${NC}"
+    echo -e "${GREEN} Function created successfully!${NC}"
 fi
 
 # Get function details
 FUNCTION_ARN=$(aws lambda get-function --function-name $FUNCTION_NAME --query Configuration.FunctionArn --output text)
 
-echo -e "${GREEN}🎉 Lambda deployed successfully!${NC}"
+echo -e "${GREEN} Lambda deployed successfully!${NC}"
 echo ""
-echo -e "${YELLOW}📋 Function Details:${NC}"
+echo -e "${YELLOW} Function Details:${NC}"
 echo "Function Name: $FUNCTION_NAME"
 echo "Function ARN: $FUNCTION_ARN"
 echo "Region: $REGION"
 echo ""
-echo -e "${YELLOW}🌐 Next Steps:${NC}"
+echo -e "${YELLOW} Next Steps:${NC}"
 echo "1. Run the main aws-setup.sh script to create API Gateway"
 echo "2. Or manually create an API Gateway endpoint"
 echo "3. Point it to this Lambda function"
 echo ""
-echo -e "${GREEN}✅ Ready to receive webhooks!${NC}"
+echo -e "${GREEN} Ready to receive webhooks!${NC}"
 
 # Cleanup
 rm webhook-deployment.zip

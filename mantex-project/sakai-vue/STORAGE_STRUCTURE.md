@@ -1,20 +1,20 @@
-# 📁 Estructura de Almacenamiento S3 Universal
+#  Estructura de Almacenamiento S3 Universal
 
-## 🏗️ Arquitectura del Bucket `mantex-documents-1763361307`
+##  Arquitectura del Bucket `mantex-documents-1763361307`
 
-### 📊 Estructura Base Universal para CLIENTS y SUPPLIERS
+###  Estructura Base Universal para CLIENTS y SUPPLIERS
 
 ```
 mantex-documents-1763361307/
 ├── users/
 │   ├── {username}/                    # Username único del usuario
-│   │   ├── 🆔 IDENTIFICACIÓN/
+│   │   ├──  IDENTIFICACIÓN/
 │   │   │   ├── ine/
 │   │   │   │   ├── {timestamp}_ine_front.jpg
 │   │   │   │   ├── {timestamp}_ine_back.jpg
 │   │   │   │   └── {timestamp}_selfie.jpg
 │   │   │
-│   │   ├── 📋 DOCUMENTOS EMPRESARIALES (SUPPLIERS)/
+│   │   ├──  DOCUMENTOS EMPRESARIALES (SUPPLIERS)/
 │   │   │   ├── insurance/
 │   │   │   │   ├── {timestamp}_poliza_responsabilidad.pdf
 │   │   │   │   └── {timestamp}_seguro_daños.pdf
@@ -27,7 +27,7 @@ mantex-documents-1763361307/
 │   │   │       ├── {timestamp}_certificacion_iso.pdf
 │   │   │       └── {timestamp}_licencia_operacion.pdf
 │   │   │
-│   │   ├── 📸 EVIDENCIAS DE TRABAJO (CLIENTS + SUPPLIERS)/
+│   │   ├──  EVIDENCIAS DE TRABAJO (CLIENTS + SUPPLIERS)/
 │   │   │   ├── evidence/
 │   │   │   │   ├── {timestamp}_antes_trabajo.jpg
 │   │   │   │   ├── {timestamp}_durante_proceso.jpg
@@ -40,7 +40,7 @@ mantex-documents-1763361307/
 │   │   │       ├── {timestamp}_contrato_firmado.pdf
 │   │   │       └── {timestamp}_orden_trabajo.pdf
 │   │   │
-│   │   ├── 📊 REPORTES Y CONTROL (CLIENTS + SUPPLIERS)/
+│   │   ├──  REPORTES Y CONTROL (CLIENTS + SUPPLIERS)/
 │   │   │   ├── reports/
 │   │   │   │   ├── {timestamp}_reporte_avance.pdf
 │   │   │   │   ├── {timestamp}_informe_final.docx
@@ -52,7 +52,7 @@ mantex-documents-1763361307/
 │   │   │       ├── {timestamp}_inspeccion_inicial.pdf
 │   │   │       └── {timestamp}_auditoria_final.pdf
 │   │   │
-│   │   └── 💰 DOCUMENTOS FINANCIEROS (CLIENTS + SUPPLIERS)/
+│   │   └──  DOCUMENTOS FINANCIEROS (CLIENTS + SUPPLIERS)/
 │   │       ├── invoices/
 │   │       │   ├── {timestamp}_factura_001.pdf
 │   │       │   └── {timestamp}_nota_credito.pdf
@@ -64,9 +64,9 @@ mantex-documents-1763361307/
 │   │           └── {timestamp}_cotizacion_final.pdf
 ```
 
-## 🎯 Casos de Uso por Rol
+## Casos de Uso por Rol
 
-### 👥 **CLIENTS (Clientes)**
+###  **CLIENTS (Clientes)**
 ```javascript
 // Subir evidencias de trabajo recibido
 await uploadWorkEvidence(fotos, username, jobId);
@@ -81,7 +81,7 @@ await uploadReportsAndChecklists([checklist], username, 'checklists');
 await uploadMultipleDocuments([contrato], username, 'contracts');
 ```
 
-### 🔧 **SUPPLIERS (Proveedores)**
+###  **SUPPLIERS (Proveedores)**
 ```javascript
 // Documentos de onboarding
 await uploadINEFiles(ineFront, ineBack, selfie, username, verificationId);
@@ -98,15 +98,15 @@ await uploadReportsAndChecklists([reporte], username, 'reports');
 await uploadFinancialDocuments([factura], username, 'invoices');
 ```
 
-## 🛡️ Características de Seguridad
+## 🛡️Características de Seguridad
 
-### 🔐 **Estructura de Archivos**
+###  **Estructura de Archivos**
 - **Timestamp único:** Evita colisiones de nombres
 - **Username separation:** Cada usuario tiene su espacio
 - **Document categorization:** Organización lógica por tipo
 - **Sanitized filenames:** Nombres de archivo seguros
 
-### 📋 **Metadatos Almacenados**
+###  **Metadatos Almacenados**
 ```javascript
 metadata: {
     username: 'juan_perez',
@@ -117,15 +117,15 @@ metadata: {
 }
 ```
 
-### 🔒 **Políticas de Acceso**
+###  **Políticas de Acceso**
 - **User isolation:** Solo acceso a sus propios archivos
 - **Role-based access:** Permisos según rol (client/supplier)
 - **Audit trail:** Log completo de subidas/accesos
 - **Encryption:** AES256 en reposo
 
-## 📱 Integración con Base de Datos
+## Integración con Base de Datos
 
-### 🗄️ **Tabla `documents`**
+###  **Tabla `documents`**
 ```sql
 CREATE TABLE documents (
     id UUID PRIMARY KEY,
@@ -141,9 +141,9 @@ CREATE TABLE documents (
 );
 ```
 
-## 🚀 Funciones del Composable
+##  Funciones del Composable
 
-### 📤 **Upload Functions**
+###  **Upload Functions**
 ```javascript
 const {
     // Básicas
@@ -162,20 +162,20 @@ const {
 } = useS3Upload();
 ```
 
-## 📈 Escalabilidad
+## Escalabilidad
 
-### 🎯 **Ventajas de la Estructura**
-- ✅ **Universal:** Sirve para clients y suppliers
-- ✅ **Extensible:** Fácil agregar nuevos tipos de documentos
-- ✅ **Organizada:** Estructura lógica y navegable
-- ✅ **Segura:** Separación por usuario y tipo
-- ✅ **Auditable:** Timestamps y metadatos completos
-- ✅ **Performante:** Búsquedas eficientes por usuario/tipo
+### **Ventajas de la Estructura**
+-  **Universal:** Sirve para clients y suppliers
+-  **Extensible:** Fácil agregar nuevos tipos de documentos
+-  **Organizada:** Estructura lógica y navegable
+-  **Segura:** Separación por usuario y tipo
+-  **Auditable:** Timestamps y metadatos completos
+-  **Performante:** Búsquedas eficientes por usuario/tipo
 
-### 📊 **Métricas Estimadas**
+###  **Métricas Estimadas**
 - **Usuarios:** ~10,000 usuarios
 - **Documentos por usuario:** ~100-500 archivos
 - **Espacio promedio:** ~50MB por usuario
 - **Total estimado:** ~500GB - 2.5TB
 
-¡Estructura lista para escalar con el crecimiento de Mantex! 🚀
+¡Estructura lista para escalar con el crecimiento de Mantex! 

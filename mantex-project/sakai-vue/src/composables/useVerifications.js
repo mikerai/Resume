@@ -207,7 +207,7 @@ export function useVerifications() {
                 .from('blocklist_verifications')
                 .insert([{
                     user_id: userId,
-                    rfc: verificationData.rfc,
+                    identifier_value: verificationData.identifier_value || verificationData.rfc, // Aceptar ambos nombres por compatibilidad
                     query_type: verificationData.query_type, // '69' o '69-B'
                     verification_status: verificationData.verification_status || 'pending',
                     is_blocked: verificationData.is_blocked || false,
