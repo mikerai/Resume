@@ -95,6 +95,7 @@ const onboardingData = {
 // Estado
 const userName = computed(() => profile.value?.username || user.value?.email?.split('@')[0] || 'Cliente');
 const isCompleted = computed(() => profile.value?.onboarding_complete);
+const activeStepIndex = computed(() => currentStep.value); // Computed para asegurar reactividad
 
 // Validation functions
 const validateStep1 = () => {
@@ -945,7 +946,8 @@ onMounted(() => {
                     <Steps
                         :model="onboardingData.steps"
                         :readonly="true"
-                        :activeIndex="currentStep"
+                        :activeIndex="activeStepIndex"
+                        :key="`step-${currentStep}`"
                         class="mb-8"
                     />
 
