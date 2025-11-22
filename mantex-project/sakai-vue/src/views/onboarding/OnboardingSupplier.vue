@@ -988,9 +988,7 @@ const saveSupplierData = async () => {
                            `Proveedor ${user.value.email}`;
 
         // URLs ya extraídas arriba, solo usar las variables existentes
-
-        // Extraer score de similitud facial
-        const faceSimilarityScore = ineData?.verification_response?.normalized?.comparacionFacial?.similitud || null;
+        // faceSimilarityScore también ya está declarado arriba
 
         // Guardar en tabla suppliers
         const supplierMainData = {
