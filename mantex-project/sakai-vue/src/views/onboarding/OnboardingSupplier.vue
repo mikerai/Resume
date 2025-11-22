@@ -889,10 +889,15 @@ const saveSupplierData = async () => {
                            formData.value.ineData?.ocr_data?.domicilio ||
                            'Pendiente';
 
-        // Extraer score de similitud facial
-        const faceSimilarityScore = formData.value.biometryResults?.comparacionFacial?.similitudPorcentaje ||
-                                   formData.value.biometryResults?.comparacionFacial?.similitud ||
-                                   null;
+        // Extraer score de similitud facial y convertir a número
+        let faceSimilarityScore = formData.value.biometryResults?.comparacionFacial?.similitudPorcentaje ||
+                                  formData.value.biometryResults?.comparacionFacial?.similitud ||
+                                  null;
+
+        // Si viene como string con "%", remover el símbolo y parsear
+        if (faceSimilarityScore && typeof faceSimilarityScore === 'string') {
+            faceSimilarityScore = parseFloat(faceSimilarityScore.replace('%', ''));
+        }
 
         // Preparar datos para guardar en la tabla supplier_profiles (schema: client-supplier-profiles.sql)
         const supplierData = {
