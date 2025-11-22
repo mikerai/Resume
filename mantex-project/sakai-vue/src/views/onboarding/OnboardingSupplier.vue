@@ -1186,8 +1186,7 @@ const goToDashboardDummy = () => {
 
                     <!-- Completion Message -->
                     <Message severity="success" v-if="isCompleted" class="mb-6">
-                        ¡Tu cuenta está lista! Redireccionando al panel principal.
-                        <Button label="Ir al Dashboard" text @click="goToDashboard" class="ml-2" />
+                        ¡Tu cuenta está lista! Tu solicitud de proveedor está siendo revisada por nuestro equipo.
                     </Message>
 
                     <!-- Progress Steps -->
@@ -1558,6 +1557,17 @@ const goToDashboardDummy = () => {
                                 />
                             </div>
                         </div>
+                    </div>
+
+                    <!-- Dashboard Button - Only shown when completed -->
+                    <div v-if="isCompleted" class="flex justify-end mt-6">
+                        <Button
+                            label="Ir al Dashboard"
+                            icon="pi pi-arrow-right"
+                            iconPos="right"
+                            @click="goToDashboard"
+                            class="px-6 py-3"
+                        />
                     </div>
                 </div>
             </div>
