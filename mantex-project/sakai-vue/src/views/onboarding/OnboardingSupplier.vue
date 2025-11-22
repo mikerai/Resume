@@ -871,44 +871,52 @@ const saveSupplierData = async () => {
         // Importar supabase aquí para evitar problemas de dependencias
         const { supabase } = await import('@/lib/supabaseClient.js');
 
-        // Preparar datos para guardar en la tabla supplier_profiles
+        // Preparar datos para guardar en la tabla supplier_profiles (schema: client-supplier-profiles.sql)
         const supplierData = {
             user_id: user.value.id,
             username: profile.value?.username || user.value?.email?.split('@')[0],
 
-            // Datos de identificación (extraidos del INE)
-            full_name: formData.value.biometryResults?.nombreCompleto || 'Pending Validation',
-            curp: formData.value.biometryResults?.curp || null,
-
-            // Datos fiscales y SAT
+            // Step 1: Datos de la Empresa & SAT
+            company_name: formData.value.biometryResults?.nombreCompleto || 'Pending Validation',
             rfc: formData.value.rfc.toUpperCase(),
-            ciec_password_encrypted: btoa(formData.value.ciecPassword), // Codificación básica (en producción usar encriptación real)
+            sat_password_encrypted: formData.value.ciecPassword ? btoa(formData.value.ciecPassword) : '', // Campo requerido
+            legal_address: 'Pendiente', // TODO: Agregar campo en UI
 
-            // Servicios y especialidades
-            service_areas: formData.value.serviceAreas,
+            // Step 2: Información de Contacto
+            contact_person: formData.value.biometryResults?.nombreCompleto || 'Pending',
+            phone_number: user.value.phone || 'Pendiente',
+            email: user.value.email,
+
+            // Step 3: Información Operativa
+            service_areas: formData.value.serviceAreas || [],
             specialties: specialtiesPickList.value[1].map(s => s.code), // Selected specialties
-            working_hours: `${workingDays.value} ${workingHoursStart.value}-${workingHoursEnd.value}`,
-            service_radius_km: parseInt(formData.value.serviceRadius) || 50,
-            business_description: formData.value.businessDescription,
+            years_experience: 1, // Por defecto
+            team_size: 1, // Por defecto
+            certifications: [],
 
-            // Nubarium validation results
-            nubarium_validations: {
+            // Step 5: Documentación (URLs)
+            ine_front_url: null, // Se guarda por separado en documents
+            ine_back_url: null,
+            selfie_url: null,
+
+            // Datos de Validación y Status
+            face_similarity_score: formData.value.biometryResults?.similarityScore || null,
+            ciec_validated: formData.value.ciecPassword ? true : false,
+            documents_validated: false,
+            status: 'submitted', // Cambiar de 'draft' a 'submitted' al completar
+
+            // Datos Calculados/Externos - guardar todos los resultados de Nubarium aquí
+            sat_data: {
                 ine_validation: formData.value.ineData,
                 biometry_results: formData.value.biometryResults,
                 blacklist_results: formData.value.blacklistResults,
-                sat_validation: formData.value.satValidationResults
+                sat_validation: formData.value.satValidationResults,
+                working_hours: `${workingDays.value} ${workingHoursStart.value}-${workingHoursEnd.value}`,
+                service_radius_km: parseInt(formData.value.serviceRadius) || 50
             },
 
-            // Campos adicionales requeridos por el esquema expandido
-            business_type: 'sole_proprietorship', // Por defecto
-            years_experience: 1, // Por defecto
-            team_size: 1, // Por defecto
-
             // Metadatos
-            submitted_at: new Date().toISOString(),
-            status: 'submitted', // Cambiar de 'draft' a 'submitted' al completar
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
+            submitted_at: new Date().toISOString()
         };
 
         // UPSERT en la tabla supplier_profiles
