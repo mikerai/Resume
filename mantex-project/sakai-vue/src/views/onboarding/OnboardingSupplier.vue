@@ -148,6 +148,7 @@ const workingHoursEnd = ref('18:00');
 // Estado
 const userName = computed(() => profile.value?.username || user.value?.email?.split('@')[0] || 'Proveedor');
 const isCompleted = computed(() => profile.value?.onboarding_complete);
+const activeStepIndex = computed(() => currentStep.value); // Computed para asegurar reactividad
 
 // Validation functions - UPDATED FOR NEW FLOW
 const validateStep1 = () => {
@@ -1211,7 +1212,8 @@ const goToDashboardDummy = () => {
                     <Steps
                         :model="onboardingData.steps"
                         :readonly="true"
-                        :activeIndex="currentStep"
+                        :activeIndex="activeStepIndex"
+                        :key="`step-${currentStep}`"
                         class="mb-8"
                     />
 
