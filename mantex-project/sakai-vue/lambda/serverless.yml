@@ -63,6 +63,17 @@ functions:
           cors: true
     description: List files from S3 by user and type
 
+  # Nubarium API Proxy
+  nubariumProxy:
+    handler: nubarium-proxy-lambda.handler
+    timeout: 60
+    events:
+      - http:
+          path: /nubarium/{proxy+}
+          method: any
+          cors: true
+    description: Proxy for all Nubarium API endpoints (ocr, sat, ine, biometrics)
+
 resources:
   Outputs:
     S3UploadUrl:
@@ -101,6 +112,18 @@ resources:
             - ".amazonaws.com/"
             - ${self:provider.stage}
             - "/s3/list"
+    NubariumProxyUrl:
+      Description: "Nubarium Proxy Lambda Base URL"
+      Value:
+        Fn::Join:
+          - ""
+          - - "https://"
+            - Ref: ApiGatewayRestApi
+            - ".execute-api."
+            - ${self:provider.region}
+            - ".amazonaws.com/"
+            - ${self:provider.stage}
+            - "/nubarium"
 
 plugins:
   - serverless-offline

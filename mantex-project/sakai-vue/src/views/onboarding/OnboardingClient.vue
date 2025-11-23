@@ -81,11 +81,11 @@ const onboardingData = {
     steps: [
         {
             label: 'SAT (RFC + CIEC)',
-            description: 'Verificación fiscal con RFC y contraseña CIEC (opcional)'
+            description: 'Verificación de RFC'
         },
         {
             label: 'INE + Selfie',
-            description: 'Validación de identidad sin verificación de blacklist'
+            description: 'Validación de identidad'
         },
         {
             label: 'Datos y Activos',
@@ -540,7 +540,8 @@ const processINEValidation = async () => {
     });
 
     try {
-        // Convert files to base64
+        // Convert files to base64 without compression
+        console.log('[CONVERSION] Convirtiendo imágenes INE a base64...');
         const frontBase64 = await fileToBase64(formData.value.ineFrontFile);
         const backBase64 = await fileToBase64(formData.value.ineBackFile);
         const selfieBase64 = await fileToBase64(formData.value.selfieFile);
@@ -855,11 +856,44 @@ const onINEFrontSelect = (event) => {
 };
 
 const onINEBackSelect = (event) => {
-    formData.value.ineBackFile = event.files[0];
+    const file = event.files[0];
+    formData.value.ineBackFile = file;
+    console.log('[DEBUG] INE Back seleccionado:', {
+        name: file?.name,
+        size: file?.size,
+        type: file?.type,
+        lastModified: file?.lastModified
+    });
 };
 
 const onSelfieSelect = (event) => {
-    formData.value.selfieFile = event.files[0];
+    const file = event.files[0];
+    formData.value.selfieFile = file;
+    console.log('[DEBUG] Selfie seleccionado:', {
+        name: file?.name,
+        size: file?.size,
+        type: file?.type,
+        lastModified: file?.lastModified
+    });
+
+    // Verificar que no sea el mismo archivo que INE Back
+    if (formData.value.ineBackFile && formData.value.selfieFile) {
+        const isSameFile =
+            formData.value.ineBackFile.name === formData.value.selfieFile.name &&
+            formData.value.ineBackFile.size === formData.value.selfieFile.size &&
+            formData.value.ineBackFile.lastModified === formData.value.selfieFile.lastModified;
+
+        if (isSameFile) {
+            console.error('[ERROR] Selfie es el mismo archivo que INE Back!');
+            toast.add({
+                severity: 'error',
+                summary: 'Error',
+                detail: 'La selfie no puede ser la misma foto que el INE trasero. Por favor toma una nueva selfie.',
+                life: 5000
+            });
+            formData.value.selfieFile = null;
+        }
+    }
 };
 
 const addAsset = () => {
@@ -999,7 +1033,7 @@ onMounted(() => {
                                     <div class="mb-6 p-4 bg-blue-50 dark:bg-blue-400/10 border border-blue-200 dark:border-blue-600 rounded-md">
                                         <h5 class="font-semibold text-blue-700 dark:text-blue-400 mb-2">Validación datos del SAT</h5>
                                         <p class="text-sm text-blue-600 dark:text-blue-300">
-                                            Ingresa tu RFC y opcionalmente tu contraseña CIEC para validación más rápida y precisa.
+                                            Ingresa tu RFC y opcionalmente tu contraseña CIEC para poder hacer una validación más rápida y precisa.
                                         </p>
                                     </div>
                                 </div>
@@ -1052,7 +1086,7 @@ onMounted(() => {
                                     <div class="mb-6 p-4 bg-green-50 dark:bg-green-400/10 border border-green-200 dark:border-green-600 rounded-md">
                                         <h5 class="font-semibold text-green-700 dark:text-green-400 mb-2">Identificación Oficial</h5>
                                         <p class="text-sm text-green-600 dark:text-green-300">
-                                            Sube las imágenes de tu INE y toma una selfie.
+                                            Sube las imágenes de tu INE y tómate una selfie.
                                         </p>
                                     </div>
                                 </div>

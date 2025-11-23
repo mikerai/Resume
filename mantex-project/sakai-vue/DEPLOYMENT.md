@@ -1,6 +1,6 @@
-# 🚀 Guía Completa de Deployment - Mantex
+# Guía Completa de Deployment - Mantex
 
-## 🎯 Resumen
+## Resumen
 
 Esta guía te lleva paso a paso para hacer el deployment completo de Mantex con:
 - **Frontend**: Vue.js + Vite + PrimeVue
@@ -9,7 +9,7 @@ Esta guía te lleva paso a paso para hacer el deployment completo de Mantex con:
 - **Webhooks**: AWS Lambda + API Gateway
 - **APIs**: Nubarium integration
 
-## 📋 Pre-requisitos
+## Pre-requisitos
 
 ### 1. Herramientas Requeridas
 ```bash
@@ -24,11 +24,11 @@ git --version
 ```
 
 ### 2. Cuentas Necesarias
-- ✅ Supabase account (supabase.com)
-- ✅ AWS account (aws.amazon.com)
-- ✅ Nubarium credentials (ya configuradas)
+- Supabase account (supabase.com)
+- AWS account (aws.amazon.com)
+- Nubarium credentials (ya configuradas)
 
-## 🗃️ Step 1: Setup Supabase Database
+## Step 1: Setup Supabase Database
 
 ### 1.1 Crear Proyecto
 1. Ve a [supabase.com](https://supabase.com)
@@ -45,7 +45,7 @@ git --version
 1. Settings > API
 2. Copia el `service_role` key (para Lambda)
 
-## ☁️ Step 2: AWS Infrastructure
+## Step 2: AWS Infrastructure
 
 ### 2.1 Configurar AWS CLI
 ```bash
@@ -68,11 +68,11 @@ chmod +x aws-setup.sh
 ```
 
 El script automático creará:
-- ✅ S3 bucket con security
-- ✅ IAM roles para Lambda
-- ✅ Lambda function
-- ✅ API Gateway endpoint
-- ✅ Todas las permissions
+- S3 bucket con security
+- IAM roles para Lambda
+- Lambda function
+- API Gateway endpoint
+- Todas las permissions
 
 ### 2.3 Setup Manual (Alternativo)
 Si prefieres hacerlo paso a paso:
@@ -89,7 +89,7 @@ chmod +x deploy.sh
 ./deploy.sh
 ```
 
-## 🌐 Step 3: Frontend Configuration
+## Step 3: Frontend Configuration
 
 ### 3.1 Variables de Entorno
 Crea `.env.development` y `.env.production`:
@@ -124,7 +124,7 @@ npm run dev
 npm run build
 ```
 
-## 🧪 Step 4: Testing
+## Step 4: Testing
 
 ### 4.1 Test Frontend Local
 ```bash
@@ -147,7 +147,7 @@ const result = await nubariumService.validateINEOCR(base64Image);
 console.log(result);
 ```
 
-## 🎯 URLs Importantes
+## URLs Importantes
 
 Después del deployment tendrás:
 - **Frontend Dev**: http://localhost:5173
@@ -155,9 +155,9 @@ Después del deployment tendrás:
 - **AWS Console**: https://console.aws.amazon.com
 - **Lambda Webhook**: https://api-id.execute-api.us-east-1.amazonaws.com/dev/webhook/sat
 
-## 📊 Servicios Implementados
+## Servicios Implementados
 
-### ✅ Nubarium APIs:
+### Nubarium APIs:
 - OCR INE/IFE: `nubariumService.validateINEOCR()`
 - Lista Nominal: `nubariumService.validateINENominalList()`
 - Face Comparison: `nubariumService.validateFaceComparison()`
@@ -166,35 +166,53 @@ Después del deployment tendrás:
 - Block Lists 69: `nubariumService.queryBlockList69()`
 - Block Lists 69-B: `nubariumService.queryBlockList69B()`
 
-### ✅ Flujos Completos:
+### Flujos Completos:
 - Clients: OCR + Lista Nominal + Face Comparison
 - Suppliers: OCR + SAT + Block Lists
 - Documents: Upload automático a S3
 - Webhooks: Recepción async de resultados SAT
 
-## 🚀 Deployment a Producción
+## Deployment a Producción
 
-### Opción 1: Vercel (Frontend)
-```bash
-npm install -g vercel
-vercel --prod
-```
+### Frontend (S3 + CloudFront)
 
-### Opción 2: Netlify (Frontend)
+#### Build
 ```bash
 npm run build
-# Subir carpeta dist/ a Netlify
 ```
 
-### AWS Lambda (Backend)
+#### Deploy a S3
+```bash
+# Sync directo al bucket (asume bucket ya configurado)
+aws s3 sync dist/ s3://dev.mantex.mx --delete
+```
+
+#### Invalidar CloudFront (si aplica)
+```bash
+# Obtener distribution ID
+aws cloudfront list-distributions \
+  --query "DistributionList.Items[?Aliases.Items[?contains(@, 'dev.mantex.mx')]].Id" \
+  --output text
+
+# Invalidar cache
+aws cloudfront create-invalidation \
+  --distribution-id DISTRIBUTION_ID \
+  --paths "/*"
+```
+
+### Backend (Lambda)
 ```bash
 # Ya deployado con aws-setup.sh
 # Para updates:
 cd lambda/nubarium-webhook
 ./deploy.sh
+
+# Lambda Proxy updates:
+cd lambda
+npm run deploy:dev  # o deploy:prod
 ```
 
-## 🛠️ Troubleshooting
+## Troubleshooting
 
 ### Error: AWS CLI not configured
 ```bash
@@ -220,7 +238,7 @@ echo $SUPABASE_SERVICE_KEY
 - Verificar bucket permissions
 - Verificar region configuration
 
-## ✅ Checklist Final
+## Checklist Final
 
 - [ ] Supabase proyecto creado y schema ejecutado
 - [ ] AWS CLI configurado
@@ -230,15 +248,14 @@ echo $SUPABASE_SERVICE_KEY
 - [ ] Lambda webhook respondiendo
 - [ ] Tests de Nubarium APIs funcionando
 - [ ] S3 uploads funcionando
+- [ ] CloudFront invalidation funcionando (si aplica)
 
-## 🎉 ¡Listo para Rockear!
+## Stack Completo
 
 Tu stack completo está listo:
-- 🔐 **Auth**: Supabase
-- 📊 **Database**: PostgreSQL (Supabase)
-- 📁 **Storage**: AWS S3
-- ⚡ **APIs**: Nubarium integration
-- 🔄 **Webhooks**: AWS Lambda
-- 🎨 **UI**: Vue.js + PrimeVue + Sakai
-
-¡A mover datos! 🤘
+- **Auth**: Supabase
+- **Database**: PostgreSQL (Supabase)
+- **Storage**: AWS S3
+- **APIs**: Nubarium integration
+- **Webhooks**: AWS Lambda
+- **UI**: Vue.js + PrimeVue + Sakai

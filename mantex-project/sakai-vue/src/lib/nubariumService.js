@@ -1,8 +1,8 @@
 // src/lib/nubariumService.js
 // Servicio para integración con API de Nubarium
 
-const NUBARIUM_PROXY_URL = import.meta.env.VITE_NUBARIUM_PROXY_URL || 'https://tkfvlgl9rd.execute-api.us-east-1.amazonaws.com/dev';
-const NUBARIUM_BASE_URL = import.meta.env.DEV ? '/api/nubarium' : NUBARIUM_PROXY_URL;
+const NUBARIUM_PROXY_URL = import.meta.env.VITE_NUBARIUM_PROXY_URL || 'https://mr04m3gkk9.execute-api.us-east-1.amazonaws.com/dev';
+const NUBARIUM_BASE_URL = NUBARIUM_PROXY_URL; // Usa Lambda proxy para localhost, dev y prod
 const NUBARIUM_CREDENTIALS = {
     username: 'mantex',
     password: 'M#tifk_#c'
@@ -21,7 +21,7 @@ class NubariumService {
      */
     async generateAccessToken(expireAfter = 3600) {
         try {
-            const response = await fetch(`${NUBARIUM_BASE_URL}/global/account/v1/generate-jwt?expire=${expireAfter}`, {
+            const response = await fetch(`${NUBARIUM_BASE_URL}/nubarium/global/account/v1/generate-jwt?expire=${expireAfter}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -111,7 +111,7 @@ class NubariumService {
                 payload.idReverso = backImageBase64;
             }
 
-            const response = await fetch(`${NUBARIUM_BASE_URL}/ocr/ocr/v1/obtener_datos_id`, {
+            const response = await fetch(`${NUBARIUM_BASE_URL}/nubarium/ocr/v1/obtener_datos_id`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -208,7 +208,7 @@ class NubariumService {
                     };
             }
 
-            const response = await fetch(`${NUBARIUM_BASE_URL}/ine/ine/v2/valida_ine`, {
+            const response = await fetch(`${NUBARIUM_BASE_URL}/nubarium/ine/v2/valida_ine`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -269,7 +269,7 @@ class NubariumService {
                 limiteInferior: limiteInferior.toString()
             };
 
-            const response = await fetch(`${NUBARIUM_BASE_URL}/biometrics/antifraude/reconocimiento_facial`, {
+            const response = await fetch(`${NUBARIUM_BASE_URL}/nubarium/biometrics/antifraude/reconocimiento_facial`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -369,7 +369,7 @@ class NubariumService {
                 rfc: rfc.toUpperCase() // Normalizar a mayúsculas
             };
 
-            const response = await fetch(`${NUBARIUM_BASE_URL}/sat/sat/valida_rfc`, {
+            const response = await fetch(`${NUBARIUM_BASE_URL}/nubarium/sat/valida_rfc`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -421,7 +421,7 @@ class NubariumService {
                 rfc: rfc.toUpperCase()
             };
 
-            const response = await fetch(`${NUBARIUM_BASE_URL}/sat/sat/v1/obtener-razonsocial`, {
+            const response = await fetch(`${NUBARIUM_BASE_URL}/nubarium/sat/v1/obtener-razonsocial`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -563,7 +563,7 @@ class NubariumService {
                 incluirPDF: options.incluirPDF || false
             };
 
-            const response = await fetch(`${NUBARIUM_BASE_URL}/sat/sat/v2/get-invoices`, {
+            const response = await fetch(`${NUBARIUM_BASE_URL}/nubarium/sat/v2/get-invoices`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -690,7 +690,7 @@ class NubariumService {
                 rfc: rfc.toUpperCase()
             };
 
-            const response = await fetch(`${NUBARIUM_BASE_URL}/sat/sat/consultar_69`, {
+            const response = await fetch(`${NUBARIUM_BASE_URL}/nubarium/sat/consultar_69`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -741,7 +741,7 @@ class NubariumService {
                 rfc: rfc.toUpperCase()
             };
 
-            const response = await fetch(`${NUBARIUM_BASE_URL}/sat/sat/consultar_69b`, {
+            const response = await fetch(`${NUBARIUM_BASE_URL}/nubarium/sat/consultar_69b`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

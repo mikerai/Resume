@@ -78,7 +78,7 @@ const onboardingData = {
         },
         {
             label: 'SAT (RFC + CIEC)',
-            description: 'Verificación fiscal con RFC y contraseña CIEC'
+            description: 'Verificación de RFC'
         },
         {
             label: 'Documentos',
@@ -86,7 +86,7 @@ const onboardingData = {
         },
         {
             label: 'Especialidades',
-            description: 'Servicios y áreas de trabajo con PickList'
+            description: 'Servicios y áreas de especialización'
         },
         {
             label: 'Revisión',
@@ -289,7 +289,8 @@ const processINEValidation = async () => {
     });
 
     try {
-        // Convert files to base64
+        // Convert files to base64 without compression
+        console.log('[CONVERSION] Convirtiendo imágenes INE a base64...');
         const frontBase64 = await fileToBase64(formData.value.ineFrontFile);
         const backBase64 = await fileToBase64(formData.value.ineBackFile);
         const selfieBase64 = await fileToBase64(formData.value.selfieFile);
@@ -339,7 +340,7 @@ const processINEValidation = async () => {
  */
 const processINEValidationAsync = async (frontBase64, backBase64, selfieBase64, frontFile, backFile, selfieFile) => {
     try {
-        console.log('🔄 Iniciando validación asíncrona de INE...');
+        console.log(' Iniciando validación asíncrona de INE...');
 
         // Step 1: OCR + Lista Nominal + Face Comparison
         const ineValidation = await nubariumService.validateSupplierINE(
@@ -349,7 +350,7 @@ const processINEValidationAsync = async (frontBase64, backBase64, selfieBase64, 
             80 // 80% similarity threshold
         );
 
-        // 💾 GUARDAR RESPONSE COMPLETO DE INE - EL ORO DE LA EMPRESA 💾
+        //  GUARDAR RESPONSE COMPLETO DE INE - EL ORO DE LA EMPRESA 
         let ineVerificationRecord = null;
         try {
             ineVerificationRecord = await saveINEVerification(user.value.id, {
@@ -1071,15 +1072,55 @@ const saveSupplierData = async () => {
 
 // File upload handlers
 const onINEFrontSelect = (event) => {
-    formData.value.ineFrontFile = event.files[0];
+    const file = event.files[0];
+    formData.value.ineFrontFile = file;
+    console.log('[DEBUG] INE Front seleccionado:', {
+        name: file?.name,
+        size: file?.size,
+        type: file?.type,
+        lastModified: file?.lastModified
+    });
 };
 
 const onINEBackSelect = (event) => {
-    formData.value.ineBackFile = event.files[0];
+    const file = event.files[0];
+    formData.value.ineBackFile = file;
+    console.log('[DEBUG] INE Back seleccionado:', {
+        name: file?.name,
+        size: file?.size,
+        type: file?.type,
+        lastModified: file?.lastModified
+    });
 };
 
 const onSelfieSelect = (event) => {
-    formData.value.selfieFile = event.files[0];
+    const file = event.files[0];
+    formData.value.selfieFile = file;
+    console.log('[DEBUG] Selfie seleccionado:', {
+        name: file?.name,
+        size: file?.size,
+        type: file?.type,
+        lastModified: file?.lastModified
+    });
+
+    // Verificar que no sea el mismo archivo que INE Back
+    if (formData.value.ineBackFile && formData.value.selfieFile) {
+        const isSameFile =
+            formData.value.ineBackFile.name === formData.value.selfieFile.name &&
+            formData.value.ineBackFile.size === formData.value.selfieFile.size &&
+            formData.value.ineBackFile.lastModified === formData.value.selfieFile.lastModified;
+
+        if (isSameFile) {
+            console.error('[ERROR] Selfie es el mismo archivo que INE Back!');
+            toast.add({
+                severity: 'error',
+                summary: 'Error',
+                detail: 'La selfie no puede ser la misma foto que el INE trasero. Por favor toma una nueva selfie.',
+                life: 5000
+            });
+            formData.value.selfieFile = null;
+        }
+    }
 };
 
 const onInsuranceFilesSelect = (event) => {
@@ -1186,7 +1227,7 @@ const goToDashboardDummy = () => {
                     <img src="/demo/images/logo.png" alt="Mantex Logo" class="h-12 w-auto" />
                     <div>
                         <h1 class="text-3xl font-bold text-surface-900 dark:text-surface-0 m-0">{{ onboardingData.title }}</h1>
-                        <p class="text-surface-600 dark:text-surface-200 m-0 mt-2">Hola, {{ userName }}. Completa tu configuración de proveedor</p>
+                        <p class="text-surface-600 dark:text-surface-200 m-0 mt-2">Hola, {{ userName }}. Completa tu alta como proveedor</p>
                     </div>
                 </div>
 
@@ -1205,7 +1246,7 @@ const goToDashboardDummy = () => {
 
                     <!-- Completion Message -->
                     <Message severity="success" v-if="isCompleted" class="mb-6">
-                        ¡Tu cuenta está lista! Tu solicitud de proveedor está siendo revisada por nuestro equipo.
+                        ¡Tu cuenta está lista! Tu solicitud de alta como proveedor está siendo revisada por nuestro equipo.
                     </Message>
 
                     <!-- Progress Steps -->
@@ -1307,7 +1348,7 @@ const goToDashboardDummy = () => {
                                     <div class="p-4 bg-green-50 dark:bg-green-400/10 border border-green-200 dark:border-green-600 rounded-md">
                                         <h6 class="font-semibold text-green-700 dark:text-green-400 mb-2">Validación Completada</h6>
                                         <p class="text-sm text-green-600 dark:text-green-300">
-                                            Identidad verificada exitosamente con Nubarium
+                                            Identidad verificada exitosamente
                                         </p>
                                     </div>
                                 </div>
@@ -1317,9 +1358,9 @@ const goToDashboardDummy = () => {
                             <div v-if="currentStep === 1" class="grid grid-cols-12 gap-4">
                                 <div class="col-span-12">
                                     <div class="mb-6 p-4 bg-red-50 dark:bg-red-400/10 border border-red-200 dark:border-red-600 rounded-md">
-                                        <h5 class="font-semibold text-red-700 dark:text-red-400 mb-2">Validación Fiscal SAT</h5>
+                                        <h5 class="font-semibold text-red-700 dark:text-red-400 mb-2">Validación de información del SAT</h5>
                                         <p class="text-sm text-red-600 dark:text-red-300">
-                                            Ingresa tu RFC y contraseña CIEC para validar tu situación fiscal
+                                            Ingresa tu RFC y opcionalmente tu contraseña CIEC para hacer tu validación más rápidamente
                                         </p>
                                     </div>
                                 </div>
@@ -1349,7 +1390,7 @@ const goToDashboardDummy = () => {
 
                                 <div class="col-span-12">
                                     <small class="text-surface-500">
-                                        Esta información se usa para extraer automáticamente las facturas y validar tu situación fiscal con el SAT
+                                        Esta información solamente la usaremos para validar tu RFC y darte de alta automáticamente en el sistema.
                                     </small>
                                 </div>
 

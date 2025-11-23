@@ -72,8 +72,9 @@ export function useS3Upload() {
 
     const generateS3Key = (username, documentType, filename) => {
         const timestamp = Date.now();
+        const random = Math.random().toString(36).substring(2, 8); // 6 caracteres random
         const sanitizedFilename = sanitizeFilename(filename);
-        return `users/${username}/${documentType}/${timestamp}_${sanitizedFilename}`;
+        return `users/${username}/${documentType}/${timestamp}_${random}_${sanitizedFilename}`;
     };
 
     /**
