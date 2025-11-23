@@ -2,179 +2,91 @@
   <ion-page>
     <ion-header>
       <ion-toolbar color="primary">
-        <ion-title>Trabajos</ion-title>
+        <ion-title>Mis Trabajos</ion-title>
         <ion-buttons slot="end">
-          <ion-button fill="clear" @click="refreshJobs">
+          <ion-button @click="refreshData">
             <ion-icon :icon="refreshOutline"></ion-icon>
-          </ion-button>
-          <ion-button fill="clear" @click="showFilters = !showFilters">
-            <ion-icon :icon="funnelOutline"></ion-icon>
           </ion-button>
         </ion-buttons>
       </ion-toolbar>
-
-      <!-- Filters -->
-      <ion-toolbar v-if="showFilters">
-        <div class="filter-container">
-          <ion-segment v-model="selectedStatus" @ionChange="filterJobs">
-            <ion-segment-button value="all">
-              <ion-label>Todos</ion-label>
-            </ion-segment-button>
-            <ion-segment-button value="pending">
-              <ion-label>Pendientes</ion-label>
-            </ion-segment-button>
-            <ion-segment-button value="in_progress">
-              <ion-label>En Curso</ion-label>
-            </ion-segment-button>
-            <ion-segment-button value="completed">
-              <ion-label>Completados</ion-label>
-            </ion-segment-button>
-          </ion-segment>
-        </div>
+      <ion-toolbar>
+        <ion-searchbar v-model="searchQuery" placeholder="Buscar trabajos..." @ionInput="handleSearch"></ion-searchbar>
+      </ion-toolbar>
+      <ion-toolbar>
+        <ion-segment v-model="filterStatus" @ionChange="handleFilterChange">
+          <ion-segment-button value="all">
+            <ion-label>Todos</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="pending">
+            <ion-label>Pendientes</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="in_progress">
+            <ion-label>En Curso</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="completed">
+            <ion-label>Listos</ion-label>
+          </ion-segment-button>
+        </ion-segment>
       </ion-toolbar>
     </ion-header>
 
     <ion-content :fullscreen="true">
-      <!-- Search Bar -->
-      <ion-searchbar
-        v-model="searchQuery"
-        placeholder="Buscar trabajos..."
-        @ionInput="searchJobs"
-        show-clear-button="focus"
-      ></ion-searchbar>
-
-      <!-- Pull to Refresh -->
-      <ion-refresher slot="fixed" @ionRefresh="handleRefresh">
-        <ion-refresher-content></ion-refresher-content>
-      </ion-refresher>
-
-      <!-- Jobs List -->
-      <div class="jobs-container">
-        <ion-card
-          v-for="job in filteredJobs"
-          :key="job.id"
-          class="job-card"
-          :class="getJobStatusClass(job.status)"
-          @click="openJobDetail(job)"
-        >
-          <ion-card-content>
-            <!-- Job Header -->
-            <div class="job-header">
-              <h3>{{ job.title }}</h3>
-              <div class="job-badges">
-                <ion-chip
-                  :color="getJobPriorityColor(job.priority)"
-                  size="small"
-                >
-                  {{ job.priority }}
-                </ion-chip>
-                <ion-chip
-                  :color="getJobStatusColor(job.status)"
-                  size="small"
-                >
-                  {{ getJobStatusText(job.status) }}
-                </ion-chip>
-              </div>
-            </div>
-
-            <!-- Job Details -->
-            <div class="job-details">
-              <div class="job-info">
-                <ion-icon :icon="businessOutline"></ion-icon>
-                <span>{{ job.client_name }}</span>
-              </div>
-
-              <div class="job-info">
-                <ion-icon :icon="locationOutline"></ion-icon>
-                <span>{{ job.address }}</span>
-              </div>
-
-              <div class="job-info">
-                <ion-icon :icon="timeOutline"></ion-icon>
-                <span>{{ formatDate(job.scheduled_date) }} - {{ job.scheduled_time }}</span>
-              </div>
-
-              <div class="job-info" v-if="job.estimated_duration">
-                <ion-icon :icon="timerOutline"></ion-icon>
-                <span>{{ job.estimated_duration }} horas</span>
-              </div>
-            </div>
-
-            <!-- Job Description -->
-            <p class="job-description">{{ job.description }}</p>
-
-            <!-- Action Buttons -->
-            <div class="job-actions">
-              <ion-button
-                v-if="job.status === 'pending'"
-                size="small"
-                fill="outline"
-                @click.stop="startJob(job)"
-              >
-                <ion-icon :icon="playOutline" slot="start"></ion-icon>
-                Iniciar
-              </ion-button>
-
-              <ion-button
-                v-if="job.status === 'in_progress'"
-                size="small"
-                color="success"
-                @click.stop="completeJob(job)"
-              >
-                <ion-icon :icon="checkmarkOutline" slot="start"></ion-icon>
-                Completar
-              </ion-button>
-
-              <ion-button
-                size="small"
-                fill="clear"
-                @click.stop="callClient(job)"
-              >
-                <ion-icon :icon="callOutline"></ion-icon>
-              </ion-button>
-
-              <ion-button
-                size="small"
-                fill="clear"
-                @click.stop="openMaps(job)"
-              >
-                <ion-icon :icon="navigateOutline"></ion-icon>
-              </ion-button>
-
-              <ion-button
-                size="small"
-                fill="clear"
-                @click.stop="takeJobPhoto(job)"
-              >
-                <ion-icon :icon="cameraOutline"></ion-icon>
-              </ion-button>
-            </div>
-
-            <!-- Progress Indicator -->
-            <div v-if="job.status === 'in_progress'" class="progress-indicator">
-              <ion-progress-bar :value="job.completion_percentage / 100"></ion-progress-bar>
-              <span class="progress-text">{{ job.completion_percentage }}% completado</span>
-            </div>
-          </ion-card-content>
-        </ion-card>
-
-        <!-- Empty State -->
-        <div v-if="filteredJobs.length === 0" class="empty-state">
-          <ion-icon :icon="constructOutline" size="large"></ion-icon>
-          <h3>No hay trabajos</h3>
-          <p>{{ getEmptyStateMessage() }}</p>
-        </div>
+      <div v-if="loading" class="ion-text-center ion-padding">
+        <ion-spinner></ion-spinner>
       </div>
 
-      <!-- Loading -->
-      <ion-loading :is-open="isLoading" message="Cargando trabajos..."></ion-loading>
+      <div v-else>
+        <ion-list v-if="filteredJobs.length > 0">
+          <ion-card v-for="job in filteredJobs" :key="job.id" class="job-card">
+            <ion-card-header>
+              <div class="job-header-top">
+                <ion-card-subtitle>{{ job.ticket_number }}</ion-card-subtitle>
+                <ion-badge :color="getStatusColor(job.status)">{{ translateStatus(job.status) }}</ion-badge>
+              </div>
+              <ion-card-title>{{ job.title }}</ion-card-title>
+            </ion-card-header>
 
-      <!-- FAB for creating new job report -->
-      <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-        <ion-fab-button @click="createJobReport">
-          <ion-icon :icon="addOutline"></ion-icon>
-        </ion-fab-button>
-      </ion-fab>
+            <ion-card-content>
+              <div class="job-detail-row">
+                <ion-icon :icon="businessOutline" color="medium"></ion-icon>
+                <span>{{ job.client?.company_name || 'Cliente Desconocido' }}</span>
+              </div>
+              
+              <div class="job-detail-row">
+                <ion-icon :icon="locationOutline" color="medium"></ion-icon>
+                <span>{{ job.location_address || job.address || 'Sin dirección' }}</span>
+              </div>
+
+              <div class="job-detail-row">
+                <ion-icon :icon="calendarOutline" color="medium"></ion-icon>
+                <span>{{ formatDate(job.scheduled_date) }}</span>
+              </div>
+
+              <div class="job-detail-row" v-if="job.priority">
+                <ion-icon :icon="alertCircleOutline" :color="getPriorityColor(job.priority)"></ion-icon>
+                <span :class="'priority-' + job.priority">{{ translatePriority(job.priority) }}</span>
+              </div>
+
+              <div class="job-actions">
+                <ion-button fill="outline" size="small" @click="openJobDetails(job)">
+                  Ver Detalles
+                </ion-button>
+                <ion-button v-if="job.status === 'in_progress'" color="success" size="small" @click="completeJob(job)">
+                  Finalizar
+                </ion-button>
+                <ion-button v-if="job.status === 'assigned' || job.status === 'pending'" color="primary" size="small" @click="startJob(job)">
+                  Iniciar
+                </ion-button>
+              </div>
+            </ion-card-content>
+          </ion-card>
+        </ion-list>
+
+        <div v-else class="empty-state">
+          <ion-icon :icon="searchOutline" size="large"></ion-icon>
+          <p>No se encontraron trabajos</p>
+        </div>
+      </div>
     </ion-content>
   </ion-page>
 </template>
@@ -319,8 +231,8 @@ const getEmptyStateMessage = () => {
 
 // Action methods
 const openJobDetail = (job) => {
-  console.log('Opening job detail:', job);
-  // TODO: Navigate to job detail view
+  console.log('Open details for:', job.id);
+  router.push(`/tickets/${job.id}`);
 };
 
 const startJob = async (job) => {

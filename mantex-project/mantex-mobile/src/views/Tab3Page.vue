@@ -148,6 +148,15 @@
             <ion-label>Desarrollo</ion-label>
           </ion-list-header>
 
+          <!-- Flynn Console -->
+          <ion-item v-if="isFlynn" button @click="toggleFlynnMode">
+            <ion-icon :icon="bugOutline" slot="start" color="danger"></ion-icon>
+            <ion-label>
+              <h3>Flynn Console</h3>
+              <p>Modo actual: {{ currentGridMode }}</p>
+            </ion-label>
+          </ion-item>
+
           <ion-item button @click="testNotifications">
             <ion-icon :icon="notificationsOutline" slot="start" color="warning"></ion-icon>
             <ion-label>
@@ -306,16 +315,39 @@ import {
   keyOutline, constructOutline, calendarOutline, cardOutline,
   notificationsOutline, locationOutline, colorPaletteOutline,
   helpCircleOutline, informationCircleOutline, logOutOutline, contrastOutline,
-  closeOutline, logoGoogle, close
+  closeOutline, logoGoogle, close, bugOutline
 } from 'ionicons/icons';
 import { useAuth } from '@/composables/useAuth.js';
 import { useGoogleCalendar } from '@/composables/useGoogleCalendar.js';
 import { useNotificationTester } from '@/composables/useNotificationTester.js';
 import { useIOSNotifications } from '@/composables/useIOSNotifications.js';
 import CalendarView from '@/components/common/CalendarView.vue';
+import { useRouter } from 'vue-router';
 
 // Auth composable
-const { user, profile, logout } = useAuth();
+const { user, profile, logout, isFlynn, currentGridMode, enterGrid } = useAuth();
+const router = useRouter();
+
+const toggleFlynnMode = async () => {
+  if (!isFlynn.value) return;
+
+  const newMode = currentGridMode.value === 'client' ? 'supplier' : 'client';
+  await enterGrid(newMode);
+  
+  const toast = await toastController.create({
+    message: `Flynn Mode: Switched to ${newMode}`,
+    duration: 2000,
+    color: 'dark'
+  });
+  await toast.present();
+
+  // Force navigation to refresh view context
+  if (newMode === 'client') {
+    router.push('/client/dashboard');
+  } else {
+    router.push('/tabs/tab1');
+  }
+};
 
 // Google Calendar composable
 const {

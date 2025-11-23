@@ -19,7 +19,7 @@ const profile = ref({
     onboarding_complete: false,
 });
 // Empieza en TRUE para bloquear el Router Guard hasta que la sesión se cargue.
-const isLoading = ref(true); 
+const isLoading = ref(true);
 
 
 // -----------------------------------------------------
@@ -39,7 +39,7 @@ async function getProfile(userId) {
         // SIN TIMEOUT - dejar que complete o falle naturalmente
         const { data, error } = await supabase
             .from('profiles')
-            .select(`username, role, onboarding_complete`)
+            .select(`username, role, sub_role, permissions, onboarding_complete`)
             .eq('id', userId)
             .single();
 
@@ -52,12 +52,14 @@ async function getProfile(userId) {
             profile.value = {
                 username: data.username,
                 role: data.role,
+                sub_role: data.sub_role,
+                permissions: data.permissions,
                 onboarding_complete: data.onboarding_complete,
             };
             console.log('✅ Perfil obtenido:', profile.value);
         } else if (error && error.code !== 'PGRST116') {
             console.error('Error al obtener perfil:', error.message, error);
-            profile.value = { username: null, role: null, onboarding_complete: false };
+            profile.value = { username: null, role: null, sub_role: null, permissions: {}, onboarding_complete: false };
         } else {
             console.log('ℹ️ Perfil no encontrado, usando predeterminado');
             profile.value = { username: null, role: null, onboarding_complete: false };
@@ -119,9 +121,9 @@ async function completeOnboarding(userId) {
         console.error('Error al completar onboarding:', error);
         throw new Error('Falló al marcar el onboarding como completado.');
     }
-    
+
     // Si la actualización es exitosa, actualizamos el estado local
-    await getProfile(userId); 
+    await getProfile(userId);
 }
 
 // Lógica de Login
