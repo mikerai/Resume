@@ -520,12 +520,17 @@ export function useGoogleCalendar() {
         }
     };
 
-    // Inicialización automática
-    onMounted(() => {
+    // Inicialización automática (opcional, no bloquea la app)
+    onMounted(async () => {
         if (CLIENT_ID && API_KEY) {
-            initializeGoogleCalendar();
+            try {
+                await initializeGoogleCalendar();
+            } catch (err) {
+                // Silently fail - Calendar is optional
+                console.warn('Google Calendar no disponible:', err.message);
+            }
         } else {
-            console.warn('⚠️ Credenciales de Google Calendar no configuradas');
+            console.warn('Credenciales de Google Calendar no configuradas');
         }
     });
 

@@ -117,26 +117,41 @@ const chartOptions = ref({});
 // Load dashboard data
 const loadDashboardData = async () => {
     try {
+        console.log('Loading dashboard data for user:', user.value?.id);
         const { supabase } = await import('@/lib/supabaseClient');
         
         // Get supplier ID
-        const { data: supplierData } = await supabase
+        const { data: supplierData, error: supplierError } = await supabase
             .from('supplier_profiles')
             .select('id')
             .eq('user_id', user.value.id)
             .single();
         
-        if (!supplierData) return;
+        if (supplierError) {
+            console.error('Error fetching supplier profile:', supplierError);
+            return;
+        }
+        
+        if (!supplierData) {
+            console.warn('No supplier profile found for user:', user.value.id);
+            return;
+        }
+        
+        console.log('Supplier ID:', supplierData.id);
         
         // Fetch all tickets for this supplier
-        const { data: tickets } = await supabase
+        const { data: tickets, error: ticketsError } = await supabase
             .from('tickets')
-            .select(`
-                *,
-                client:client_profiles(company_name, contact_person)
-            `)
+            .select('*')
             .eq('supplier_id', supplierData.id)
             .order('created_at', { ascending: false });
+        
+        if (ticketsError) {
+            console.error('Error fetching tickets:', ticketsError);
+            return;
+        }
+        
+        console.log('Tickets found:', tickets?.length || 0);
         
         if (tickets) {
             // Calculate stats
@@ -156,7 +171,7 @@ const loadDashboardData = async () => {
                 title: t.title || 'Sin título',
                 status: t.status,
                 priority: t.priority || 'normal',
-                customer: t.client?.company_name || t.client?.contact_person || 'Cliente desconocido'
+                customer: `Ticket #${t.ticket_number || t.id.substring(0, 8)}`
             }));
             
             // Calculate average rating (if ratings exist)
@@ -189,6 +204,14 @@ const loadDashboardData = async () => {
                 monthlyData.push(monthTickets.length);
                 monthlyCompleted.push(completed.length);
             }
+            
+            console.log('Dashboard stats:', {
+                totalJobs: totalJobs.value,
+                assignedJobs: assignedJobs.value,
+                pendingInvoices: pendingInvoices.value,
+                averageRating: averageRating.value,
+                recentJobs: recentJobs.value.length
+            });
             
             setChartData(monthlyData, monthlyCompleted);
         }
