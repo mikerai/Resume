@@ -17,6 +17,17 @@ const config: CapacitorConfig = {
     PushNotifications: {
       presentationOptions: ['badge', 'sound', 'alert']
     },
+    // iOS specific configuration
+    ios: {
+      // Push notifications configuration
+      // APNs certificate should be configured in Apple Developer Portal
+      // and Firebase Console for production
+    },
+    // Android specific configuration  
+    android: {
+      // FCM configuration
+      // google-services.json should be placed in android/app/
+    },
     SplashScreen: {
       launchShowDuration: 2000,
       launchAutoHide: true,

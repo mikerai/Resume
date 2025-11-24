@@ -34,10 +34,14 @@
           </div>
 
           <!-- EVIDENCIAS -->
-          <div>
             <h4 class="font-semibold mb-2">Evidencias</h4>
             <ImageGallery :items="ticket.attachments || []" />
           </div>
+
+          <!-- CHAT -->
+          <Panel header="Chat en vivo" toggleable>
+            <TicketChat :ticketId="ticket.id" />
+          </Panel>
 
           <!-- FORMULARIO DE EDICIÓN -->
           <Panel header="Editar ticket">
@@ -114,6 +118,7 @@ import Tag from 'primevue/tag';
 import { useToast } from 'primevue/usetoast';
 
 import ImageGallery from '@/components/common/ImageGallery.vue';
+import TicketChat from '@/components/ticket/TicketChat.vue';
 import { getJob, updateJob } from '@/api/jobs.js';
 
 const route = useRoute();

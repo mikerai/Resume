@@ -179,130 +179,164 @@
     </div>
 
     <!-- Dialog para ver detalles del ticket -->
-    <Dialog v-model:visible="showTicketDialog" modal :style="{ width: '80vw' }" header="Detalles del Ticket">
-        <div v-if="selectedTicket" class="grid">
-            <div class="col-12 md:col-8">
-                <h6>Información General</h6>
+    <Dialog v-model:visible="showTicketDialog" modal :style="{ width: '90vw', maxWidth: '1200px' }" header="Detalles del Ticket">
+        <div v-if="selectedTicket">
+            
+            <!-- Información General -->
+            <div class="surface-card p-4 border-round mb-3">
                 <div class="grid">
                     <div class="col-12 md:col-6">
-                        <div class="field">
-                            <label>Número de Ticket:</label>
-                            <p class="font-medium">{{ selectedTicket.ticket_number }}</p>
+                        <h6 class="text-900 mb-3">Información General</h6>
+                        <div class="mb-3">
+                            <label class="block text-600 mb-1">Número de Ticket:</label>
+                            <p class="text-900 font-medium m-0">{{ selectedTicket.ticket_number }}</p>
                         </div>
-                        <div class="field">
-                            <label>Título:</label>
-                            <p class="font-medium">{{ selectedTicket.title }}</p>
+                        <div class="mb-3">
+                            <label class="block text-600 mb-1">Título:</label>
+                            <p class="text-900 font-medium m-0">{{ selectedTicket.title }}</p>
                         </div>
-                        <div class="field">
-                            <label>Descripción:</label>
-                            <p>{{ selectedTicket.description }}</p>
+                        <div class="mb-3">
+                            <label class="block text-600 mb-1">Descripción:</label>
+                            <p class="text-900 m-0">{{ selectedTicket.description }}</p>
                         </div>
                     </div>
                     <div class="col-12 md:col-6">
-                        <div class="field">
-                            <label>Tipo de Mantenimiento:</label>
+                        <h6 class="text-900 mb-3">Estado y Prioridad</h6>
+                        <div class="mb-3">
+                            <label class="block text-600 mb-1">Tipo de Mantenimiento:</label>
                             <Tag
                                 :value="getMaintenanceTypeLabel(selectedTicket.maintenance_type)"
                                 :severity="getMaintenanceTypeSeverity(selectedTicket.maintenance_type)"
-                                class="mt-1"
                             />
                         </div>
-                        <div class="field">
-                            <label>Prioridad:</label>
+                        <div class="mb-3">
+                            <label class="block text-600 mb-1">Prioridad:</label>
                             <Tag
                                 :value="getPriorityLabel(selectedTicket.priority)"
                                 :severity="getPrioritySeverity(selectedTicket.priority)"
-                                class="mt-1"
                             />
                         </div>
-                        <div class="field">
-                            <label>Estado:</label>
+                        <div class="mb-3">
+                            <label class="block text-600 mb-1">Estado:</label>
                             <Tag
                                 :value="getStatusLabel(selectedTicket.status)"
                                 :severity="getStatusSeverity(selectedTicket.status)"
-                                class="mt-1"
                             />
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <h6>Ubicación</h6>
-                <div class="field">
-                    <label>Dirección:</label>
-                    <p>{{ selectedTicket.location_address }}</p>
-                    <p class="text-sm text-500">{{ selectedTicket.location_city }}, {{ selectedTicket.location_state }}</p>
+            <!-- Ubicación -->
+            <div class="surface-card p-4 border-round mb-3">
+                <h6 class="text-900 mb-3">Ubicación</h6>
+                <div class="mb-2">
+                    <label class="block text-600 mb-1">Dirección:</label>
+                    <p class="text-900 m-0">{{ selectedTicket.location_address }}</p>
                 </div>
+                <div>
+                    <label class="block text-600 mb-1">Ciudad:</label>
+                    <p class="text-900 m-0">{{ selectedTicket.location_city }}, {{ selectedTicket.location_state }}</p>
+                </div>
+            </div>
 
-                <div v-if="isSupplierApproved && selectedTicket.client">
-                    <h6>Información del Cliente</h6>
-                    <div class="grid">
-                        <div class="col-12 md:col-6">
-                            <div class="field">
-                                <label>Empresa:</label>
-                                <p class="font-medium">{{ selectedTicket.client.company_name }}</p>
-                            </div>
-                            <div class="field">
-                                <label>Contacto:</label>
-                                <p>{{ selectedTicket.client.contact_person }}</p>
-                            </div>
+            <!-- Información del Cliente -->
+            <div class="surface-card p-4 border-round mb-3" v-if="isSupplierApproved && selectedTicket.client">
+                <h6 class="text-900 mb-3">Información del Cliente</h6>
+                <div class="grid">
+                    <div class="col-12 md:col-6">
+                        <div class="mb-3">
+                            <label class="block text-600 mb-1">Empresa:</label>
+                            <p class="text-900 font-medium m-0">{{ selectedTicket.client.company_name }}</p>
                         </div>
-                        <div class="col-12 md:col-6">
-                            <div class="field">
-                                <label>Email:</label>
-                                <p>{{ selectedTicket.client.email }}</p>
-                            </div>
-                            <div class="field">
-                                <label>Teléfono:</label>
-                                <p>{{ selectedTicket.client.phone }}</p>
-                            </div>
+                        <div class="mb-3">
+                            <label class="block text-600 mb-1">Contacto:</label>
+                            <p class="text-900 m-0">{{ selectedTicket.client.contact_person }}</p>
                         </div>
                     </div>
-                </div>
-
-                <div v-if="isSupplierApproved">
-                    <h6>Información Financiera</h6>
-                    <div class="grid">
-                        <div class="col-12 md:col-4" v-if="selectedTicket.estimated_cost">
-                            <div class="field">
-                                <label>Costo Estimado:</label>
-                                <p class="font-medium text-green-600">${{ formatCurrency(selectedTicket.estimated_cost) }}</p>
-                            </div>
+                    <div class="col-12 md:col-6">
+                        <div class="mb-3">
+                            <label class="block text-600 mb-1">Email:</label>
+                            <p class="text-900 m-0">{{ selectedTicket.client.email }}</p>
                         </div>
-                        <div class="col-12 md:col-4" v-if="selectedTicket.supplier_quote">
-                            <div class="field">
-                                <label>Mi Cotización:</label>
-                                <p class="font-medium text-blue-600">${{ formatCurrency(selectedTicket.supplier_quote) }}</p>
-                            </div>
-                        </div>
-                        <div class="col-12 md:col-4" v-if="selectedTicket.final_cost">
-                            <div class="field">
-                                <label>Costo Final:</label>
-                                <p class="font-medium">${{ formatCurrency(selectedTicket.final_cost) }}</p>
-                            </div>
+                        <div class="mb-3">
+                            <label class="block text-600 mb-1">Teléfono:</label>
+                            <p class="text-900 m-0">{{ selectedTicket.client.phone }}</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="col-12 md:col-4">
-                <h6>Fechas Importantes</h6>
-                <div class="field" v-if="selectedTicket.created_at">
-                    <label>Creado:</label>
-                    <p>{{ formatDateTime(selectedTicket.created_at) }}</p>
-                </div>
-                <div class="field" v-if="selectedTicket.scheduled_date">
-                    <label>Programado:</label>
-                    <p>{{ formatDateTime(selectedTicket.scheduled_date) }}</p>
-                </div>
-                <div class="field" v-if="selectedTicket.started_at">
-                    <label>Iniciado:</label>
-                    <p>{{ formatDateTime(selectedTicket.started_at) }}</p>
-                </div>
-                <div class="field" v-if="selectedTicket.completed_at">
-                    <label>Completado:</label>
-                    <p>{{ formatDateTime(selectedTicket.completed_at) }}</p>
+            <!-- Información Financiera -->
+            <div class="surface-card p-4 border-round mb-3" v-if="isSupplierApproved && (selectedTicket.estimated_cost || selectedTicket.supplier_quote || selectedTicket.final_cost)">
+                <h6 class="text-900 mb-3">Información Financiera</h6>
+                <div class="grid">
+                    <div class="col-12 md:col-4" v-if="selectedTicket.estimated_cost">
+                        <div class="mb-2">
+                            <label class="block text-600 mb-1">Costo Estimado:</label>
+                            <p class="text-green-600 font-medium m-0">${{ formatCurrency(selectedTicket.estimated_cost) }}</p>
+                        </div>
+                    </div>
+                    <div class="col-12 md:col-4" v-if="selectedTicket.supplier_quote">
+                        <div class="mb-2">
+                            <label class="block text-600 mb-1">Mi Cotización:</label>
+                            <p class="text-blue-600 font-medium m-0">${{ formatCurrency(selectedTicket.supplier_quote) }}</p>
+                        </div>
+                    </div>
+                    <div class="col-12 md:col-4" v-if="selectedTicket.final_cost">
+                        <div class="mb-2">
+                            <label class="block text-600 mb-1">Costo Final:</label>
+                            <p class="text-900 font-medium m-0">${{ formatCurrency(selectedTicket.final_cost) }}</p>
+                        </div>
+                    </div>
                 </div>
             </div>
+
+            <!-- Fechas Importantes -->
+            <div class="surface-card p-4 border-round mb-3">
+                <h6 class="text-900 mb-3">Fechas Importantes</h6>
+                <div class="grid">
+                    <div class="col-12 md:col-6" v-if="selectedTicket.created_at">
+                        <div class="mb-2">
+                            <label class="block text-600 mb-1">Creado:</label>
+                            <p class="text-900 m-0">{{ formatDate(selectedTicket.created_at) }}</p>
+                        </div>
+                    </div>
+                    <div class="col-12 md:col-6" v-if="selectedTicket.updated_at">
+                        <div class="mb-2">
+                            <label class="block text-600 mb-1">Última Actualización:</label>
+                            <p class="text-900 m-0">{{ formatDate(selectedTicket.updated_at) }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fotos Adjuntas -->
+            <div class="surface-card p-4 border-round mb-3" v-if="selectedTicket.attachments && selectedTicket.attachments.length > 0">
+                <h6 class="text-900 mb-3">Fotos del Cliente</h6>
+                <div class="grid">
+                    <div class="col-12 md:col-4 text-center mb-3" v-for="(photo, index) in selectedTicket.attachments" :key="index">
+                        <Image :src="photo" alt="Foto del ticket" width="200" preview />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mapa de Ubicación -->
+            <div class="surface-card p-4 border-round mb-3" v-if="selectedTicket.location_address">
+                <h6 class="text-900 mb-3">Ubicación del Servicio</h6>
+                <iframe
+                    width="100%"
+                    height="400"
+                    style="border:0; border-radius: 8px;"
+                    loading="lazy"
+                    :src="`https://www.google.com/maps/embed/v1/place?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}&q=${encodeURIComponent(selectedTicket.location_address + ', ' + selectedTicket.location_city + ', ' + selectedTicket.location_state)}`"
+                ></iframe>
+            </div>
+
+            </div>
+
+            <!-- Botones de Acción -->
+
         </div>
 
         <template #footer>
@@ -442,7 +476,7 @@ const statusOptions = ref([
 const loadCurrentSupplier = async () => {
     try {
         const { data, error } = await supabase
-            .from('suppliers')
+            .from('supplier_profiles')
             .select('*')
             .eq('user_id', user.value.id)
             .single();
@@ -461,7 +495,7 @@ const loadTickets = async () => {
             .from('tickets')
             .select(`
                 *,
-                client:clients(*)
+                client:client_profiles(*)
             `)
             .order('created_at', { ascending: false });
 

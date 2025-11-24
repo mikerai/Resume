@@ -10,7 +10,7 @@
                 <DataTable :value="myTickets" :rows="10" :paginator="true" responsiveLayout="scroll" :loading="loading">
                     <Column field="ticket_number" header="ID" sortable style="min-width: 12rem">
                         <template #body="slotProps">
-                            <span class="font-medium text-primary">{{ slotProps.data.ticket_number || `REQ-${slotProps.data.id}` }}</span>
+                            <span class="font-medium text-primary">{{ slotProps.data.ticket_number }}</span>
                         </template>
                     </Column>
                     <Column field="title" header="Solicitud" sortable>
@@ -68,6 +68,24 @@
                     <Dropdown id="maintenance_type" v-model="newRequest.maintenance_type" :options="maintenanceTypeOptions" option-label="label" option-value="value" placeholder="Selecciona el tipo" class="w-full" />
                 </div>
                 <div class="field">
+                    <label for="category">Categoría *</label>
+                    <Dropdown id="category" v-model="newRequest.category" :options="categoryOptions" option-label="label" option-value="value" placeholder="Selecciona la categoría" class="w-full" />
+                </div>
+                <div class="field">
+                    <label for="supplier">Proveedor (Opcional)</label>
+                    <Dropdown 
+                        id="supplier" 
+                        v-model="newRequest.supplier_id" 
+                        :options="suppliers" 
+                        option-label="company_name" 
+                        option-value="id" 
+                        placeholder="Selecciona un proveedor (opcional)" 
+                        class="w-full" 
+                        :showClear="true"
+                        filter
+                    />
+                </div>
+                <div class="field">
                     <label for="priority">Prioridad *</label>
                     <Dropdown id="priority" v-model="newRequest.priority" :options="priorityOptions" option-label="label" option-value="value" placeholder="Selecciona la prioridad" class="w-full" />
                 </div>
@@ -86,7 +104,7 @@
             <div class="col-span-12">
                 <div class="field">
                     <label>Número:</label>
-                    <p class="font-medium">{{ selectedTicket.ticket_number || `REQ-${selectedTicket.id}` }}</p>
+                    <p class="font-medium">{{ selectedTicket.ticket_number }}</p>
                 </div>
                 <div class="field">
                     <label>Título:</label>
@@ -129,6 +147,7 @@ const { user } = useAuth();
 
 // Reactive data
 const myTickets = ref([]);
+const suppliers = ref([]);
 const loading = ref(false);
 const creating = ref(false);
 const showCreateDialog = ref(false);
@@ -139,14 +158,24 @@ const selectedTicket = ref(null);
 const newRequest = ref({
     title: '',
     description: '',
-    maintenance_type: '',
-    priority: 'medium'
+    maintenance_type: 'corrective',
+    category: '',
+    priority: 'medium',
+    supplier_id: null
 });
 
 // Options
 const maintenanceTypeOptions = [
     { label: 'Correctivo (Reparación)', value: 'corrective' },
     { label: 'Preventivo (Mantenimiento)', value: 'preventive' }
+];
+
+const categoryOptions = [
+    { label: 'Electricidad', value: 'electricidad' },
+    { label: 'Plomería', value: 'plomeria' },
+    { label: 'Climatización', value: 'climatizacion' },
+    { label: 'Pintura', value: 'pintura' },
+    { label: 'Otro', value: 'otro' }
 ];
 
 const priorityOptions = [
@@ -157,6 +186,20 @@ const priorityOptions = [
 ];
 
 // Methods
+const loadSuppliers = async () => {
+    try {
+        const { data, error } = await supabase
+            .from('supplier_profiles')
+            .select('id, company_name, contact_person')
+            .order('company_name');
+        
+        if (error) throw error;
+        suppliers.value = data || [];
+    } catch (e) {
+        console.error('Error loading suppliers:', e);
+    }
+};
+
 const loadMyTickets = async () => {
     loading.value = true;
     try {
@@ -210,27 +253,11 @@ const loadMyTickets = async () => {
 
     } catch (error) {
         console.error('💥 Error loading tickets:', error);
-
-        // En caso de error, mostrar datos mock como fallback
-        const mockTickets = [
-            {
-                id: 'mock-1',
-                ticket_number: 'REQ-001',
-                title: 'Reparación de aire acondicionado',
-                description: 'El sistema de climatización del edificio principal no está funcionando correctamente',
-                status: 'pending',
-                priority: 'high',
-                maintenance_type: 'corrective',
-                created_at: '2024-11-15T10:00:00Z'
-            }
-        ];
-        myTickets.value = mockTickets;
-
         toast.add({
-            severity: 'warn',
-            summary: 'Modo Demo',
-            detail: 'Mostrando datos de demostración. Verifica la conexión a la base de datos.',
-            life: 5000
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Error al cargar los tickets',
+            life: 3000
         });
     } finally {
         loading.value = false;
@@ -267,18 +294,16 @@ const createRequest = async () => {
             }
         }
 
-        // Generar número de ticket único
-        const ticketNumber = `REQ-${Date.now().toString().slice(-6)}`;
-
         // Crear el ticket en la base de datos
         const ticketData = {
-            ticket_number: ticketNumber,
+            // ticket_number: Generated by DB trigger
             title: newRequest.value.title,
             description: newRequest.value.description,
             maintenance_type: newRequest.value.maintenance_type,
             priority: newRequest.value.priority,
             status: 'pending',
-            category: 'general', // Categoría por defecto
+            category: newRequest.value.category || 'general',
+            supplier_id: newRequest.value.supplier_id || null, // Asignación de proveedor
             location_address: 'Por definir', // Se puede mejorar después
             location_city: 'Por definir',
             location_state: 'Por definir',
@@ -307,7 +332,7 @@ const createRequest = async () => {
         toast.add({
             severity: 'success',
             summary: 'Solicitud Creada',
-            detail: `Tu solicitud ${ticketNumber} ha sido enviada exitosamente`,
+            detail: `Tu solicitud ${newTicket.ticket_number} ha sido enviada exitosamente`,
             life: 4000
         });
 
@@ -331,7 +356,7 @@ const createRequest = async () => {
 };
 
 const validateForm = () => {
-    const required = ['title', 'description', 'maintenance_type'];
+    const required = ['title', 'description', 'maintenance_type', 'category'];
 
     for (const field of required) {
         if (!newRequest.value[field] || newRequest.value[field].trim() === '') {
@@ -352,8 +377,10 @@ const closeCreateDialog = () => {
     newRequest.value = {
         title: '',
         description: '',
-        maintenance_type: '',
-        priority: 'medium'
+        maintenance_type: 'corrective',
+        category: '',
+        priority: 'medium',
+        supplier_id: null
     };
 };
 
@@ -394,6 +421,7 @@ const truncateText = (text, maxLength) => {
 
 onMounted(() => {
     loadMyTickets();
+    loadSuppliers();
 });
 </script>
 

@@ -56,6 +56,11 @@ const formData = ref({
     insuranceFiles: [],
     legalDocuments: [],
     certifications: [],
+    
+    // Proof of Address (NEW)
+    proofOfAddressFile: null,
+    proofOfAddressData: null,
+    proofOfAddressValidated: false,
 
     // Step 4: Service Areas & Specialties (with PickList)
     selectedSpecialties: [],
@@ -1135,6 +1140,69 @@ const onCertificationsSelect = (event) => {
     formData.value.certifications = Array.from(event.files || []);
 };
 
+// Proof of Address handler (NEW)
+const onProofOfAddressSelect = async (event) => {
+    const file = event.files[0];
+    if (!file) return;
+    
+    formData.value.proofOfAddressFile = file;
+    
+    // Automatically validate proof of address
+    await processProofOfAddressValidation();
+};
+
+// Process proof of address validation (NEW)
+const processProofOfAddressValidation = async () => {
+    if (!formData.value.proofOfAddressFile) return;
+    
+    loading.value = true;
+    toast.add({
+        severity: 'info',
+        summary: 'Validando Comprobante',
+        detail: 'Procesando comprobante de domicilio con OCR...',
+        life: 3000
+    });
+    
+    try {
+        // Convert file to base64
+        const base64 = await fileToBase64(formData.value.proofOfAddressFile);
+        
+        // Call Nubarium API
+        const result = await nubariumService.validateProofOfAddress(base64);
+        
+        if (result.success) {
+            formData.value.proofOfAddressData = result.normalized;
+            formData.value.proofOfAddressValidated = true;
+            
+            toast.add({
+                severity: 'success',
+                summary: 'Comprobante Validado',
+                detail: `${result.normalized.tipo} validado - ${result.normalized.nombre}`,
+                life: 5000
+            });
+        } else {
+            formData.value.proofOfAddressValidated = false;
+            toast.add({
+                severity: 'error',
+                summary: 'Validación Falló',
+                detail: result.error || 'No se pudo validar el comprobante',
+                life: 5000
+            });
+        }
+    } catch (error) {
+        console.error('Error validando comprobante:', error);
+        formData.value.proofOfAddressValidated = false;
+        toast.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Error al procesar el comprobante',
+            life: 5000
+        });
+    } finally {
+        loading.value = false;
+    }
+};
+
 // PickList handlers
 const onPickListChange = (event) => {
     formData.value.selectedSpecialties = event.target;
@@ -1454,6 +1522,52 @@ const goToDashboardDummy = () => {
                                     <small v-if="formData.certifications.length > 0" class="text-green-600">
                                         {{ formData.certifications.length }} archivo(s) seleccionado(s)
                                     </small>
+                                </div>
+
+                                <!-- Proof of Address (NEW) -->
+                                <div class="mt-6 pt-6 border-t border-surface-200">
+                                    <h5 class="font-semibold mb-3">Comprobante de Domicilio *</h5>
+                                    <p class="text-sm text-color-secondary mb-3">
+                                        Sube tu comprobante de domicilio (CFE, TELMEX, TELCEL, MEGACABLE, SKY, IZZI)
+                                    </p>
+                                    
+                                    <FileUpload
+                                        mode="basic"
+                                        accept=".pdf,.jpg,.jpeg,.png"
+                                        :maxFileSize="5000000"
+                                        @select="onProofOfAddressSelect"
+                                        choose-label="Seleccionar Comprobante"
+                                        class="mb-3"
+                                    />
+
+                                    <!-- Validation Status -->
+                                    <div v-if="formData.proofOfAddressFile" class="mt-3">
+                                        <Message v-if="formData.proofOfAddressValidated" severity="success" :closable="false">
+                                            <div class="flex flex-column gap-2">
+                                                <div class="font-semibold">✅ Comprobante Validado</div>
+                                                <div class="text-sm">
+                                                    <strong>Tipo:</strong> {{ formData.proofOfAddressData?.tipo }}<br>
+                                                    <strong>Titular:</strong> {{ formData.proofOfAddressData?.nombre }}<br>
+                                                    <strong>Dirección:</strong> {{ formData.proofOfAddressData?.direccion?.calle }}, 
+                                                    {{ formData.proofOfAddressData?.direccion?.colonia }}, 
+                                                    {{ formData.proofOfAddressData?.direccion?.ciudad }}<br>
+                                                    <strong>CP:</strong> {{ formData.proofOfAddressData?.direccion?.cp }}
+                                                </div>
+                                            </div>
+                                        </Message>
+
+                                        <Message v-else-if="!loading" severity="error" :closable="false">
+                                            <div class="font-semibold">❌ No se pudo validar el comprobante</div>
+                                            <div class="text-sm">Por favor verifica que el documento sea legible y esté en formato correcto</div>
+                                        </Message>
+
+                                        <Message v-else severity="info" :closable="false">
+                                            <div class="flex align-items-center gap-2">
+                                                <ProgressSpinner style="width: 20px; height: 20px" strokeWidth="4" />
+                                                <span>Validando comprobante de domicilio...</span>
+                                            </div>
+                                        </Message>
+                                    </div>
                                 </div>
                             </div>
 

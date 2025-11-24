@@ -26,23 +26,24 @@
         </div>
 
         <!-- Active Service Status -->
-        <div v-if="activeTicket" class="active-service-section">
-          <ion-card class="mantex-card">
+        <div v-if="activeTickets.length > 0" class="active-service-section">
+          <h3 class="mantex-text-light ion-margin-bottom">Servicios Activos</h3>
+          <ion-card v-for="ticket in activeTickets" :key="ticket.id" class="mantex-card ion-margin-bottom" @click="viewTicketDetails(ticket)">
             <ion-card-header>
               <ion-card-subtitle class="mantex-text-accent">SERVICIO EN CURSO</ion-card-subtitle>
-              <ion-card-title class="mantex-text-light">{{ activeTicket.title }}</ion-card-title>
+              <ion-card-title class="mantex-text-light">{{ ticket.title }}</ion-card-title>
             </ion-card-header>
             <ion-card-content>
               <div class="status-badge">
-                <ion-chip :class="'status-' + activeTicket.status">
-                  {{ getStatusText(activeTicket.status) }}
+                <ion-chip :color="getStatusColor(ticket.status)">
+                  {{ getStatusText(ticket.status) }}
+                </ion-chip>
+                <ion-chip v-if="ticket.supplier" color="secondary" outline>
+                  <ion-icon :icon="personCircleOutline"></ion-icon>
+                  <ion-label>{{ ticket.supplier.company_name || ticket.supplier.contact_person }}</ion-label>
                 </ion-chip>
               </div>
-              <p class="technician-info mantex-text-secondary" v-if="activeTicket.supplier">
-                <ion-icon :icon="personCircleOutline" color="secondary"></ion-icon>
-                Técnico: <span class="mantex-text-light">{{ activeTicket.supplier.company_name }}</span>
-              </p>
-              <ion-progress-bar v-if="activeTicket.status === 'in_progress'" type="indeterminate" color="accent"></ion-progress-bar>
+              <ion-progress-bar v-if="ticket.status === 'in_progress'" type="indeterminate" color="accent"></ion-progress-bar>
             </ion-card-content>
           </ion-card>
         </div>
@@ -102,12 +103,12 @@ const { canCreateTicket } = usePermissions();
 
 const tickets = ref([]);
 
-const activeTicket = computed(() => {
-  return tickets.value.find(t => ['pending', 'in_progress', 'assigned'].includes(t.status));
+const activeTickets = computed(() => {
+  return tickets.value.filter(t => ['pending', 'opened', 'in_progress', 'assigned'].includes(t.status));
 });
 
 const recentTickets = computed(() => {
-  return tickets.value.filter(t => !['pending', 'in_progress', 'assigned'].includes(t.status));
+  return tickets.value.filter(t => !['pending', 'opened', 'in_progress', 'assigned'].includes(t.status));
 });
 
 const loadData = async () => {
@@ -129,12 +130,29 @@ const viewTicketDetails = (ticket) => {
 const getStatusText = (status) => {
   const map = {
     'pending': 'Pendiente',
+    'opened': 'En Proceso',
     'in_progress': 'En Curso',
     'completed': 'Completado',
     'cancelled': 'Cancelado',
-    'assigned': 'Asignado'
+    'assigned': 'Asignado',
+    'rejected': 'Rechazado',
+    'approved': 'Aprobado'
   };
   return map[status] || status;
+};
+
+const getStatusColor = (status) => {
+  const colorMap = {
+    'pending': 'warning',        // Amarillo - Pendiente
+    'opened': 'primary',         // Azul - En proceso
+    'in_progress': 'primary',    // Azul - En curso
+    'completed': 'success',      // Verde - Completado
+    'approved': 'success',       // Verde - Aprobado
+    'cancelled': 'medium',       // Gris - Cancelado
+    'rejected': 'danger',        // Rojo - Rechazado
+    'assigned': 'tertiary'       // Morado - Asignado
+  };
+  return colorMap[status] || 'medium';
 };
 
 const formatDate = (date) => {

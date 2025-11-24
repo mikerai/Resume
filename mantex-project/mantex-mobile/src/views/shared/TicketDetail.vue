@@ -150,10 +150,32 @@
               Enviar Correcciones
             </ion-button>
           </div>
+
+          <!-- Ready for Payment -> Paid -->
+          <div v-if="ticket.status === 'ready_for_payment'">
+             <ion-button expand="block" color="success" @click="handleStatusChange('paid')">
+              Registrar Pago Recibido
+            </ion-button>
+          </div>
         </div>
 
         <!-- Client Actions -->
         <div class="action-footer" v-if="isClient">
+          <!-- Pending/Opened -> Cancel -->
+          <div v-if="['pending', 'opened'].includes(ticket.status)">
+            <ion-button expand="block" color="danger" fill="outline" @click="handleStatusChange('cancelled')">
+              Cancelar Solicitud
+            </ion-button>
+          </div>
+
+          <!-- Rejected -> Reassign -->
+          <div v-if="ticket.status === 'rejected'">
+            <p class="instruction-text error-text">El proveedor ha rechazado esta solicitud. Por favor, reasigna a otro proveedor.</p>
+            <ion-button expand="block" color="primary" @click="openReassignModal">
+              Reasignar Proveedor
+            </ion-button>
+          </div>
+
           <!-- Completed/Under Review -> Approve/Reject/Request Changes -->
           <div v-if="['completed', 'under_review'].includes(ticket.status)" class="button-group-vertical">
             <ion-button expand="block" color="success" @click="handleStatusChange('approved')">
@@ -163,7 +185,7 @@
               Solicitar Cambios
             </ion-button>
             <ion-button expand="block" color="danger" fill="clear" @click="handleStatusChange('rejected')">
-              Rechazar
+              Rechazar Trabajo
             </ion-button>
           </div>
 
@@ -175,19 +197,39 @@
             </ion-button>
           </div>
 
-          <!-- Ready for Payment -> Paid -->
-          <div v-if="ticket.status === 'ready_for_payment'">
-             <ion-button expand="block" color="success" @click="handleStatusChange('paid')">
-              Registrar Pago
-            </ion-button>
-          </div>
-
           <!-- Paid -> Closed -->
           <div v-if="ticket.status === 'paid'">
              <ion-button expand="block" color="medium" fill="outline" @click="handleStatusChange('closed')">
               Cerrar Ticket
             </ion-button>
           </div>
+        </div>
+
+        <!-- Reassign Modal -->
+        <ion-modal :is-open="showReassignModal" @didDismiss="showReassignModal = false">
+          <ion-header>
+            <ion-toolbar>
+              <ion-title>Reasignar Proveedor</ion-title>
+              <ion-buttons slot="end">
+                <ion-button @click="showReassignModal = false">Cerrar</ion-button>
+              </ion-buttons>
+            </ion-toolbar>
+          </ion-header>
+          <ion-content class="ion-padding">
+            <ion-list>
+              <ion-item v-for="supplier in suppliers" :key="supplier.id" button @click="handleReassign(supplier.id)">
+                <ion-label>
+                  <h2>{{ supplier.company_name || supplier.contact_person }}</h2>
+                </ion-label>
+              </ion-item>
+            </ion-list>
+          </ion-content>
+        </ion-modal>
+
+        <!-- Chat Section (NEW) -->
+        <div class="section">
+          <h3>Chat con {{ isTechnician ? 'Cliente' : 'Técnico' }}</h3>
+          <TicketChat :ticketId="ticket.id" />
         </div>
       </div>
     </ion-content>
@@ -208,16 +250,18 @@ import { useRoute, useRouter } from 'vue-router';
 import { 
   IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonBackButton,
   IonCard, IonCardContent, IonIcon, IonButton, IonChip, IonList, IonItem, IonLabel,
-  IonAvatar, IonSpinner, toastController
+  IonAvatar, IonSpinner, toastController, IonModal
 } from '@ionic/vue';
 import { 
   locationOutline, mapOutline, calendarOutline, timeOutline, callOutline,
-  playOutline, checkmarkCircleOutline, alertCircleOutline, timeSharp
+  playOutline, checkmarkCircleOutline, alertCircleOutline, timeSharp,
+  documentTextOutline, cashOutline, closeCircleOutline, syncOutline
 } from 'ionicons/icons';
 import { useAuth } from '@/composables/useAuth.js';
 import { useTechnicianTickets } from '@/composables/useTechnicianTickets.js';
 import { useClientTickets } from '@/composables/useClientTickets.js';
 import { useGoogleMaps } from '@/composables/useGoogleMaps.js';
+import TicketChat from '@/components/TicketChat.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -230,6 +274,8 @@ const clientTickets = useClientTickets();
 
 const ticket = ref(null);
 const loading = ref(true);
+const showReassignModal = ref(false);
+const suppliers = ref([]);
 
 const isTechnician = computed(() => isSupplier.value || (isFlynn.value && !isClient.value));
 
@@ -259,18 +305,10 @@ const handleStatusChange = async (newStatus) => {
   // Determine which composable to use based on role
   const updater = isTechnician.value ? techTickets : clientTickets;
   
-  // Note: We need to ensure clientTickets has updateTicketStatus method too
-  // For now, let's assume we add it or use a shared method
-  // If clientTickets doesn't have it, we might need to add it.
-  
   let result;
   if (isTechnician.value) {
     result = await techTickets.updateTicketStatus(ticket.value.id, newStatus);
   } else {
-    // Temporary: Client update logic (needs to be in composable properly)
-    // For now reusing the same logic pattern if we add the method to useClientTickets
-    // Or we can just call supabase directly here for simplicity in this step
-    // But better to add it to useClientTickets.
     result = await clientTickets.updateTicketStatus(ticket.value.id, newStatus);
   }
 
@@ -292,6 +330,33 @@ const handleStatusChange = async (newStatus) => {
   }
 };
 
+const openReassignModal = async () => {
+  suppliers.value = await clientTickets.fetchSuppliers();
+  showReassignModal.value = true;
+};
+
+const handleReassign = async (supplierId) => {
+  const result = await clientTickets.reassignTicket(ticket.value.id, supplierId);
+  
+  if (result.success) {
+    ticket.value = { ...ticket.value, ...result.data };
+    showReassignModal.value = false;
+    const toast = await toastController.create({
+      message: 'Ticket reasignado exitosamente',
+      duration: 2000,
+      color: 'success'
+    });
+    await toast.present();
+  } else {
+    const toast = await toastController.create({
+      message: 'Error al reasignar ticket',
+      duration: 2000,
+      color: 'danger'
+    });
+    await toast.present();
+  }
+};
+
 const openInMaps = () => {
   if (ticket.value?.location_address) {
     openAddress(ticket.value.location_address);
@@ -306,8 +371,18 @@ const callClient = (phone) => {
 const getStatusIcon = (status) => {
   const map = {
     'pending': timeSharp,
+    'opened': documentTextOutline,
     'in_progress': playOutline,
-    'completed': checkmarkCircleOutline
+    'completed': checkmarkCircleOutline,
+    'revision_requested': syncOutline,
+    'under_review': documentTextOutline,
+    'approved': checkmarkCircleOutline,
+    'rejected': closeCircleOutline,
+    'ready_for_payment': cashOutline,
+    'payment_pending': cashOutline,
+    'paid': cashOutline,
+    'closed': checkmarkCircleOutline,
+    'cancelled': closeCircleOutline
   };
   return map[status] || alertCircleOutline;
 };
@@ -315,23 +390,40 @@ const getStatusIcon = (status) => {
 const translateStatus = (status) => {
   const map = { 
     'pending': 'Pendiente', 
+    'opened': 'Abierto',
     'assigned': 'Asignado',
     'in_progress': 'En Curso', 
     'completed': 'Completado',
+    'revision_requested': 'Cambios Solicitados',
+    'under_review': 'En Revisión',
+    'approved': 'Aprobado',
+    'rejected': 'Rechazado',
+    'ready_for_payment': 'Listo para Pago',
+    'payment_pending': 'Pago Pendiente',
+    'paid': 'Pagado',
+    'closed': 'Cerrado',
     'cancelled': 'Cancelado'
   };
   return map[status] || status;
 };
 
 const getPriorityColor = (priority) => {
-  const p = priority?.toLowerCase() || '';
-  if (p === 'high' || p === 'urgente') return 'danger';
-  if (p === 'medium' || p === 'media') return 'warning';
-  return 'success';
+  const colorMap = {
+    'urgent': 'danger',      // Rojo - Urgente/Crítico
+    'high': 'warning',       // Naranja - Alta
+    'medium': 'warning',     // Amarillo - Media
+    'low': 'success'         // Verde - Baja
+  };
+  return colorMap[priority?.toLowerCase()] || 'medium';
 };
 
 const translatePriority = (priority) => {
-  const map = { 'high': 'Alta', 'medium': 'Media', 'low': 'Baja' };
+  const map = { 
+    'urgent': 'Urgente', 
+    'high': 'Alta', 
+    'medium': 'Media', 
+    'low': 'Baja' 
+  };
   return map[priority] || priority;
 };
 

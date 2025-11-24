@@ -16,29 +16,10 @@ import {
   limitToFirst,
   off
 } from 'firebase/database';
+import { database } from '@/lib/firebaseConfig';
 
-// Firebase config - Real production credentials
-const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID
-};
-
-// Initialize Firebase
-let firebaseApp;
-let database;
-
-try {
-  firebaseApp = initializeApp(firebaseConfig);
-  database = getDatabase(firebaseApp);
-  console.log('🔥 Firebase initialized successfully');
-} catch (error) {
-  console.error('Error initializing Firebase:', error);
-}
+// Remove local config and initialization
+// Use imported database instance
 
 export function useFirebaseJobs() {
   const jobs = ref([]);
@@ -122,7 +103,7 @@ export function useFirebaseJobs() {
                     }
 
                     return new Date(a.scheduled_date + ' ' + a.scheduled_time) -
-                           new Date(b.scheduled_date + ' ' + b.scheduled_time);
+                      new Date(b.scheduled_date + ' ' + b.scheduled_time);
                   });
 
                   jobs.value = [...technicianJobs];

@@ -12,13 +12,9 @@ export function useClientTickets() {
         loading.value = true;
         error.value = null;
         try {
-            // Assuming 'tickets' table has a 'client_id' column.
-            // We need to find the client_id associated with the current user.
-            // For now, let's assume the profile has an organization_id or we query clients table.
-
-            // 1. Get Client ID
+            // 1. Get Client Profile ID
             const { data: clientData, error: clientError } = await supabase
-                .from('clients')
+                .from('client_profiles')
                 .select('id')
                 .eq('user_id', user.value.id)
                 .single();
@@ -29,18 +25,31 @@ export function useClientTickets() {
             const clientId = clientData.id;
 
             // 2. Fetch Tickets
-            const { data, error: ticketsError } = await supabase
+            const { data: tickets, error: ticketsError } = await supabase
                 .from('tickets')
-                .select(`
-                    *,
-                    suppliers!supplier_id (company_name)
-                `)
+                .select('*')
                 .eq('client_id', clientId)
                 .order('created_at', { ascending: false });
 
             if (ticketsError) throw ticketsError;
 
-            return data;
+            // 3. Manually fetch supplier data for each ticket
+            const ticketsWithSuppliers = await Promise.all(
+                (tickets || []).map(async (ticket) => {
+                    if (ticket.supplier_id) {
+                        const { data: supplierData, error: supplierError } = await supabase
+                            .from('supplier_profiles')
+                            .select('company_name, contact_person')
+                            .eq('id', ticket.supplier_id)
+                            .single();
+
+                        return { ...ticket, supplier: supplierData };
+                    }
+                    return { ...ticket, supplier: null };
+                })
+            );
+
+            return ticketsWithSuppliers;
         } catch (e) {
             console.error('Error fetching tickets:', e);
             error.value = e.message;
@@ -75,7 +84,8 @@ export function useClientTickets() {
                     priority: ticketData.priority,
                     maintenance_type: ticketData.maintenance_type,
                     status: 'pending',
-                    created_by: user.value.id
+                    created_by: user.value.id,
+                    supplier_id: ticketData.supplier_id || null // Optional supplier assignment
                 }])
                 .select();
 
@@ -98,7 +108,7 @@ export function useClientTickets() {
                 .from('tickets')
                 .select(`
                     *,
-                    supplier: suppliers(company_name, contact_person, phone)
+                    supplier: supplier_profiles(company_name, contact_person, phone_number)
                         `)
                 .eq('id', ticketId)
                 .single();
@@ -135,11 +145,54 @@ export function useClientTickets() {
         }
     };
 
+    // Fetch all available suppliers
+    const fetchSuppliers = async () => {
+        try {
+            const { data, error: dbError } = await supabase
+                .from('supplier_profiles')
+                .select('id, company_name, contact_person')
+                .order('company_name');
+
+            if (dbError) throw dbError;
+            return data || [];
+        } catch (e) {
+            console.error('Error fetching suppliers:', e);
+            return [];
+        }
+    };
+
+    // Reassign a rejected ticket to a new supplier
+    const reassignTicket = async (ticketId, newSupplierId) => {
+        try {
+            const updates = {
+                supplier_id: newSupplierId,
+                status: 'pending', // Reset status to pending for the new supplier
+                updated_at: new Date().toISOString()
+            };
+
+            const { data, error: updateError } = await supabase
+                .from('tickets')
+                .update(updates)
+                .eq('id', ticketId)
+                .select()
+                .single();
+
+            if (updateError) throw updateError;
+
+            return { success: true, data };
+        } catch (e) {
+            console.error('Error reassigning ticket:', e);
+            return { success: false, error: e.message };
+        }
+    };
+
     return {
         fetchTickets,
         fetchTicketById,
         createTicket,
         updateTicketStatus,
+        fetchSuppliers,
+        reassignTicket,
         loading,
         error
     };

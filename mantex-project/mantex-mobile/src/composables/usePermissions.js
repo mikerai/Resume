@@ -55,7 +55,10 @@ export function usePermissions() {
         if (isFlynn.value || profile.value?.sub_role === 'god') return true;
 
         // Client Owner, Manager, and Buyer can create tickets. Viewer cannot.
-        return hasAnySubRole(['owner', 'manager', 'buyer']);
+        const result = hasAnySubRole(['owner', 'manager', 'buyer']);
+        console.log('  hasAnySubRole result:', result);
+        console.log('  Final canCreateTicket:', result);
+        return result;
     });
 
     const canViewBilling = computed(() => {

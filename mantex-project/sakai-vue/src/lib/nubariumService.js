@@ -855,6 +855,154 @@ class NubariumService {
             };
         }
     }
+
+    // ==============================================
+    // PROOF OF ADDRESS VALIDATION (NEW)
+    // ==============================================
+
+    /**
+     * Validación de Comprobante de Domicilio (OCR)
+     * Detecta automáticamente el tipo: CFE, TELMEX, TELCEL, MEGACABLE, SKY, IZZI
+     * @param {string} comprobanteBase64 - Imagen (JPG/PNG) o PDF en base64
+     * @returns {Promise<Object>}
+     */
+    async validateProofOfAddress(comprobanteBase64) {
+        try {
+            console.log('📄 Validando comprobante de domicilio con Nubarium OCR...');
+
+            const payload = {
+                comprobante: comprobanteBase64
+            };
+
+            const response = await fetch(`${NUBARIUM_BASE_URL}/nubarium/ocr/v2/comprobante_domicilio`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Basic ${btoa(`${NUBARIUM_CREDENTIALS.username}:${NUBARIUM_CREDENTIALS.password}`)}`
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+
+            if (data.status === 'ERROR') {
+                console.error('❌ Error en validación de comprobante:', data.mensaje);
+                return {
+                    success: false,
+                    error: data.mensaje || 'No se identificó el documento',
+                    data: null
+                };
+            }
+
+            // Normalizar respuesta según tipo detectado
+            const normalized = {
+                tipo: data.tipo, // CFE, TELMEX, TELCEL, MEGACABLE, SKY, IZZI
+                nombre: data.nombre,
+                direccion: {
+                    calle: data.calle,
+                    referencia: data.referencia || '',
+                    colonia: data.colonia,
+                    ciudad: data.ciudad,
+                    cp: data.cp
+                },
+                fechaEmision: data.fecha || data.fechaEmision || data.fechaCorte,
+                pagarAntesDe: data.pagarAntesDe || data.fechaLimitePago,
+                cuenta: data.cuenta || data.numeroFactura || data.suscriptor,
+                codigoValidacion: data.codigoValidacion,
+                validado: data.status === 'OK'
+            };
+
+            console.log(`✅ Comprobante validado: ${normalized.tipo}`);
+            console.log(`   Titular: ${normalized.nombre}`);
+            console.log(`   Dirección: ${normalized.direccion.calle}, ${normalized.direccion.colonia}`);
+
+            return {
+                success: true,
+                data: data,
+                normalized
+            };
+        } catch (error) {
+            console.error('💥 Error validando comprobante de domicilio:', error);
+            return {
+                success: false,
+                error: error.message,
+                data: null
+            };
+        }
+    }
+
+    /**
+     * Validación de CFE por nombre y número de servicio
+     * @param {string} name - Nombre completo del titular
+     * @param {string} serviceNumber - Número de servicio CFE (RPU)
+     * @returns {Promise<Object>}
+     */
+    async validateCFE(name, serviceNumber) {
+        try {
+            console.log('⚡ Validando CFE con Nubarium...');
+            console.log(`   Titular: ${name}`);
+            console.log(`   RPU: ${serviceNumber}`);
+
+            const payload = {
+                name,
+                serviceNumber
+            };
+
+            const response = await fetch(`${NUBARIUM_BASE_URL}/nubarium/mex/documents/validate-cfe`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Basic ${btoa(`${NUBARIUM_CREDENTIALS.username}:${NUBARIUM_CREDENTIALS.password}`)}`
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+
+            if (data.status === 'ERROR') {
+                console.error('❌ Error en validación CFE:', data.message);
+                return {
+                    success: false,
+                    error: data.message || 'Data not found',
+                    messageCode: data.messageCode,
+                    data: null
+                };
+            }
+
+            const normalized = {
+                validado: data.status === 'OK',
+                rpu: data.data?.datos?.rpu,
+                nombre: data.data?.datos?.cliente?.nombre,
+                direccion: {
+                    calle: data.data?.datos?.cliente?.calle,
+                    calle2: data.data?.datos?.cliente?.calle2,
+                    colonia: data.data?.datos?.cliente?.colonia,
+                    codigoPostal: data.data?.datos?.cliente?.codigoPostal,
+                    ciudad: data.data?.datos?.cliente?.ciudad,
+                    estado: data.data?.datos?.cliente?.estado
+                }
+            };
+
+            console.log('✅ CFE validado exitosamente');
+            console.log(`   RPU: ${normalized.rpu}`);
+            console.log(`   Nombre: ${normalized.nombre}`);
+            console.log(`   Dirección: ${normalized.direccion.calle}, ${normalized.direccion.colonia}`);
+
+            return {
+                success: true,
+                data: data.data,
+                normalized
+            };
+        } catch (error) {
+            console.error('💥 Error validando CFE:', error);
+            return {
+                success: false,
+                error: error.message,
+                data: null
+            };
+        }
+    }
+}
 }
 
 // Exportar instancia singleton

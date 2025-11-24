@@ -1,9 +1,8 @@
 // src/composables/useFirebaseChat.js
 // Real-time chat for tickets using Firebase Realtime Database
 
-import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import {
-    getDatabase,
     ref as dbRef,
     onValue,
     push,

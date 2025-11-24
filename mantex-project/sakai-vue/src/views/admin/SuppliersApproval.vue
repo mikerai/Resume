@@ -391,6 +391,52 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Proof of Address Validation (NEW) -->
+                <div v-if="selectedSupplier.proof_of_address_type" class="surface-card p-4 border-round mb-3">
+                    <h6 class="text-900 mb-3">Comprobante de Domicilio</h6>
+                    <div class="grid">
+                        <div class="col-12 md:col-6">
+                            <label class="block text-600 mb-1">Tipo de Comprobante:</label>
+                            <Tag
+                                :value="selectedSupplier.proof_of_address_type"
+                                :severity="selectedSupplier.proof_of_address_validated ? 'success' : 'warning'"
+                                class="font-bold"
+                            />
+                        </div>
+                        <div class="col-12 md:col-6">
+                            <label class="block text-600 mb-1">Validado:</label>
+                            <Tag
+                                :value="selectedSupplier.proof_of_address_validated ? 'SÍ' : 'NO'"
+                                :severity="selectedSupplier.proof_of_address_validated ? 'success' : 'danger'"
+                            />
+                        </div>
+                        <div class="col-12 md:col-6">
+                            <label class="block text-600 mb-1">Titular:</label>
+                            <p class="text-900 font-medium m-0">{{ selectedSupplier.proof_of_address_name || 'N/A' }}</p>
+                        </div>
+                        <div class="col-12 md:col-6">
+                            <label class="block text-600 mb-1">Código Postal:</label>
+                            <p class="text-900 m-0">{{ selectedSupplier.proof_of_address_cp || 'N/A' }}</p>
+                        </div>
+                        <div class="col-12">
+                            <label class="block text-600 mb-1">Dirección Validada:</label>
+                            <p class="text-900 m-0">
+                                {{ selectedSupplier.proof_of_address_street || 'N/A' }},
+                                {{ selectedSupplier.proof_of_address_colonia || '' }},
+                                {{ selectedSupplier.proof_of_address_city || '' }}
+                            </p>
+                        </div>
+                        <div class="col-12" v-if="selectedSupplier.proof_of_address_validated_at">
+                            <label class="block text-600 mb-1">Fecha de Validación:</label>
+                            <p class="text-900 m-0">{{ formatDate(selectedSupplier.proof_of_address_validated_at) }}</p>
+                        </div>
+                        <div class="col-12" v-if="selectedSupplier.proof_of_address_validation_code">
+                            <label class="block text-600 mb-1">Código de Validación:</label>
+                            <p class="text-900 font-mono text-sm m-0">{{ selectedSupplier.proof_of_address_validation_code }}</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 

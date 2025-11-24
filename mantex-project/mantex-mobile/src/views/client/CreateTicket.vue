@@ -37,6 +37,15 @@
           </ion-item>
 
           <ion-item>
+            <ion-select label="Proveedor (Opcional)" label-placement="floating" v-model="form.supplier_id" placeholder="Selecciona un proveedor">
+              <ion-select-option :value="null">Sin asignar</ion-select-option>
+              <ion-select-option v-for="supplier in suppliers" :key="supplier.id" :value="supplier.id">
+                {{ supplier.company_name || supplier.contact_person }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+
+          <ion-item>
             <ion-select label="Prioridad" label-placement="floating" v-model="form.priority">
               <ion-select-option value="low">Baja (Planificado)</ion-select-option>
               <ion-select-option value="medium">Media (Normal)</ion-select-option>
@@ -84,7 +93,7 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue';
+import { ref, reactive, onMounted } from 'vue';
 import { 
   IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonBackButton,
   IonList, IonItem, IonSelect, IonSelectOption, IonInput, IonTextarea, IonButton,
@@ -98,12 +107,13 @@ import { usePermissions } from '@/composables/usePermissions.js';
 import { useAuth } from '@/composables/useAuth.js';
 
 const router = useRouter();
-const { createTicket } = useClientTickets();
+const { createTicket, fetchSuppliers } = useClientTickets();
 const { canCreateTicket } = usePermissions();
 
 const isSubmitting = ref(false);
 const selectedPhoto = ref(null); // Base64 photo data
 const photoPreview = ref(null); // Preview URL
+const suppliers = ref([]);
 const { user } = useAuth();
 
 const form = reactive({
@@ -111,7 +121,12 @@ const form = reactive({
   category: '',
   priority: 'medium',
   title: '',
-  description: ''
+  description: '',
+  supplier_id: null
+});
+
+onMounted(async () => {
+  suppliers.value = await fetchSuppliers();
 });
 
 const selectPhoto = async () => {
