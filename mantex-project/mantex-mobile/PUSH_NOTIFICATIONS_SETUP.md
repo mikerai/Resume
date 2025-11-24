@@ -1,4 +1,4 @@
-# 🔔 Push Notifications Setup Profesional - Mantex Mobile
+# Push Notifications Setup Profesional - Mantex Mobile
 
 ## Arquitectura Completa
 

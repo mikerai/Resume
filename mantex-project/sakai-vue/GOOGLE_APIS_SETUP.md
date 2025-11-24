@@ -1,14 +1,14 @@
-# 🚀 Google APIs Setup Completo para Mantex
+#  Google APIs Setup Completo para Mantex
 
-## 🎯 Objetivo
+##  Objetivo
 Integración completa y funcional de Google APIs para:
-- 🗺️ **Maps API**: Geolocalización y tracking tiempo real
-- 📅 **Calendar API**: Sistema de scheduling completo
-- 🔥 **Firebase**: Real-time updates y notifications
+- **Maps API**: Geolocalización y tracking tiempo real
+- **Calendar API**: Sistema de scheduling completo
+- **Firebase**: Real-time updates y notifications
 
 ---
 
-## 🏗️ STEP 1: Google Cloud Console Setup
+## STEP 1: Google Cloud Console Setup
 
 ### 1.1 Crear Proyecto en Google Cloud Console
 
@@ -60,7 +60,7 @@ VITE_GOOGLE_OAUTH_CLIENT_ID=123456789012-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.apps.g
 
 ---
 
-## 🗺️ STEP 2: Maps API Implementation
+## STEP 2: Maps API Implementation
 
 ### 2.1 Funcionalidades Completas
 
@@ -101,7 +101,7 @@ VITE_GOOGLE_OAUTH_CLIENT_ID=123456789012-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.apps.g
 
 ---
 
-## 📅 STEP 3: Calendar API Implementation
+## STEP 3: Calendar API Implementation
 
 ### 3.1 Funcionalidades Completas
 
@@ -141,12 +141,12 @@ VITE_GOOGLE_OAUTH_CLIENT_ID=123456789012-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.apps.g
 
 ---
 
-## 🔥 STEP 4: Firebase Implementation
+## STEP 4: Firebase Implementation
 
 ### 4.1 Real-Time Features
 
-**🚀 IMPORTANTE: Firebase SOLO para datos temporales y notifications**
-**🔐 Authentication: Supabase Auth (ya implementado)**
+**IMPORTANTE: Firebase SOLO para datos temporales y notifications**
+**Authentication: Supabase Auth (ya implementado)**
 
 **Real-time Updates:**
 - ✅ Ubicación de suppliers actualizada cada 30 segundos
@@ -230,7 +230,7 @@ VITE_FIREBASE_PROJECT_ID=mantex-production-XXXXX
 
 ---
 
-## 📊 Success Metrics
+## Success Metrics
 
 ### KPIs to Track:
 - ✅ **Location accuracy**: <10 meters error
@@ -244,4 +244,4 @@ VITE_FIREBASE_PROJECT_ID=mantex-production-XXXXX
 - ✅ **Calendar API calls**: <500ms response
 - ✅ **Firebase writes**: <100ms latency
 
-¡Integración Google APIs completamente funcional y escalable! 🚀
+¡Integración Google APIs completamente funcional y escalable! 

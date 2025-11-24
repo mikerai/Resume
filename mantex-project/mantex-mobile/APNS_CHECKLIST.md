@@ -60,7 +60,7 @@ VITE_FIREBASE_VAPID_KEY=BMiffToTzycBHCUjBn27VlyV7ZFBfc68gvv30BkgofmIKjoxtTFwpDnu
 
 ### 5. Testing (Requiere dispositivo físico)
 
-⚠️ **IMPORTANTE:** Push notifications NO funcionan en simulador iOS
+**IMPORTANTE:** Push notifications NO funcionan en simulador iOS
 
 **Probar en dispositivo real:**
 ```bash

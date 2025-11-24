@@ -1,4 +1,4 @@
-# 🔧 Mantex Project Setup Guide
+# Mantex Project Setup Guide
 
 ## Estructura del Proyecto
 
@@ -24,7 +24,7 @@ mantex-project/
 - **AWS** account (S3 + Lambda)
 - **Google Cloud Console** (Maps + Calendar APIs)
 
-## 🚀 Instalación Rápida
+## Instalación Rápida
 
 ### 1. Clonar Repositorio
 ```bash
@@ -50,9 +50,9 @@ Cada proyecto usa 3 archivos:
 - `.env.development` - Desarrollo local
 - `.env.production` - Producción
 
-**⚠️ IMPORTANTE**: Nunca commitear los archivos `.env` con valores reales.
+** IMPORTANTE**: Nunca commitear los archivos `.env` con valores reales.
 
-## 📱 Setup iOS (Mobile App)
+## Setup iOS (Mobile App)
 
 ### 1. Instalar Ruby y CocoaPods
 ```bash
@@ -78,7 +78,7 @@ cd mantex-mobile
 npm run ios:open
 ```
 
-## 🌐 Configuración de Servicios
+## Configuración de Servicios
 
 ### Supabase
 1. Crear proyecto en [supabase.com](https://supabase.com)
@@ -103,7 +103,7 @@ npm run ios:open
 3. Crear credenciales OAuth 2.0
 4. Configurar pantalla de consentimiento
 
-## 🔧 Comandos de Desarrollo
+## Comandos de Desarrollo
 
 ### Web Application (sakai-vue/)
 ```bash
@@ -121,7 +121,7 @@ npm run ios:sync         # Sincronizar con iOS
 npm run ios:run          # Ejecutar en simulador iOS
 ```
 
-## 🔐 Variables de Entorno
+## Variables de Entorno
 
 ### Variables Compartidas (Ambos Proyectos)
 ```bash
@@ -147,7 +147,7 @@ VITE_GOOGLE_MAPS_API_KEY=tu-maps-api-key
 VITE_GOOGLE_OAUTH_CLIENT_ID=tu-oauth-client-id
 ```
 
-## ⚙️ Base de Datos (Supabase)
+## Base de Datos (Supabase)
 
 ### Usuarios de Prueba
 ```sql
@@ -167,7 +167,7 @@ password: master123
 role: admin.god
 ```
 
-## 🧪 Testing
+## Testing
 
 ### Web Application
 ```bash
@@ -185,11 +185,11 @@ npm run test:e2e        # E2E tests (Cypress)
 npm run lint           # ESLint
 ```
 
-## 🚀 Deployment
+## Deployment
 
 Ver [DEPLOYMENT.md](./DEPLOYMENT.md) para instrucciones completas de deployment.
 
-## 📋 Troubleshooting
+## Troubleshooting
 
 ### Problemas Comunes
 
@@ -227,7 +227,7 @@ npx cap run android --list
 npx cap run android --target=[device-id]
 ```
 
-## 📞 Soporte
+## Soporte
 
 Para problemas específicos:
 1. Revisar logs en consola del navegador/device

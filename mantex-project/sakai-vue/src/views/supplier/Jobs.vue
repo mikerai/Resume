@@ -573,9 +573,6 @@ const viewTicket = (ticket) => {
   // expose to template via refs (optional)
   chatData.value = { messages, isTyping, sendMessage, markAsRead, setTypingStatus };
 };
-    selectedTicket.value = ticket;
-    showTicketDialog.value = true;
-};
 
 const canAcceptTicket = (ticket) => {
     return ['pending', 'opened'].includes(ticket.status) &&
@@ -628,47 +625,6 @@ const acceptTicket = async (ticket) => {
       life: 3000
     });
   }
-};
-    if (!isSupplierApproved.value) {
-        toast.add({
-            severity: 'warn',
-            summary: 'Acceso Restringido',
-            detail: 'Debe ser aprobado antes de aceptar trabajos',
-            life: 3000
-        });
-        return;
-    }
-
-    try {
-        const { error } = await supabase
-            .from('tickets')
-            .update({
-                supplier_id: currentSupplierId.value,
-                status: 'opened',
-                updated_at: new Date().toISOString()
-            })
-            .eq('id', ticket.id);
-
-        if (error) throw error;
-
-        toast.add({
-            severity: 'success',
-            summary: 'Trabajo Aceptado',
-            detail: `Has aceptado el trabajo ${ticket.ticket_number}`,
-            life: 3000
-        });
-
-        await loadTickets();
-        showTicketDialog.value = false;
-    } catch (error) {
-        console.error('Error accepting ticket:', error);
-        toast.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: 'Error al aceptar el trabajo',
-            life: 3000
-        });
-    }
 };
 
 const rejectTicket = (ticket) => {
