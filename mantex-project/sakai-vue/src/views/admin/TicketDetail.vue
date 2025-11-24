@@ -34,6 +34,7 @@
           </div>
 
           <!-- EVIDENCIAS -->
+          <div>
             <h4 class="font-semibold mb-2">Evidencias</h4>
             <ImageGallery :items="ticket.attachments || []" />
           </div>

@@ -1003,7 +1003,6 @@ class NubariumService {
         }
     }
 }
-}
 
 // Exportar instancia singleton
 export const nubariumService = new NubariumService();
