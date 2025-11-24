@@ -184,7 +184,7 @@ npm run build
 #### Deploy a S3
 ```bash
 # Sync directo al bucket (asume bucket ya configurado)
-aws s3 sync dist/ s3://dev.mantex.mx --delete
+aws s3 sync dist/ s3://dev.mantex.mx
 ```
 
 #### Invalidar CloudFront (si aplica)

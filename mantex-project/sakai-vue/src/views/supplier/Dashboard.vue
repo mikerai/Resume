@@ -190,12 +190,22 @@ const setChartData = () => {
 
 // Utility functions
 const getStatusSeverity = (status) => {
-    switch (status) {
-        case 'pending': return 'warn';
-        case 'in_progress': return 'info';
-        case 'completed': return 'success';
-        default: return 'secondary';
-    }
+    const severities = {
+        'pending': 'warning',
+        'opened': 'info',
+        'in_progress': 'info',
+        'completed': 'success',
+        'approved': 'success',
+        'rejected': 'danger',
+        'cancelled': 'secondary',
+        'under_review': 'warning',
+        'revision_requested': 'warning',
+        'payment_pending': 'warning',
+        'ready_for_payment': 'success',
+        'paid': 'success',
+        'closed': 'secondary'
+    };
+    return severities[status] || 'secondary';
 };
 
 onMounted(() => {

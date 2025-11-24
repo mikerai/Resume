@@ -7,6 +7,7 @@ import {
     onValue,
     push,
     set,
+    update,
     serverTimestamp,
     off
 } from 'firebase/database';
@@ -83,7 +84,7 @@ export function useFirebaseChat(ticketId) {
 
             if (Object.keys(updates).length > 0) {
                 const dbReference = dbRef(database);
-                await set(dbReference, updates);
+                await update(dbReference, updates);
             }
 
         } catch (error) {

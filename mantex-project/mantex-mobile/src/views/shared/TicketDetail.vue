@@ -159,6 +159,103 @@
           </div>
         </div>
 
+        <!-- Evidence Gallery (for Client) -->
+        <div class="section" v-if="isClient && ['completed', 'under_review', 'approved', 'ready_for_payment', 'paid', 'closed'].includes(ticket.status)">
+          <h3>Evidencias del Trabajo</h3>
+          
+          <div v-if="loadingEvidence" class="loading-evidence">
+            <ion-spinner></ion-spinner>
+            <p>Cargando evidencias...</p>
+          </div>
+
+          <div v-else-if="evidence.length === 0" class="empty-evidence">
+            <ion-icon :icon="imagesOutline" size="large" color="medium"></ion-icon>
+            <p>No hay evidencias disponibles aún</p>
+          </div>
+
+          <div v-else class="evidence-grid">
+            <!-- Before Photos -->
+            <div v-if="beforePhotos.length > 0" class="evidence-section">
+              <h4 class="evidence-type-title">Fotos Iniciales</h4>
+              <div class="evidence-photos">
+                <div 
+                  v-for="photo in beforePhotos" 
+                  :key="photo.id" 
+                  class="evidence-photo"
+                  @click="openPhotoViewer(photo)"
+                >
+                  <img :src="photo.url" :alt="photo.file_name" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Progress Photos -->
+            <div v-if="progressPhotos.length > 0" class="evidence-section">
+              <h4 class="evidence-type-title">Fotos del Proceso</h4>
+              <div class="evidence-photos">
+                <div 
+                  v-for="photo in progressPhotos" 
+                  :key="photo.id" 
+                  class="evidence-photo"
+                  @click="openPhotoViewer(photo)"
+                >
+                  <img :src="photo.url" :alt="photo.file_name" />
+                </div>
+              </div>
+            </div>
+
+            <!-- After Photos -->
+            <div v-if="afterPhotos.length > 0" class="evidence-section">
+              <h4 class="evidence-type-title">Fotos Finales</h4>
+              <div class="evidence-photos">
+                <div 
+                  v-for="photo in afterPhotos" 
+                  :key="photo.id" 
+                  class="evidence-photo"
+                  @click="openPhotoViewer(photo)"
+                >
+                  <img :src="photo.url" :alt="photo.file_name" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Documents -->
+            <div v-if="documents.length > 0" class="evidence-section">
+              <h4 class="evidence-type-title">Documentos</h4>
+              <ion-list>
+                <ion-item 
+                  v-for="doc in documents" 
+                  :key="doc.id"
+                  button
+                  @click="openDocument(doc.url)"
+                >
+                  <ion-icon :icon="documentTextOutline" slot="start" color="primary"></ion-icon>
+                  <ion-label>
+                    <h3>{{ doc.file_name }}</h3>
+                    <p>{{ formatFileSize(doc.file_size) }} - {{ formatDate(doc.uploaded_at) }}</p>
+                  </ion-label>
+                  <ion-icon :icon="downloadOutline" slot="end"></ion-icon>
+                </ion-item>
+              </ion-list>
+            </div>
+          </div>
+        </div>
+
+        <!-- Photo Viewer Modal -->
+        <ion-modal :is-open="showPhotoViewer" @didDismiss="showPhotoViewer = false">
+          <ion-header>
+            <ion-toolbar>
+              <ion-title>{{ selectedPhoto?.file_name }}</ion-title>
+              <ion-buttons slot="end">
+                <ion-button @click="showPhotoViewer = false">Cerrar</ion-button>
+              </ion-buttons>
+            </ion-toolbar>
+          </ion-header>
+          <ion-content class="photo-viewer-content">
+            <img v-if="selectedPhoto" :src="selectedPhoto.url" :alt="selectedPhoto.file_name" class="full-photo" />
+          </ion-content>
+        </ion-modal>
+
         <!-- Client Actions -->
         <div class="action-footer" v-if="isClient">
           <!-- Pending/Opened -> Cancel -->
@@ -167,6 +264,8 @@
               Cancelar Solicitud
             </ion-button>
           </div>
+
+
 
           <!-- Rejected -> Reassign -->
           <div v-if="ticket.status === 'rejected'">
@@ -181,7 +280,7 @@
             <ion-button expand="block" color="success" @click="handleStatusChange('approved')">
               Aprobar Trabajo
             </ion-button>
-            <ion-button expand="block" color="warning" fill="outline" @click="handleStatusChange('revision_requested')">
+            <ion-button expand="block" color="warning" fill="outline" @click="openRevisionModal">
               Solicitar Cambios
             </ion-button>
             <ion-button expand="block" color="danger" fill="clear" @click="handleStatusChange('rejected')">
@@ -226,6 +325,38 @@
           </ion-content>
         </ion-modal>
 
+        <!-- Revision Request Modal -->
+        <ion-modal :is-open="showRevisionModal" @didDismiss="showRevisionModal = false">
+          <ion-header>
+            <ion-toolbar>
+              <ion-title>Solicitar Cambios</ion-title>
+              <ion-buttons slot="end">
+                <ion-button @click="showRevisionModal = false">Cancelar</ion-button>
+              </ion-buttons>
+            </ion-toolbar>
+          </ion-header>
+          <ion-content class="ion-padding">
+            <p class="instruction-text">Por favor, describe qué cambios necesitas que realice el técnico:</p>
+            <ion-textarea
+              v-model="revisionComments"
+              placeholder="Ej: Las fotos finales no muestran X, falta Y, etc."
+              :rows="6"
+              counter
+              :maxlength="500"
+              fill="outline"
+            ></ion-textarea>
+            <ion-button 
+              expand="block" 
+              color="warning" 
+              @click="submitRevisionRequest"
+              :disabled="!revisionComments || revisionComments.trim().length < 10"
+              class="ion-margin-top"
+            >
+              Enviar Solicitud de Cambios
+            </ion-button>
+          </ion-content>
+        </ion-modal>
+
         <!-- Chat Section (NEW) -->
         <div class="section">
           <h3>Chat con {{ isTechnician ? 'Cliente' : 'Técnico' }}</h3>
@@ -245,17 +376,18 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { 
   IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonBackButton,
   IonCard, IonCardContent, IonIcon, IonButton, IonChip, IonList, IonItem, IonLabel,
-  IonAvatar, IonSpinner, toastController, IonModal
+  IonAvatar, IonSpinner, toastController, IonModal, IonTextarea
 } from '@ionic/vue';
 import { 
   locationOutline, mapOutline, calendarOutline, timeOutline, callOutline,
   playOutline, checkmarkCircleOutline, alertCircleOutline, timeSharp,
-  documentTextOutline, cashOutline, closeCircleOutline, syncOutline
+  documentTextOutline, cashOutline, closeCircleOutline, syncOutline,
+  imagesOutline, downloadOutline
 } from 'ionicons/icons';
 import { useAuth } from '@/composables/useAuth.js';
 import { useTechnicianTickets } from '@/composables/useTechnicianTickets.js';
@@ -275,6 +407,8 @@ const clientTickets = useClientTickets();
 const ticket = ref(null);
 const loading = ref(true);
 const showReassignModal = ref(false);
+const showRevisionModal = ref(false);
+const revisionComments = ref('');
 const suppliers = ref([]);
 
 const isTechnician = computed(() => isSupplier.value || (isFlynn.value && !isClient.value));
@@ -300,6 +434,68 @@ onMounted(async () => {
     loading.value = false;
   }
 });
+
+// Evidence state
+const evidence = ref([]);
+const loadingEvidence = ref(false);
+const showPhotoViewer = ref(false);
+const selectedPhoto = ref(null);
+
+// Computed evidence by type
+const beforePhotos = computed(() => evidence.value.filter(e => e.evidence_type === 'before' && e.file_type === 'image'));
+const progressPhotos = computed(() => evidence.value.filter(e => e.evidence_type === 'progress' && e.file_type === 'image'));
+const afterPhotos = computed(() => evidence.value.filter(e => e.evidence_type === 'after' && e.file_type === 'image'));
+const documents = computed(() => evidence.value.filter(e => e.file_type === 'document'));
+
+// Load evidence when ticket changes
+watch(ticket, async (newTicket) => {
+  if (newTicket && isClient.value && ['completed', 'under_review', 'approved', 'ready_for_payment', 'paid', 'closed'].includes(newTicket.status)) {
+    await loadEvidence();
+  }
+});
+
+// Load evidence from Supabase
+const loadEvidence = async () => {
+  if (!ticket.value) return;
+  
+  loadingEvidence.value = true;
+  try {
+    const { supabase } = await import('@/lib/supabaseClient.js');
+    const { data, error } = await supabase
+      .from('ticket_evidence')
+      .select('*')
+      .eq('ticket_id', ticket.value.id)
+      .order('uploaded_at', { ascending: true });
+
+    if (error) throw error;
+    evidence.value = data || [];
+  } catch (error) {
+    console.error('Error loading evidence:', error);
+    evidence.value = [];
+  } finally {
+    loadingEvidence.value = false;
+  }
+};
+
+// Open photo viewer
+const openPhotoViewer = (photo) => {
+  selectedPhoto.value = photo;
+  showPhotoViewer.value = true;
+};
+
+// Open document in browser
+const openDocument = (url) => {
+  window.open(url, '_blank');
+};
+
+// Format file size
+const formatFileSize = (bytes) => {
+  if (!bytes) return '0 B';
+  const k = 1024;
+  const sizes = ['B', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+};
 
 const handleStatusChange = async (newStatus) => {
   // Determine which composable to use based on role
@@ -333,6 +529,53 @@ const handleStatusChange = async (newStatus) => {
 const openReassignModal = async () => {
   suppliers.value = await clientTickets.fetchSuppliers();
   showReassignModal.value = true;
+};
+
+const openRevisionModal = () => {
+  revisionComments.value = '';
+  showRevisionModal.value = true;
+};
+
+const submitRevisionRequest = async () => {
+  if (!revisionComments.value || revisionComments.value.trim().length < 10) {
+    return;
+  }
+
+  try {
+    const { supabase } = await import('@/lib/supabaseClient.js');
+    
+    // Update ticket status and save revision comments
+    const { error } = await supabase
+      .from('tickets')
+      .update({
+        status: 'revision_requested',
+        revision_comments: revisionComments.value.trim(),
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', ticket.value.id);
+
+    if (error) throw error;
+
+    ticket.value.status = 'revision_requested';
+    ticket.value.revision_comments = revisionComments.value.trim();
+    
+    showRevisionModal.value = false;
+    
+    const toast = await toastController.create({
+      message: 'Solicitud de cambios enviada al técnico',
+      duration: 2000,
+      color: 'warning'
+    });
+    await toast.present();
+  } catch (error) {
+    console.error('Error requesting revision:', error);
+    const toast = await toastController.create({
+      message: 'Error al solicitar cambios',
+      duration: 2000,
+      color: 'danger'
+    });
+    await toast.present();
+  }
 };
 
 const handleReassign = async (supplierId) => {
@@ -529,4 +772,72 @@ const getInitials = (name) => {
   flex-direction: column;
   gap: 16px;
 }
+
+/* Evidence Gallery Styles */
+.loading-evidence,
+.empty-evidence {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  color: var(--ion-color-medium);
+  gap: 12px;
+}
+
+.evidence-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.evidence-section {
+  margin-bottom: 16px;
+}
+
+.evidence-type-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ion-color-dark);
+  margin-bottom: 12px;
+}
+
+.evidence-photos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 12px;
+}
+
+.evidence-photo {
+  aspect-ratio: 1;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+}
+
+.evidence-photo:active {
+  transform: scale(0.95);
+}
+
+.evidence-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.photo-viewer-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+}
+
+.full-photo {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
 </style>

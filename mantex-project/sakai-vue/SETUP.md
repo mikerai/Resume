@@ -1,6 +1,6 @@
-# 🚀 Setup Completo - Mantex + Nubarium
+# Setup Completo - Mantex + Nubarium
 
-## 📋 Variables de Entorno Requeridas
+## Variables de Entorno Requeridas
 
 ### 1. Frontend (Vue.js)
 Crea `.env.development` y `.env.production`:
@@ -28,7 +28,7 @@ export SUPABASE_URL="https://tu-proyecto.supabase.co"
 export SUPABASE_SERVICE_KEY="tu_service_role_key"
 ```
 
-## 🗃️ Setup de Base de Datos (Supabase)
+## Setup de Base de Datos (Supabase)
 
 1. **Ejecutar el schema**:
    ```sql
@@ -43,7 +43,7 @@ export SUPABASE_SERVICE_KEY="tu_service_role_key"
    ('temp-uploads', 'temp-uploads', false);
    ```
 
-## ☁️ Setup de AWS
+## Setup de AWS
 
 ### 1. Crear S3 Bucket
 ```bash
@@ -70,9 +70,9 @@ Permisos requeridos:
 - `AWSLambdaBasicExecutionRole`
 - `AmazonS3FullAccess` (o más restrictivo)
 
-## 🔧 Servicios Implementados
+## Servicios Implementados
 
-### ✅ Nubarium API Completa:
+### Nubarium API Completa:
 - **OCR INE/IFE**: `nubariumService.validateINEOCR()`
 - **Lista Nominal**: `nubariumService.validateINENominalList()`
 - **Face Comparison**: `nubariumService.validateFaceComparison()`
@@ -81,12 +81,12 @@ Permisos requeridos:
 - **Block Lists 69**: `nubariumService.queryBlockList69()`
 - **Block Lists 69-B**: `nubariumService.queryBlockList69B()`
 
-### ✅ Flujos Completos:
+### Flujos Completos:
 - **Clients**: `nubariumService.validateClientINE()` (OCR + Lista Nominal + Face)
 - **Suppliers**: `nubariumService.validateSupplierINE()` + `validateSupplierSAT()`
 - **Block Lists**: `nubariumService.queryAllBlockLists()` (ambas consultas)
 
-## 🧪 Testing
+## Testing
 
 ### Frontend:
 ```bash
@@ -106,17 +106,17 @@ curl -X POST https://tu-webhook-url/webhook/sat \
   -d '{"codigoValidacion": "test123", "estatus": "OK"}'
 ```
 
-## 🎯 URLs importantes
+## URLs importantes
 
 - **Frontend**: http://localhost:5173
 - **Supabase Dashboard**: https://app.supabase.com/project/tu-proyecto
 - **AWS Console**: https://console.aws.amazon.com
 - **Lambda Webhook**: Tu API Gateway URL
 
-## 📱 Credenciales Nubarium
+## Credenciales Nubarium
 
 Ya configuradas en el código:
 - **Username**: mantex
 - **Password**: M#tifk_#c
 
-¡Todo listo para rockear! 🤘
+¡Todo listo para rockear!

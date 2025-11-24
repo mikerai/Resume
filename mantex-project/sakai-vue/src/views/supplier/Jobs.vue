@@ -181,167 +181,84 @@
     <!-- Dialog para ver detalles del ticket -->
     <Dialog v-model:visible="showTicketDialog" modal :style="{ width: '90vw', maxWidth: '1200px' }" header="Detalles del Ticket">
         <div v-if="selectedTicket">
-            
-            <!-- Información General -->
-            <div class="surface-card p-4 border-round mb-3">
-                <div class="grid">
-                    <div class="col-12 md:col-6">
-                        <h6 class="text-900 mb-3">Información General</h6>
-                        <div class="mb-3">
-                            <label class="block text-600 mb-1">Número de Ticket:</label>
-                            <p class="text-900 font-medium m-0">{{ selectedTicket.ticket_number }}</p>
-                        </div>
-                        <div class="mb-3">
-                            <label class="block text-600 mb-1">Título:</label>
-                            <p class="text-900 font-medium m-0">{{ selectedTicket.title }}</p>
-                        </div>
-                        <div class="mb-3">
-                            <label class="block text-600 mb-1">Descripción:</label>
-                            <p class="text-900 m-0">{{ selectedTicket.description }}</p>
+            <Splitter style="height: 600px">
+                <!-- Panel 1: Mapa (30%) -->
+                <SplitterPanel :size="30" :minSize="20">
+                    <div class="h-full flex items-center justify-content-center">
+                        <iframe
+                            v-if="selectedTicket.location_address"
+                            width="100%"
+                            height="100%"
+                            class="border-none"
+                            loading="lazy"
+                            :src="mapSrc"
+                        ></iframe>
+                        <div v-else class="flex flex-column align-items-center justify-content-center h-full text-500">
+                            <i class="pi pi-map-marker text-4xl mb-2"></i>
+                            <span>Sin ubicación</span>
                         </div>
                     </div>
-                    <div class="col-12 md:col-6">
-                        <h6 class="text-900 mb-3">Estado y Prioridad</h6>
-                        <div class="mb-3">
-                            <label class="block text-600 mb-1">Tipo de Mantenimiento:</label>
-                            <Tag
-                                :value="getMaintenanceTypeLabel(selectedTicket.maintenance_type)"
-                                :severity="getMaintenanceTypeSeverity(selectedTicket.maintenance_type)"
-                            />
-                        </div>
-                        <div class="mb-3">
-                            <label class="block text-600 mb-1">Prioridad:</label>
-                            <Tag
-                                :value="getPriorityLabel(selectedTicket.priority)"
-                                :severity="getPrioritySeverity(selectedTicket.priority)"
-                            />
-                        </div>
-                        <div class="mb-3">
-                            <label class="block text-600 mb-1">Estado:</label>
-                            <Tag
-                                :value="getStatusLabel(selectedTicket.status)"
-                                :severity="getStatusSeverity(selectedTicket.status)"
-                            />
-                        </div>
-                    </div>
-                </div>
-            </div>
+                </SplitterPanel>
 
-            <!-- Ubicación -->
-            <div class="surface-card p-4 border-round mb-3">
-                <h6 class="text-900 mb-3">Ubicación</h6>
-                <div class="mb-2">
-                    <label class="block text-600 mb-1">Dirección:</label>
-                    <p class="text-900 m-0">{{ selectedTicket.location_address }}</p>
-                </div>
-                <div>
-                    <label class="block text-600 mb-1">Ciudad:</label>
-                    <p class="text-900 m-0">{{ selectedTicket.location_city }}, {{ selectedTicket.location_state }}</p>
-                </div>
-            </div>
+                <!-- Paneles Derecha (70%) -->
+                <SplitterPanel :size="70">
+                    <Splitter layout="vertical">
+                        <!-- Panel 2: Detalles (20%) -->
+                        <SplitterPanel :size="20" :minSize="15">
+                            <div class="p-3 h-full overflow-y-auto">
+                                <div class="flex align-items-center justify-content-between mb-3">
+                                    <h6 class="m-0">
+                                        <i class="pi pi-info-circle mr-2"></i>
+                                        Detalles del Ticket
+                                    </h6>
+                                    <Tag :value="getStatusLabel(selectedTicket.status)" :severity="selectedTicket.status === 'revision_requested' ? 'warning' : getStatusSeverity(selectedTicket.status)" />
+                                </div>
 
-            <!-- Información del Cliente -->
-            <div class="surface-card p-4 border-round mb-3" v-if="isSupplierApproved && selectedTicket.client">
-                <h6 class="text-900 mb-3">Información del Cliente</h6>
-                <div class="grid">
-                    <div class="col-12 md:col-6">
-                        <div class="mb-3">
-                            <label class="block text-600 mb-1">Empresa:</label>
-                            <p class="text-900 font-medium m-0">{{ selectedTicket.client.company_name }}</p>
-                        </div>
-                        <div class="mb-3">
-                            <label class="block text-600 mb-1">Contacto:</label>
-                            <p class="text-900 m-0">{{ selectedTicket.client.contact_person }}</p>
-                        </div>
-                    </div>
-                    <div class="col-12 md:col-6">
-                        <div class="mb-3">
-                            <label class="block text-600 mb-1">Email:</label>
-                            <p class="text-900 m-0">{{ selectedTicket.client.email }}</p>
-                        </div>
-                        <div class="mb-3">
-                            <label class="block text-600 mb-1">Teléfono:</label>
-                            <p class="text-900 m-0">{{ selectedTicket.client.phone }}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                                <!-- Revision Comments Alert -->
+                                <Message v-if="selectedTicket.status === 'revision_requested' && selectedTicket.revision_comments" severity="warn" :closable="false" class="mb-3">
+                                    <strong>Cambios solicitados:</strong>
+                                    <p class="mt-2 mb-0">{{ selectedTicket.revision_comments }}</p>
+                                </Message>
 
-            <!-- Información Financiera -->
-            <div class="surface-card p-4 border-round mb-3" v-if="isSupplierApproved && (selectedTicket.estimated_cost || selectedTicket.supplier_quote || selectedTicket.final_cost)">
-                <h6 class="text-900 mb-3">Información Financiera</h6>
-                <div class="grid">
-                    <div class="col-12 md:col-4" v-if="selectedTicket.estimated_cost">
-                        <div class="mb-2">
-                            <label class="block text-600 mb-1">Costo Estimado:</label>
-                            <p class="text-green-600 font-medium m-0">${{ formatCurrency(selectedTicket.estimated_cost) }}</p>
-                        </div>
-                    </div>
-                    <div class="col-12 md:col-4" v-if="selectedTicket.supplier_quote">
-                        <div class="mb-2">
-                            <label class="block text-600 mb-1">Mi Cotización:</label>
-                            <p class="text-blue-600 font-medium m-0">${{ formatCurrency(selectedTicket.supplier_quote) }}</p>
-                        </div>
-                    </div>
-                    <div class="col-12 md:col-4" v-if="selectedTicket.final_cost">
-                        <div class="mb-2">
-                            <label class="block text-600 mb-1">Costo Final:</label>
-                            <p class="text-900 font-medium m-0">${{ formatCurrency(selectedTicket.final_cost) }}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                                <div class="flex flex-wrap gap-2 mb-3">
+                                    <Chip :label="getMaintenanceTypeLabel(selectedTicket.maintenance_type)" icon="pi pi-wrench" />
+                                    <Chip :label="getPriorityLabel(selectedTicket.priority)" icon="pi pi-exclamation-circle" />
+                                    <Chip v-if="selectedTicket.location_city" :label="selectedTicket.location_city" icon="pi pi-map-marker" />
+                                </div>
 
-            <!-- Fechas Importantes -->
-            <div class="surface-card p-4 border-round mb-3">
-                <h6 class="text-900 mb-3">Fechas Importantes</h6>
-                <div class="grid">
-                    <div class="col-12 md:col-6" v-if="selectedTicket.created_at">
-                        <div class="mb-2">
-                            <label class="block text-600 mb-1">Creado:</label>
-                            <p class="text-900 m-0">{{ formatDate(selectedTicket.created_at) }}</p>
-                        </div>
-                    </div>
-                    <div class="col-12 md:col-6" v-if="selectedTicket.updated_at">
-                        <div class="mb-2">
-                            <label class="block text-600 mb-1">Última Actualización:</label>
-                            <p class="text-900 m-0">{{ formatDate(selectedTicket.updated_at) }}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                                <div class="flex align-items-center gap-2 mb-3" v-if="isSupplierApproved && selectedTicket.client">
+                                    <Avatar :label="selectedTicket.client.company_name[0]" shape="circle" />
+                                    <div>
+                                        <div class="font-semibold text-sm">{{ selectedTicket.client.company_name }}</div>
+                                        <div class="text-xs text-500">{{ selectedTicket.client.contact_person }}</div>
+                                    </div>
+                                </div>
 
-            <!-- Fotos Adjuntas -->
-            <div class="surface-card p-4 border-round mb-3" v-if="selectedTicket.attachments && selectedTicket.attachments.length > 0">
-                <h6 class="text-900 mb-3">Fotos del Cliente</h6>
-                <div class="grid">
-                    <div class="col-12 md:col-4 text-center mb-3" v-for="(photo, index) in selectedTicket.attachments" :key="index">
-                        <Image :src="photo" alt="Foto del ticket" width="200" preview />
-                    </div>
-                </div>
-            </div>
+                                <p class="text-700 text-sm line-height-3 m-0">{{ selectedTicket.description }}</p>
+                            </div>
+                        </SplitterPanel>
 
-            <!-- Mapa de Ubicación -->
-            <div class="surface-card p-4 border-round mb-3" v-if="selectedTicket.location_address">
-                <h6 class="text-900 mb-3">Ubicación del Servicio</h6>
-                <iframe
-                    width="100%"
-                    height="400"
-                    style="border:0; border-radius: 8px;"
-                    loading="lazy"
-                    :src="mapSrc"
-                ></iframe>
-            </div>
-
-            </div>
-            <!-- Chat Dialog -->
-            <Dialog v-model:visible="showChatDialog" modal :style="{ width: '90vw', maxWidth: '1200px' }" header="Chat del Ticket">
-                <TicketChat :ticketId="selectedTicket.id" />
-            </Dialog>
-
-            <!-- Botones de Acción -->
-
-
+                        <!-- Panel 3: Chat (80%) -->
+                        <SplitterPanel :size="80" :minSize="50">
+                            <div class="h-full flex flex-column">
+                                <div class="p-3 surface-100 border-bottom-1 surface-border">
+                                    <h6 class="m-0 flex align-items-center">
+                                        <i class="pi pi-comments mr-2"></i>
+                                        Chat
+                                    </h6>
+                                </div>
+                                <div class="flex-1" v-if="isSupplierApproved">
+                                    <TicketChat :ticketId="selectedTicket.id" />
+                                </div>
+                                <div v-else class="flex-1 flex align-items-center justify-content-center text-500">
+                                    <i class="pi pi-lock mr-2"></i> Chat disponible al aprobarse
+                                </div>
+                            </div>
+                        </SplitterPanel>
+                    </Splitter>
+                </SplitterPanel>
+            </Splitter>
+        </div>
 
         <template #footer>
             <div class="flex justify-content-between">
@@ -368,23 +285,24 @@
                         @click="requestReview(selectedTicket)"
                     />
                     <Button
-                        v-if="isSupplierApproved && selectedTicket.status === 'under_review'"
-                        label="Cerrar Ticket"
-                        icon="pi pi-check"
-                        class="p-button-warning"
-                        @click="closeTicket(selectedTicket)"
-                    />
-                    <Button
-                        v-if="isSupplierApproved"
-                        label="Chat"
-                        icon="pi pi-comments"
-                        class="p-button-secondary"
-                        @click="showChatDialog = true"
-                    />
+                v-if="isSupplierApproved && selectedTicket.status === 'revision_requested'"
+                label="Reabrir para Correcciones"
+                icon="pi pi-refresh"
+                class="p-button-warning"
+                @click="sendCorrections(selectedTicket)"
+            />
+
                 </div>
                 <Button label="Cerrar" icon="pi pi-times" class="p-button-text" @click="showTicketDialog = false" />
             </div>
         </template>
+
+
+            <!-- Botones de Acción -->
+
+
+
+
     </Dialog>
 
     <!-- Dialog para rechazar ticket -->
@@ -410,7 +328,7 @@
         v-model:visible="showEvidenceDialog"
         modal
         :style="{ width: '90vw', maxWidth: '1200px' }"
-        header="📸 Subir Evidencias del Trabajo"
+        header="Subir Evidencias del Trabajo"
         class="p-dialog-maximized"
     >
         <EvidenceUpload
@@ -456,7 +374,7 @@ const ticketToReject = ref(null);
 const currentSupplier = ref(null);
 const showEvidenceDialog = ref(false);
 const evidenceTicket = ref(null);
-const showChatDialog = ref(false);
+
 
 // Computed properties
 const isSupplierApproved = computed(() => {
@@ -709,6 +627,44 @@ const startWork = async (ticket) => {
         });
     }
 };
+
+    const sendCorrections = async (ticket) => {
+        try {
+            // Change status to in_progress and clear revision comments
+            const { error } = await supabase
+                .from('tickets')
+                .update({
+                    status: 'in_progress',
+                    revision_comments: null,
+                    updated_at: new Date().toISOString()
+                })
+                .eq('id', ticket.id);
+
+            if (error) throw error;
+
+            // Open evidence upload dialog for the ticket
+            evidenceTicket.value = ticket;
+            showEvidenceDialog.value = true;
+
+            toast.add({
+                severity: 'success',
+                summary: 'Ticket Reabierto',
+                detail: `El ticket ${ticket.ticket_number} ha sido reabierto para subir evidencias`,
+                life: 3000
+            });
+
+            await loadTickets();
+            showTicketDialog.value = false;
+        } catch (error) {
+            console.error('Error reopening ticket:', error);
+            toast.add({
+                severity: 'error',
+                summary: 'Error',
+                detail: 'Error al reabrir el ticket',
+                life: 3000
+            });
+        }
+    };
 
 const uploadEvidence = (ticket) => {
     evidenceTicket.value = ticket;

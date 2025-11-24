@@ -1,102 +1,190 @@
 // src/lib/storageService.js
-// Servicio para manejo de archivos usando AWS S3
-
-import AWS from 'aws-sdk';
+// Servicio para manejo de archivos usando AWS S3 vía Lambda
 
 class StorageService {
     constructor() {
-        // Configuración de AWS S3
-        this.bucketName = import.meta.env.VITE_AWS_S3_BUCKET || 'mantex-documents';
-        this.region = import.meta.env.VITE_AWS_REGION || 'us-east-1';
-
-        AWS.config.update({
-            accessKeyId: import.meta.env.VITE_AWS_ACCESS_KEY_ID,
-            secretAccessKey: import.meta.env.VITE_AWS_SECRET_ACCESS_KEY,
-            region: this.region
-        });
-        this.s3 = new AWS.S3();
-
-        // Carpetas para diferentes tipos de documentos
-        this.folders = {
-            client_documents: 'clients',
-            supplier_documents: 'suppliers',
-            temp_uploads: 'temp'
-        };
+        // URL de la Lambda (usa la misma que Nubarium proxy)
+        this.lambdaBaseUrl = import.meta.env.VITE_LAMBDA_NUBARIUM_PROXY_URL;
+        this.bucketName = import.meta.env.VITE_AWS_S3_BUCKET_DOCUMENTS;
     }
 
     /**
-     * Sube un archivo a AWS S3
+     * Sube un archivo a AWS S3 vía Lambda
      * @param {File} file - Archivo a subir
-     * @param {string} folder - Carpeta de destino
-     * @param {string} fileName - Nombre del archivo
+     * @param {string} key - Key (path) del archivo en S3
+     * @param {Object} metadata - Metadatos opcionales
      * @returns {Promise<Object>}
      */
-    async uploadFile(file, folder, fileName) {
+    async uploadFile(file, key, metadata = {}) {
         try {
-            const key = `${folder}/${fileName}`;
+            // Convertir archivo a base64
+            const base64 = await this.fileToBase64(file);
 
-            const params = {
-                Bucket: this.bucketName,
-                Key: key,
-                Body: file,
-                ContentType: file.type,
-                ACL: 'private' // Solo accesible por la aplicación
+            const payload = {
+                bucket: this.bucketName,
+                key: key,
+                body: base64,
+                contentType: file.type,
+                metadata: metadata
             };
 
-            const result = await this.s3.upload(params).promise();
+            console.log(`📤 Uploading to S3 via Lambda: ${key}`);
+            console.log('Lambda URL:', this.lambdaBaseUrl);
 
-            console.log(`✅ File uploaded successfully to S3: ${key}`);
+            const response = await fetch(`${this.lambdaBaseUrl}/s3/upload`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            console.log('Response status:', response.status);
+            console.log('Response ok:', response.ok);
+
+            // Intentar obtener el texto de la respuesta primero
+            const responseText = await response.text();
+            console.log('Response text:', responseText);
+
+            if (!response.ok) {
+                let errorData;
+                try {
+                    errorData = JSON.parse(responseText);
+                } catch {
+                    errorData = { message: responseText || `HTTP ${response.status}: ${response.statusText}` };
+                }
+                throw new Error(errorData.message || errorData.error || `HTTP ${response.status}`);
+            }
+
+            // Parsear el resultado
+            const result = JSON.parse(responseText);
+
+            console.log(`✅ File uploaded successfully: ${result.key}`);
+
             return {
                 success: true,
-                key: result.Key,
-                location: result.Location,
-                bucket: result.Bucket
+                key: result.key,
+                signedUrl: result.fileUrl, // URL firmada de 7 días
+                bucket: result.bucket,
+                etag: result.etag,
+                size: result.size
             };
 
         } catch (error) {
-            console.error('Error uploading file to S3:', error);
+            console.error('Error uploading file to S3 via Lambda:', error);
             return { success: false, error: error.message };
         }
     }
 
     /**
-     * Obtiene una URL firmada (temporal) de un archivo
-     * @param {string} key - Key del archivo en S3
-     * @param {number} expires - Tiempo de expiración en segundos
-     * @returns {Promise<string>}
-     */
-    async getSignedUrl(key, expires = 3600) {
-        try {
-            const params = {
-                Bucket: this.bucketName,
-                Key: key,
-                Expires: expires
-            };
-            return this.s3.getSignedUrl('getObject', params);
-        } catch (error) {
-            console.error('Error generating signed URL:', error);
-            throw error;
-        }
-    }
-
-    /**
-     * Elimina un archivo de S3
+     * Elimina un archivo de S3 vía Lambda
      * @param {string} key - Key del archivo en S3
      * @returns {Promise<boolean>}
      */
     async deleteFile(key) {
         try {
-            const params = {
-                Bucket: this.bucketName,
-                Key: key
-            };
-            await this.s3.deleteObject(params).promise();
+            const response = await fetch(`${this.lambdaBaseUrl}/s3/delete`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    bucket: this.bucketName,
+                    key: key
+                })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || `HTTP ${response.status}`);
+            }
 
             console.log(`✅ File deleted from S3: ${key}`);
             return true;
         } catch (error) {
             console.error('Error deleting file from S3:', error);
             return false;
+        }
+    }
+
+    /**
+     * Lista archivos de un usuario en S3 vía Lambda
+     * @param {string} prefix - Prefijo para filtrar (ej: "users/john123/")
+     * @returns {Promise<Array>}
+     */
+    async listFiles(prefix) {
+        try {
+            const response = await fetch(`${this.lambdaBaseUrl}/s3/list`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    bucket: this.bucketName,
+                    prefix: prefix
+                })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || `HTTP ${response.status}`);
+            }
+
+            const result = await response.json();
+            return result.files || [];
+        } catch (error) {
+            console.error('Error listing files from S3:', error);
+            return [];
+        }
+    }
+
+    // ==============================================
+    // MÉTODOS PARA EVIDENCIAS DE TICKETS
+    // ==============================================
+
+    /**
+     * Sube evidencia de ticket (fotos before/during/after o documentos)
+     * @param {File} file - Archivo a subir
+     * @param {string} username - Username del usuario
+     * @param {string} ticketId - ID del ticket
+     * @param {string} evidenceType - Tipo: 'before', 'progress', 'after', 'document'
+     * @returns {Promise<Object>}
+     */
+    async uploadTicketEvidence(file, username, ticketId, evidenceType) {
+        try {
+            // Estructura: users/{username}/evidence/{timestamp}_filename
+            const timestamp = Date.now();
+            const sanitizedFileName = file.name.replace(/[^a-z0-9._-]/gi, '_');
+            const key = `users/${username}/evidence/${timestamp}_${sanitizedFileName}`;
+
+            const metadata = {
+                'ticket-id': ticketId,
+                'evidence-type': evidenceType,
+                'uploaded-by': username,
+                'upload-date': new Date().toISOString()
+            };
+
+            const result = await this.uploadFile(file, key, metadata);
+
+            if (!result.success) {
+                throw new Error(result.error || 'Error al subir archivo');
+            }
+
+            return {
+                success: true,
+                key: result.key,
+                bucket: result.bucket,
+                signedUrl: result.signedUrl,
+                metadata: {
+                    ticketId,
+                    evidenceType,
+                    uploadedBy: username
+                }
+            };
+
+        } catch (error) {
+            console.error('Error uploading ticket evidence:', error);
+            return { success: false, error: error.message };
         }
     }
 
@@ -111,30 +199,8 @@ class StorageService {
      * @returns {Promise<Object>}
      */
     async uploadClientINE(file, userId) {
-        const fileName = `${userId}/ine/${Date.now()}_${file.name}`;
-        return this.uploadFile(file, this.folders.client_documents, fileName);
-    }
-
-    /**
-     * Sube documento RFC para cliente
-     * @param {File} file - Archivo RFC
-     * @param {string} userId - ID del usuario
-     * @returns {Promise<Object>}
-     */
-    async uploadClientRFC(file, userId) {
-        const fileName = `${userId}/rfc/${Date.now()}_${file.name}`;
-        return this.uploadFile(file, this.folders.client_documents, fileName);
-    }
-
-    /**
-     * Sube documento CIEC para cliente
-     * @param {File} file - Archivo CIEC
-     * @param {string} userId - ID del usuario
-     * @returns {Promise<Object>}
-     */
-    async uploadClientCIEC(file, userId) {
-        const fileName = `${userId}/ciec/${Date.now()}_${file.name}`;
-        return this.uploadFile(file, this.folders.client_documents, fileName);
+        const key = `users/${userId}/ine/${Date.now()}_${file.name}`;
+        return this.uploadFile(file, key);
     }
 
     // ==============================================
@@ -148,19 +214,8 @@ class StorageService {
      * @returns {Promise<Object>}
      */
     async uploadSupplierINE(file, userId) {
-        const fileName = `${userId}/ine/${Date.now()}_${file.name}`;
-        return this.uploadFile(file, this.folders.supplier_documents, fileName);
-    }
-
-    /**
-     * Sube documento SAT para proveedor
-     * @param {File} file - Archivo SAT
-     * @param {string} userId - ID del usuario
-     * @returns {Promise<Object>}
-     */
-    async uploadSupplierSAT(file, userId) {
-        const fileName = `${userId}/sat/${Date.now()}_${file.name}`;
-        return this.uploadFile(file, this.folders.supplier_documents, fileName);
+        const key = `users/${userId}/ine/${Date.now()}_${file.name}`;
+        return this.uploadFile(file, key);
     }
 
     /**
@@ -170,8 +225,8 @@ class StorageService {
      * @returns {Promise<Object>}
      */
     async uploadSupplierInsurance(file, userId) {
-        const fileName = `${userId}/insurance/${Date.now()}_${file.name}`;
-        return this.uploadFile(file, this.folders.supplier_documents, fileName);
+        const key = `users/${userId}/insurance/${Date.now()}_${file.name}`;
+        return this.uploadFile(file, key);
     }
 
     // ==============================================
@@ -179,25 +234,21 @@ class StorageService {
     // ==============================================
 
     /**
-     * Lista todos los archivos de un usuario
-     * @param {string} bucket - Bucket a consultar
-     * @param {string} userId - ID del usuario
-     * @returns {Promise<Array>}
+     * Convierte un archivo a base64
+     * @param {File} file - Archivo a convertir
+     * @returns {Promise<string>}
      */
-    async listUserFiles(folder, userId) {
-        try {
-            const params = {
-                Bucket: this.bucketName,
-                Prefix: `${folder}/${userId}/`
+    fileToBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => {
+                // Remover el prefijo "data:image/png;base64," para obtener solo el base64
+                const base64 = reader.result.split(',')[1];
+                resolve(base64);
             };
-            const data = await this.s3.listObjectsV2(params).promise();
-
-            console.log(`✅ Listed ${data.Contents?.length || 0} files for user ${userId}`);
-            return data.Contents || [];
-        } catch (error) {
-            console.error('Error listing files from S3:', error);
-            return [];
-        }
+            reader.onerror = error => reject(error);
+        });
     }
 
     /**

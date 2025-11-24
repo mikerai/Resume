@@ -95,11 +95,12 @@ export function useTechnicianTickets() {
                 updates.supplier_notes = notes;
             }
 
+            // Select explicit columns to avoid ambiguous column errors
             const { data, error: updateError } = await supabase
                 .from('tickets')
                 .update(updates)
                 .eq('id', ticketId)
-                .select()
+                .select('id,status,revision_comments,updated_at,started_at,completed_at,supplier_notes')
                 .single();
 
             if (updateError) throw updateError;

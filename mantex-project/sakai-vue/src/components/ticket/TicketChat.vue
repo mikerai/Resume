@@ -1,57 +1,44 @@
 <template>
-  <div class="ticket-chat h-full flex flex-column">
-    <!-- Messages Area -->
-    <div class="flex-grow-1 overflow-y-auto p-3 border-round surface-ground mb-3" style="min-height: 300px; max-height: 500px;" ref="messagesContainer">
+  <div class="ticket-chat">
+    <!-- Messages Scroll -->
+    <div class="messages-scroll" ref="messagesContainer">
       <div v-if="isLoading" class="flex justify-content-center align-items-center h-full">
-        <i class="pi pi-spin pi-spinner text-2xl text-gray-400"></i>
+        <i class="pi pi-spin pi-spinner text-2xl"></i>
       </div>
 
-      <div v-else-if="messages.length === 0" class="flex flex-column align-items-center justify-content-center h-full text-gray-500">
+      <div v-else-if="messages.length === 0" class="flex flex-column align-items-center justify-content-center h-full text-500">
         <i class="pi pi-comments text-4xl mb-2"></i>
         <p>No hay mensajes aún. ¡Inicia la conversación!</p>
       </div>
 
-      <div v-else class="flex flex-column gap-3">
+      <div v-else class="messages-list">
         <div 
           v-for="msg in messages" 
           :key="msg.id" 
-          class="flex flex-column"
-          :class="{'align-items-end': isMe(msg.sender_id), 'align-items-start': !isMe(msg.sender_id)}"
+          :class="['message', isMe(msg.sender_id) ? 'sent' : 'received']"
         >
-          <div 
-            class="p-3 border-round-xl max-w-20rem shadow-1"
-            :class="{
-              'bg-primary text-white': isMe(msg.sender_id), 
-              'surface-card text-900': !isMe(msg.sender_id)
-            }"
-          >
-            <div class="text-xs mb-1 opacity-80 font-semibold" v-if="!isMe(msg.sender_id)">
-              {{ msg.sender_name }}
-            </div>
-            <div class="message-text" style="word-break: break-word;">
-              {{ msg.text }}
-            </div>
-            <div class="text-xs mt-1 text-right opacity-70 flex align-items-center justify-content-end gap-1">
-              {{ formatTime(msg.timestamp) }}
-              <i v-if="isMe(msg.sender_id)" class="pi" :class="msg.read ? 'pi-check-circle' : 'pi-check'"></i>
-            </div>
+          <div class="message-header">
+            <span class="sender-name">{{ msg.sender_name }}</span>
+            <span class="timestamp">{{ formatTime(msg.timestamp) }}</span>
           </div>
+          <div class="message-bubble">
+            <p>{{ msg.text }}</p>
+            <i v-if="isMe(msg.sender_id)" class="pi read-indicator" :class="msg.read ? 'pi-check-circle' : 'pi-check'"></i>
+          </div>
+        </div>
+
+        <!-- Typing indicator -->
+        <div v-if="someoneIsTyping" class="text-xs text-500">
+          <span class="font-semibold">{{ typingUserName }}</span> está escribiendo...
         </div>
       </div>
     </div>
 
-    <!-- Typing Indicator -->
-    <div v-if="someoneIsTyping" class="text-xs text-gray-500 ml-2 mb-2 h-1rem">
-      <span class="font-semibold">{{ typingUserName }}</span> está escribiendo...
-    </div>
-    <div v-else class="h-1rem mb-2"></div>
-
-    <!-- Input Area -->
-    <div class="flex gap-2">
+    <!-- Input -->
+    <div class="input-container">
       <InputText 
         v-model="newMessage" 
         placeholder="Escribe un mensaje..." 
-        class="flex-grow-1" 
         @keyup.enter="handleSend"
         @input="handleTyping"
         :disabled="isLoading"
@@ -114,7 +101,7 @@ const handleSend = async () => {
   if (!newMessage.value.trim()) return;
   
   const text = newMessage.value;
-  newMessage.value = ''; // Clear immediately for UX
+  newMessage.value = '';
   
   try {
     await sendMessage(text);
@@ -122,7 +109,6 @@ const handleSend = async () => {
     scrollToBottom();
   } catch (error) {
     console.error('Error sending message:', error);
-    // Restore message if failed (optional, but good UX)
     newMessage.value = text; 
   }
 };
@@ -149,7 +135,92 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.message-text {
+.ticket-chat {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.messages-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+}
+
+.messages-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.message {
+  display: flex;
+  flex-direction: column;
+  max-width: 80%;
+}
+
+.message.sent {
+  align-self: flex-end;
+  align-items: flex-end;
+}
+
+.message.received {
+  align-self: flex-start;
+  align-items: flex-start;
+}
+
+.message-header {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--text-color-secondary);
+}
+
+.sender-name {
+  font-weight: 600;
+}
+
+.timestamp {
+  opacity: 0.7;
+}
+
+.message-bubble {
+  background: var(--surface-card);
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  position: relative;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.message.sent .message-bubble {
+  background: var(--primary-color);
+  color: var(--primary-color-text);
+}
+
+.message-bubble p {
+  margin: 0;
+  word-wrap: break-word;
   line-height: 1.4;
+}
+
+.read-indicator {
+  position: absolute;
+  bottom: 4px;
+  right: 8px;
+  font-size: 0.875rem;
+  opacity: 0.7;
+}
+
+.input-container {
+  display: flex;
+  gap: 0.5rem;
+  padding: 1rem;
+  border-top: 1px solid var(--surface-border);
+  background: var(--surface-ground);
+}
+
+.input-container .p-inputtext {
+  flex: 1;
 }
 </style>

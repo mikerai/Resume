@@ -98,7 +98,7 @@ await uploadReportsAndChecklists([reporte], username, 'reports');
 await uploadFinancialDocuments([factura], username, 'invoices');
 ```
 
-## 🛡️Características de Seguridad
+## Características de Seguridad
 
 ###  **Estructura de Archivos**
 - **Timestamp único:** Evita colisiones de nombres

@@ -2,7 +2,7 @@
     <div class="evidence-upload">
         <div class="card">
             <div class="flex align-items-center justify-content-between mb-4">
-                <h5 class="m-0">📸 Evidencias del Trabajo</h5>
+                <h5 class="m-0">Evidencias del Trabajo</h5>
                 <Tag :value="getStatusLabel(ticket.status)" :severity="getStatusSeverity(ticket.status)" />
             </div>
 
@@ -25,7 +25,7 @@
             <!-- Diferentes tipos de evidencia según el estado -->
             <div v-if="canUploadBeforePhotos" class="mb-5">
                 <FileUpload
-                    title="📷 Fotos del Estado Inicial"
+                    title="Fotos del Estado Inicial"
                     :max-files="10"
                     :max-size-m-b="5"
                     accepted-types="image/*"
@@ -39,7 +39,7 @@
 
             <div v-if="canUploadProgressPhotos" class="mb-5">
                 <FileUpload
-                    title="🔧 Fotos del Proceso de Trabajo"
+                    title="Fotos del Proceso de Trabajo"
                     :max-files="15"
                     :max-size-m-b="5"
                     accepted-types="image/*"
@@ -53,7 +53,7 @@
 
             <div v-if="canUploadAfterPhotos" class="mb-5">
                 <FileUpload
-                    title="✅ Fotos del Resultado Final"
+                    title="Fotos del Resultado Final"
                     :max-files="10"
                     :max-size-m-b="5"
                     accepted-types="image/*"
@@ -67,7 +67,7 @@
 
             <div v-if="canUploadDocuments" class="mb-5">
                 <FileUpload
-                    title="📄 Documentos y Reportes"
+                    title="Documentos y Reportes"
                     :max-files="5"
                     :max-size-m-b="10"
                     accepted-types=".pdf,.doc,.docx"
@@ -81,7 +81,7 @@
 
             <!-- Galería de evidencias existentes -->
             <div v-if="existingEvidence.length > 0" class="mt-6">
-                <h6>🗂️ Evidencias Subidas</h6>
+                <h6>Evidencias Subidas</h6>
                 <div class="grid">
                     <div
                         v-for="(evidence, index) in existingEvidence"
@@ -247,34 +247,48 @@ const hasRequiredEvidence = computed(() => {
 // Métodos de carga de evidencias
 const uploadEvidence = async (file, evidenceType, onProgress) => {
     try {
-        // 1. Subir archivo a Supabase Storage
-        const fileName = `${props.ticket.id}/${evidenceType}/${Date.now()}_${file.name}`;
-        const { data: uploadData, error: uploadError } = await supabase.storage
-            .from('ticket-evidence')
-            .upload(fileName, file, {
-                onUploadProgress: (progress) => {
-                    const percentage = Math.round((progress.loaded / progress.total) * 100);
-                    onProgress(percentage);
-                }
-            });
+        // Import del storage service
+        const { storageService } = await import('@/lib/storageService.js');
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        if (!user) throw new Error('Usuario no autenticado');
 
-        if (uploadError) throw uploadError;
+        // Obtener username del profile
+        const { data: profile } = await supabase
+            .from('profiles')
+            .select('username')
+            .eq('id', user.id)
+            .single();
 
-        // 2. Obtener URL pública
-        const { data: { publicUrl } } = supabase.storage
-            .from('ticket-evidence')
-            .getPublicUrl(fileName);
+        if (!profile?.username) throw new Error('Username no encontrado');
 
-        // 3. Guardar metadatos en la base de datos
+        // Simular progreso inicial
+        onProgress(10);
+
+        // 1. Subir archivo a S3
+        const s3Result = await storageService.uploadTicketEvidence(
+            file,
+            profile.username,
+            props.ticket.id,
+            evidenceType
+        );
+
+        if (!s3Result.success) {
+            throw new Error(s3Result.error || 'Error al subir archivo a S3');
+        }
+
+        onProgress(70);
+
+        // 2. Guardar metadatos en Supabase con URL firmada
         const evidenceRecord = {
             ticket_id: props.ticket.id,
             evidence_type: evidenceType,
             file_name: file.name,
             file_type: file.type.startsWith('image/') ? 'image' : 'document',
             file_size: file.size,
-            url: publicUrl,
-            storage_path: fileName,
-            uploaded_by: supabase.auth.user()?.id
+            url: s3Result.signedUrl, // URL firmada de S3
+            storage_path: s3Result.key, // Key en S3
+            uploaded_by: user.id
         };
 
         const { data, error } = await supabase
@@ -285,8 +299,17 @@ const uploadEvidence = async (file, evidenceType, onProgress) => {
 
         if (error) throw error;
 
+        onProgress(100);
+
         // Actualizar la lista de evidencias existentes
         await loadExistingEvidence();
+
+        toast.add({
+            severity: 'success',
+            summary: 'Evidencia subida',
+            detail: `${file.name} se subió correctamente`,
+            life: 3000
+        });
 
         return data;
 
@@ -343,12 +366,14 @@ const confirmDeleteEvidence = (evidence) => {
 
 const deleteEvidence = async (evidence) => {
     try {
-        // 1. Eliminar de Storage
-        const { error: storageError } = await supabase.storage
-            .from('ticket-evidence')
-            .remove([evidence.storage_path]);
+        const { storageService } = await import('@/lib/storageService.js');
 
-        if (storageError) throw storageError;
+        // 1. Eliminar de S3
+        const deleted = await storageService.deleteFile(evidence.storage_path);
+
+        if (!deleted) {
+            throw new Error('No se pudo eliminar el archivo de S3');
+        }
 
         // 2. Eliminar registro de la base de datos
         const { error: dbError } = await supabase
