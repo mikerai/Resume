@@ -28,7 +28,7 @@ class StorageService {
                 metadata: metadata
             };
 
-            console.log(`📤 Uploading to S3 via Lambda: ${key}`);
+            console.log(`Uploading to S3 via Lambda: ${key}`);
             console.log('Lambda URL:', this.lambdaBaseUrl);
 
             const response = await fetch(`${this.lambdaBaseUrl}/s3/upload`, {
@@ -59,7 +59,7 @@ class StorageService {
             // Parsear el resultado
             const result = JSON.parse(responseText);
 
-            console.log(`✅ File uploaded successfully: ${result.key}`);
+            console.log(`File uploaded successfully: ${result.key}`);
 
             return {
                 success: true,
@@ -99,7 +99,7 @@ class StorageService {
                 throw new Error(errorData.message || `HTTP ${response.status}`);
             }
 
-            console.log(`✅ File deleted from S3: ${key}`);
+            console.log(`File deleted from S3: ${key}`);
             return true;
         } catch (error) {
             console.error('Error deleting file from S3:', error);

@@ -124,20 +124,22 @@ export function useClientTickets() {
     // Update ticket status (for Client actions like Approve/Reject)
     const updateTicketStatus = async (ticketId, newStatus, options = {}) => {
         try {
-            const { revisionComments = null, paymentDueDate = null } = options;
+            const { revisionComments = null } = options;
             const updates = {
                 status: newStatus,
                 updated_at: new Date().toISOString()
             };
-            if (revisionComments !== null) updates.revision_comments = revisionComments;
-            if (paymentDueDate !== null) updates.payment_due_date = paymentDueDate;
 
-            // Select explicit columns to avoid ambiguous column errors
+            // Only add revision_comments if explicitly provided
+            if (revisionComments !== null && revisionComments !== undefined) {
+                updates.revision_comments = revisionComments;
+            }
+
             const { data, error: updateError } = await supabase
                 .from('tickets')
                 .update(updates)
                 .eq('id', ticketId)
-                .select('id,status,revision_comments,updated_at')
+                .select('id,status,updated_at')
                 .single();
 
             if (updateError) throw updateError;

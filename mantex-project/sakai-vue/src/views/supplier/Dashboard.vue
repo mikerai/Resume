@@ -12,8 +12,8 @@
                         <i class="pi pi-briefcase text-blue-500 !text-xl"></i>
                     </div>
                 </div>
-                <span class="text-primary font-medium">{{ assignedJobs - 5 }} </span>
-                <span class="text-muted-color">completados esta semana</span>
+                <span class="text-primary font-medium">{{ Math.max(0, assignedJobs - 5) }} </span>
+                <span class="text-muted-color">nuevos esta semana</span>
             </div>
         </div>
         <div class="col-span-12 lg:col-span-6 xl:col-span-3">
@@ -36,29 +36,27 @@
                 <div class="flex justify-between mb-4">
                     <div>
                         <span class="block text-muted-color font-medium mb-4">Calificación Promedio</span>
-                        <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{ averageRating.toFixed(1) }}/5</div>
+                        <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{ averageRating > 0 ? averageRating.toFixed(1) : 'N/A' }}{{ averageRating > 0 ? '/5' : '' }}</div>
                     </div>
                     <div class="flex items-center justify-center bg-yellow-100 dark:bg-yellow-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
                         <i class="pi pi-star text-yellow-500 !text-xl"></i>
                     </div>
                 </div>
-                <span class="text-green-500 font-medium">+0.3 </span>
-                <span class="text-muted-color">vs mes anterior</span>
+                <span class="text-muted-color">{{ averageRating > 0 ? 'Basado en trabajos completados' : 'Sin calificaciones aún' }}</span>
             </div>
         </div>
         <div class="col-span-12 lg:col-span-6 xl:col-span-3">
             <div class="card mb-0">
                 <div class="flex justify-between mb-4">
                     <div>
-                        <span class="block text-muted-color font-medium mb-4">Ingresos del Mes</span>
-                        <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">$45,200</div>
+                        <span class="block text-muted-color font-medium mb-4">Trabajos Totales</span>
+                        <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{ totalJobs }}</div>
                     </div>
                     <div class="flex items-center justify-center bg-green-100 dark:bg-green-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
                         <i class="pi pi-chart-line text-green-500 !text-xl"></i>
                     </div>
                 </div>
-                <span class="text-green-500 font-medium">+18% </span>
-                <span class="text-muted-color">vs mes anterior</span>
+                <span class="text-muted-color">Todos los tiempos</span>
             </div>
         </div>
 
@@ -109,6 +107,7 @@ const companyName = profile.value?.username || user.value?.email?.split('@')[0] 
 const assignedJobs = ref(0);
 const pendingInvoices = ref(0);
 const averageRating = ref(0.0);
+const totalJobs = ref(0);
 const recentJobs = ref([]);
 
 // Chart data
@@ -116,41 +115,114 @@ const chartData = ref({});
 const chartOptions = ref({});
 
 // Load dashboard data
-const loadDashboardData = () => {
-    setTimeout(() => {
-        assignedJobs.value = 42;
-        pendingInvoices.value = 5;
-        averageRating.value = 4.7;
-
-        recentJobs.value = [
-            { id: 101, title: 'Reparación de HVAC - Piso 3', status: 'pending', priority: 'high', customer: 'Cliente X' },
-            { id: 102, title: 'Mantenimiento preventivo de bombas', status: 'in_progress', priority: 'normal', customer: 'Cliente Y' },
-            { id: 103, title: 'Inspección de sistemas eléctricos', status: 'completed', priority: 'normal', customer: 'Cliente Z' },
-        ];
-
-        setChartData();
-    }, 500);
+const loadDashboardData = async () => {
+    try {
+        const { supabase } = await import('@/lib/supabaseClient');
+        
+        // Get supplier ID
+        const { data: supplierData } = await supabase
+            .from('supplier_profiles')
+            .select('id')
+            .eq('user_id', user.value.id)
+            .single();
+        
+        if (!supplierData) return;
+        
+        // Fetch all tickets for this supplier
+        const { data: tickets } = await supabase
+            .from('tickets')
+            .select(`
+                *,
+                client:client_profiles(company_name, contact_person)
+            `)
+            .eq('supplier_id', supplierData.id)
+            .order('created_at', { ascending: false });
+        
+        if (tickets) {
+            // Calculate stats
+            totalJobs.value = tickets.length;
+            
+            assignedJobs.value = tickets.filter(t => 
+                ['pending', 'opened', 'in_progress'].includes(t.status)
+            ).length;
+            
+            pendingInvoices.value = tickets.filter(t => 
+                ['ready_for_payment', 'payment_pending'].includes(t.status)
+            ).length;
+            
+            // Get recent jobs (last 5)
+            recentJobs.value = tickets.slice(0, 5).map(t => ({
+                id: t.id,
+                title: t.title || 'Sin título',
+                status: t.status,
+                priority: t.priority || 'normal',
+                customer: t.client?.company_name || t.client?.contact_person || 'Cliente desconocido'
+            }));
+            
+            // Calculate average rating (if ratings exist)
+            const completedTickets = tickets.filter(t => t.rating);
+            if (completedTickets.length > 0) {
+                const totalRating = completedTickets.reduce((sum, t) => sum + (t.rating || 0), 0);
+                averageRating.value = totalRating / completedTickets.length;
+            } else {
+                averageRating.value = 0;
+            }
+            
+            // Prepare chart data with real monthly stats
+            const now = new Date();
+            const monthlyData = [];
+            const monthlyCompleted = [];
+            
+            for (let i = 6; i >= 0; i--) {
+                const month = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                const nextMonth = new Date(now.getFullYear(), now.getMonth() - i + 1, 1);
+                
+                const monthTickets = tickets.filter(t => {
+                    const created = new Date(t.created_at);
+                    return created >= month && created < nextMonth;
+                });
+                
+                const completed = monthTickets.filter(t => 
+                    ['completed', 'approved', 'paid', 'closed'].includes(t.status)
+                );
+                
+                monthlyData.push(monthTickets.length);
+                monthlyCompleted.push(completed.length);
+            }
+            
+            setChartData(monthlyData, monthlyCompleted);
+        }
+    } catch (error) {
+        console.error('Error loading dashboard data:', error);
+    }
 };
 
 // Chart configuration - Identical to Sakai ChartDoc
-const setChartData = () => {
+const setChartData = (monthlyData = [0,0,0,0,0,0,0], monthlyCompleted = [0,0,0,0,0,0,0]) => {
     const documentStyle = getComputedStyle(document.documentElement);
     const textColor = documentStyle.getPropertyValue('--text-color');
     const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary');
     const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
+    
+    const now = new Date();
+    const labels = [];
+    for (let i = 6; i >= 0; i--) {
+        const month = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        labels.push(month.toLocaleDateString('es-MX', { month: 'short' }));
+    }
 
     chartData.value = {
-        labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul'],
+        labels,
         datasets: [
             {
                 label: 'Trabajos Asignados',
-                data: [15, 12, 20, 18, 25, 22, 19],
+                data: monthlyData,
                 backgroundColor: documentStyle.getPropertyValue('--p-primary-500'),
                 borderColor: documentStyle.getPropertyValue('--p-primary-500')
             },
             {
                 label: 'Completados',
-                data: [10, 11, 15, 14, 21, 18, 15],
+                data: monthlyCompleted,
                 backgroundColor: documentStyle.getPropertyValue('--p-green-500'),
                 borderColor: documentStyle.getPropertyValue('--p-green-500')
             }

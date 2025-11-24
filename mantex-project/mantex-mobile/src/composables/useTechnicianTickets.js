@@ -100,7 +100,7 @@ export function useTechnicianTickets() {
                 .from('tickets')
                 .update(updates)
                 .eq('id', ticketId)
-                .select('id,status,revision_comments,updated_at,started_at,completed_at,supplier_notes')
+                .select('id,status,updated_at,started_at,completed_at,supplier_notes')
                 .single();
 
             if (updateError) throw updateError;

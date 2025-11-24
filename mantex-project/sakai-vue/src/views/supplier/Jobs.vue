@@ -525,6 +525,48 @@ const acceptTicket = async (ticket) => {
 
     if (error) throw error;
 
+    // Create Google Calendar event if scheduled_date exists
+    if (ticket.scheduled_date) {
+      try {
+        const { useGoogleCalendar } = await import('@/composables/useGoogleCalendar.js');
+        const calendar = useGoogleCalendar();
+        
+        // Initialize if not already done
+        if (!calendar.isGapiLoaded.value) {
+          await calendar.initializeGoogleCalendar();
+        }
+        
+        // Authorize if needed
+        if (!calendar.isAuthorized.value) {
+          const authorized = await calendar.authorizeUser();
+          if (!authorized) {
+            console.warn('Google Calendar authorization failed, skipping event creation');
+          }
+        }
+        
+        // Create event if authorized
+        if (calendar.isAuthorized.value) {
+          const scheduledDate = new Date(ticket.scheduled_date);
+          const endDate = new Date(scheduledDate);
+          endDate.setHours(scheduledDate.getHours() + 2); // Default 2 hour duration
+          
+          await calendar.createEvent({
+            title: `Mantex: ${ticket.title}`,
+            description: `Ticket #${ticket.ticket_number}\n\n${ticket.description}\n\nCliente: ${ticket.client?.company_name || 'N/A'}\nCategoría: ${ticket.category}`,
+            location: ticket.location_address ? `${ticket.location_address}, ${ticket.location_city}, ${ticket.location_state}` : '',
+            startDateTime: scheduledDate.toISOString(),
+            endDateTime: endDate.toISOString(),
+            attendees: ticket.client?.email ? [{ email: ticket.client.email }] : []
+          });
+          
+          console.log('✅ Google Calendar event created for ticket:', ticket.ticket_number);
+        }
+      } catch (calendarError) {
+        // Don't fail ticket acceptance if calendar fails
+        console.error('Error creating calendar event:', calendarError);
+      }
+    }
+
     toast.add({
       severity: 'success',
       summary: 'Trabajo Aceptado',

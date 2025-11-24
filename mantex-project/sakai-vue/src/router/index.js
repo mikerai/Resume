@@ -144,6 +144,11 @@ const router = createRouter({
                     name: 'AdminAccount',
                     component: () => import('@/views/admin/Account.vue')
                 },
+                {
+                    path: 'google-apis-test',
+                    name: 'GoogleApisTest',
+                    component: () => import('@/views/GoogleApisTest.vue')
+                },
             ]
         },
 
