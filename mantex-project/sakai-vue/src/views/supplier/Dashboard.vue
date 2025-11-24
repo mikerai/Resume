@@ -13,7 +13,7 @@
                     </div>
                 </div>
                 <span class="text-primary font-medium">{{ Math.max(0, assignedJobs - 5) }} </span>
-                <span class="text-muted-color">nuevos esta semana</span>
+                <span class="text-muted-color">&ensp;nuevos esta semana</span>
             </div>
         </div>
         <div class="col-span-12 lg:col-span-6 xl:col-span-3">
@@ -28,7 +28,7 @@
                     </div>
                 </div>
                 <span class="text-orange-500 font-medium">{{ pendingInvoices }} </span>
-                <span class="text-muted-color">por cobrar</span>
+                <span class="text-muted-color">&ensp;por cobrar</span>
             </div>
         </div>
         <div class="col-span-12 lg:col-span-6 xl:col-span-3">
@@ -240,14 +240,16 @@ const setChartData = (monthlyData = [0,0,0,0,0,0,0], monthlyCompleted = [0,0,0,0
             {
                 label: 'Trabajos Asignados',
                 data: monthlyData,
-                backgroundColor: documentStyle.getPropertyValue('--p-primary-500'),
-                borderColor: documentStyle.getPropertyValue('--p-primary-500')
+                backgroundColor: documentStyle.getPropertyValue('--p-primary-200'),
+                borderColor: documentStyle.getPropertyValue('--p-primary-200'),
+                tension: 0.4
             },
             {
                 label: 'Completados',
                 data: monthlyCompleted,
                 backgroundColor: documentStyle.getPropertyValue('--p-green-500'),
-                borderColor: documentStyle.getPropertyValue('--p-green-500')
+                borderColor: documentStyle.getPropertyValue('--p-green-500'),
+                tension: 0.4
             }
         ]
     };

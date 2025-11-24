@@ -23,7 +23,7 @@ a {
     min-height: 100vh;
 }
 
-.intro{
+.intro {
     /* From https://css.glass */
     background: rgba(255, 255, 255, 0.2);
     border-radius: 16px;
@@ -32,14 +32,19 @@ a {
     -webkit-backdrop-filter: blur(5px);
     border: 1px solid rgba(255, 255, 255, 0.3);
     padding: 1rem;
+    width: 50%;
+    margin: 2% 25%;
 }
 
-.intro h1.clear, p.clear, a.clear {
+.intro h1.clear,
+p.clear,
+a.clear {
     color: #F2F2F2;
 }
 
-#home > #hero {
-  background: url("public/demo/images/landing/helmets_hero.jpg");
-  background-repeat: no-repeat;
-  background-size: cover;
+#home>#hero {
+    background: url("public/demo/images/landing/helmets_hero.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+
 }

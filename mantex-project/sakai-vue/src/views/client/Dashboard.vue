@@ -177,7 +177,7 @@ const viewRequest = (request) => {
                     </div>
                 </div>
                 <span class="text-primary font-medium">+12% </span>
-                <span class="text-muted-color">desde el mes pasado</span>
+                <span class="text-muted-color">&ensp;desde el mes pasado</span>
             </div>
         </div>
         <div class="col-span-12 lg:col-span-6 xl:col-span-3">
@@ -192,7 +192,7 @@ const viewRequest = (request) => {
                     </div>
                 </div>
                 <span class="text-green-500 font-medium">-2 </span>
-                <span class="text-muted-color">vs semana pasada</span>
+                <span class="text-muted-color">&ensp;vs semana pasada</span>
             </div>
         </div>
         <div class="col-span-12 lg:col-span-6 xl:col-span-3">
@@ -207,7 +207,7 @@ const viewRequest = (request) => {
                     </div>
                 </div>
                 <span class="text-primary font-medium">+5 </span>
-                <span class="text-muted-color">nuevos este mes</span>
+                <span class="text-muted-color">&ensp;nuevos este mes</span>
             </div>
         </div>
         <div class="col-span-12 lg:col-span-6 xl:col-span-3">
@@ -222,7 +222,7 @@ const viewRequest = (request) => {
                     </div>
                 </div>
                 <span class="text-green-500 font-medium">-8% </span>
-                <span class="text-muted-color">vs mes anterior</span>
+                <span class="text-muted-color">&ensp;vs mes anterior</span>
             </div>
         </div>
 

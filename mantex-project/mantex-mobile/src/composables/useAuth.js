@@ -297,46 +297,52 @@ let initializationComplete = false;
 
 async function initializeAuth() {
     try {
-        console.log('🚀 Iniciando autenticación...');
+        console.log('Iniciando autenticación...');
+        isLoading.value = true;
 
-        // 1. LIMPIAR LOCALSTORAGE COMPLETAMENTE
-        console.log('🧹 Limpiando localStorage de Supabase...');
-        if (typeof localStorage !== 'undefined') {
-            // Eliminar todas las keys de Supabase
-            const keysToRemove = [];
-            for (let i = 0; i < localStorage.length; i++) {
-                const key = localStorage.key(i);
-                if (key && (key.startsWith('sb-') || key.includes('supabase'))) {
-                    keysToRemove.push(key);
-                }
+        // 1. Intentar recuperar sesión existente
+        const { data: { session }, error } = await supabase.auth.getSession();
+
+        if (error) {
+            console.error('Error obteniendo sesión:', error);
+            // Solo limpiar si hay error
+            user.value = null;
+            profile.value = { username: null, role: null, onboarding_complete: false };
+        } else if (session?.user) {
+            // Sesión válida encontrada - restaurar usuario
+            console.log('Sesión válida encontrada para:', session.user.email);
+            user.value = session.user;
+
+            // Cargar perfil en background
+            try {
+                await getProfile(session.user.id);
+                console.log('Perfil cargado exitosamente');
+            } catch (profileError) {
+                console.error('Error cargando perfil:', profileError);
+                // No destruir sesión si falla el perfil
             }
-            keysToRemove.forEach(key => {
-                console.log('  🗑️ Eliminando:', key);
-                localStorage.removeItem(key);
-            });
+        } else {
+            // No hay sesión - estado limpio
+            console.log('No hay sesión activa');
+            user.value = null;
+            profile.value = { username: null, role: null, onboarding_complete: false };
         }
 
-        // 2. Force logout any existing session to ensure clean state
-        await supabase.auth.signOut();
-
-        // 3. Reset all auth state
+        console.log('Autenticación inicializada');
+    } catch (e) {
+        console.error('Error crítico en initializeAuth:', e);
+        // En caso de error crítico, estado limpio
         user.value = null;
         profile.value = { username: null, role: null, onboarding_complete: false };
-
-        console.log('👤 Usuario actual: No autenticado (forzado)');
-        console.log('✅ Sesión completamente limpiada');
-    } catch (e) {
-        console.error('❌ Error crítico en initializeAuth:', e);
     } finally {
-        // DESBLOQUEAR: Esto es CRÍTICO para el Router Guard
-        console.log('✅ Autenticación inicializada (sin auto-login)');
+        // Desbloquear router guard
         isLoading.value = false;
 
-        // IMPORTANTE: Activar listener DESPUÉS de signOut completo
+        // Activar listener después de inicialización
         setTimeout(() => {
             initializationComplete = true;
-            console.log('✅ Listener de auth ahora activo');
-        }, 2000); // 2 segundos para asegurar que signOut terminó
+            console.log('Listener de auth ahora activo');
+        }, 500);
     }
 }
 
@@ -345,35 +351,42 @@ initializeAuth();
 
 // Listener para cambios posteriores (login, logout, refresco de token)
 supabase.auth.onAuthStateChange(async (event, session) => {
-    console.log('📡 Auth state change:', event, 'initComplete:', initializationComplete);
+    console.log('Auth state change:', event);
 
-    // IGNORAR eventos durante inicialización para evitar auto-login
+    // IGNORAR eventos durante inicialización
     if (!initializationComplete) {
-        console.log('🚫 Ignorando auth state change durante inicialización:', event);
-        return;
-    }
-
-    // IGNORAR eventos de sesión inicial/recuperada (previene auto-login)
-    if (event === 'INITIAL_SESSION' || event === 'TOKEN_REFRESHED') {
-        console.log('🚫 Ignorando evento de sesión automática:', event);
+        console.log('Ignorando evento durante inicialización:', event);
         return;
     }
 
     try {
-        if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
-            console.log('✅ Procesando login manual:', event);
+        if (event === 'SIGNED_IN') {
+            console.log('Procesando login');
             const currentUser = session.user;
             user.value = currentUser;
             await getProfile(currentUser.id);
+        } else if (event === 'TOKEN_REFRESHED') {
+            // Mantener sesión activa cuando se refresca el token
+            console.log('Token refrescado, manteniendo sesión');
+            if (session?.user && !user.value) {
+                // Si tenemos sesión pero no usuario local, restaurar
+                user.value = session.user;
+                await getProfile(session.user.id);
+            }
+        } else if (event === 'USER_UPDATED') {
+            console.log('Usuario actualizado');
+            if (session?.user) {
+                user.value = session.user;
+                await getProfile(session.user.id);
+            }
         } else if (event === 'SIGNED_OUT') {
-            console.log('✅ Procesando logout');
+            console.log('Procesando logout');
             user.value = null;
             profile.value = { username: null, role: null, onboarding_complete: false };
         }
     } catch (e) {
         console.error("Error durante el cambio de estado de Auth:", e);
     } finally {
-        // 🚀 Desbloqueo garantizado, sin importar el éxito de getProfile
         isLoading.value = false;
     }
 });

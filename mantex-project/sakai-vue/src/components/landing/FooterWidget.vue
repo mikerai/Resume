@@ -43,5 +43,8 @@
                 </div>
             </div>
         </div>
+        <div class="flex justify-center">
+            <p class="text-surface-700 dark:text-surface-100">&copy; {{ new Date().getFullYear() }} Hecho en 🇲🇽 con ❤️.</p>
+        </div>
     </div>
 </template>

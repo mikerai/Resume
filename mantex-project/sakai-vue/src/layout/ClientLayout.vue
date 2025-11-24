@@ -11,6 +11,7 @@
                 </button>
                 <router-link to="/client/dashboard" class="layout-topbar-logo">
                     <img src="/demo/images/logo.png" alt="Mantex Logo" style="height: 2.5rem; width: auto;" />
+                    <span class="text-xl font-bold text-primary">Mantex</span>
                 </router-link>
             </div>
 
