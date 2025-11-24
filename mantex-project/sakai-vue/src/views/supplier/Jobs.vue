@@ -329,15 +329,19 @@
                     height="400"
                     style="border:0; border-radius: 8px;"
                     loading="lazy"
-                    :src="`https://www.google.com/maps/embed/v1/place?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}&q=${encodeURIComponent(selectedTicket.location_address + ', ' + selectedTicket.location_city + ', ' + selectedTicket.location_state)}`"
+                    :src="mapSrc"
                 ></iframe>
             </div>
 
             </div>
+            <!-- Chat Dialog -->
+            <Dialog v-model:visible="showChatDialog" modal :style="{ width: '90vw', maxWidth: '1200px' }" header="Chat del Ticket">
+                <TicketChat :ticketId="selectedTicket.id" />
+            </Dialog>
 
             <!-- Botones de Acción -->
 
-        </div>
+
 
         <template #footer>
             <div class="flex justify-content-between">
@@ -355,6 +359,27 @@
                         icon="pi pi-times"
                         class="p-button-danger"
                         @click="rejectTicket(selectedTicket)"
+                    />
+                    <Button
+                        v-if="isSupplierApproved && selectedTicket.status === 'opened'"
+                        label="Solicitar Revisión"
+                        icon="pi pi-search"
+                        class="p-button-info"
+                        @click="requestReview(selectedTicket)"
+                    />
+                    <Button
+                        v-if="isSupplierApproved && selectedTicket.status === 'under_review'"
+                        label="Cerrar Ticket"
+                        icon="pi pi-check"
+                        class="p-button-warning"
+                        @click="closeTicket(selectedTicket)"
+                    />
+                    <Button
+                        v-if="isSupplierApproved"
+                        label="Chat"
+                        icon="pi pi-comments"
+                        class="p-button-secondary"
+                        @click="showChatDialog = true"
                     />
                 </div>
                 <Button label="Cerrar" icon="pi pi-times" class="p-button-text" @click="showTicketDialog = false" />
@@ -412,6 +437,7 @@ import { useToast } from 'primevue/usetoast';
 import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/composables/useAuth';
 import EvidenceUpload from '@/components/ticket/EvidenceUpload.vue';
+import TicketChat from '@/components/TicketChat.vue';
 
 const toast = useToast();
 const { user, profile } = useAuth();
@@ -430,6 +456,7 @@ const ticketToReject = ref(null);
 const currentSupplier = ref(null);
 const showEvidenceDialog = ref(false);
 const evidenceTicket = ref(null);
+const showChatDialog = ref(false);
 
 // Computed properties
 const isSupplierApproved = computed(() => {
@@ -460,6 +487,12 @@ const filteredTickets = computed(() => {
     }
 
     return filtered;
+});
+
+const mapSrc = computed(() => {
+  if (!selectedTicket.value) return '';
+  const address = `${selectedTicket.value.location_address}, ${selectedTicket.value.location_city}, ${selectedTicket.value.location_state}`;
+  return `https://www.google.com/maps/embed/v1/place?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}&q=${encodeURIComponent(address)}`;
 });
 
 // Options
@@ -533,6 +566,13 @@ const loadTickets = async () => {
 };
 
 const viewTicket = (ticket) => {
+  selectedTicket.value = ticket;
+  showTicketDialog.value = true;
+  // Initialize chat for this ticket
+  const { messages, isTyping, sendMessage, markAsRead, setTypingStatus } = useFirebaseChat(ticket.id);
+  // expose to template via refs (optional)
+  chatData.value = { messages, isTyping, sendMessage, markAsRead, setTypingStatus };
+};
     selectedTicket.value = ticket;
     showTicketDialog.value = true;
 };
@@ -548,6 +588,47 @@ const canRejectTicket = (ticket) => {
 };
 
 const acceptTicket = async (ticket) => {
+  if (!isSupplierApproved.value) {
+    toast.add({
+      severity: 'warn',
+      summary: 'Acceso Restringido',
+      detail: 'Debe ser aprobado antes de aceptar trabajos',
+      life: 3000
+    });
+    return;
+  }
+
+  try {
+    const { error } = await supabase
+      .from('tickets')
+      .update({
+        supplier_id: currentSupplierId.value,
+        status: 'opened',
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', ticket.id);
+
+    if (error) throw error;
+
+    toast.add({
+      severity: 'success',
+      summary: 'Trabajo Aceptado',
+      detail: `Has aceptado el trabajo ${ticket.ticket_number}`,
+      life: 3000
+    });
+
+    await loadTickets();
+    showTicketDialog.value = false;
+  } catch (error) {
+    console.error('Error accepting ticket:', error);
+    toast.add({
+      severity: 'error',
+      summary: 'Error',
+      detail: 'Error al aceptar el trabajo',
+      life: 3000
+    });
+  }
+};
     if (!isSupplierApproved.value) {
         toast.add({
             severity: 'warn',
