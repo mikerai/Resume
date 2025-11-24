@@ -437,7 +437,7 @@ import { useToast } from 'primevue/usetoast';
 import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/composables/useAuth';
 import EvidenceUpload from '@/components/ticket/EvidenceUpload.vue';
-import TicketChat from '@/components/TicketChat.vue';
+import TicketChat from '@/components/ticket/TicketChat.vue';
 
 const toast = useToast();
 const { user, profile } = useAuth();
