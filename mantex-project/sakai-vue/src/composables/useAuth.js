@@ -17,6 +17,10 @@ const profile = ref({
     username: null,
     role: null,
     onboarding_complete: false,
+    first_name: null,
+    last_name: null,
+    second_last_name: null,
+    avatar_url: null,
 });
 // Empieza en TRUE para bloquear el Router Guard hasta que la sesión se cargue.
 const isLoading = ref(true);
@@ -38,7 +42,7 @@ async function getProfile(userId) {
         const { data, error } = await Promise.race([
             supabase
                 .from('profiles')
-                .select(`username, role, onboarding_complete`)
+                .select(`first_name, last_name, second_last_name, username, role, onboarding_complete, avatar_url`)
                 .eq('id', userId)
                 .single(),
             new Promise((_, reject) =>
@@ -55,6 +59,10 @@ async function getProfile(userId) {
                 username: data.username,
                 role: data.role,
                 onboarding_complete: data.onboarding_complete,
+                first_name: data.first_name,
+                last_name: data.last_name,
+                second_last_name: data.second_last_name,
+                avatar_url: data.avatar_url,
             };
             console.log('✅ Perfil obtenido:', profile.value);
         } else if (error && error.code !== 'PGRST116') {

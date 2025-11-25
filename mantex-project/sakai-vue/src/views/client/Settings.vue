@@ -231,8 +231,40 @@ function toggleDarkMode() {
     document.documentElement.classList.toggle('app-dark');
 }
 
+// Load first_name, last_name, second_last_name from profiles
+const loadProfileInfo = async () => {
+    try {
+        const { data, error } = await supabase
+            .from('profiles')
+            .select('first_name, last_name, second_last_name')
+            .eq('id', user.value.id)
+            .single();
+        if (error) throw error;
+        if (data) {
+            profile.value = {
+                ...profile.value,
+                first_name: data.first_name,
+                last_name: data.last_name,
+                second_last_name: data.second_last_name,
+            };
+        }
+    } catch (e) {
+        console.error('Error loading profile info from profiles:', e);
+    }
+};
+
+// Updated onMounted to load profile info then avatar
 onMounted(() => {
-    loadAvatar();
+    if (user.value?.id) {
+        loadProfileInfo()
+            .then(() => loadAvatar())
+            .catch(e => {
+                console.error('Error loading profile info on Settings mount:', e);
+                loadAvatar();
+            });
+    } else {
+        loadAvatar();
+    }
 });
 </script>
 
@@ -269,7 +301,7 @@ onMounted(() => {
                                 />
                             </div>
                         </div>
-                        <h3 class="text-xl font-bold m-0">{{ profile?.first_name }} {{ profile?.last_name }}</h3>
+                        <h3 class="text-xl font-bold m-0">{{ profile?.first_name }} {{ profile?.last_name }} {{ profile?.second_last_name }}</h3>
                         <span class="text-muted-color">{{ user?.email }}</span>
                     </div>
 
