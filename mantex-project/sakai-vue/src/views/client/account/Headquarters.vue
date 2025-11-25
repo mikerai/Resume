@@ -1,11 +1,12 @@
 <script setup>
-import { ref, watch, onMounted } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import { useAuth } from '@/composables/useAuth';
 import { useS3Upload } from '@/composables/useS3Upload';
 import { supabase } from '@/lib/supabaseClient';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
+import Galleria from 'primevue/galleria';
 import AddressForm from './components/AddressForm.vue';
 
 const toast = useToast();
@@ -32,11 +33,55 @@ const formData = ref({
 });
 
 const headquartersPictureUrl = ref(null);
+const additionalPicturesUrls = ref([]);
+const layoutUrl = ref(null);
 
-// Generar URL firmada cuando se carga el headquarters
+const galleriaResponsiveOptions = ref([
+    { breakpoint: '1024px', numVisible: 5 },
+    { breakpoint: '960px', numVisible: 4 },
+    { breakpoint: '768px', numVisible: 3 },
+    { breakpoint: '560px', numVisible: 1 }
+]);
+
+// Computed para crear el array de imágenes para Galleria
+const galleryImages = computed(() => {
+    const images = [];
+    
+    // Agregar foto principal de fachada
+    if (headquartersPictureUrl.value) {
+        images.push({
+            itemImageSrc: headquartersPictureUrl.value,
+            thumbnailImageSrc: headquartersPictureUrl.value,
+            alt: 'Fachada principal'
+        });
+    }
+    
+    // Agregar fotos adicionales
+    additionalPicturesUrls.value.forEach((url, index) => {
+        images.push({
+            itemImageSrc: url,
+            thumbnailImageSrc: url,
+            alt: `Foto adicional ${index + 1}`
+        });
+    });
+    
+    return images;
+});
+
+// Generar URLs firmadas cuando se carga el headquarters
 watch(headquarters, async (newVal) => {
     if (newVal?.hq_picture) {
         headquartersPictureUrl.value = await getSignedUrl(newVal.hq_picture);
+    }
+    
+    if (newVal?.hq_additional_pictures?.length > 0) {
+        additionalPicturesUrls.value = await Promise.all(
+            newVal.hq_additional_pictures.map(key => getSignedUrl(key))
+        );
+    }
+    
+    if (newVal?.hq_layout) {
+        layoutUrl.value = await getSignedUrl(newVal.hq_layout);
     }
 }, { immediate: true });
 
@@ -176,16 +221,45 @@ onMounted(() => {
                 </div>
             </div>
             
-            <div class="col-12 mt-3" v-if="headquartersPictureUrl">
+            <div class="col-12 mt-3" v-if="galleryImages.length > 0">
                 <div class="field">
-                    <label class="font-medium text-sm text-500">Fachada</label>
+                    <label class="font-medium text-sm text-500">Galería de Fotos</label>
                     <div class="mt-2">
-                        <img 
-                            :src="headquartersPictureUrl" 
-                            alt="Fachada de oficina central" 
-                            class="w-full max-w-30rem border-round"
-                            style="max-height: 300px; object-fit: cover;"
-                        />
+                        <Galleria 
+                            :value="galleryImages" 
+                            :responsiveOptions="galleriaResponsiveOptions" 
+                            :numVisible="5" 
+                            containerStyle="max-width: 800px"
+                            :circular="true"
+                            :showItemNavigators="true"
+                        >
+                            <template #item="slotProps">
+                                <img 
+                                    :src="slotProps.item.itemImageSrc" 
+                                    :alt="slotProps.item.alt" 
+                                    style="width: 100%; display: block; max-height: 500px; object-fit: contain;"
+                                />
+                            </template>
+                            <template #thumbnail="slotProps">
+                                <img 
+                                    :src="slotProps.item.thumbnailImageSrc" 
+                                    :alt="slotProps.item.alt"
+                                    style="display: block; width: 100%; height: 60px; object-fit: cover;"
+                                />
+                            </template>
+                        </Galleria>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 mt-3" v-if="layoutUrl">
+                <div class="field">
+                    <label class="font-medium text-sm text-500">Layout</label>
+                    <div class="mt-2">
+                        <a :href="layoutUrl" target="_blank" class="p-button p-button-outlined">
+                            <i class="pi pi-file-pdf mr-2"></i>
+                            Ver Layout
+                        </a>
                     </div>
                 </div>
             </div>
