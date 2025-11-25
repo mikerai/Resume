@@ -19,7 +19,7 @@ const profile = ref({
     onboarding_complete: false,
 });
 // Empieza en TRUE para bloquear el Router Guard hasta que la sesión se cargue.
-const isLoading = ref(true); 
+const isLoading = ref(true);
 
 
 // -----------------------------------------------------
@@ -121,9 +121,9 @@ async function completeOnboarding(userId) {
         console.error('Error al completar onboarding:', error);
         throw new Error('Falló al marcar el onboarding como completado.');
     }
-    
+
     // Si la actualización es exitosa, actualizamos el estado local
-    await getProfile(userId); 
+    await getProfile(userId);
 }
 
 // Lógica de Login
@@ -312,7 +312,13 @@ supabase.auth.onAuthStateChange(async (event, session) => {
         if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
             const currentUser = session.user;
             user.value = currentUser;
-            await getProfile(currentUser.id); 
+
+            // Solo cargar perfil si no lo tenemos o si el usuario cambió
+            if (!profile.value?.role || profile.value?.username === null) {
+                await getProfile(currentUser.id);
+            } else {
+                console.log('✅ Perfil ya cargado, omitiendo getProfile');
+            }
         } else if (event === 'SIGNED_OUT') {
             user.value = null;
             profile.value = { username: null, role: null, onboarding_complete: false };
@@ -320,8 +326,8 @@ supabase.auth.onAuthStateChange(async (event, session) => {
     } catch (e) {
         console.error("Error durante el cambio de estado de Auth:", e);
     } finally {
-        // 🚀 Desbloqueo garantizado, sin importar el éxito de getProfile
-        isLoading.value = false; 
+        // Desbloqueo garantizado, sin importar el éxito de getProfile
+        isLoading.value = false;
     }
 });
 

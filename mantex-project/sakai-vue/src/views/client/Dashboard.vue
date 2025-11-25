@@ -9,6 +9,11 @@ import Column from 'primevue/column';
 import Tag from 'primevue/tag';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
+import Splitter from 'primevue/splitter';
+import SplitterPanel from 'primevue/splitterpanel';
+import Chip from 'primevue/chip';
+import Avatar from 'primevue/avatar';
+import TicketChat from '@/components/ticket/TicketChat.vue';
 import { translateStatus, translatePriority, getStatusSeverity as getStatusSev } from '@/utils/status-utils.js';
 
 const router = useRouter();
@@ -22,6 +27,7 @@ const chartData = ref(null);
 const chartOptions = ref(null);
 const selectedTicket = ref(null);
 const showTicketDialog = ref(false);
+const mapSrc = ref('');
 
 // Computed stats from real data
 const stats = computed(() => {
@@ -232,12 +238,34 @@ const fetchTickets = async () => {
 
 const viewTicket = (ticket) => {
     selectedTicket.value = ticket;
+    // Build Google Maps embed URL
+    const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+    const query = encodeURIComponent(`${ticket.location_city}, ${ticket.location_state}`);
+    mapSrc.value = `https://www.google.com/maps/embed/v1/place?key=${apiKey}&q=${query}`;
     showTicketDialog.value = true;
 };
 
 const closeTicketDialog = () => {
     showTicketDialog.value = false;
     selectedTicket.value = null;
+};
+
+const cancelTicketQuick = async (ticket) => {
+    if (!confirm(`¿Está seguro de cancelar el ticket ${ticket.ticket_number}?`)) return;
+    
+    try {
+        const { error } = await supabase
+            .from('tickets')
+            .update({ status: 'cancelled' })
+            .eq('id', ticket.id);
+        
+        if (error) throw error;
+        
+        // Refresh data
+        await fetchTickets();
+    } catch (error) {
+        console.error('Error cancelling ticket:', error);
+    }
 };
 
 const cancelTicket = async () => {
@@ -410,7 +438,7 @@ const cancelTicket = async () => {
                             <div class="text-sm">{{ formatDate(slotProps.data.created_at) }}</div>
                         </template>
                     </Column>
-                    <Column header="Acciones" :exportable="false" style="min-width: 10rem">
+                    <Column header="Acciones" :exportable="false" style="min-width: 12rem">
                         <template #body="slotProps">
                             <div class="flex gap-2">
                                 <Button 
@@ -426,8 +454,18 @@ const cancelTicket = async () => {
                                     severity="success" 
                                     text 
                                     rounded 
+                                    @click="router.push(`/client/requests/${slotProps.data.id}`)"
                                     v-tooltip.top="'Editar'"
                                     :disabled="['completed', 'cancelled', 'closed'].includes(slotProps.data.status)"
+                                />
+                                <Button 
+                                    icon="pi pi-ban" 
+                                    severity="danger" 
+                                    text 
+                                    rounded 
+                                    @click="cancelTicketQuick(slotProps.data)"
+                                    v-tooltip.top="'Cancelar'"
+                                    :disabled="['ready_for_payment', 'in_progress', 'cancelled', 'closed', 'completed'].includes(slotProps.data.status)"
                                 />
                             </div>
                         </template>
@@ -439,78 +477,97 @@ const cancelTicket = async () => {
         <!-- Ticket Detail Overlay -->
         <Dialog 
             v-model:visible="showTicketDialog" 
-            :modal="true" 
-            :closable="true"
-            :style="{ width: '50vw' }"
-            @hide="closeTicketDialog"
+            modal 
+            :style="{ width: '90vw', maxWidth: '1200px' }" 
+            header="Detalles del Ticket"
         >
-            <template #header>
-                <div class="flex align-items-center gap-2">
-                    <i class="pi pi-ticket text-2xl"></i>
-                    <span class="font-semibold text-xl">{{ selectedTicket?.ticket_number }}</span>
-                </div>
-            </template>
+            <div v-if="selectedTicket">
+                <Splitter style="height: 600px">
+                    <!-- Panel 1: Mapa (30%) -->
+                    <SplitterPanel :size="30" :minSize="20">
+                        <div class="h-full flex items-center justify-content-center">
+                            <iframe
+                                v-if="selectedTicket.location_city && selectedTicket.location_state"
+                                width="100%"
+                                height="100%"
+                                class="border-none"
+                                loading="lazy"
+                                :src="mapSrc"
+                            ></iframe>
+                            <div v-else class="flex flex-column align-items-center justify-content-center h-full text-500">
+                                <i class="pi pi-map-marker text-4xl mb-2"></i>
+                                <span>Sin ubicación</span>
+                            </div>
+                        </div>
+                    </SplitterPanel>
 
-            <div v-if="selectedTicket" class="flex flex-column gap-4">
-                <!-- Status and Priority -->
-                <div class="flex gap-3">
-                    <Tag :value="getStatusLabel(selectedTicket.status)" :severity="getStatusSeverity(selectedTicket.status)" class="text-base" />
-                    <Tag :value="getPriorityLabel(selectedTicket.priority)" :severity="getPrioritySeverity(selectedTicket.priority)" class="text-base" />
-                </div>
+                    <!-- Paneles Derecha (70%) -->
+                    <SplitterPanel :size="70">
+                        <Splitter layout="vertical">
+                            <!-- Panel 2: Detalles (20%) -->
+                            <SplitterPanel :size="20" :minSize="15">
+                                <div class="p-3 h-full overflow-y-auto">
+                                    <div class="flex align-items-center justify-content-between mb-3">
+                                        <h6 class="m-0">
+                                            <i class="pi pi-info-circle mr-2"></i>
+                                            Detalles del Ticket
+                                        </h6>
+                                        <Tag :value="getStatusLabel(selectedTicket.status)" :severity="getStatusSeverity(selectedTicket.status)" />
+                                    </div>
 
-                <!-- Title and Description -->
-                <div>
-                    <h3 class="mt-0 mb-2">{{ selectedTicket.title }}</h3>
-                    <p class="text-color-secondary m-0">{{ selectedTicket.description }}</p>
-                </div>
+                                    <div class="flex flex-wrap gap-2 mb-3">
+                                        <Chip :label="selectedTicket.maintenance_type === 'preventive' ? 'Preventivo' : 'Correctivo'" icon="pi pi-wrench" />
+                                        <Chip :label="getPriorityLabel(selectedTicket.priority)" icon="pi pi-exclamation-circle" />
+                                        <Chip v-if="selectedTicket.location_city" :label="selectedTicket.location_city" icon="pi pi-map-marker" />
+                                    </div>
 
-                <!-- Details Grid -->
-                <div class="grid">
-                    <div class="col-6">
-                        <div class="text-500 mb-1">Ubicación</div>
-                        <div class="font-medium">
-                            <i class="pi pi-map-marker mr-2"></i>
-                            {{ selectedTicket.location_city }}, {{ selectedTicket.location_state }}
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="text-500 mb-1">Proveedor</div>
-                        <div class="font-medium">
-                            {{ selectedTicket.supplier?.company_name || 'Sin asignar' }}
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="text-500 mb-1">Fecha Programada</div>
-                        <div class="font-medium">
-                            <i class="pi pi-calendar mr-2"></i>
-                            {{ selectedTicket.scheduled_date ? formatDate(selectedTicket.scheduled_date) : 'No programada' }}
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="text-500 mb-1">Tipo de Mantenimiento</div>
-                        <div class="font-medium">
-                            {{ selectedTicket.maintenance_type === 'preventive' ? 'Preventivo' : 'Correctivo' }}
-                        </div>
-                    </div>
-                </div>
+                                    <div class="flex align-items-center gap-2 mb-3" v-if="selectedTicket.supplier">
+                                        <Avatar :label="selectedTicket.supplier.company_name[0]" shape="circle" />
+                                        <div>
+                                            <div class="font-semibold text-sm">{{ selectedTicket.supplier.company_name }}</div>
+                                            <div class="text-xs text-500">{{ selectedTicket.supplier.contact_person }}</div>
+                                        </div>
+                                    </div>
+
+                                    <p class="text-700 text-sm line-height-3 m-0">{{ selectedTicket.description }}</p>
+                                </div>
+                            </SplitterPanel>
+
+                            <!-- Panel 3: Chat (80%) -->
+                            <SplitterPanel :size="80" :minSize="50">
+                                <div class="h-full flex flex-column">
+                                    <div class="p-3 surface-100 border-bottom-1 surface-border">
+                                        <h6 class="m-0 flex align-items-center">
+                                            <i class="pi pi-comments mr-2"></i>
+                                            Chat
+                                        </h6>
+                                    </div>
+                                    <div class="flex-1">
+                                        <TicketChat :ticketId="selectedTicket.id" />
+                                    </div>
+                                </div>
+                            </SplitterPanel>
+                        </Splitter>
+                    </SplitterPanel>
+                </Splitter>
             </div>
 
             <template #footer>
                 <div class="flex justify-content-between w-full">
                     <Button 
                         label="Cancelar Ticket" 
-                        icon="pi pi-times" 
+                        icon="pi pi-ban" 
                         severity="danger" 
                         outlined
                         @click="cancelTicket"
-                        :disabled="['cancelled', 'closed', 'completed'].includes(selectedTicket?.status)"
+                        :disabled="['ready_for_payment', 'in_progress', 'cancelled', 'closed', 'completed'].includes(selectedTicket?.status)"
                     />
                     <div class="flex gap-2">
                         <Button label="Cerrar" icon="pi pi-times" text @click="closeTicketDialog" />
                         <Button 
                             label="Editar" 
                             icon="pi pi-pencil" 
-                            @click="router.push(`/client/tickets/${selectedTicket?.id}`)"
+                            @click="router.push(`/client/requests/${selectedTicket?.id}`)"
                             :disabled="['completed', 'cancelled', 'closed'].includes(selectedTicket?.status)"
                         />
                     </div>

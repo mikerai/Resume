@@ -41,9 +41,36 @@
                             <div class="text-sm">{{ formatDate(slotProps.data.created_at) }}</div>
                         </template>
                     </Column>
-                    <Column header="Acciones" :exportable="false" style="min-width: 8rem">
+                    <Column header="Acciones" :exportable="false" style="min-width: 12rem">
                         <template #body="slotProps">
-                            <Button icon="pi pi-eye" severity="info" text rounded @click="viewTicket(slotProps.data)" />
+                            <div class="flex gap-2">
+                                <Button 
+                                    icon="pi pi-eye" 
+                                    severity="info" 
+                                    text 
+                                    rounded 
+                                    @click="viewTicket(slotProps.data)" 
+                                    v-tooltip.top="'Ver detalles'"
+                                />
+                                <Button 
+                                    icon="pi pi-pencil" 
+                                    severity="success" 
+                                    text 
+                                    rounded 
+                                    @click="router.push(`/client/requests/${slotProps.data.id}`)"
+                                    v-tooltip.top="'Editar'"
+                                    :disabled="['completed', 'cancelled', 'closed'].includes(slotProps.data.status)"
+                                />
+                                <Button 
+                                    icon="pi pi-ban" 
+                                    severity="danger" 
+                                    text 
+                                    rounded 
+                                    @click="cancelTicketQuick(slotProps.data)"
+                                    v-tooltip.top="'Cancelar'"
+                                    :disabled="['ready_for_payment', 'in_progress', 'cancelled', 'closed', 'completed'].includes(slotProps.data.status)"
+                                />
+                            </div>
                         </template>
                     </Column>
                 </DataTable>
@@ -99,36 +126,110 @@
     </Dialog>
 
     <!-- Simple details dialog -->
-    <Dialog v-model:visible="showDetailsDialog" modal :style="{ width: '600px' }" header="Detalles de la Solicitud">
-        <div v-if="selectedTicket" class="grid">
-            <div class="col-span-12">
-                <div class="field">
-                    <label>Número:</label>
-                    <p class="font-medium">{{ selectedTicket.ticket_number }}</p>
-                </div>
-                <div class="field">
-                    <label>Título:</label>
-                    <p class="font-medium">{{ selectedTicket.title }}</p>
-                </div>
-                <div class="field">
-                    <label>Descripción:</label>
-                    <p>{{ selectedTicket.description }}</p>
-                </div>
-                <div class="field">
-                    <label>Estado:</label>
-                    <Tag :value="getStatusLabel(selectedTicket.status)" :severity="getStatusSeverity(selectedTicket.status)" class="mt-1" />
-                </div>
-            </div>
+    <Dialog 
+        v-model:visible="showDetailsDialog" 
+        modal 
+        :style="{ width: '90vw', maxWidth: '1200px' }" 
+        header="Detalles del Ticket"
+    >
+        <div v-if="selectedTicket">
+            <Splitter style="height: 600px">
+                <!-- Panel 1: Mapa (30%) -->
+                <SplitterPanel :size="30" :minSize="20">
+                    <div class="h-full flex items-center justify-content-center">
+                        <iframe
+                            v-if="selectedTicket.location_city && selectedTicket.location_state"
+                            width="100%"
+                            height="100%"
+                            class="border-none"
+                            loading="lazy"
+                            :src="mapSrc"
+                        ></iframe>
+                        <div v-else class="flex flex-column align-items-center justify-content-center h-full text-500">
+                            <i class="pi pi-map-marker text-4xl mb-2"></i>
+                            <span>Sin ubicación</span>
+                        </div>
+                    </div>
+                </SplitterPanel>
+
+                <!-- Paneles Derecha (70%) -->
+                <SplitterPanel :size="70">
+                    <Splitter layout="vertical">
+                        <!-- Panel 2: Detalles (20%) -->
+                        <SplitterPanel :size="20" :minSize="15">
+                            <div class="p-3 h-full overflow-y-auto">
+                                <div class="flex align-items-center justify-content-between mb-3">
+                                    <h6 class="m-0">
+                                        <i class="pi pi-info-circle mr-2"></i>
+                                        Detalles del Ticket
+                                    </h6>
+                                    <Tag :value="getStatusLabel(selectedTicket.status)" :severity="getStatusSeverity(selectedTicket.status)" />
+                                </div>
+
+                                <div class="flex flex-wrap gap-2 mb-3">
+                                    <Chip :label="selectedTicket.maintenance_type === 'preventive' ? 'Preventivo' : 'Correctivo'" icon="pi pi-wrench" />
+                                    <Chip :label="getPriorityLabel(selectedTicket.priority)" icon="pi pi-exclamation-circle" />
+                                    <Chip v-if="selectedTicket.location_city" :label="selectedTicket.location_city" icon="pi pi-map-marker" />
+                                </div>
+
+                                <div class="flex align-items-center gap-2 mb-3" v-if="selectedTicket.supplier">
+                                    <Avatar :label="selectedTicket.supplier.company_name[0]" shape="circle" />
+                                    <div>
+                                        <div class="font-semibold text-sm">{{ selectedTicket.supplier.company_name }}</div>
+                                        <div class="text-xs text-500">{{ selectedTicket.supplier.contact_person }}</div>
+                                    </div>
+                                </div>
+
+                                <p class="text-700 text-sm line-height-3 m-0">{{ selectedTicket.description }}</p>
+                            </div>
+                        </SplitterPanel>
+
+                        <!-- Panel 3: Chat (80%) -->
+                        <SplitterPanel :size="80" :minSize="50">
+                            <div class="h-full flex flex-column">
+                                <div class="p-3 surface-100 border-bottom-1 surface-border">
+                                    <h6 class="m-0 flex align-items-center">
+                                        <i class="pi pi-comments mr-2"></i>
+                                        Chat
+                                    </h6>
+                                </div>
+                                <div class="flex-1">
+                                    <TicketChat :ticketId="selectedTicket.id" />
+                                </div>
+                            </div>
+                        </SplitterPanel>
+                    </Splitter>
+                </SplitterPanel>
+            </Splitter>
         </div>
 
         <template #footer>
-            <Button label="Cerrar" icon="pi pi-times" text @click="showDetailsDialog = false" />
+            <div class="flex justify-content-between w-full">
+                <Button 
+                    label="Cancelar Ticket" 
+                    icon="pi pi-ban" 
+                    severity="danger" 
+                    outlined
+                    @click="cancelTicket"
+                    :disabled="['ready_for_payment', 'in_progress', 'cancelled', 'closed', 'completed'].includes(selectedTicket?.status)"
+                />
+                <div class="flex gap-2">
+                    <Button label="Cerrar" icon="pi pi-times" text @click="showDetailsDialog = false" />
+                    <Button 
+                        label="Editar" 
+                        icon="pi pi-pencil" 
+                        @click="router.push(`/client/requests/${selectedTicket?.id}`)"
+                        :disabled="['completed', 'cancelled', 'closed'].includes(selectedTicket?.status)"
+                    />
+                </div>
+            </div>
         </template>
     </Dialog>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import { useToast } from 'primevue/usetoast';
 import { useAuth } from '@/composables/useAuth';
 import { supabase } from '@/lib/supabaseClient';
@@ -137,12 +238,18 @@ import Column from 'primevue/column';
 import Button from 'primevue/button';
 import Tag from 'primevue/tag';
 import Dialog from 'primevue/dialog';
+import Splitter from 'primevue/splitter';
+import SplitterPanel from 'primevue/splitterpanel';
+import Chip from 'primevue/chip';
+import Avatar from 'primevue/avatar';
+import TicketChat from '@/components/ticket/TicketChat.vue';
 import InputText from 'primevue/inputtext';
 import Dropdown from 'primevue/dropdown';
 import Textarea from 'primevue/textarea';
 import { getLabel, getSeverity, formatDate } from '@/lib/constants.js';
 
 const toast = useToast();
+const router = useRouter();
 const { user } = useAuth();
 
 // Reactive data
@@ -153,6 +260,7 @@ const creating = ref(false);
 const showCreateDialog = ref(false);
 const showDetailsDialog = ref(false);
 const selectedTicket = ref(null);
+const mapSrc = ref('');
 
 // Form data for new request
 const newRequest = ref({
@@ -386,7 +494,54 @@ const closeCreateDialog = () => {
 
 const viewTicket = (ticket) => {
     selectedTicket.value = ticket;
+    // Build Google Maps embed URL
+    const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+    const query = encodeURIComponent(`${ticket.location_city}, ${ticket.location_state}`);
+    mapSrc.value = `https://www.google.com/maps/embed/v1/place?key=${apiKey}&q=${query}`;
     showDetailsDialog.value = true;
+};
+
+const cancelTicketQuick = async (ticket) => {
+    if (!confirm(`¿Está seguro de cancelar el ticket ${ticket.ticket_number}?`)) return;
+    
+    try {
+        const { error } = await supabase
+            .from('tickets')
+            .update({ status: 'cancelled' })
+            .eq('id', ticket.id);
+        
+        if (error) throw error;
+        
+        // Refresh data
+        await loadTickets();
+        toast.add({ severity: 'success', summary: 'Ticket cancelado', detail: 'El ticket ha sido cancelado exitosamente', life: 3000 });
+    } catch (error) {
+        console.error('Error cancelling ticket:', error);
+        toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo cancelar el ticket', life: 3000 });
+    }
+};
+
+const cancelTicket = async () => {
+    if (!selectedTicket.value) return;
+    if (!confirm(`¿Está seguro de cancelar el ticket ${selectedTicket.value.ticket_number}?`)) return;
+    
+    try {
+        const { error } = await supabase
+            .from('tickets')
+            .update({ status: 'cancelled' })
+            .eq('id', selectedTicket.value.id);
+        
+        if (error) throw error;
+        
+        // Refresh data
+        await loadTickets();
+        showDetailsDialog.value = false;
+        selectedTicket.value = null;
+        toast.add({ severity: 'success', summary: 'Ticket cancelado', detail: 'El ticket ha sido cancelado exitosamente', life: 3000 });
+    } catch (error) {
+        console.error('Error cancelling ticket:', error);
+        toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo cancelar el ticket', life: 3000 });
+    }
 };
 
 // Utility functions using constants

@@ -74,25 +74,31 @@
     "S3UploadLogGroup": {
       "Type": "AWS::Logs::LogGroup",
       "Properties": {
-        "LogGroupName": "/aws/lambda/mantex-lambdas-dev-s3Upload"
+        "LogGroupName": "/aws/lambda/mantex-lambdas-prod-s3Upload"
       }
     },
     "S3DeleteLogGroup": {
       "Type": "AWS::Logs::LogGroup",
       "Properties": {
-        "LogGroupName": "/aws/lambda/mantex-lambdas-dev-s3Delete"
+        "LogGroupName": "/aws/lambda/mantex-lambdas-prod-s3Delete"
       }
     },
     "S3ListLogGroup": {
       "Type": "AWS::Logs::LogGroup",
       "Properties": {
-        "LogGroupName": "/aws/lambda/mantex-lambdas-dev-s3List"
+        "LogGroupName": "/aws/lambda/mantex-lambdas-prod-s3List"
+      }
+    },
+    "S3SignedUrlLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/mantex-lambdas-prod-s3SignedUrl"
       }
     },
     "NubariumProxyLogGroup": {
       "Type": "AWS::Logs::LogGroup",
       "Properties": {
-        "LogGroupName": "/aws/lambda/mantex-lambdas-dev-nubariumProxy"
+        "LogGroupName": "/aws/lambda/mantex-lambdas-prod-nubariumProxy"
       }
     },
     "IamRoleLambdaExecution": {
@@ -121,7 +127,7 @@
                 "-",
                 [
                   "mantex-lambdas",
-                  "dev",
+                  "prod",
                   "lambda"
                 ]
               ]
@@ -138,7 +144,7 @@
                   ],
                   "Resource": [
                     {
-                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/mantex-lambdas-dev*:*"
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/mantex-lambdas-prod*:*"
                     }
                   ]
                 },
@@ -149,7 +155,7 @@
                   ],
                   "Resource": [
                     {
-                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/mantex-lambdas-dev*:*:*"
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/mantex-lambdas-prod*:*:*"
                     }
                   ]
                 },
@@ -176,7 +182,7 @@
             "-",
             [
               "mantex-lambdas",
-              "dev",
+              "prod",
               {
                 "Ref": "AWS::Region"
               },
@@ -193,11 +199,11 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/mantex-lambdas/dev/1763870467551-2025-11-23T04:01:07.551Z/mantex-lambdas.zip"
+          "S3Key": "serverless/mantex-lambdas/prod/1764103549906-2025-11-25T20:45:49.906Z/mantex-lambdas.zip"
         },
         "Handler": "s3-upload-lambda.handler",
         "Runtime": "nodejs18.x",
-        "FunctionName": "mantex-lambdas-dev-s3Upload",
+        "FunctionName": "mantex-lambdas-prod-s3Upload",
         "MemorySize": 256,
         "Timeout": 30,
         "Description": "Upload files to S3 with proper structure",
@@ -224,11 +230,11 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/mantex-lambdas/dev/1763870467551-2025-11-23T04:01:07.551Z/mantex-lambdas.zip"
+          "S3Key": "serverless/mantex-lambdas/prod/1764103549906-2025-11-25T20:45:49.906Z/mantex-lambdas.zip"
         },
         "Handler": "s3-delete-lambda.handler",
         "Runtime": "nodejs18.x",
-        "FunctionName": "mantex-lambdas-dev-s3Delete",
+        "FunctionName": "mantex-lambdas-prod-s3Delete",
         "MemorySize": 256,
         "Timeout": 30,
         "Description": "Delete files from S3",
@@ -255,11 +261,11 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/mantex-lambdas/dev/1763870467551-2025-11-23T04:01:07.551Z/mantex-lambdas.zip"
+          "S3Key": "serverless/mantex-lambdas/prod/1764103549906-2025-11-25T20:45:49.906Z/mantex-lambdas.zip"
         },
         "Handler": "s3-list-lambda.handler",
         "Runtime": "nodejs18.x",
-        "FunctionName": "mantex-lambdas-dev-s3List",
+        "FunctionName": "mantex-lambdas-prod-s3List",
         "MemorySize": 256,
         "Timeout": 30,
         "Description": "List files from S3 by user and type",
@@ -279,6 +285,37 @@
         "S3ListLogGroup"
       ]
     },
+    "S3SignedUrlLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/mantex-lambdas/prod/1764103549906-2025-11-25T20:45:49.906Z/mantex-lambdas.zip"
+        },
+        "Handler": "s3-signed-url-lambda.handler",
+        "Runtime": "nodejs18.x",
+        "FunctionName": "mantex-lambdas-prod-s3SignedUrl",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Description": "Generate signed URLs for S3 objects",
+        "Environment": {
+          "Variables": {
+            "AWS_S3_BUCKET": "mantex-documents-1763361307"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "S3SignedUrlLogGroup"
+      ]
+    },
     "NubariumProxyLambdaFunction": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
@@ -286,11 +323,11 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/mantex-lambdas/dev/1763870467551-2025-11-23T04:01:07.551Z/mantex-lambdas.zip"
+          "S3Key": "serverless/mantex-lambdas/prod/1764103549906-2025-11-25T20:45:49.906Z/mantex-lambdas.zip"
         },
         "Handler": "nubarium-proxy-lambda.handler",
         "Runtime": "nodejs18.x",
-        "FunctionName": "mantex-lambdas-dev-nubariumProxy",
+        "FunctionName": "mantex-lambdas-prod-nubariumProxy",
         "MemorySize": 256,
         "Timeout": 60,
         "Description": "Proxy for all Nubarium API endpoints (ocr, sat, ine, biometrics)",
@@ -310,54 +347,65 @@
         "NubariumProxyLogGroup"
       ]
     },
-    "S3UploadLambdaVersioncEEI8bJ4K67Rtm9duvGrDVcODNxqnLRdzAyMfLU": {
+    "S3UploadLambdaVersionJDlRxSZupd6k4GeSDQFlUVmr6XBfFeDF5IAOULE8hs": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "S3UploadLambdaFunction"
         },
-        "CodeSha256": "xdM+oeZpWtpFQgo734cCiHgHElf6kg5X3/l/tq5H/+Y=",
+        "CodeSha256": "rtNg5BeVc2BxQ9JtjUtQ/0GhLWQy1Jlx6sgdtmkPIYE=",
         "Description": "Upload files to S3 with proper structure"
       }
     },
-    "S3DeleteLambdaVersionivmg7hqq5DsYvC8UE7WMY0bVuPyStKbWirv5YQaVvo8": {
+    "S3DeleteLambdaVersionDSYHRP3mLKlogyJ43f8GuHU4WTumePwPS8QekIDA": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "S3DeleteLambdaFunction"
         },
-        "CodeSha256": "xdM+oeZpWtpFQgo734cCiHgHElf6kg5X3/l/tq5H/+Y=",
+        "CodeSha256": "rtNg5BeVc2BxQ9JtjUtQ/0GhLWQy1Jlx6sgdtmkPIYE=",
         "Description": "Delete files from S3"
       }
     },
-    "S3ListLambdaVersion38Qgeiegh6MBM8xvjgMiUj02j0ReONbV2cdMq7lFFqM": {
+    "S3ListLambdaVersion31WOVMtAPMGfQPnwBPtt13YoTfTduboy5IiYVdmQ": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "S3ListLambdaFunction"
         },
-        "CodeSha256": "xdM+oeZpWtpFQgo734cCiHgHElf6kg5X3/l/tq5H/+Y=",
+        "CodeSha256": "rtNg5BeVc2BxQ9JtjUtQ/0GhLWQy1Jlx6sgdtmkPIYE=",
         "Description": "List files from S3 by user and type"
       }
     },
-    "NubariumProxyLambdaVersionYib41IcNDUAOmYUqgKMUJUUfHI6tmQvXhfNVjfgs0U": {
+    "S3SignedUrlLambdaVersionKoWWaB77IDResfdXheSpphAlkoHrp3M6oea9ROvtoY": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "S3SignedUrlLambdaFunction"
+        },
+        "CodeSha256": "rtNg5BeVc2BxQ9JtjUtQ/0GhLWQy1Jlx6sgdtmkPIYE=",
+        "Description": "Generate signed URLs for S3 objects"
+      }
+    },
+    "NubariumProxyLambdaVersionvCBeTX9Cb0uheTRbMgEAagowGTZ38DvnvZPonWDPpw": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "NubariumProxyLambdaFunction"
         },
-        "CodeSha256": "xdM+oeZpWtpFQgo734cCiHgHElf6kg5X3/l/tq5H/+Y=",
+        "CodeSha256": "rtNg5BeVc2BxQ9JtjUtQ/0GhLWQy1Jlx6sgdtmkPIYE=",
         "Description": "Proxy for all Nubarium API endpoints (ocr, sat, ine, biometrics)"
       }
     },
     "ApiGatewayRestApi": {
       "Type": "AWS::ApiGateway::RestApi",
       "Properties": {
-        "Name": "dev-mantex-lambdas",
+        "Name": "prod-mantex-lambdas",
         "EndpointConfiguration": {
           "Types": [
             "EDGE"
@@ -412,6 +460,18 @@
           "Ref": "ApiGatewayResourceS3"
         },
         "PathPart": "list",
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        }
+      }
+    },
+    "ApiGatewayResourceS3SignedDashurl": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Ref": "ApiGatewayResourceS3"
+        },
+        "PathPart": "signed-url",
         "RestApiId": {
           "Ref": "ApiGatewayRestApi"
         }
@@ -663,6 +723,79 @@
         "S3ListLambdaPermissionApiGateway"
       ]
     },
+    "ApiGatewayMethodS3SignedDashurlOptions": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "MethodResponses": [
+          {
+            "StatusCode": "200",
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Origin": true,
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true
+            },
+            "ResponseModels": {}
+          }
+        ],
+        "RequestParameters": {},
+        "Integration": {
+          "Type": "AWS_PROXY",
+          "RequestTemplates": {
+            "application/json": "{statusCode:200}"
+          },
+          "ContentHandling": "CONVERT_TO_TEXT",
+          "IntegrationResponses": [
+            {
+              "StatusCode": "200",
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent,X-Amzn-Trace-Id'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,POST'"
+              },
+              "ResponseTemplates": {
+                "application/json": ""
+              }
+            }
+          ],
+          "IntegrationHttpMethod": "POST",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "S3SignedUrlLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        },
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceS3SignedDashurl"
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        },
+        "ApiKeyRequired": false
+      },
+      "DependsOn": [
+        "S3SignedUrlLambdaPermissionApiGateway"
+      ]
+    },
     "ApiGatewayMethodNubariumProxyVarOptions": {
       "Type": "AWS::ApiGateway::Method",
       "Properties": {
@@ -846,6 +979,52 @@
         "S3ListLambdaPermissionApiGateway"
       ]
     },
+    "ApiGatewayMethodS3SignedDashurlPost": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "POST",
+        "RequestParameters": {},
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceS3SignedDashurl"
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        },
+        "ApiKeyRequired": false,
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "S3SignedUrlLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        },
+        "MethodResponses": []
+      },
+      "DependsOn": [
+        "S3SignedUrlLambdaPermissionApiGateway"
+      ]
+    },
     "ApiGatewayMethodNubariumProxyVarAny": {
       "Type": "AWS::ApiGateway::Method",
       "Properties": {
@@ -892,18 +1071,19 @@
         "NubariumProxyLambdaPermissionApiGateway"
       ]
     },
-    "ApiGatewayDeployment1763870463370": {
+    "ApiGatewayDeployment1764103544685": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
           "Ref": "ApiGatewayRestApi"
         },
-        "StageName": "dev"
+        "StageName": "prod"
       },
       "DependsOn": [
         "ApiGatewayMethodS3UploadOptions",
         "ApiGatewayMethodS3DeleteOptions",
         "ApiGatewayMethodS3ListOptions",
+        "ApiGatewayMethodS3SignedDashurlOptions",
         "ApiGatewayMethodNubariumProxyVarOptions",
         "ApiGatewayMethodS3UploadPost",
         "ApiGatewayMethodS3UploadOptions",
@@ -911,6 +1091,8 @@
         "ApiGatewayMethodS3DeleteOptions",
         "ApiGatewayMethodS3ListPost",
         "ApiGatewayMethodS3ListOptions",
+        "ApiGatewayMethodS3SignedDashurlPost",
+        "ApiGatewayMethodS3SignedDashurlOptions",
         "ApiGatewayMethodNubariumProxyVarAny"
       ]
     },
@@ -1025,6 +1207,43 @@
         }
       }
     },
+    "S3SignedUrlLambdaPermissionApiGateway": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "S3SignedUrlLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "/*/*"
+            ]
+          ]
+        }
+      }
+    },
     "NubariumProxyLambdaPermissionApiGateway": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
@@ -1069,43 +1288,52 @@
         "Ref": "ServerlessDeploymentBucket"
       },
       "Export": {
-        "Name": "sls-mantex-lambdas-dev-ServerlessDeploymentBucketName"
+        "Name": "sls-mantex-lambdas-prod-ServerlessDeploymentBucketName"
       }
     },
     "S3UploadLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "S3UploadLambdaVersioncEEI8bJ4K67Rtm9duvGrDVcODNxqnLRdzAyMfLU"
+        "Ref": "S3UploadLambdaVersionJDlRxSZupd6k4GeSDQFlUVmr6XBfFeDF5IAOULE8hs"
       },
       "Export": {
-        "Name": "sls-mantex-lambdas-dev-S3UploadLambdaFunctionQualifiedArn"
+        "Name": "sls-mantex-lambdas-prod-S3UploadLambdaFunctionQualifiedArn"
       }
     },
     "S3DeleteLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "S3DeleteLambdaVersionivmg7hqq5DsYvC8UE7WMY0bVuPyStKbWirv5YQaVvo8"
+        "Ref": "S3DeleteLambdaVersionDSYHRP3mLKlogyJ43f8GuHU4WTumePwPS8QekIDA"
       },
       "Export": {
-        "Name": "sls-mantex-lambdas-dev-S3DeleteLambdaFunctionQualifiedArn"
+        "Name": "sls-mantex-lambdas-prod-S3DeleteLambdaFunctionQualifiedArn"
       }
     },
     "S3ListLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "S3ListLambdaVersion38Qgeiegh6MBM8xvjgMiUj02j0ReONbV2cdMq7lFFqM"
+        "Ref": "S3ListLambdaVersion31WOVMtAPMGfQPnwBPtt13YoTfTduboy5IiYVdmQ"
       },
       "Export": {
-        "Name": "sls-mantex-lambdas-dev-S3ListLambdaFunctionQualifiedArn"
+        "Name": "sls-mantex-lambdas-prod-S3ListLambdaFunctionQualifiedArn"
+      }
+    },
+    "S3SignedUrlLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "S3SignedUrlLambdaVersionKoWWaB77IDResfdXheSpphAlkoHrp3M6oea9ROvtoY"
+      },
+      "Export": {
+        "Name": "sls-mantex-lambdas-prod-S3SignedUrlLambdaFunctionQualifiedArn"
       }
     },
     "NubariumProxyLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "NubariumProxyLambdaVersionYib41IcNDUAOmYUqgKMUJUUfHI6tmQvXhfNVjfgs0U"
+        "Ref": "NubariumProxyLambdaVersionvCBeTX9Cb0uheTRbMgEAagowGTZ38DvnvZPonWDPpw"
       },
       "Export": {
-        "Name": "sls-mantex-lambdas-dev-NubariumProxyLambdaFunctionQualifiedArn"
+        "Name": "sls-mantex-lambdas-prod-NubariumProxyLambdaFunctionQualifiedArn"
       }
     },
     "ServiceEndpoint": {
@@ -1126,12 +1354,12 @@
             {
               "Ref": "AWS::URLSuffix"
             },
-            "/dev"
+            "/prod"
           ]
         ]
       },
       "Export": {
-        "Name": "sls-mantex-lambdas-dev-ServiceEndpoint"
+        "Name": "sls-mantex-lambdas-prod-ServiceEndpoint"
       }
     },
     "S3UploadUrl": {
@@ -1147,7 +1375,7 @@
             ".execute-api.",
             "us-east-1",
             ".amazonaws.com/",
-            "dev",
+            "prod",
             "/s3/upload"
           ]
         ]
@@ -1166,7 +1394,7 @@
             ".execute-api.",
             "us-east-1",
             ".amazonaws.com/",
-            "dev",
+            "prod",
             "/s3/delete"
           ]
         ]
@@ -1185,7 +1413,7 @@
             ".execute-api.",
             "us-east-1",
             ".amazonaws.com/",
-            "dev",
+            "prod",
             "/s3/list"
           ]
         ]
@@ -1204,7 +1432,7 @@
             ".execute-api.",
             "us-east-1",
             ".amazonaws.com/",
-            "dev",
+            "prod",
             "/nubarium"
           ]
         ]

@@ -35,14 +35,6 @@ export SUPABASE_SERVICE_KEY="tu_service_role_key"
    -- Ejecuta todo el contenido de database/supabase-schema.sql
    ```
 
-2. **Crear buckets de Storage** (si usas Supabase Storage):
-   ```sql
-   INSERT INTO storage.buckets (id, name, public) VALUES
-   ('client-documents', 'client-documents', false),
-   ('supplier-documents', 'supplier-documents', false),
-   ('temp-uploads', 'temp-uploads', false);
-   ```
-
 ## Setup de AWS
 
 ### 1. Crear S3 Bucket
@@ -59,11 +51,6 @@ npm install
 npm install -g serverless
 sls deploy
 
-# Opción 2: Deploy directo
-export SUPABASE_URL="tu_url"
-export SUPABASE_SERVICE_KEY="tu_key"
-./deploy.sh
-```
 
 ### 3. Configurar IAM Role para Lambda
 Permisos requeridos:

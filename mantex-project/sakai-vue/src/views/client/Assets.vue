@@ -1,6 +1,325 @@
+<script setup>
+import { ref, computed, onMounted } from 'vue';
+import { useToast } from 'primevue/usetoast';
+import { useAuth } from '@/composables/useAuth';
+import { useS3Upload } from '@/composables/useS3Upload';
+import { supabase } from '@/lib/supabaseClient';
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
+import Button from 'primevue/button';
+import Tag from 'primevue/tag';
+import Dialog from 'primevue/dialog';
+import InputText from 'primevue/inputtext';
+import Dropdown from 'primevue/dropdown';
+import Textarea from 'primevue/textarea';
+import FileUpload from 'primevue/fileupload';
+import { formatDate } from '@/lib/constants.js';
+
+const toast = useToast();
+const { user } = useAuth();
+const { uploadFileToS3, isUploading } = useS3Upload();
+
+// State
+const assets = ref([]);
+const branches = ref([]);
+const client = ref(null);
+const loading = ref(true);
+const creating = ref(false);
+const showCreateDialog = ref(false);
+const showDetailsDialog = ref(false);
+const selectedAsset = ref(null);
+const clientId = ref(null);
+
+// Form Data
+const assetForm = ref({
+    name: '',
+    description: '',
+    category: '',
+    status: 'operational',
+    location_type: '',
+    branch_id: null,
+    photos: [],
+    documents: []
+});
+
+// Options
+const categoryOptions = [
+    { label: 'HVAC', value: 'hvac' },
+    { label: 'Eléctrico', value: 'electrical' },
+    { label: 'Plomería', value: 'plumbing' },
+    { label: 'Seguridad', value: 'security' },
+    { label: 'Tecnología', value: 'technology' },
+    { label: 'Mobiliario', value: 'furniture' },
+    { label: 'Vehículos', value: 'vehicles' },
+    { label: 'Otros', value: 'others' }
+];
+
+const statusOptions = [
+    { label: 'Operativo', value: 'operational' },
+    { label: 'En Mantenimiento', value: 'maintenance' },
+    { label: 'Fuera de Servicio', value: 'out_of_order' },
+    { label: 'Retirado', value: 'retired' }
+];
+
+// Computed
+const locationOptions = computed(() => {
+    const options = [];
+    
+    // Add HQ if exists
+    if (client.value && client.value.hq_street) {
+        options.push({
+            label: 'Oficina Central',
+            value: 'HEADQUARTERS',
+            type: 'HEADQUARTERS',
+            id: null
+        });
+    }
+    
+    // Add Branches
+    branches.value.forEach(branch => {
+        options.push({
+            label: branch.name,
+            value: branch.id, // We'll handle this mapping in save
+            type: 'BRANCH',
+            id: branch.id
+        });
+    });
+    
+    return options;
+});
+
+const hasLocations = computed(() => {
+    return (client.value && client.value.hq_street) || branches.value.length > 0;
+});
+
+const inMaintenanceCount = computed(() => assets.value.filter(a => a.status === 'maintenance').length);
+const operationalCount = computed(() => assets.value.filter(a => a.status === 'operational').length);
+
+// Methods
+const loadData = async () => {
+    loading.value = true;
+    try {
+        // 1. Get Client ID and HQ info
+        const { data: clientData, error: clientError } = await supabase
+            .from('clients')
+            .select('id, hq_street')
+            .eq('user_id', user.value.id)
+            .single();
+            
+        if (clientError) throw clientError;
+        client.value = clientData;
+        clientId.value = clientData.id;
+
+        // 2. Get Branches
+        const { data: branchData, error: branchError } = await supabase
+            .from('client_branches')
+            .select('id, name')
+            .eq('client_id', clientId.value);
+            
+        if (branchError) throw branchError;
+        branches.value = branchData || [];
+
+        // 3. Get Assets
+        await loadAssets();
+
+    } catch (error) {
+        console.error('Error loading data:', error);
+        toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudieron cargar los datos', life: 3000 });
+    } finally {
+        loading.value = false;
+    }
+};
+
+const loadAssets = async () => {
+    const { data, error } = await supabase
+        .from('client_assets')
+        .select(`
+            *,
+            branch:client_branches(name)
+        `)
+        .eq('client_id', clientId.value)
+        .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    assets.value = data || [];
+};
+
+const openCreateDialog = () => {
+    selectedAsset.value = null;
+    assetForm.value = {
+        name: '',
+        description: '',
+        category: '',
+        status: 'operational',
+        location_type: '',
+        branch_id: null,
+        photos: [],
+        documents: []
+    };
+    showCreateDialog.value = true;
+};
+
+const editAsset = (asset) => {
+    selectedAsset.value = asset;
+    
+    // Determine location value for dropdown
+    let locationVal = '';
+    if (asset.location_type === 'HEADQUARTERS') {
+        locationVal = 'HEADQUARTERS';
+    } else {
+        locationVal = asset.branch_id;
+    }
+
+    assetForm.value = {
+        name: asset.name,
+        description: asset.description,
+        category: asset.category,
+        status: asset.status,
+        location_val: locationVal, // Temporary for dropdown binding
+        photos: asset.photos || [],
+        documents: asset.documents || []
+    };
+    showCreateDialog.value = true;
+};
+
+const saveAsset = async () => {
+    if (!assetForm.value.name || !assetForm.value.category || !assetForm.value.location_val) {
+        toast.add({ severity: 'warn', summary: 'Atención', detail: 'Complete los campos requeridos', life: 3000 });
+        return;
+    }
+
+    creating.value = true;
+    try {
+        const username = user.value.email.split('@')[0];
+        
+        // Handle File Uploads
+        const photoKeys = [...(Array.isArray(assetForm.value.photos) ? assetForm.value.photos.filter(p => typeof p === 'string') : [])];
+        const docKeys = [...(Array.isArray(assetForm.value.documents) ? assetForm.value.documents.filter(d => typeof d === 'string') : [])];
+
+        // Upload new photos
+        if (Array.isArray(assetForm.value.photos)) {
+             const newPhotos = assetForm.value.photos.filter(p => p instanceof File);
+             for (const file of newPhotos) {
+                const res = await uploadFileToS3(file, username, 'infrastructure/assets');
+                photoKeys.push(res.s3_key);
+             }
+        }
+
+        // Upload new docs
+        if (Array.isArray(assetForm.value.documents)) {
+             const newDocs = assetForm.value.documents.filter(d => d instanceof File);
+             for (const file of newDocs) {
+                const res = await uploadFileToS3(file, username, 'infrastructure/assets');
+                docKeys.push(res.s3_key);
+             }
+        }
+
+        // Determine Location Type and ID
+        let locType = 'BRANCH';
+        let branchId = null;
+        
+        if (assetForm.value.location_val === 'HEADQUARTERS') {
+            locType = 'HEADQUARTERS';
+        } else {
+            branchId = assetForm.value.location_val;
+        }
+
+        const payload = {
+            client_id: clientId.value,
+            name: assetForm.value.name,
+            description: assetForm.value.description,
+            category: assetForm.value.category,
+            status: assetForm.value.status,
+            location_type: locType,
+            branch_id: branchId,
+            photos: photoKeys,
+            documents: docKeys,
+            updated_at: new Date().toISOString()
+        };
+
+        let error;
+        if (selectedAsset.value) {
+            ({ error } = await supabase
+                .from('client_assets')
+                .update(payload)
+                .eq('id', selectedAsset.value.id));
+        } else {
+            ({ error } = await supabase
+                .from('client_assets')
+                .insert(payload));
+        }
+
+        if (error) throw error;
+
+        toast.add({ severity: 'success', summary: 'Éxito', detail: 'Activo guardado correctamente', life: 3000 });
+        await loadAssets();
+        showCreateDialog.value = false;
+    } catch (error) {
+        console.error('Error saving asset:', error);
+        toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo guardar el activo', life: 3000 });
+    } finally {
+        creating.value = false;
+    }
+};
+
+const deleteAsset = async (asset) => {
+    if (!confirm(`¿Eliminar el activo ${asset.name}?`)) return;
+    
+    try {
+        const { error } = await supabase
+            .from('client_assets')
+            .delete()
+            .eq('id', asset.id);
+            
+        if (error) throw error;
+        
+        toast.add({ severity: 'success', summary: 'Éxito', detail: 'Activo eliminado', life: 3000 });
+        await loadAssets();
+    } catch (error) {
+        console.error('Error deleting asset:', error);
+        toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo eliminar', life: 3000 });
+    }
+};
+
+const getLocationLabel = (asset) => {
+    if (asset.location_type === 'HEADQUARTERS') return 'Oficina Central';
+    if (asset.branch) return asset.branch.name;
+    return 'Desconocido';
+};
+
+const getStatusLabel = (status) => {
+    const labels = {
+        'operational': 'Operativo',
+        'maintenance': 'En Mantenimiento',
+        'out_of_order': 'Fuera de Servicio',
+        'retired': 'Retirado'
+    };
+    return labels[status] || status;
+};
+
+const getStatusSeverity = (status) => {
+    const severities = {
+        'operational': 'success',
+        'maintenance': 'warn',
+        'out_of_order': 'danger',
+        'retired': 'secondary'
+    };
+    return severities[status] || 'info';
+};
+
+const viewAsset = (asset) => {
+    selectedAsset.value = asset;
+    showDetailsDialog.value = true;
+};
+
+onMounted(() => {
+    loadData();
+});
+</script>
+
 <template>
     <div class="grid grid-cols-12 gap-8">
-        <!-- Assets Stats -->
+        <!-- Stats -->
         <div class="col-span-12 lg:col-span-6 xl:col-span-3">
             <div class="card mb-0">
                 <div class="flex justify-between mb-4">
@@ -40,44 +359,39 @@
                 </div>
             </div>
         </div>
-        <div class="col-span-12 lg:col-span-6 xl:col-span-3">
-            <div class="card mb-0">
-                <div class="flex justify-between mb-4">
-                    <div>
-                        <span class="block text-muted-color font-medium mb-4">Valor Total</span>
-                        <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">$250,000</div>
-                    </div>
-                    <div class="flex items-center justify-center bg-purple-100 dark:bg-purple-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
-                        <i class="pi pi-dollar text-purple-500 !text-xl"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Assets Table -->
+        
+        <!-- Main Table -->
         <div class="col-span-12">
             <div class="card">
                 <div class="flex justify-between items-center mb-4">
                     <div class="font-semibold text-xl">Mis Activos</div>
-                    <Button icon="pi pi-plus" label="Registrar Activo" @click="showCreateDialog = true" />
+                    <Button 
+                        v-if="hasLocations"
+                        icon="pi pi-plus" 
+                        label="Registrar Activo" 
+                        @click="openCreateDialog" 
+                    />
                 </div>
-                <DataTable :value="assets" :rows="10" :paginator="true" responsiveLayout="scroll">
-                    <Column field="id" header="ID" sortable style="min-width: 8rem">
-                        <template #body="slotProps">
-                            <span class="font-medium text-primary">{{ slotProps.data.id }}</span>
-                        </template>
-                    </Column>
+
+                <div v-if="!hasLocations && !loading" class="text-center p-5 border-round surface-100">
+                    <i class="pi pi-building text-4xl mb-3 text-500 block"></i>
+                    <h3 class="text-xl font-medium text-900 mb-2">Registra tu Empresa</h3>
+                    <p class="text-600 mb-4">Para registrar activos, primero debes configurar tu Oficina Central o Sucursales.</p>
+                    <Button label="Ir a Mi Empresa" icon="pi pi-arrow-right" @click="$router.push('/client/account')" />
+                </div>
+
+                <DataTable v-else :value="assets" :loading="loading" :rows="10" :paginator="true" responsiveLayout="scroll">
                     <Column field="name" header="Nombre" sortable>
                         <template #body="slotProps">
                             <div>
                                 <div class="font-medium">{{ slotProps.data.name }}</div>
-                                <div class="text-sm text-muted-color">{{ slotProps.data.description }}</div>
+                                <div class="text-sm text-muted-color">{{ slotProps.data.category }}</div>
                             </div>
                         </template>
                     </Column>
-                    <Column field="category" header="Categoría" sortable>
+                    <Column header="Ubicación" sortable>
                         <template #body="slotProps">
-                            <Tag :value="slotProps.data.category" severity="info" />
+                            <Tag :value="getLocationLabel(slotProps.data)" severity="secondary" />
                         </template>
                     </Column>
                     <Column field="status" header="Estado" sortable>
@@ -85,281 +399,106 @@
                             <Tag :value="getStatusLabel(slotProps.data.status)" :severity="getStatusSeverity(slotProps.data.status)" />
                         </template>
                     </Column>
-                    <Column field="location" header="Ubicación" sortable>
+                    <Column header="Archivos">
                         <template #body="slotProps">
-                            <div class="text-sm">{{ slotProps.data.location }}</div>
-                        </template>
-                    </Column>
-                    <Column field="last_maintenance" header="Último Mantenimiento" sortable>
-                        <template #body="slotProps">
-                            <div class="text-sm">{{ formatDate(slotProps.data.last_maintenance) }}</div>
+                            <div class="flex gap-2">
+                                <i v-if="slotProps.data.photos?.length" class="pi pi-image text-primary" v-tooltip="'Tiene fotos'"></i>
+                                <i v-if="slotProps.data.documents?.length" class="pi pi-file text-primary" v-tooltip="'Tiene documentos'"></i>
+                            </div>
                         </template>
                     </Column>
                     <Column header="Acciones" :exportable="false" style="min-width: 8rem">
                         <template #body="slotProps">
-                            <Button icon="pi pi-eye" severity="info" text rounded @click="viewAsset(slotProps.data)" />
+                            <div class="flex gap-2">
+                                <Button icon="pi pi-pencil" severity="info" text rounded @click="editAsset(slotProps.data)" />
+                                <Button icon="pi pi-trash" severity="danger" text rounded @click="deleteAsset(slotProps.data)" />
+                            </div>
                         </template>
                     </Column>
+                    <template #empty>
+                        <div class="text-center p-4 text-500">
+                            No hay activos registrados
+                        </div>
+                    </template>
                 </DataTable>
             </div>
         </div>
     </div>
 
-    <!-- Create Asset Dialog -->
-    <Dialog v-model:visible="showCreateDialog" modal :style="{ width: '600px' }" header="Registrar Nuevo Activo">
-        <div class="grid">
+    <!-- Create/Edit Dialog -->
+    <Dialog v-model:visible="showCreateDialog" modal :style="{ width: '600px' }" :header="selectedAsset ? 'Editar Activo' : 'Registrar Nuevo Activo'">
+        <div class="grid grid-cols-12 gap-4">
             <div class="col-span-12">
-                <div class="field">
-                    <label for="name">Nombre del Activo *</label>
-                    <InputText id="name" v-model="newAsset.name" class="w-full" placeholder="Ej: Aire Acondicionado Oficina 1" />
+                <div class="field mb-4">
+                    <label for="name" class="font-medium block mb-2">Nombre del Activo *</label>
+                    <InputText id="name" v-model="assetForm.name" class="w-full" placeholder="Ej: Aire Acondicionado Oficina 1" />
                 </div>
-                <div class="field">
-                    <label for="description">Descripción</label>
-                    <Textarea id="description" v-model="newAsset.description" rows="3" class="w-full" placeholder="Descripción detallada del activo..." />
+                
+                <div class="field mb-4">
+                    <label for="category" class="font-medium block mb-2">Categoría *</label>
+                    <Dropdown id="category" v-model="assetForm.category" :options="categoryOptions" optionLabel="label" optionValue="value" placeholder="Selecciona categoría" class="w-full" />
                 </div>
-                <div class="field">
-                    <label for="category">Categoría *</label>
-                    <Dropdown id="category" v-model="newAsset.category" :options="categoryOptions" option-label="label" option-value="value" placeholder="Selecciona categoría" class="w-full" />
+
+                <div class="field mb-4">
+                    <label for="location" class="font-medium block mb-2">Ubicación *</label>
+                    <Dropdown 
+                        id="location" 
+                        v-model="assetForm.location_val" 
+                        :options="locationOptions" 
+                        optionLabel="label" 
+                        optionValue="value" 
+                        placeholder="Selecciona ubicación" 
+                        class="w-full" 
+                    />
                 </div>
-                <div class="field">
-                    <label for="location">Ubicación *</label>
-                    <InputText id="location" v-model="newAsset.location" class="w-full" placeholder="Ej: Edificio A, Piso 3, Oficina 301" />
+
+                <div class="field mb-4">
+                    <label for="status" class="font-medium block mb-2">Estado</label>
+                    <Dropdown id="status" v-model="assetForm.status" :options="statusOptions" optionLabel="label" optionValue="value" class="w-full" />
+                </div>
+
+                <div class="field mb-4">
+                    <label for="description" class="font-medium block mb-2">Descripción</label>
+                    <Textarea id="description" v-model="assetForm.description" rows="3" class="w-full" placeholder="Descripción detallada..." />
+                </div>
+
+                <div class="field mb-4">
+                    <label class="font-medium block mb-2">Fotos (Opcional)</label>
+                    <FileUpload 
+                        mode="basic" 
+                        name="photos[]" 
+                        accept="image/*" 
+                        :multiple="true" 
+                        :maxFileSize="5000000" 
+                        @select="assetForm.photos = $event.files"
+                        chooseLabel="Seleccionar Fotos"
+                    />
+                    <div v-if="selectedAsset && selectedAsset.photos?.length" class="mt-2 text-sm text-500">
+                        {{ selectedAsset.photos.length }} fotos existentes
+                    </div>
+                </div>
+
+                <div class="field mb-4">
+                    <label class="font-medium block mb-2">Documentos / Manuales (Opcional)</label>
+                    <FileUpload 
+                        mode="basic" 
+                        name="docs[]" 
+                        accept=".pdf,.doc,.docx" 
+                        :multiple="true" 
+                        :maxFileSize="10000000" 
+                        @select="assetForm.documents = $event.files"
+                        chooseLabel="Seleccionar Documentos"
+                    />
+                    <div v-if="selectedAsset && selectedAsset.documents?.length" class="mt-2 text-sm text-500">
+                        {{ selectedAsset.documents.length }} documentos existentes
+                    </div>
                 </div>
             </div>
         </div>
 
         <template #footer>
-            <Button label="Cancelar" icon="pi pi-times" text @click="closeCreateDialog" />
-            <Button label="Registrar Activo" icon="pi pi-check" @click="createAsset" :loading="creating" />
-        </template>
-    </Dialog>
-
-    <!-- Asset Details Dialog -->
-    <Dialog v-model:visible="showDetailsDialog" modal :style="{ width: '600px' }" header="Detalles del Activo">
-        <div v-if="selectedAsset" class="grid">
-            <div class="col-span-12">
-                <div class="field">
-                    <label>ID:</label>
-                    <p class="font-medium">{{ selectedAsset.id }}</p>
-                </div>
-                <div class="field">
-                    <label>Nombre:</label>
-                    <p class="font-medium">{{ selectedAsset.name }}</p>
-                </div>
-                <div class="field">
-                    <label>Descripción:</label>
-                    <p>{{ selectedAsset.description }}</p>
-                </div>
-                <div class="field">
-                    <label>Estado:</label>
-                    <Tag :value="getStatusLabel(selectedAsset.status)" :severity="getStatusSeverity(selectedAsset.status)" class="mt-1" />
-                </div>
-                <div class="field">
-                    <label>Ubicación:</label>
-                    <p>{{ selectedAsset.location }}</p>
-                </div>
-            </div>
-        </div>
-
-        <template #footer>
-            <Button label="Cerrar" icon="pi pi-times" text @click="showDetailsDialog = false" />
+            <Button label="Cancelar" icon="pi pi-times" severity="danger" text @click="showCreateDialog = false" />
+            <Button label="Guardar" icon="pi pi-check" @click="saveAsset" :loading="creating || isUploading" />
         </template>
     </Dialog>
 </template>
-
-<script setup>
-import { ref, computed, onMounted } from 'vue';
-import { useToast } from 'primevue/usetoast';
-import DataTable from 'primevue/datatable';
-import Column from 'primevue/column';
-import Button from 'primevue/button';
-import Tag from 'primevue/tag';
-import Dialog from 'primevue/dialog';
-import InputText from 'primevue/inputtext';
-import Dropdown from 'primevue/dropdown';
-import Textarea from 'primevue/textarea';
-import { formatDate } from '@/lib/constants.js';
-
-const toast = useToast();
-
-// Reactive data
-const assets = ref([]);
-const creating = ref(false);
-const showCreateDialog = ref(false);
-const showDetailsDialog = ref(false);
-const selectedAsset = ref(null);
-
-// Form data for new asset
-const newAsset = ref({
-    name: '',
-    description: '',
-    category: '',
-    location: ''
-});
-
-// Options
-const categoryOptions = [
-    { label: 'HVAC', value: 'hvac' },
-    { label: 'Eléctrico', value: 'electrical' },
-    { label: 'Plomería', value: 'plumbing' },
-    { label: 'Seguridad', value: 'security' },
-    { label: 'Tecnología', value: 'technology' },
-    { label: 'Mobiliario', value: 'furniture' },
-    { label: 'Vehículos', value: 'vehicles' },
-    { label: 'Otros', value: 'others' }
-];
-
-// Computed
-const inMaintenanceCount = computed(() => {
-    return assets.value.filter(asset => asset.status === 'maintenance').length;
-});
-
-const operationalCount = computed(() => {
-    return assets.value.filter(asset => asset.status === 'operational').length;
-});
-
-// Methods
-const loadAssets = async () => {
-    try {
-        // Mock data for demonstration
-        const mockAssets = [
-            {
-                id: 'AC-001',
-                name: 'Aire Acondicionado Central',
-                description: 'Sistema HVAC principal del edificio',
-                category: 'hvac',
-                status: 'operational',
-                location: 'Edificio Principal, Azotea',
-                last_maintenance: '2024-10-15T10:00:00Z'
-            },
-            {
-                id: 'ELV-001',
-                name: 'Elevador Principal',
-                description: 'Elevador de pasajeros, capacidad 8 personas',
-                category: 'electrical',
-                status: 'maintenance',
-                location: 'Torre Norte',
-                last_maintenance: '2024-11-01T09:00:00Z'
-            },
-            {
-                id: 'SEC-001',
-                name: 'Sistema de Cámaras',
-                description: 'Red de videovigilancia completa',
-                category: 'security',
-                status: 'operational',
-                location: 'Todo el complejo',
-                last_maintenance: '2024-09-20T14:00:00Z'
-            }
-        ];
-        assets.value = mockAssets;
-    } catch (error) {
-        console.error('Error loading assets:', error);
-    }
-};
-
-const createAsset = async () => {
-    if (!validateForm()) return;
-
-    creating.value = true;
-    try {
-        // Mock creation
-        const newAssetData = {
-            id: `AST-${(assets.value.length + 1).toString().padStart(3, '0')}`,
-            ...newAsset.value,
-            status: 'operational',
-            last_maintenance: new Date().toISOString()
-        };
-
-        assets.value.unshift(newAssetData);
-
-        toast.add({
-            severity: 'success',
-            summary: 'Activo Registrado',
-            detail: 'El activo se registró exitosamente',
-            life: 3000
-        });
-
-        closeCreateDialog();
-    } catch (error) {
-        console.error('Error creating asset:', error);
-        toast.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: 'Error al registrar el activo',
-            life: 3000
-        });
-    } finally {
-        creating.value = false;
-    }
-};
-
-const validateForm = () => {
-    const required = ['name', 'category', 'location'];
-
-    for (const field of required) {
-        if (!newAsset.value[field] || newAsset.value[field].trim() === '') {
-            toast.add({
-                severity: 'warn',
-                summary: 'Campo Requerido',
-                detail: `El campo es obligatorio`,
-                life: 3000
-            });
-            return false;
-        }
-    }
-    return true;
-};
-
-const closeCreateDialog = () => {
-    showCreateDialog.value = false;
-    newAsset.value = {
-        name: '',
-        description: '',
-        category: '',
-        location: ''
-    };
-};
-
-const viewAsset = (asset) => {
-    selectedAsset.value = asset;
-    showDetailsDialog.value = true;
-};
-
-// Utility functions
-const getStatusLabel = (status) => {
-    const labels = {
-        'operational': 'Operativo',
-        'maintenance': 'En Mantenimiento',
-        'out_of_order': 'Fuera de Servicio',
-        'retired': 'Retirado'
-    };
-    return labels[status] || status;
-};
-
-const getStatusSeverity = (status) => {
-    const severities = {
-        'operational': 'success',
-        'maintenance': 'warn',
-        'out_of_order': 'danger',
-        'retired': 'secondary'
-    };
-    return severities[status] || 'info';
-};
-
-onMounted(() => {
-    loadAssets();
-});
-</script>
-
-<style scoped>
-.field {
-    margin-bottom: 1rem;
-}
-
-.field label {
-    font-weight: 600;
-    display: block;
-    margin-bottom: 0.25rem;
-    color: var(--text-color-secondary);
-}
-</style>

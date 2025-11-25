@@ -6,7 +6,7 @@ export function useS3Upload() {
     const isUploading = ref(false);
 
     // Configuración del bucket S3
-    const S3_BUCKET = 'mantex-documents-1763361307';
+    const S3_BUCKET = import.meta.env.VITE_AWS_S3_BUCKET_DOCUMENTS || 'mantex-documents-1763361307';
     const S3_REGION = 'us-east-1';
 
     // AWS credentials desde variables de entorno
@@ -36,6 +36,10 @@ export function useS3Upload() {
      *
      * 🆔 IDENTIFICACIÓN (Clients + Suppliers):
      * - ine_front, ine_back, ine_selfie
+     *
+     * 🏢 INFRAESTRUCTURA (Clients):
+     * - headquarters (fachada, layout)
+     * - branches (fachada, layout)
      *
      * 📋 DOCUMENTOS EMPRESARIALES (Suppliers):
      * - insurance (pólizas de seguro)
@@ -111,7 +115,13 @@ export function useS3Upload() {
             };
 
             // Usar Lambda para subir a S3 (más seguro que exponer credentials)
-            const lambdaUrl = import.meta.env.VITE_LAMBDA_S3_UPLOAD_URL;
+            const lambdaBaseUrl = import.meta.env.VITE_LAMBDA_NUBARIUM_PROXY_URL;
+
+            if (!lambdaBaseUrl) {
+                throw new Error('VITE_LAMBDA_NUBARIUM_PROXY_URL is not defined in environment variables');
+            }
+
+            const lambdaUrl = `${lambdaBaseUrl}/s3/upload`;
 
             const response = await fetch(lambdaUrl, {
                 method: 'POST',
@@ -128,13 +138,15 @@ export function useS3Upload() {
 
             const result = await response.json();
 
-            console.log('✅ Archivo subido exitosamente a S3:', result.fileUrl);
+            console.log(`✅ Archivo subido exitosamente a S3: ${result.fileUrl}`);
 
             // Retornar información del archivo subido
             return {
-                success: true,
-                file_url: result.fileUrl,
                 s3_key: s3Key,
+                signedUrl: result.fileUrl, // URL firmada de 7 días
+                bucket: result.bucket,
+                etag: result.etag,
+                size: result.size,
                 file_size: file.size,
                 mime_type: file.type,
                 filename: file.name,
@@ -143,10 +155,43 @@ export function useS3Upload() {
             };
 
         } catch (error) {
-            console.error('💥 Error crítico subiendo archivo:', error);
+            console.error('💥 Error crítico subiendo archivo:', error.message);
             throw error;
         } finally {
             isUploading.value = false;
+        }
+    };
+
+    /**
+     * Obtiene una URL firmada para un archivo existente en S3
+     * @param {string} s3Key - S3 key del archivo
+     * @returns {Promise<string>} URL firmada
+     */
+    const getSignedUrl = async (s3Key) => {
+        try {
+            const lambdaBaseUrl = import.meta.env.VITE_LAMBDA_NUBARIUM_PROXY_URL;
+            const lambdaUrl = `${lambdaBaseUrl}/s3/signed-url`;
+
+            const response = await fetch(lambdaUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    bucket: S3_BUCKET,
+                    key: s3Key
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to get signed URL');
+            }
+
+            const result = await response.json();
+            return result.signedUrl;
+        } catch (error) {
+            console.error('Error getting signed URL:', error);
+            return null;
         }
     };
 
@@ -382,15 +427,16 @@ export function useS3Upload() {
 
         // Funciones principales
         uploadFileToS3,
+        getSignedUrl,
         uploadINEFiles,
         uploadMultipleDocuments,
         deleteFileFromS3,
         listUserFiles,
 
         // Funciones especializadas para CLIENTS + SUPPLIERS
-        uploadWorkEvidence,           // 📸 Evidencias de trabajo
-        uploadFinancialDocuments,     // 💰 Documentos financieros
-        uploadReportsAndChecklists,   // 📊 Reportes y checklists
+        uploadWorkEvidence,           // Evidencias de trabajo
+        uploadFinancialDocuments,     // Documentos financieros
+        uploadReportsAndChecklists,   // Reportes y checklists
 
         // Utilidades
         fileToBase64,

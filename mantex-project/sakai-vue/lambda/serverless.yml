@@ -63,6 +63,19 @@ functions:
           cors: true
     description: List files from S3 by user and type
 
+  s3SignedUrl:
+    handler: s3-signed-url-lambda.handler
+    events:
+      - http:
+          path: /s3/signed-url
+          method: post
+          cors: true
+      - http:
+          path: /s3/signed-url
+          method: options
+          cors: true
+    description: Generate signed URLs for S3 objects
+
   # Nubarium API Proxy
   nubariumProxy:
     handler: nubarium-proxy-lambda.handler
