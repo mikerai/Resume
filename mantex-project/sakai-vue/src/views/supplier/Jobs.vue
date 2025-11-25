@@ -356,6 +356,7 @@ import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/composables/useAuth';
 import EvidenceUpload from '@/components/ticket/EvidenceUpload.vue';
 import TicketChat from '@/components/ticket/TicketChat.vue';
+import { translateStatus, translatePriority, getPriorityColor, getStatusSeverity, formatDate } from '@/utils/status-utils.js';
 
 const toast = useToast();
 const { user, profile } = useAuth();
@@ -729,62 +730,10 @@ const onTicketStatusChanged = async (newStatus) => {
     }
 };
 
-// Utility functions
-const getStatusLabel = (status) => {
-    const labels = {
-        'pending': 'Pendiente',
-        'opened': 'Abierto',
-        'in_progress': 'En Progreso',
-        'completed': 'Completado',
-        'approved': 'Aprobado',
-        'rejected': 'Rechazado',
-        'cancelled': 'Cancelado',
-        'under_review': 'En Revisión',
-        'revision_requested': 'Revisión Solicitada',
-        'payment_pending': 'Pago Pendiente',
-        'ready_for_payment': 'Listo para Pago',
-        'paid': 'Pagado',
-        'closed': 'Cerrado'
-    };
-    return labels[status] || status;
-};
-
-const getStatusSeverity = (status) => {
-    const severities = {
-        'pending': 'warning',
-        'opened': 'info',
-        'in_progress': 'info',
-        'completed': 'success',
-        'approved': 'success',
-        'rejected': 'danger',
-        'cancelled': 'secondary',
-        'under_review': 'warning',
-        'revision_requested': 'warning',
-        'payment_pending': 'warning',
-        'ready_for_payment': 'success',
-        'paid': 'success',
-        'closed': 'secondary'
-    };
-    return severities[status] || 'secondary';
-};
-
-const getMaintenanceTypeLabel = (type) => {
-    return type === 'preventive' ? 'Preventivo' : 'Correctivo';
-};
-
-const getMaintenanceTypeSeverity = (type) => {
-    return type === 'preventive' ? 'info' : 'warning';
-};
-
-const getPriorityLabel = (priority) => {
-    const labels = {
-        'low': 'Baja',
-        'medium': 'Media',
-        'high': 'Alta',
-        'urgent': 'Urgente'
-    };
-    return labels[priority] || priority;
-};
+// Translation functions now imported from @/utils/status-utils.js
+// Using translateStatus as getStatusLabel, translatePriority as getPriorityLabel
+const getStatusLabel = translateStatus;
+const getPriorityLabel = translatePriority;
 
 const getPrioritySeverity = (priority) => {
     const severities = {

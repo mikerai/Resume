@@ -36,7 +36,7 @@
             <ion-card-content>
               <div class="status-badge">
                 <ion-chip :color="getStatusColor(ticket.status)">
-                  {{ getStatusText(ticket.status) }}
+                  {{ translateStatus(ticket.status) }}
                 </ion-chip>
                 <ion-chip v-if="ticket.supplier" color="secondary" outline>
                   <ion-icon :icon="personCircleOutline"></ion-icon>
@@ -70,7 +70,7 @@
               </div>
               <div class="history-status">
                 <span :class="'status-dot status-' + ticket.status"></span>
-                <span class="status-text mantex-text-secondary">{{ getStatusText(ticket.status) }}</span>
+                <span class="status-text mantex-text-secondary">{{ translateStatus(ticket.status) }}</span>
               </div>
             </div>
           </div>
@@ -96,6 +96,7 @@ import {
 import { useRouter } from 'vue-router';
 import { useClientTickets } from '@/composables/useClientTickets.js';
 import { usePermissions } from '@/composables/usePermissions.js';
+import { translateStatus, getStatusColor, formatDate } from '@/utils/status-utils.js';
 
 const router = useRouter();
 const { fetchTickets, loading } = useClientTickets();
@@ -127,37 +128,8 @@ const viewTicketDetails = (ticket) => {
   router.push(`/tickets/${ticket.id}`);
 };
 
-const getStatusText = (status) => {
-  const map = {
-    'pending': 'Pendiente',
-    'opened': 'En Proceso',
-    'in_progress': 'En Curso',
-    'completed': 'Completado',
-    'cancelled': 'Cancelado',
-    'assigned': 'Asignado',
-    'rejected': 'Rechazado',
-    'approved': 'Aprobado'
-  };
-  return map[status] || status;
-};
-
-const getStatusColor = (status) => {
-  const colorMap = {
-    'pending': 'warning',        // Amarillo - Pendiente
-    'opened': 'primary',         // Azul - En proceso
-    'in_progress': 'primary',    // Azul - En curso
-    'completed': 'success',      // Verde - Completado
-    'approved': 'success',       // Verde - Aprobado
-    'cancelled': 'medium',       // Gris - Cancelado
-    'rejected': 'danger',        // Rojo - Rechazado
-    'assigned': 'tertiary'       // Morado - Asignado
-  };
-  return colorMap[status] || 'medium';
-};
-
-const formatDate = (date) => {
-  return new Date(date).toLocaleDateString('es-MX', { month: 'short', day: 'numeric' });
-};
+// Translation functions now imported from @/utils/status-utils.js
+// Using translateStatus as getStatusText
 
 onMounted(() => {
   loadData();

@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from '@ionic/vue-router';
-import TabsPage from '../views/TabsPage.vue'
 
 const routes = [
   {
@@ -10,42 +9,76 @@ const routes = [
     path: '/login',
     component: () => import('@/views/LoginPage.vue')
   },
-  // 👷 TECHNICIAN ROUTES (Existing Tabs)
+  // 👷 SUPPLIER ROUTES (New Tabs)
   {
-    path: '/tabs/',
-    component: TabsPage,
+    path: '/supplier/',
+    component: () => import('@/views/supplier/SupplierTabs.vue'),
     children: [
       {
         path: '',
-        redirect: '/tabs/tab1'
+        redirect: '/supplier/dashboard'
       },
       {
-        path: 'tab1',
-        component: () => import('@/views/Tab1Page.vue')
+        path: 'dashboard',
+        component: () => import('@/views/supplier/SupplierDashboard.vue')
       },
       {
-        path: 'tab2',
-        component: () => import('@/views/Tab2Page.vue')
+        path: 'jobs',
+        component: () => import('@/views/supplier/JobsList.vue')
       },
       {
-        path: 'tab3',
-        component: () => import('@/views/Tab3Page.vue')
+        path: 'calendar',
+        component: () => import('@/views/supplier/CalendarView.vue')
+      },
+      {
+        path: 'messages',
+        component: () => import('@/views/supplier/MessagesList.vue')
+      },
+      {
+        path: 'account',
+        component: () => import('@/views/supplier/AccountSettings.vue')
       }
     ]
   },
-  // 👤 CLIENT ROUTES (New)
+  // 👤 CLIENT ROUTES (New Tabs)
   {
-    path: '/client/dashboard',
-    component: () => import('@/views/client/ClientDashboard.vue')
-  },
-  {
-    path: '/client/create-ticket',
-    component: () => import('@/views/client/CreateTicket.vue')
+    path: '/client/',
+    component: () => import('@/views/client/ClientTabs.vue'),
+    children: [
+      {
+        path: '',
+        redirect: '/client/dashboard'
+      },
+      {
+        path: 'dashboard',
+        component: () => import('@/views/client/ClientDashboard.vue')
+      },
+      {
+        path: 'tickets',
+        component: () => import('@/views/client/TicketsList.vue')
+      },
+      {
+        path: 'calendar',
+        component: () => import('@/views/client/CalendarView.vue')
+      },
+      {
+        path: 'chat',
+        component: () => import('@/views/client/ChatList.vue')
+      },
+      {
+        path: 'profile',
+        component: () => import('@/views/client/UserProfile.vue')
+      }
+    ]
   },
   // 🎟️ SHARED TICKET ROUTES
   {
     path: '/tickets/:id',
     component: () => import('@/views/shared/TicketDetail.vue')
+  },
+  {
+    path: '/client/create-ticket',
+    component: () => import('@/views/client/CreateTicket.vue')
   }
 ]
 
@@ -88,20 +121,20 @@ router.beforeEach(async (to, from) => {
     if (isFlynn.value) {
       console.log('🕶️ Flynn Mode Active - Grid Mode:', currentGridMode.value);
       if (currentGridMode.value === 'client') return '/client/dashboard';
-      return '/tabs/tab1'; // Default to technician view for now
+      return '/supplier/dashboard'; // Default to technician view
     }
 
     if (role === 'client') return '/client/dashboard';
-    return '/tabs/tab1'; // Default (Technician/Supplier)
+    return '/supplier/dashboard'; // Default (Technician/Supplier)
   }
 
   // 3. Role Access Control
   if (to.path.startsWith('/client') && profile.value?.role !== 'client' && !isFlynn.value) {
     console.warn('🚫 Access denied to Client area');
-    return '/tabs/tab1';
+    return '/supplier/dashboard';
   }
 
-  if (to.path.startsWith('/tabs') && profile.value?.role === 'client' && !isFlynn.value) {
+  if (to.path.startsWith('/supplier') && profile.value?.role === 'client' && !isFlynn.value) {
     console.warn('🚫 Access denied to Technician area');
     return '/client/dashboard';
   }

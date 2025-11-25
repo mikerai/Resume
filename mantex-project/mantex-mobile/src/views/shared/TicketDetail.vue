@@ -394,6 +394,7 @@ import { useTechnicianTickets } from '@/composables/useTechnicianTickets.js';
 import { useClientTickets } from '@/composables/useClientTickets.js';
 import { useGoogleMaps } from '@/composables/useGoogleMaps.js';
 import TicketChat from '@/components/TicketChat.vue';
+import { translateStatus, translatePriority, getPriorityColor, getStatusColor, formatDate } from '@/utils/status-utils.js';
 
 const route = useRoute();
 const router = useRouter();
@@ -630,52 +631,7 @@ const getStatusIcon = (status) => {
   return map[status] || alertCircleOutline;
 };
 
-const translateStatus = (status) => {
-  const map = { 
-    'pending': 'Pendiente', 
-    'opened': 'Abierto',
-    'assigned': 'Asignado',
-    'in_progress': 'En Curso', 
-    'completed': 'Completado',
-    'revision_requested': 'Cambios Solicitados',
-    'under_review': 'En Revisión',
-    'approved': 'Aprobado',
-    'rejected': 'Rechazado',
-    'ready_for_payment': 'Listo para Pago',
-    'payment_pending': 'Pago Pendiente',
-    'paid': 'Pagado',
-    'closed': 'Cerrado',
-    'cancelled': 'Cancelado'
-  };
-  return map[status] || status;
-};
-
-const getPriorityColor = (priority) => {
-  const colorMap = {
-    'urgent': 'danger',      // Rojo - Urgente/Crítico
-    'high': 'warning',       // Naranja - Alta
-    'medium': 'warning',     // Amarillo - Media
-    'low': 'success'         // Verde - Baja
-  };
-  return colorMap[priority?.toLowerCase()] || 'medium';
-};
-
-const translatePriority = (priority) => {
-  const map = { 
-    'urgent': 'Urgente', 
-    'high': 'Alta', 
-    'medium': 'Media', 
-    'low': 'Baja' 
-  };
-  return map[priority] || priority;
-};
-
-const formatDate = (date) => {
-  if (!date) return '--';
-  return new Date(date).toLocaleDateString('es-MX', {
-    weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'
-  });
-};
+// Translation functions now imported from @/utils/status-utils.js
 
 const getInitials = (name) => {
   if (!name) return '?';
