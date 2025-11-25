@@ -15,9 +15,12 @@ import Textarea from 'primevue/textarea';
 import FileUpload from 'primevue/fileupload';
 import { formatDate } from '@/lib/constants.js';
 
+import OverlayPanel from 'primevue/overlaypanel';
+import Galleria from 'primevue/galleria';
+
 const toast = useToast();
 const { user } = useAuth();
-const { uploadFileToS3, isUploading } = useS3Upload();
+const { uploadFileToS3, getSignedUrl, isUploading } = useS3Upload();
 
 // State
 const assets = ref([]);
@@ -312,6 +315,47 @@ const viewAsset = (asset) => {
     showDetailsDialog.value = true;
 };
 
+// Gallery Logic
+const op = ref(null);
+const galleryImages = ref([]);
+const loadingGallery = ref(false);
+const galleriaResponsiveOptions = ref([
+    { breakpoint: '1024px', numVisible: 5 },
+    { breakpoint: '768px', numVisible: 3 },
+    { breakpoint: '560px', numVisible: 1 }
+]);
+
+const toggleGallery = async (event, asset) => {
+    op.value.toggle(event);
+    
+    if (!asset.photos || asset.photos.length === 0) {
+        galleryImages.value = [];
+        return;
+    }
+
+    loadingGallery.value = true;
+    galleryImages.value = []; // Clear previous
+
+    try {
+        const urls = await Promise.all(
+            asset.photos.map(async (key) => {
+                const url = await getSignedUrl(key);
+                return {
+                    itemImageSrc: url,
+                    thumbnailImageSrc: url,
+                    alt: asset.name
+                };
+            })
+        );
+        galleryImages.value = urls;
+    } catch (error) {
+        console.error('Error loading gallery images:', error);
+        toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudieron cargar las imágenes', life: 3000 });
+    } finally {
+        loadingGallery.value = false;
+    }
+};
+
 onMounted(() => {
     loadData();
 });
@@ -402,8 +446,16 @@ onMounted(() => {
                     <Column header="Archivos">
                         <template #body="slotProps">
                             <div class="flex gap-2">
-                                <i v-if="slotProps.data.photos?.length" class="pi pi-image text-primary" v-tooltip="'Tiene fotos'"></i>
-                                <i v-if="slotProps.data.documents?.length" class="pi pi-file text-primary" v-tooltip="'Tiene documentos'"></i>
+                                <Button 
+                                    v-if="slotProps.data.photos?.length" 
+                                    icon="pi pi-images" 
+                                    text 
+                                    rounded 
+                                    severity="primary" 
+                                    v-tooltip="'Ver Fotos'"
+                                    @click="toggleGallery($event, slotProps.data)"
+                                />
+                                <i v-if="slotProps.data.documents?.length" class="pi pi-file text-primary p-2" v-tooltip="'Tiene documentos'"></i>
                             </div>
                         </template>
                     </Column>
@@ -501,4 +553,34 @@ onMounted(() => {
             <Button label="Guardar" icon="pi pi-check" @click="saveAsset" :loading="creating || isUploading" />
         </template>
     </Dialog>
+
+    <!-- Gallery Overlay -->
+    <OverlayPanel ref="op" appendTo="body" :showCloseIcon="true" style="width: 450px">
+        <div v-if="loadingGallery" class="flex justify-center items-center p-4">
+            <i class="pi pi-spin pi-spinner text-2xl"></i>
+        </div>
+        <div v-else-if="galleryImages.length > 0">
+            <Galleria 
+                :value="galleryImages" 
+                :responsiveOptions="galleriaResponsiveOptions" 
+                :numVisible="5" 
+                containerStyle="max-width: 100%"
+                :circular="true"
+                :showItemNavigators="true"
+                :showThumbnails="false"
+                :showIndicators="true"
+            >
+                <template #item="slotProps">
+                    <img 
+                        :src="slotProps.item.itemImageSrc" 
+                        :alt="slotProps.item.alt" 
+                        style="width: 100%; display: block; max-height: 300px; object-fit: contain;"
+                    />
+                </template>
+            </Galleria>
+        </div>
+        <div v-else class="text-center p-4">
+            No hay imágenes disponibles
+        </div>
+    </OverlayPanel>
 </template>

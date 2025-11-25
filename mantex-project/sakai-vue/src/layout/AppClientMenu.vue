@@ -43,6 +43,11 @@ const model = ref([
                 label: 'Mis Activos',
                 icon: 'pi pi-fw pi-box',
                 to: '/client/assets'
+            },
+            {
+                label: 'Historial de Mantenimiento',
+                icon: 'pi pi-fw pi-history',
+                to: '/client/maintenance-history'
             }
         ]
     },
@@ -53,6 +58,11 @@ const model = ref([
                 label: 'Mi Empresa',
                 icon: 'pi pi-fw pi-building',
                 to: '/client/account'
+            },
+            {
+                label: 'Configuración',
+                icon: 'pi pi-fw pi-cog',
+                to: '/client/settings'
             },
             {
                 label: 'Cerrar Sesión',

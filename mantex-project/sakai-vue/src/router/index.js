@@ -218,6 +218,11 @@ const router = createRouter({
                     component: () => import('@/views/client/Assets.vue')
                 },
                 {
+                    path: 'maintenance-history',
+                    name: 'ClientMaintenanceHistory',
+                    component: () => import('@/views/client/MaintenanceHistory.vue')
+                },
+                {
                     path: 'calendar',
                     name: 'ClientCalendar',
                     component: () => import('@/views/client/Calendar.vue')
@@ -226,6 +231,11 @@ const router = createRouter({
                     path: 'account',
                     name: 'ClientAccount',
                     component: () => import('@/views/client/Account.vue')
+                },
+                {
+                    path: 'settings',
+                    name: 'ClientSettings',
+                    component: () => import('@/views/client/Settings.vue')
                 },
             ]
         },
