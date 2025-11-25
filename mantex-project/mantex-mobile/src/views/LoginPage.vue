@@ -166,9 +166,16 @@ const handleLogin = async () => {
 
     showSuccess.value = true;
 
-    // Redirect to main app
+    // Wait a bit for profile to load, then redirect based on role
     setTimeout(() => {
-      router.replace('/tabs/tab1');
+      const { profile } = useAuth();
+      const userRole = profile.value?.role;
+      
+      if (userRole === 'client') {
+        router.replace('/client/dashboard');
+      } else {
+        router.replace('/supplier/dashboard');
+      }
     }, 1000);
 
   } catch (error) {

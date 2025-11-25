@@ -745,6 +745,14 @@ const getPrioritySeverity = (priority) => {
     return severities[priority] || 'secondary';
 };
 
+const getMaintenanceTypeLabel = (type) => {
+    return type === 'preventive' ? 'Preventivo' : 'Correctivo';
+};
+
+const getMaintenanceTypeSeverity = (type) => {
+    return type === 'preventive' ? 'info' : 'warning';
+};
+
 const truncateText = (text, maxLength) => {
     if (!text) return '';
     return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
@@ -755,15 +763,6 @@ const formatCurrency = (amount) => {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
     }).format(amount);
-};
-
-const formatDate = (dateString) => {
-    if (!dateString) return '';
-    return new Date(dateString).toLocaleDateString('es-MX', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-    });
 };
 
 const formatDateTime = (dateString) => {

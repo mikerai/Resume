@@ -533,66 +533,62 @@ const parseAddress = (address, item) => {
     return getCoordinates(item);
 };
 
-const loadMockData = () => {
-    const mockTickets = [
-        {
-            id: 1001,
-            title: 'Reparación de aire acondicionado',
-            priority: 'alta',
-            status: 'abierto',
-            assignedTo: 'Juan Pérez',
-            createdAt: '2024-01-15T10:30:00Z'
-        },
-        {
-            id: 1002,
-            title: 'Mantenimiento preventivo de elevador',
-            priority: 'media',
-            status: 'en_progreso',
-            assignedTo: 'María García',
-            createdAt: '2024-01-14T14:20:00Z'
-        },
-        {
-            id: 1003,
-            title: 'Limpieza de oficinas',
-            priority: 'baja',
-            status: 'completado',
-            assignedTo: 'Carlos López',
-            createdAt: '2024-01-13T09:15:00Z'
-        },
-        {
-            id: 1004,
-            title: 'Reparación de plomería',
-            priority: 'alta',
-            status: 'abierto',
-            assignedTo: 'Ana Martínez',
-            createdAt: '2024-01-12T16:45:00Z'
-        },
-        {
-            id: 1005,
-            title: 'Instalación de sistema de seguridad',
-            priority: 'alta',
-            status: 'en_progreso',
-            assignedTo: 'Roberto Silva',
-            createdAt: '2024-01-11T11:00:00Z'
-        }
-    ];
-
-    recent.value = mockTickets;
-    metrics.value.total = mockTickets.length;
-    metrics.value.open = mockTickets.filter(t => t.status === 'abierto').length;
-    metrics.value.completed = mockTickets.filter(t => t.status === 'completado').length;
-    metrics.value.activeUsers = 24;
+const loadRealTickets = async () => {
+    try {
+        const { data: ticketsData, error } = await supabase
+            .from('tickets')
+            .select(`
+                id,
+                ticket_number,
+                title,
+                priority,
+                status,
+                created_at,
+                supplier:supplier_id(company_name, contact_person)
+            `)
+            .order('created_at', { ascending: false })
+            .limit(10);
+        
+        if (error) throw error;
+        
+        recent.value = (ticketsData || []).map(t => ({
+            id: t.ticket_number || t.id,
+            title: t.title,
+            priority: t.priority,
+            status: t.status,
+            assignedTo: t.supplier?.company_name || t.supplier?.contact_person || 'Sin asignar',
+            createdAt: t.created_at
+        }));
+        
+        // Calculate real metrics
+        const allTicketsResult = await supabase
+            .from('tickets')
+            .select('status', { count: 'exact' });
+        
+        metrics.value.total = allTicketsResult.count || ticketsData.length;
+        metrics.value.open = ticketsData.filter(t => ['pending', 'opened', 'in_progress'].includes(t.status)).length;
+        metrics.value.completed = ticketsData.filter(t => ['completed', 'paid', 'closed'].includes(t.status)).length;
+        
+        // Get active users count
+        const usersResult = await supabase
+            .from('users')
+            .select('id', { count: 'exact' });
+        
+        metrics.value.activeUsers = usersResult.count || 0;
+        
+        console.log('✅ Loaded real tickets:', recent.value.length);
+    } catch (error) {
+        console.error('Error loading tickets:', error);
+        // Fallback to empty
+        recent.value = [];
+        metrics.value = { total: 0, open: 0, completed: 0, activeUsers: 0 };
+    }
 };
 
 onMounted(async () => {
     try {
-        // Intentar cargar datos reales
-        // const res = await fetch(`${import.meta.env.VITE_API_URL}/tickets?limit=10`);
-        // const data = await res.json();
-        // recent.value = data;
-
-        // Cargar datos reales
-        loadMockData();
+        // Load real data
+        await loadRealTickets();
         await loadRealData();
 
         // Start real-time updates for suppliers (every 30 seconds)
@@ -603,8 +599,6 @@ onMounted(async () => {
         }, 30000);
     } catch (error) {
         console.error('Error loading dashboard data:', error);
-        loadMockData();
-        await loadRealData();
     }
 });
 </script>

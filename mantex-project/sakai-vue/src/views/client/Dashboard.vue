@@ -1,32 +1,56 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
+import { supabase } from '@/lib/supabaseClient';
+import { useAuth } from '@/composables/useAuth';
 import Chart from 'primevue/chart';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Tag from 'primevue/tag';
 import Button from 'primevue/button';
+import Dialog from 'primevue/dialog';
+import { translateStatus, translatePriority, getStatusSeverity as getStatusSev } from '@/utils/status-utils.js';
 
 const router = useRouter();
+const { user } = useAuth();
 
 // Reactive data
+const tickets = ref([]);
+const loading = ref(true);
 const recentRequests = ref([]);
 const chartData = ref(null);
 const chartOptions = ref(null);
+const selectedTicket = ref(null);
+const showTicketDialog = ref(false);
+
+// Computed stats from real data
+const stats = computed(() => {
+    const active = tickets.value.filter(t => !['closed', 'cancelled', 'paid'].includes(t.status)).length;
+    const pendingApproval = tickets.value.filter(t => ['under_review', 'completed'].includes(t.status)).length;
+    const totalAssets = 0; // TODO: Connect to assets table
+    const avgResponseTime = 0; // TODO: Calculate from ticket data
+    return { active, pendingApproval, totalAssets, avgResponseTime };
+});
 
 // Chart configuration - Identical to Sakai ChartDoc
-onMounted(() => {
+onMounted(async () => {
     const documentStyle = getComputedStyle(document.documentElement);
     const textColor = documentStyle.getPropertyValue('--text-color');
     const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary');
     const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
 
+    // Fetch real ticket data first
+    await fetchTickets();
+    
+    // Calculate real chart data from last 7 months
+    const monthlyData = calculateMonthlyTicketData(tickets.value);
+
     chartData.value = {
-        labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul'],
+        labels: monthlyData.labels,
         datasets: [
             {
                 label: 'Mantenimiento Preventivo',
-                data: [12000, 15000, 8000, 22000, 19000, 14000, 17000],
+                data: monthlyData.preventive,
                 fill: false,
                 backgroundColor: documentStyle.getPropertyValue('--p-primary-500'),
                 borderColor: documentStyle.getPropertyValue('--p-primary-500'),
@@ -34,7 +58,7 @@ onMounted(() => {
             },
             {
                 label: 'Mantenimiento Correctivo',
-                data: [8000, 12000, 15000, 10000, 8000, 20000, 12000],
+                data: monthlyData.corrective,
                 fill: false,
                 backgroundColor: documentStyle.getPropertyValue('--p-orange-500'),
                 borderColor: documentStyle.getPropertyValue('--p-orange-500'),
@@ -73,45 +97,7 @@ onMounted(() => {
         }
     };
 
-    // Sample data
-    recentRequests.value = [
-        {
-            id: 'REQ-2024-001',
-            title: 'Fuga de agua en Cocina - Edificio A',
-            status: 'in_progress',
-            priority: 'high',
-            supplier: 'HidroTech Solutions',
-            location: 'Edificio A - Piso 3',
-            date: '2024-11-15'
-        },
-        {
-            id: 'REQ-2024-002',
-            title: 'Revisión trimestral de UPS',
-            status: 'assigned',
-            priority: 'normal',
-            supplier: 'ElectroMant',
-            location: 'Centro de Datos',
-            date: '2024-11-14'
-        },
-        {
-            id: 'REQ-2024-003',
-            title: 'Limpieza profunda de ductos HVAC',
-            status: 'completed',
-            priority: 'low',
-            supplier: 'ClimaTech Pro',
-            location: 'Edificio B - Todos los pisos',
-            date: '2024-11-10'
-        },
-        {
-            id: 'REQ-2024-004',
-            title: 'Reparación de elevador principal',
-            status: 'pending',
-            priority: 'urgent',
-            supplier: 'Sin asignar',
-            location: 'Torre Norte',
-            date: '2024-11-16'
-        }
-    ];
+    loading.value = false;
 });
 
 // Utility functions - matching TableDoc pattern
@@ -125,40 +111,152 @@ const getPrioritySeverity = (priority) => {
     }
 };
 
-const getStatusSeverity = (status) => {
-    switch (status) {
-        case 'pending': return 'warn';
-        case 'assigned': return 'info';
-        case 'in_progress': return 'info';
-        case 'completed': return 'success';
-        case 'cancelled': return 'danger';
-        default: return 'info';
+// Use centralized translation functions
+const getStatusLabel = translateStatus;
+const getPriorityLabel = translatePriority;
+const getStatusSeverity = getStatusSev;
+
+// Format date function (not in utils yet)
+const formatDate = (dateString) => {
+    if (!dateString) return '-';
+    return new Date(dateString).toLocaleDateString('es-MX', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+    });
+};
+
+// Helper function to calculate monthly ticket data for chart
+const calculateMonthlyTicketData = (ticketsData) => {
+    const now = new Date();
+    const labels = [];
+    const preventive = [];
+    const corrective = [];
+    
+    // Generate last 7 months
+    for (let i = 6; i >= 0; i--) {
+        const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        const monthName = date.toLocaleDateString('es-ES', { month: 'short' });
+        labels.push(monthName.charAt(0).toUpperCase() + monthName.slice(1));
+        
+        // Count tickets for this month
+        const monthTickets = ticketsData.filter(t => {
+            const ticketDate = new Date(t.created_at);
+            return ticketDate.getFullYear() === date.getFullYear() &&
+                   ticketDate.getMonth() === date.getMonth();
+        });
+        
+        preventive.push(monthTickets.filter(t => t.maintenance_type === 'preventive').length);
+        corrective.push(monthTickets.filter(t => t.maintenance_type === 'corrective').length);
+    }
+    
+    return { labels, preventive, corrective };
+};
+
+const fetchTickets = async () => {
+    try {
+        console.log('🎫 Cargando tickets del usuario:', user.value?.id);
+        
+        if (!user.value) {
+            console.warn('⚠️ No user logged in');
+            return;
+        }
+
+        // Buscar client_id del usuario actual (same logic as Requests.vue)
+        const { data: clientProfile, error: clientError } = await supabase
+            .from('client_profiles')
+            .select('id')
+            .eq('user_id', user.value.id)
+            .single();
+
+        let clientId = null;
+        if (clientProfile) {
+            clientId = clientProfile.id;
+        } else {
+            // Si no hay client_profile, buscar en la tabla clients por user_id
+            const { data: clientData, error: clientDataError } = await supabase
+                .from('clients')
+                .select('id')
+                .eq('user_id', user.value.id)
+                .single();
+
+            if (clientData) {
+                clientId = clientData.id;
+            }
+        }
+
+        if (!clientId) {
+            console.warn('⚠️ No client_id found for user:', user.value.id);
+            tickets.value = [];
+            recentRequests.value = [];
+            return;
+        }
+
+        console.log('📡 Querying tickets for client_id:', clientId);
+
+        const { data, error } = await supabase
+            .from('tickets')
+            .select(`
+                id,
+                ticket_number,
+                title,
+                description,
+                status,
+                priority,
+                maintenance_type,
+                location_city,
+                location_state,
+                scheduled_date,
+                created_at,
+                supplier:supplier_id(id, company_name, contact_person)
+            `)
+            .eq('client_id', clientId)
+            .order('created_at', { ascending: false })
+            .limit(10);
+        
+        if (error) throw error;
+        
+        console.log('✅ Cargados', data?.length || 0, 'tickets');
+        
+        tickets.value = data || [];
+        recentRequests.value = data?.slice(0, 5) || [];
+        
+        console.log('📊 tickets.value:', tickets.value.length);
+        console.log('📋 recentRequests.value:', recentRequests.value.length);
+    } catch (error) {
+        console.error('💥 Error fetching tickets:', error);
+        tickets.value = [];
+        recentRequests.value = [];
     }
 };
 
-const getPriorityLabel = (priority) => {
-    const labels = {
-        low: 'Baja',
-        normal: 'Normal',
-        high: 'Alta',
-        urgent: 'Urgente'
-    };
-    return labels[priority] || priority;
+const viewTicket = (ticket) => {
+    selectedTicket.value = ticket;
+    showTicketDialog.value = true;
 };
 
-const getStatusLabel = (status) => {
-    const labels = {
-        pending: 'Pendiente',
-        assigned: 'Asignado',
-        in_progress: 'En Progreso',
-        completed: 'Completado',
-        cancelled: 'Cancelado'
-    };
-    return labels[status] || status;
+const closeTicketDialog = () => {
+    showTicketDialog.value = false;
+    selectedTicket.value = null;
 };
 
-const viewRequest = (request) => {
-    router.push(`/client/requests/${request.id}`);
+const cancelTicket = async () => {
+    if (!selectedTicket.value) return;
+    
+    try {
+        const { error } = await supabase
+            .from('tickets')
+            .update({ status: 'cancelled' })
+            .eq('id', selectedTicket.value.id);
+        
+        if (error) throw error;
+        
+        // Refresh data
+        await fetchTickets();
+        closeTicketDialog();
+    } catch (error) {
+        console.error('Error cancelling ticket:', error);
+    }
 };
 </script>
 
@@ -170,7 +268,7 @@ const viewRequest = (request) => {
                 <div class="flex justify-between mb-4">
                     <div>
                         <span class="block text-muted-color font-medium mb-4">Solicitudes Activas</span>
-                        <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">18</div>
+                        <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{ stats.active }}</div>
                     </div>
                     <div class="flex items-center justify-center bg-blue-100 dark:bg-blue-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
                         <i class="pi pi-ticket text-blue-500 !text-xl"></i>
@@ -185,7 +283,7 @@ const viewRequest = (request) => {
                 <div class="flex justify-between mb-4">
                     <div>
                         <span class="block text-muted-color font-medium mb-4">Pendientes Aprobación</span>
-                        <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">3</div>
+                        <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{ stats.pendingApproval }}</div>
                     </div>
                     <div class="flex items-center justify-center bg-orange-100 dark:bg-orange-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
                         <i class="pi pi-clock text-orange-500 !text-xl"></i>
@@ -200,7 +298,7 @@ const viewRequest = (request) => {
                 <div class="flex justify-between mb-4">
                     <div>
                         <span class="block text-muted-color font-medium mb-4">Activos Totales</span>
-                        <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">85</div>
+                        <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{ stats.totalAssets || 'N/A' }}</div>
                     </div>
                     <div class="flex items-center justify-center bg-cyan-100 dark:bg-cyan-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
                         <i class="pi pi-building text-cyan-500 !text-xl"></i>
@@ -277,24 +375,24 @@ const viewRequest = (request) => {
         <!-- Full width table at bottom -->
         <div class="col-span-12">
             <div class="card">
-                <div class="font-semibold text-xl mb-4">Solicitudes Recientes</div>
-                <DataTable :value="recentRequests" :rows="5" :paginator="true" responsiveLayout="scroll">
-                    <Column field="id" header="ID" sortable style="min-width: 12rem">
+                <div class="font-semibold text-xl mb-4">Solicitudes Recientes ({{ recentRequests.length }})</div>
+                <DataTable :value="recentRequests" :paginator="false" responsiveLayout="scroll">
+                    <Column field="ticket_number" header="ID" sortable style="min-width: 12rem">
                         <template #body="slotProps">
-                            <span class="font-medium text-primary">{{ slotProps.data.id }}</span>
+                            <span class="font-medium text-primary">{{ slotProps.data.ticket_number }}</span>
                         </template>
                     </Column>
                     <Column field="title" header="Descripción" sortable>
                         <template #body="slotProps">
                             <div>
                                 <div class="font-medium">{{ slotProps.data.title }}</div>
-                                <div class="text-sm text-muted-color">{{ slotProps.data.location }}</div>
+                                <div class="text-sm text-muted-color">{{ slotProps.data.location_city }}, {{ slotProps.data.location_state }}</div>
                             </div>
                         </template>
                     </Column>
                     <Column field="supplier" header="Proveedor" sortable>
                         <template #body="slotProps">
-                            <div class="font-medium">{{ slotProps.data.supplier }}</div>
+                            <div class="font-medium">{{ slotProps.data.supplier?.company_name || 'Sin asignar' }}</div>
                         </template>
                     </Column>
                     <Column field="priority" header="Prioridad" sortable>
@@ -309,16 +407,115 @@ const viewRequest = (request) => {
                     </Column>
                     <Column field="date" header="Fecha" sortable>
                         <template #body="slotProps">
-                            <div class="text-sm">{{ new Date(slotProps.data.date).toLocaleDateString('es-MX') }}</div>
+                            <div class="text-sm">{{ formatDate(slotProps.data.created_at) }}</div>
                         </template>
                     </Column>
-                    <Column header="Acciones" :exportable="false" style="min-width: 8rem">
+                    <Column header="Acciones" :exportable="false" style="min-width: 10rem">
                         <template #body="slotProps">
-                            <Button icon="pi pi-eye" severity="info" text rounded @click="viewRequest(slotProps.data)" />
+                            <div class="flex gap-2">
+                                <Button 
+                                    icon="pi pi-eye" 
+                                    severity="info" 
+                                    text 
+                                    rounded 
+                                    @click="viewTicket(slotProps.data)" 
+                                    v-tooltip.top="'Ver detalles'"
+                                />
+                                <Button 
+                                    icon="pi pi-pencil" 
+                                    severity="success" 
+                                    text 
+                                    rounded 
+                                    v-tooltip.top="'Editar'"
+                                    :disabled="['completed', 'cancelled', 'closed'].includes(slotProps.data.status)"
+                                />
+                            </div>
                         </template>
                     </Column>
                 </DataTable>
             </div>
         </div>
+
+        <!-- Ticket Detail Overlay -->
+        <Dialog 
+            v-model:visible="showTicketDialog" 
+            :modal="true" 
+            :closable="true"
+            :style="{ width: '50vw' }"
+            @hide="closeTicketDialog"
+        >
+            <template #header>
+                <div class="flex align-items-center gap-2">
+                    <i class="pi pi-ticket text-2xl"></i>
+                    <span class="font-semibold text-xl">{{ selectedTicket?.ticket_number }}</span>
+                </div>
+            </template>
+
+            <div v-if="selectedTicket" class="flex flex-column gap-4">
+                <!-- Status and Priority -->
+                <div class="flex gap-3">
+                    <Tag :value="getStatusLabel(selectedTicket.status)" :severity="getStatusSeverity(selectedTicket.status)" class="text-base" />
+                    <Tag :value="getPriorityLabel(selectedTicket.priority)" :severity="getPrioritySeverity(selectedTicket.priority)" class="text-base" />
+                </div>
+
+                <!-- Title and Description -->
+                <div>
+                    <h3 class="mt-0 mb-2">{{ selectedTicket.title }}</h3>
+                    <p class="text-color-secondary m-0">{{ selectedTicket.description }}</p>
+                </div>
+
+                <!-- Details Grid -->
+                <div class="grid">
+                    <div class="col-6">
+                        <div class="text-500 mb-1">Ubicación</div>
+                        <div class="font-medium">
+                            <i class="pi pi-map-marker mr-2"></i>
+                            {{ selectedTicket.location_city }}, {{ selectedTicket.location_state }}
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="text-500 mb-1">Proveedor</div>
+                        <div class="font-medium">
+                            {{ selectedTicket.supplier?.company_name || 'Sin asignar' }}
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="text-500 mb-1">Fecha Programada</div>
+                        <div class="font-medium">
+                            <i class="pi pi-calendar mr-2"></i>
+                            {{ selectedTicket.scheduled_date ? formatDate(selectedTicket.scheduled_date) : 'No programada' }}
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="text-500 mb-1">Tipo de Mantenimiento</div>
+                        <div class="font-medium">
+                            {{ selectedTicket.maintenance_type === 'preventive' ? 'Preventivo' : 'Correctivo' }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <template #footer>
+                <div class="flex justify-content-between w-full">
+                    <Button 
+                        label="Cancelar Ticket" 
+                        icon="pi pi-times" 
+                        severity="danger" 
+                        outlined
+                        @click="cancelTicket"
+                        :disabled="['cancelled', 'closed', 'completed'].includes(selectedTicket?.status)"
+                    />
+                    <div class="flex gap-2">
+                        <Button label="Cerrar" icon="pi pi-times" text @click="closeTicketDialog" />
+                        <Button 
+                            label="Editar" 
+                            icon="pi pi-pencil" 
+                            @click="router.push(`/client/tickets/${selectedTicket?.id}`)"
+                            :disabled="['completed', 'cancelled', 'closed'].includes(selectedTicket?.status)"
+                        />
+                    </div>
+                </div>
+            </template>
+        </Dialog>
     </div>
 </template>

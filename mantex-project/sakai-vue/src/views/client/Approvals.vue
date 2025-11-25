@@ -191,14 +191,17 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useToast } from 'primevue/usetoast';
+import { supabase } from '@/lib/supabaseClient';
+import { useAuth } from '@/composables/useAuth';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Button from 'primevue/button';
 import Tag from 'primevue/tag';
 import Dialog from 'primevue/dialog';
-import { formatDate } from '@/lib/constants.js';
+import { translateStatus, getStatusSeverity as getStatusSev } from '@/utils/status-utils.js';
 
 const toast = useToast();
+const { user } = useAuth();
 
 // Reactive data
 const jobs = ref([]);
@@ -216,45 +219,65 @@ const totalValue = computed(() => jobs.value.reduce((sum, job) => sum + (job.cos
 const loadJobs = async () => {
     loading.value = true;
     try {
-        // Mock data for demonstration
-        const mockJobs = [
-            {
-                id: 'JOB-001',
-                title: 'Reparación de sistema HVAC',
-                description: 'Reparación completa del sistema de climatización en el piso 3',
-                supplier: 'HVAC Solutions S.A.',
-                status: 'completed',
-                completedAt: '2024-11-15T14:30:00Z',
-                cost: 15000,
-                attachments: [
-                    { name: 'Antes.jpg', url: '/images/before.jpg' },
-                    { name: 'Después.jpg', url: '/images/after.jpg' }
-                ]
-            },
-            {
-                id: 'JOB-002',
-                title: 'Mantenimiento preventivo de elevadores',
-                description: 'Revisión y mantenimiento mensual del sistema de elevadores',
-                supplier: 'Elevadores Modernos',
-                status: 'completed',
-                completedAt: '2024-11-14T10:00:00Z',
-                cost: 8500,
-                attachments: []
-            },
-            {
-                id: 'JOB-003',
-                title: 'Reparación de sistema eléctrico',
-                description: 'Reparación de tableros eléctricos dañados por sobrecarga',
-                supplier: 'Electrotécnica Pro',
-                status: 'completed',
-                completedAt: '2024-11-13T16:45:00Z',
-                cost: 22300,
-                attachments: [
-                    { name: 'Reporte.pdf', url: '/docs/electrical-report.pdf' }
-                ]
+        // Get client_id first
+        const { data: clientProfile, error: clientError } = await supabase
+            .from('client_profiles')
+            .select('id')
+            .eq('user_id', user.value.id)
+            .single();
+
+        let clientId = null;
+        if (clientProfile) {
+            clientId = clientProfile.id;
+        } else {
+            const { data: clientData } = await supabase
+                .from('clients')
+                .select('id')
+                .eq('user_id', user.value.id)
+                .single();
+
+            if (clientData) {
+                clientId = clientData.id;
             }
-        ];
-        jobs.value = mockJobs.filter(job => job.status === 'completed');
+        }
+
+        if (!clientId) {
+            console.warn('No client_id found');
+            jobs.value = [];
+            return;
+        }
+
+        // Load tickets that are completed but not yet ready for payment (pre-approval)
+        const { data: ticketsData, error } = await supabase
+            .from('tickets')
+            .select(`
+                id,
+                ticket_number,
+                title,
+                description,
+                status,
+                completed_at,
+                total_cost,
+                supplier:supplier_id(company_name)
+            `)
+            .eq('client_id', clientId)
+            .eq('status', 'completed')
+            .order('completed_at', { ascending: false });
+        
+        if (error) throw error;
+
+        jobs.value = (ticketsData || []).map(t => ({
+            id: t.ticket_number || t.id,
+            title: t.title,
+            description: t.description,
+            supplier: t.supplier?.company_name || 'No asignado',
+            status: t.status,
+            completedAt: t.completed_at,
+            cost: t.total_cost || 0,
+            attachments: [] // TODO: Load from storage
+        }));
+
+        console.log('✅ Cargados', jobs.value.length, 'trabajos pendientes de aprobación');
     } catch (error) {
         console.error('Error loading jobs:', error);
         toast.add({
@@ -276,14 +299,19 @@ const viewJob = (job) => {
 const approveJob = async (job) => {
     approving.value = true;
     try {
-        // Mock approval
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        // Update ticket status to approved_for_payment
+        const { error } = await supabase
+            .from('tickets')
+            .update({ 
+                status: 'approved_for_payment',
+                approved_at: new Date().toISOString()
+            })
+            .eq('ticket_number', job.id);
 
-        // Update job status
-        const jobIndex = jobs.value.findIndex(j => j.id === job.id);
-        if (jobIndex !== -1) {
-            jobs.value[jobIndex].status = 'approved_for_payment';
-        }
+        if (error) throw error;
+
+        // Remove from list
+        jobs.value = jobs.value.filter(j => j.id !== job.id);
 
         toast.add({
             severity: 'success',
@@ -308,8 +336,16 @@ const approveJob = async (job) => {
 
 const rejectJob = async (job) => {
     try {
-        // Mock rejection
-        await new Promise(resolve => setTimeout(resolve, 500));
+        // Update ticket status to rejected
+        const { error } = await supabase
+            .from('tickets')
+            .update({ 
+                status: 'rejected',
+                rejected_at: new Date().toISOString()
+            })
+            .eq('ticket_number', job.id);
+
+        if (error) throw error;
 
         toast.add({
             severity: 'warn',
@@ -338,22 +374,16 @@ const openImagePreview = (attachment) => {
 };
 
 // Utility functions
-const getStatusLabel = (status) => {
-    const labels = {
-        'completed': 'Completado',
-        'approved_for_payment': 'Aprobado para Pago',
-        'rejected': 'Rechazado'
-    };
-    return labels[status] || status;
-};
+const getStatusLabel = translateStatus;
+const getStatusSeverity = getStatusSev;
 
-const getStatusSeverity = (status) => {
-    const severities = {
-        'completed': 'success',
-        'approved_for_payment': 'info',
-        'rejected': 'danger'
-    };
-    return severities[status] || 'secondary';
+const formatDate = (dateString) => {
+    if (!dateString) return '-';
+    return new Date(dateString).toLocaleDateString('es-MX', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+    });
 };
 
 onMounted(() => {
