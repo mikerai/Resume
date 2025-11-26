@@ -2,14 +2,19 @@
    FONTS
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;500;600&family=Petrona:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;500;600;700&display=swap');
 
 :root {
   --ion-font-family: 'Urbanist', sans-serif;
 }
 
-h1, h2, h3, h4, h5, h6 {
-  font-family: 'Petrona', serif;
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Urbanist', sans-serif;
 }
 
 
@@ -108,10 +113,12 @@ ion-button {
 
 
 /* Inputs */
-ion-input, ion-textarea, ion-select {
+ion-input,
+ion-textarea,
+ion-select {
   --color: var(--ion-text-color);
   --background: var(--surface);
-  --placeholder-color: rgba(255,255,255,0.55);
+  --placeholder-color: rgba(255, 255, 255, 0.55);
 }
 
 
@@ -144,6 +151,7 @@ ion-tab-bar {
   opacity: 0;
   transition: opacity var(--transition-medium);
 }
+
 .fade-in.loaded {
   opacity: 1;
 }
@@ -153,6 +161,7 @@ ion-tab-bar {
   opacity: 0;
   transition: transform var(--transition-medium), opacity var(--transition-medium);
 }
+
 .slide-up.enter {
   transform: translateY(0);
   opacity: 1;

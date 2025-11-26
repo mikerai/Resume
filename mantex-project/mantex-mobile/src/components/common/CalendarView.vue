@@ -673,7 +673,7 @@ export default {
 }
 
 .month-year {
-  font-family: 'Petrona', serif;
+  font-family: 'Urbanist', sans-serif;
   font-size: 1.5rem;
   margin: 0;
   text-transform: capitalize;
@@ -782,7 +782,7 @@ export default {
 }
 
 .selected-day-events h3 {
-  font-family: 'Petrona', serif;
+  font-family: 'Urbanist', sans-serif;
   margin: 0 0 16px 0;
   color: var(--ion-color-primary);
 }

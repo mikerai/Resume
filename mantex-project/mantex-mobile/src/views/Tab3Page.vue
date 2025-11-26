@@ -1003,7 +1003,7 @@ ion-item p {
 }
 
 .auth-message h3 {
-  font-family: 'Petrona', serif;
+  font-family: 'Urbanist', sans-serif;
   margin-bottom: 1rem;
   color: var(--ion-color-primary);
 }

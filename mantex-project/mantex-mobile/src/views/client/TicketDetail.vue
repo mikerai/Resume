@@ -111,6 +111,64 @@
         </ion-item>
       </ion-list>
 
+      <!-- Action Buttons -->
+      <div class="ion-padding" v-if="showActionButtons">
+        <ion-button 
+          v-if="canCancel" 
+          expand="block" 
+          color="danger" 
+          @click="confirmCancelTicket"
+        >
+          <ion-icon :icon="closeCircleOutline" slot="start"></ion-icon>
+          Cancelar Ticket
+        </ion-button>
+      </div>
+
+      <!-- Chat Section -->
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>Chat con el Proveedor</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <!-- Messages List -->
+          <div class="messages-container" ref="messagesContainer">
+            <div v-if="messages.length === 0" class="empty-chat">
+              <p>No hay mensajes aún. Inicia la conversación.</p>
+            </div>
+            <div 
+              v-for="message in messages" 
+              :key="message.id"
+              :class="['message', message.sender_role === 'client' ? 'message-sent' : 'message-received']"
+            >
+              <div class="message-header">
+                <strong>{{ message.sender_name }}</strong>
+                <span class="message-time">{{ formatMessageTime(message.created_at) }}</span>
+              </div>
+              <div class="message-content">{{ message.message }}</div>
+            </div>
+          </div>
+
+          <!-- Message Input -->
+          <div class="message-input-container">
+            <ion-item lines="none">
+              <ion-textarea
+                v-model="newMessage"
+                placeholder="Escribe un mensaje..."
+                :rows="2"
+                @keyup.enter.exact="sendMessage"
+              ></ion-textarea>
+              <ion-button 
+                slot="end" 
+                @click="sendMessage" 
+                :disabled="!newMessage.trim() || sendingMessage"
+              >
+                <ion-icon :icon="sendOutline"></ion-icon>
+              </ion-button>
+            </ion-item>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
       <!-- Evidence Gallery (After Work) -->
       <div v-if="evidence.length > 0" class="ion-padding">
         <h3>Evidencias del Trabajo</h3>
@@ -128,6 +186,15 @@
         </swiper>
       </div>
     </ion-content>
+
+    <!-- Cancel Confirmation Alert -->
+    <ion-alert
+      :is-open="showCancelAlert"
+      header="Cancelar Ticket"
+      message="¿Estás seguro de que deseas cancelar este ticket?"
+      :buttons="cancelAlertButtons"
+      @didDismiss="showCancelAlert = false"
+    ></ion-alert>
 
     <!-- Edit Modal -->
     <ion-modal :is-open="showEditModal" @didDismiss="closeEditModal">
@@ -214,43 +281,51 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue';
 import { useRoute } from 'vue-router';
 import {
   IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonButton, IonBackButton,
   IonIcon, IonChip, IonCard, IonCardHeader, IonCardTitle, IonCardContent,
   IonList, IonListHeader, IonItem, IonLabel, IonInput, IonTextarea, IonSelect, IonSelectOption,
-  IonDatetime, IonDatetimeButton, IonModal, IonLoading,
-  toastController
+  IonDatetime, IonDatetimeButton, IonModal, IonLoading, IonAlert,
+  toastController, alertController
 } from '@ionic/vue';
 import {
   createOutline, businessOutline, cubeOutline, calendarOutline, personOutline,
   checkmarkCircleOutline, timeOutline, alertCircleOutline, closeCircleOutline,
-  hourglassOutline
+  hourglassOutline, sendOutline
 } from 'ionicons/icons';
 import { Swiper, SwiperSlide } from 'swiper/vue';
 import { Pagination } from 'swiper/modules';
 import { supabase } from '@/lib/supabaseClient';
 import { useS3Upload } from '@/composables/useS3Upload';
+import { useAuth } from '@/composables/useAuth';
 import 'swiper/css';
 import 'swiper/css/pagination';
 
 const route = useRoute();
 const { getSignedUrl } = useS3Upload();
+const { user, profile } = useAuth();
 
 const modules = [Pagination];
 const ticket = ref(null);
 const photos = ref([]);
 const evidence = ref([]);
+const messages = ref([]);
 const loading = ref(true);
 const showEditModal = ref(false);
 const showPhotoModal = ref(false);
 const showEvidenceModal = ref(false);
+const showCancelAlert = ref(false);
 const currentPhotoIndex = ref(0);
 const currentEvidenceIndex = ref(0);
 const saving = ref(false);
+const sendingMessage = ref(false);
+const newMessage = ref('');
 const mapContainer = ref(null);
+const messagesContainer = ref(null);
 let map = null;
+let messageSubscription = null;
 
 const editForm = ref({
   title: '',
@@ -262,6 +337,26 @@ const editForm = ref({
 const canEdit = computed(() => {
   return ticket.value && ['pending', 'opened'].includes(ticket.value.status);
 });
+
+const canCancel = computed(() => {
+  return ticket.value && ['pending', 'opened', 'assigned'].includes(ticket.value.status);
+});
+
+const showActionButtons = computed(() => {
+  return canCancel.value;
+});
+
+const cancelAlertButtons = [
+  {
+    text: 'No',
+    role: 'cancel'
+  },
+  {
+    text: 'Sí, cancelar',
+    role: 'confirm',
+    handler: () => cancelTicket()
+  }
+];
 
 const loadTicket = async () => {
   try {
@@ -286,8 +381,12 @@ const loadTicket = async () => {
     await loadPhotos();
     // Load evidence
     await loadEvidence();
+    // Load messages
+    await loadMessages();
     // Initialize map
     await initMap();
+    // Subscribe to new messages
+    subscribeToMessages();
   } catch (error) {
     console.error('Error loading ticket:', error);
     showToast('Error al cargar el ticket', 'danger');
@@ -337,6 +436,100 @@ const loadEvidence = async () => {
     );
   } catch (error) {
     console.error('Error loading evidence:', error);
+  }
+};
+
+const loadMessages = async () => {
+  try {
+    const { data, error } = await supabase
+      .from('ticket_messages')
+      .select('*')
+      .eq('ticket_id', ticket.value.id)
+      .order('created_at', { ascending: true });
+
+    if (error) throw error;
+    messages.value = data || [];
+    
+    // Scroll to bottom after messages load
+    await nextTick();
+    scrollToBottom();
+  } catch (error) {
+    console.error('Error loading messages:', error);
+  }
+};
+
+const subscribeToMessages = () => {
+  messageSubscription = supabase
+    .channel(`ticket-messages-${ticket.value.id}`)
+    .on(
+      'postgres_changes',
+      {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'ticket_messages',
+        filter: `ticket_id=eq.${ticket.value.id}`
+      },
+      (payload) => {
+        messages.value.push(payload.new);
+        nextTick(() => scrollToBottom());
+      }
+    )
+    .subscribe();
+};
+
+const sendMessage = async () => {
+  if (!newMessage.value.trim() || sendingMessage.value) return;
+
+  try {
+    sendingMessage.value = true;
+    const { error } = await supabase
+      .from('ticket_messages')
+      .insert({
+        ticket_id: ticket.value.id,
+        sender_id: user.value.id,
+        sender_role: 'client',
+        sender_name: profile.value?.full_name || profile.value?.username || 'Cliente',
+        message: newMessage.value.trim()
+      });
+
+    if (error) throw error;
+
+    newMessage.value = '';
+  } catch (error) {
+    console.error('Error sending message:', error);
+    showToast('Error al enviar mensaje', 'danger');
+  } finally {
+    sendingMessage.value = false;
+  }
+};
+
+const scrollToBottom = () => {
+  if (messagesContainer.value) {
+    messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;
+  }
+};
+
+const confirmCancelTicket = () => {
+  showCancelAlert.value = true;
+};
+
+const cancelTicket = async () => {
+  try {
+    const { error } = await supabase
+      .from('tickets')
+      .update({
+        status: 'cancelled',
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', ticket.value.id);
+
+    if (error) throw error;
+
+    showToast('Ticket cancelado correctamente', 'success');
+    await loadTicket();
+  } catch (error) {
+    console.error('Error cancelling ticket:', error);
+    showToast('Error al cancelar el ticket', 'danger');
   }
 };
 
@@ -544,6 +737,27 @@ const formatDate = (dateString) => {
   });
 };
 
+const formatMessageTime = (dateString) => {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffInHours = (now - date) / (1000 * 60 * 60);
+  
+  if (diffInHours < 24) {
+    return date.toLocaleTimeString('es-MX', {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+  
+  return date.toLocaleDateString('es-MX', {
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+};
+
 const showToast = async (message, color = 'success') => {
   const toast = await toastController.create({
     message,
@@ -555,6 +769,12 @@ const showToast = async (message, color = 'success') => {
 
 onMounted(() => {
   loadTicket();
+});
+
+onUnmounted(() => {
+  if (messageSubscription) {
+    messageSubscription.unsubscribe();
+  }
 });
 </script>
 
@@ -605,5 +825,80 @@ onMounted(() => {
 
 #map {
   border-radius: 8px;
+}
+
+/* Chat Styles */
+.messages-container {
+  max-height: 400px;
+  overflow-y: auto;
+  padding: 1rem;
+  background: var(--ion-color-light);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.empty-chat {
+  text-align: center;
+  color: var(--ion-color-medium);
+  padding: 2rem;
+}
+
+.message {
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  border-radius: 8px;
+  max-width: 80%;
+}
+
+.message-sent {
+  background: var(--ion-color-primary);
+  color: white;
+  margin-left: auto;
+  text-align: right;
+}
+
+.message-received {
+  background: white;
+  color: var(--ion-color-dark);
+  margin-right: auto;
+}
+
+.message-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.message-sent .message-header {
+  flex-direction: row-reverse;
+}
+
+.message-time {
+  opacity: 0.7;
+  font-size: 0.75rem;
+}
+
+.message-content {
+  word-wrap: break-word;
+}
+
+.message-input-container {
+  border-top: 1px solid var(--ion-color-light-shade);
+  padding-top: 0.5rem;
+}
+
+.message-input-container ion-item {
+  --padding-start: 0;
+  --inner-padding-end: 0;
+}
+
+.message-input-container ion-textarea {
+  --padding-start: 0.5rem;
+}
+
+.message-input-container ion-button {
+  margin-left: 0.5rem;
 }
 </style>

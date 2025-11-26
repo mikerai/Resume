@@ -6,7 +6,7 @@
    FONTS
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;500;600&family=Petrona:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;500;600;700&display=swap');
 
 /* Ionic root font setup */
 :root {
@@ -17,7 +17,8 @@
 h1, h2, h3, h4, h5, h6,
 ion-title,
 .ion-page h1, .ion-page h2, .ion-page h3, .ion-page h4, .ion-page h5, .ion-page h6 {
-  font-family: 'Petrona', serif;
+  font-family: 'Urbanist', sans-serif;
+  font-weight: 600;
 }
 
 /* ============================================================
@@ -173,7 +174,7 @@ ion-toolbar {
 }
 
 ion-title {
-  font-family: 'Petrona', serif;
+  font-family: 'Urbanist', sans-serif;
   font-weight: 600;
   color: #ffffff;
 }
@@ -208,7 +209,7 @@ ion-item {
 ion-item-divider {
   --background: var(--primary);
   --color: #ffffff;
-  font-family: 'Petrona', serif;
+  font-family: 'Urbanist', sans-serif;
   font-weight: 600;
 }
 
@@ -222,11 +223,11 @@ ion-card {
 }
 
 ion-card-header {
-  font-family: 'Petrona', serif;
+  font-family: 'Urbanist', sans-serif;
 }
 
 ion-card-title {
-  font-family: 'Petrona', serif;
+  font-family: 'Urbanist', sans-serif;
   font-weight: 600;
   color: #ffffff;
 }
@@ -396,7 +397,7 @@ ion-card:active {
 
 /* Text utilities */
 .text-heading {
-  font-family: 'Petrona', serif;
+  font-family: 'Urbanist', sans-serif;
   font-weight: 600;
 }
 

@@ -5,8 +5,8 @@
   /* Primary Font: Urbanist - Modern, clean, tech-focused */
   --mantex-font-primary: 'Urbanist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 
-  /* Secondary Font: Petrona - Professional, elegant for headings */
-  --mantex-font-secondary: 'Petrona', Georgia, serif;
+  /* Secondary Font: Urbanist - Professional, clean for all text */
+  --mantex-font-secondary: 'Urbanist', -apple-system, BlinkMacSystemFont, sans-serif;
 
   /* Font Weights */
   --mantex-font-weight-light: 300;
@@ -18,28 +18,40 @@
 
   /* === COLOR PALETTE === */
   /* Mantex Brand Colors */
-  --mantex-primary: #0D9488;        /* Teal - Professional, trustworthy */
-  --mantex-primary-light: #14B8A6;  /* Lighter teal */
-  --mantex-primary-dark: #0F766E;   /* Darker teal */
-  --mantex-primary-50: #F0FDFA;     /* Very light teal background */
-  --mantex-primary-100: #CCFBF1;    /* Light teal background */
-  --mantex-primary-900: #134E4A;    /* Very dark teal */
+  --mantex-primary: #0D9488;
+  /* Teal - Professional, trustworthy */
+  --mantex-primary-light: #14B8A6;
+  /* Lighter teal */
+  --mantex-primary-dark: #0F766E;
+  /* Darker teal */
+  --mantex-primary-50: #F0FDFA;
+  /* Very light teal background */
+  --mantex-primary-100: #CCFBF1;
+  /* Light teal background */
+  --mantex-primary-900: #134E4A;
+  /* Very dark teal */
 
   /* Secondary Colors */
-  --mantex-secondary: #1E40AF;      /* Professional blue */
+  --mantex-secondary: #1E40AF;
+  /* Professional blue */
   --mantex-secondary-light: #3B82F6;
   --mantex-secondary-dark: #1E3A8A;
 
   /* Accent Colors */
-  --mantex-accent: #F59E0B;         /* Amber for warnings/important */
+  --mantex-accent: #F59E0B;
+  /* Amber for warnings/important */
   --mantex-accent-light: #FCD34D;
   --mantex-accent-dark: #D97706;
 
   /* Status Colors */
-  --mantex-success: #10B981;        /* Emerald green */
-  --mantex-warning: #F59E0B;        /* Amber */
-  --mantex-danger: #EF4444;         /* Red */
-  --mantex-info: #3B82F6;           /* Blue */
+  --mantex-success: #10B981;
+  /* Emerald green */
+  --mantex-warning: #F59E0B;
+  /* Amber */
+  --mantex-danger: #EF4444;
+  /* Red */
+  --mantex-info: #3B82F6;
+  /* Blue */
 
   /* Neutral Colors */
   --mantex-gray-50: #F9FAFB;
@@ -54,21 +66,34 @@
   --mantex-gray-900: #111827;
 
   /* === SPACING === */
-  --mantex-space-xs: 0.25rem;    /* 4px */
-  --mantex-space-sm: 0.5rem;     /* 8px */
-  --mantex-space-md: 1rem;       /* 16px */
-  --mantex-space-lg: 1.5rem;     /* 24px */
-  --mantex-space-xl: 2rem;       /* 32px */
-  --mantex-space-2xl: 3rem;      /* 48px */
-  --mantex-space-3xl: 4rem;      /* 64px */
+  --mantex-space-xs: 0.25rem;
+  /* 4px */
+  --mantex-space-sm: 0.5rem;
+  /* 8px */
+  --mantex-space-md: 1rem;
+  /* 16px */
+  --mantex-space-lg: 1.5rem;
+  /* 24px */
+  --mantex-space-xl: 2rem;
+  /* 32px */
+  --mantex-space-2xl: 3rem;
+  /* 48px */
+  --mantex-space-3xl: 4rem;
+  /* 64px */
 
   /* === BORDER RADIUS === */
-  --mantex-radius-sm: 0.25rem;   /* 4px */
-  --mantex-radius-md: 0.5rem;    /* 8px */
-  --mantex-radius-lg: 0.75rem;   /* 12px */
-  --mantex-radius-xl: 1rem;      /* 16px */
-  --mantex-radius-2xl: 1.5rem;   /* 24px */
-  --mantex-radius-full: 9999px;  /* Fully rounded */
+  --mantex-radius-sm: 0.25rem;
+  /* 4px */
+  --mantex-radius-md: 0.5rem;
+  /* 8px */
+  --mantex-radius-lg: 0.75rem;
+  /* 12px */
+  --mantex-radius-xl: 1rem;
+  /* 16px */
+  --mantex-radius-2xl: 1.5rem;
+  /* 24px */
+  --mantex-radius-full: 9999px;
+  /* Fully rounded */
 
   /* === SHADOWS === */
   --mantex-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
@@ -154,48 +179,133 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Headings use Petrona font */
-h1, h2, h3, h4, h5, h6 {
+/* Headings use Urbanist font */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--mantex-font-secondary) !important;
   font-weight: var(--mantex-font-weight-semibold);
   line-height: 1.2;
   color: var(--mantex-gray-900);
 }
 
-h1 { font-size: 2.5rem; font-weight: var(--mantex-font-weight-bold); }
-h2 { font-size: 2rem; font-weight: var(--mantex-font-weight-bold); }
-h3 { font-size: 1.5rem; font-weight: var(--mantex-font-weight-semibold); }
-h4 { font-size: 1.25rem; font-weight: var(--mantex-font-weight-semibold); }
-h5 { font-size: 1.125rem; font-weight: var(--mantex-font-weight-medium); }
-h6 { font-size: 1rem; font-weight: var(--mantex-font-weight-medium); }
+h1 {
+  font-size: 2.5rem;
+  font-weight: var(--mantex-font-weight-bold);
+}
+
+h2 {
+  font-size: 2rem;
+  font-weight: var(--mantex-font-weight-bold);
+}
+
+h3 {
+  font-size: 1.5rem;
+  font-weight: var(--mantex-font-weight-semibold);
+}
+
+h4 {
+  font-size: 1.25rem;
+  font-weight: var(--mantex-font-weight-semibold);
+}
+
+h5 {
+  font-size: 1.125rem;
+  font-weight: var(--mantex-font-weight-medium);
+}
+
+h6 {
+  font-size: 1rem;
+  font-weight: var(--mantex-font-weight-medium);
+}
 
 /* === UTILITY CLASSES === */
-.mantex-text-primary { color: var(--mantex-primary) !important; }
-.mantex-text-secondary { color: var(--mantex-secondary) !important; }
-.mantex-text-success { color: var(--mantex-success) !important; }
-.mantex-text-warning { color: var(--mantex-warning) !important; }
-.mantex-text-danger { color: var(--mantex-danger) !important; }
+.mantex-text-primary {
+  color: var(--mantex-primary) !important;
+}
 
-.mantex-bg-primary { background-color: var(--mantex-primary) !important; }
-.mantex-bg-primary-light { background-color: var(--mantex-primary-50) !important; }
+.mantex-text-secondary {
+  color: var(--mantex-secondary) !important;
+}
 
-.mantex-font-primary { font-family: var(--mantex-font-primary) !important; }
-.mantex-font-secondary { font-family: var(--mantex-font-secondary) !important; }
+.mantex-text-success {
+  color: var(--mantex-success) !important;
+}
 
-.mantex-weight-light { font-weight: var(--mantex-font-weight-light) !important; }
-.mantex-weight-normal { font-weight: var(--mantex-font-weight-normal) !important; }
-.mantex-weight-medium { font-weight: var(--mantex-font-weight-medium) !important; }
-.mantex-weight-semibold { font-weight: var(--mantex-font-weight-semibold) !important; }
-.mantex-weight-bold { font-weight: var(--mantex-font-weight-bold) !important; }
+.mantex-text-warning {
+  color: var(--mantex-warning) !important;
+}
 
-.mantex-shadow-sm { box-shadow: var(--mantex-shadow-sm) !important; }
-.mantex-shadow-md { box-shadow: var(--mantex-shadow-md) !important; }
-.mantex-shadow-lg { box-shadow: var(--mantex-shadow-lg) !important; }
+.mantex-text-danger {
+  color: var(--mantex-danger) !important;
+}
 
-.mantex-rounded-sm { border-radius: var(--mantex-radius-sm) !important; }
-.mantex-rounded-md { border-radius: var(--mantex-radius-md) !important; }
-.mantex-rounded-lg { border-radius: var(--mantex-radius-lg) !important; }
-.mantex-rounded-xl { border-radius: var(--mantex-radius-xl) !important; }
+.mantex-bg-primary {
+  background-color: var(--mantex-primary) !important;
+}
+
+.mantex-bg-primary-light {
+  background-color: var(--mantex-primary-50) !important;
+}
+
+.mantex-font-primary {
+  font-family: var(--mantex-font-primary) !important;
+}
+
+.mantex-font-secondary {
+  font-family: var(--mantex-font-secondary) !important;
+}
+
+.mantex-weight-light {
+  font-weight: var(--mantex-font-weight-light) !important;
+}
+
+.mantex-weight-normal {
+  font-weight: var(--mantex-font-weight-normal) !important;
+}
+
+.mantex-weight-medium {
+  font-weight: var(--mantex-font-weight-medium) !important;
+}
+
+.mantex-weight-semibold {
+  font-weight: var(--mantex-font-weight-semibold) !important;
+}
+
+.mantex-weight-bold {
+  font-weight: var(--mantex-font-weight-bold) !important;
+}
+
+.mantex-shadow-sm {
+  box-shadow: var(--mantex-shadow-sm) !important;
+}
+
+.mantex-shadow-md {
+  box-shadow: var(--mantex-shadow-md) !important;
+}
+
+.mantex-shadow-lg {
+  box-shadow: var(--mantex-shadow-lg) !important;
+}
+
+.mantex-rounded-sm {
+  border-radius: var(--mantex-radius-sm) !important;
+}
+
+.mantex-rounded-md {
+  border-radius: var(--mantex-radius-md) !important;
+}
+
+.mantex-rounded-lg {
+  border-radius: var(--mantex-radius-lg) !important;
+}
+
+.mantex-rounded-xl {
+  border-radius: var(--mantex-radius-xl) !important;
+}
 
 /* === COMPONENT OVERRIDES === */
 
@@ -271,7 +381,9 @@ ion-item {
   --padding-end: var(--mantex-space-md);
 }
 
-ion-input, ion-textarea, ion-select {
+ion-input,
+ion-textarea,
+ion-select {
   font-family: var(--mantex-font-primary);
   --padding-start: var(--mantex-space-md);
   --padding-end: var(--mantex-space-md);

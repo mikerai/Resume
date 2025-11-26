@@ -201,12 +201,15 @@ GEOCODING AUTOMÁTICO:
 - Si falla el geocoding, la operación continúa (solo warning)
 
 GEOCODING MANUAL (BACKFILL):
-Para geocodificar registros existentes sin coordenadas:
+Para geocodificar registros existentes sin coordenadas, usa la función:
+  manual_geocode_table(table_name TEXT, limit_rows INTEGER DEFAULT NULL)
+
+Ejemplos:
 
 -- Geocodificar todas las sucursales sin coordenadas
 SELECT * FROM manual_geocode_table('client_branches');
 
--- Geocodificar solo 10 proveedores
+-- Geocodificar solo 10 proveedores (útil para pruebas)
 SELECT * FROM manual_geocode_table('supplier_profiles', 10);
 
 -- Geocodificar todos los clientes
@@ -216,7 +219,7 @@ SELECT * FROM manual_geocode_table('clients');
 SELECT * FROM manual_geocode_table('suppliers');
 
 NOTA: El geocoding manual puede tardar si hay muchos registros.
-Se recomienda hacerlo en lotes pequeños.
+Se recomienda hacerlo en lotes pequeños usando el parámetro limit_rows.
 */
 
 SELECT '✅ Función de geocoding automático instalada exitosamente!' as status;

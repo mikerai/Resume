@@ -21,7 +21,7 @@
       <div v-else>
         <!-- Welcome Header -->
         <div class="welcome-header ion-margin-bottom">
-          <h1 class="mantex-gradient-text">Hola, Cliente</h1>
+          <h1 class="mantex-gradient-text">Hola, {{ displayName }}</h1>
           <p class="mantex-text-secondary">Bienvenido a tu panel de control</p>
         </div>
 
@@ -96,11 +96,13 @@ import {
 import { useRouter } from 'vue-router';
 import { useClientTickets } from '@/composables/useClientTickets.js';
 import { usePermissions } from '@/composables/usePermissions.js';
+import { useAuth } from '@/composables/useAuth.js';
 import { translateStatus, getStatusColor, formatDate } from '@/utils/status-utils.js';
 
 const router = useRouter();
 const { fetchTickets, loading } = useClientTickets();
 const { canCreateTicket } = usePermissions();
+const { profile } = useAuth();
 
 const tickets = ref([]);
 
@@ -110,6 +112,27 @@ const activeTickets = computed(() => {
 
 const recentTickets = computed(() => {
   return tickets.value.filter(t => !['pending', 'opened', 'in_progress', 'assigned'].includes(t.status));
+});
+
+const displayName = computed(() => {
+  if (!profile.value) return 'Cliente';
+  
+  // Try to build full name from profile fields
+  const firstName = profile.value.first_name;
+  const lastName = profile.value.last_name;
+  const secondLastName = profile.value.second_last_name;
+  
+  if (firstName || lastName || secondLastName) {
+    return [firstName, lastName, secondLastName].filter(Boolean).join(' ');
+  }
+  
+  // Fallback to company name if available
+  if (profile.value.company_name) {
+    return profile.value.company_name;
+  }
+  
+  // Final fallback
+  return 'Cliente';
 });
 
 const loadData = async () => {
@@ -125,7 +148,7 @@ const navigateToCreateTicket = () => {
 };
 
 const viewTicketDetails = (ticket) => {
-  router.push(`/tickets/${ticket.id}`);
+  router.push(`/client/tickets/${ticket.id}`);
 };
 
 // Translation functions now imported from @/utils/status-utils.js
