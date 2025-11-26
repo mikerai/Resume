@@ -1,0 +1,20 @@
+{
+  "rules": {
+    "chats": {
+      "$chatId": {
+        ".read": true,
+        ".write": true,
+        "messages": {
+          "$messageId": {
+            ".validate": "newData.hasChildren(['sender_id', 'sender_name', 'sender_role', 'text', 'timestamp', 'read']) && newData.child('sender_id').isString() && newData.child('text').isString() && newData.child('text').val().length > 0 && newData.child('text').val().length <= 5000"
+          }
+        },
+        "typing": {
+          "$userId": {
+            ".validate": "newData.hasChildren(['name', 'typing', 'timestamp'])"
+          }
+        }
+      }
+    }
+  }
+}

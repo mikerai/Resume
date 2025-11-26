@@ -8,13 +8,13 @@
 mantex-documents-1763361307/
 ├── users/
 │   ├── {username}/                    # Username único del usuario
-│   │   ├── 🆔 IDENTIFICACIÓN/
+│   │   ├── IDENTIFICACIÓN/
 │   │   │   ├── ine/
 │   │   │   │   ├── {timestamp}_ine_front.jpg
 │   │   │   │   ├── {timestamp}_ine_back.jpg
 │   │   │   │   └── {timestamp}_selfie.jpg
 │   │   │
-│   │   ├── 🏢 infrastructure/ (CLIENTS)
+│   │   ├── infrastructure/ (CLIENTS)
 │   │   │   ├── headquarters/
 │   │   │   │   ├── {timestamp}_fachada.jpg
 │   │   │   │   ├── {timestamp}_layout.pdf
@@ -26,7 +26,7 @@ mantex-documents-1763361307/
 │   │   │       ├── {timestamp}_activo_foto.jpg
 │   │   │       └── {timestamp}_manual.pdf
 │   │   │
-│   │   ├── 📋 DOCUMENTOS EMPRESARIALES (SUPPLIERS)/
+│   │   ├── DOCUMENTOS EMPRESARIALES (SUPPLIERS)/
 │   │   │   ├── insurance/
 │   │   │   │   ├── {timestamp}_poliza_responsabilidad.pdf
 │   │   │   │   └── {timestamp}_seguro_daños.pdf
