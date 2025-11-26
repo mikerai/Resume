@@ -12,12 +12,17 @@
         <ion-card-content>
           <div class="profile-header">
             <ion-avatar class="profile-avatar">
-              <div class="avatar-placeholder">
-                {{ getInitials(profile?.username) }}
+              <img 
+                v-if="avatarUrl" 
+                :src="avatarUrl" 
+                alt="Avatar"
+              />
+              <div v-else class="avatar-placeholder">
+                {{ getInitials(profile?.first_name || profile?.username) }}
               </div>
             </ion-avatar>
             <div class="profile-info">
-              <h2>{{ profile?.username || 'Usuario' }}</h2>
+              <h2>{{ profile?.first_name }} {{ profile?.last_name }} {{ profile?.second_last_name }}</h2>
               <p>{{ profile?.role === 'client' ? 'Cliente' : profile?.role }}</p>
             </div>
           </div>
@@ -155,7 +160,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import {
   IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonCard, IonCardContent,
@@ -169,11 +174,33 @@ import {
   informationCircleOutline, settingsOutline
 } from 'ionicons/icons';
 import { useAuth } from '@/composables/useAuth.js';
+import { useS3Upload } from '@/composables/useS3Upload';
+import { supabase } from '@/lib/supabaseClient';
 
 const router = useRouter();
 const { user, profile, logout } = useAuth();
+const { getSignedUrl } = useS3Upload();
 
 const notificationsEnabled = ref(true);
+const avatarUrl = ref(null);
+
+const loadAvatar = async () => {
+  try {
+    const { data, error } = await supabase
+      .from('client_profiles')
+      .select('avatar_url')
+      .eq('user_id', user.value.id)
+      .single();
+
+    if (error) throw error;
+
+    if (data?.avatar_url) {
+      avatarUrl.value = await getSignedUrl(data.avatar_url);
+    }
+  } catch (e) {
+    console.error('Error loading avatar:', e);
+  }
+};
 
 const getInitials = (name) => {
   if (!name) return '?';
@@ -241,6 +268,12 @@ const handleLogout = async () => {
     await toast.present();
   }
 };
+
+onMounted(() => {
+  if (user.value?.id) {
+    loadAvatar();
+  }
+});
 </script>
 
 <style scoped>

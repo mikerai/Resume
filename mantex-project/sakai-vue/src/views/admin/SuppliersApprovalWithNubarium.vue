@@ -218,7 +218,7 @@
                 <h6>Ubicación y Servicios</h6>
                 <div class="field">
                     <label>Dirección:</label>
-                    <p>{{ selectedSupplier.legal_address || 'Sin dirección' }}</p>
+                    <p>{{ selectedSupplier.full_address || 'Sin dirección' }}</p>
                 </div>
                 <div class="field">
                     <label>Radio de Servicio:</label>
@@ -802,7 +802,7 @@ const generateNubariumValidations = (supplier) => {
                 name: supplier.contact_person?.toUpperCase() || 'NOMBRE EXTRAÍDO',
                 curp: supplier.curp || 'CURP123456789',
                 birth_date: '1988-07-23',
-                address: supplier.legal_address?.toUpperCase() || 'DIRECCIÓN EXTRAÍDA',
+                address: supplier.full_address?.toUpperCase() || 'DIRECCIÓN EXTRAÍDA',
                 voter_id: '1234567890123',
                 expiry_date: '2029-12-31'
             },
@@ -944,7 +944,7 @@ const loadSuppliers = async () => {
                 email: 'juan.mendoza@sibajio.com.mx',
                 phone_number: '477-123-4567',
                 rfc: 'SIB8807231G3',
-                legal_address: 'Blvd. Adolfo López Mateos 2505, Centro, 37000 León, Gto.',
+                full_address: 'Blvd. Adolfo López Mateos 2505, Centro, 37000 León, Gto.',
                 status: 'submitted',
                 specialties: ['mantenimiento_preventivo', 'instalaciones_electricas', 'climatizacion'],
                 service_radius_km: 75,
@@ -963,7 +963,7 @@ const loadSuppliers = async () => {
                 email: 'maria.rodriguez@mpcenter.mx',
                 phone_number: '33-1234-5678',
                 rfc: 'MPC9012281H4',
-                legal_address: 'Av. Américas 1500, Col. Providencia, 44630 Guadalajara, Jal.',
+                full_address: 'Av. Américas 1500, Col. Providencia, 44630 Guadalajara, Jal.',
                 status: 'submitted',
                 specialties: ['limpieza_industrial', 'mantenimiento_edificios', 'jardineria'],
                 service_radius_km: 50,
@@ -982,7 +982,7 @@ const loadSuppliers = async () => {
                 email: 'roberto@dudosos.com',
                 phone_number: '55-9999-0001',
                 rfc: 'SDS000101XX1',
-                legal_address: 'Calle Falsa 123, Col. Inexistente, 00000 Ciudad Fantasma, DF',
+                full_address: 'Calle Falsa 123, Col. Inexistente, 00000 Ciudad Fantasma, DF',
                 status: 'submitted',
                 specialties: ['servicios_varios'],
                 service_radius_km: 10,

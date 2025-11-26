@@ -176,7 +176,7 @@ const searchTickets = () => {
 };
 
 const openTicketDetail = (ticket) => {
-  router.push(`/tickets/${ticket.id}`);
+  router.push(`/client/tickets/${ticket.id}`);
 };
 
 const createTicket = () => {

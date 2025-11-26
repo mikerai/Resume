@@ -71,6 +71,11 @@ const routes = [
       }
     ]
   },
+  // 🎟️ CLIENT TICKET DETAIL
+  {
+    path: '/client/tickets/:id',
+    component: () => import('@/views/client/TicketDetail.vue')
+  },
   // 🎟️ SHARED TICKET ROUTES
   {
     path: '/tickets/:id',
@@ -99,6 +104,10 @@ const routes = [
   {
     path: '/client/settings',
     component: () => import('@/views/client/Settings.vue')
+  },
+  {
+    path: '/supplier/settings',
+    component: () => import('@/views/supplier/Settings.vue')
   }
 ]
 

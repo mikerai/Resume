@@ -4,11 +4,9 @@
       <div class="login-container">
         <!-- Logo and Title -->
         <div class="login-header">
-          <div class="logo-container">
-            <ion-icon :icon="constructOutline" class="logo-icon"></ion-icon>
-          </div>
-          <h1>Mantex Mobile</h1>
-          <p class="subtitle">Técnicos Especializados</p>
+          <img src="/icon.png" alt="Logo" />
+          <h1>Mantex</h1>
+          <p class="subtitle">Servicio de Mantenimiento</p>
         </div>
 
         <!-- Login Form -->
@@ -62,10 +60,10 @@
             <ion-button
               fill="outline"
               size="small"
-              @click="quickLogin('admin')"
+              @click="quickLogin('client')"
               :disabled="isLoading"
             >
-              Admin
+              Cliente
             </ion-button>
             <ion-button
               fill="outline"
@@ -203,7 +201,7 @@ const getErrorMessage = (error) => {
 // Quick login for development/demo
 const quickLogin = async (role) => {
   const testAccounts = {
-    admin: { email: 'admin@mantex.mx', password: 'admin123' },
+    client: { email: 'ingenieromike+client@gmail.com', password: 'client1234' },
     technician: { email: 'tecnico@mantex.mx', password: 'tecnico123' },
     flynn: { email: 'm@511.mx', password: 'flynn123' }
   };

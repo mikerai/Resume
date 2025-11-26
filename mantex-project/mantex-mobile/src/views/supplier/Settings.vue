@@ -3,7 +3,7 @@
     <ion-header>
       <ion-toolbar color="primary">
         <ion-buttons slot="start">
-          <ion-back-button default-href="/client/profile"></ion-back-button>
+          <ion-back-button default-href="/supplier/account"></ion-back-button>
         </ion-buttons>
         <ion-title>Configuración</ion-title>
       </ion-toolbar>
@@ -30,7 +30,7 @@
             @change="onAvatarSelect"
           />
         </div>
-        <h2 class="ion-margin-top">{{ profile?.first_name }} {{ profile?.last_name }} {{ profile?.second_last_name }}</h2>
+        <h2 class="ion-margin-top">{{ profile?.username || 'Usuario' }}</h2>
         <p class="text-muted">{{ user?.email }}</p>
       </div>
 
@@ -98,7 +98,7 @@ const fileInput = ref(null);
 const loadAvatar = async () => {
   try {
     const { data, error } = await supabase
-      .from('client_profiles')
+      .from('supplier_profiles')
       .select('avatar_url')
       .eq('user_id', user.value.id)
       .single();
@@ -128,7 +128,7 @@ const onAvatarSelect = async (event) => {
 
     // Update profile in DB
     const { error } = await supabase
-      .from('client_profiles')
+      .from('supplier_profiles')
       .update({ avatar_url: s3_key })
       .eq('user_id', user.value.id);
 

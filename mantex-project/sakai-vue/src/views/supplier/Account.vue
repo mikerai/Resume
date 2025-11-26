@@ -90,7 +90,7 @@
                         </div>
                         <div class="field">
                             <label class="font-medium text-sm">Dirección:</label>
-                            <p>{{ supplierProfile.legal_address }}</p>
+                            <p>{{ supplierProfile.full_address || 'Sin dirección' }}</p>
                         </div>
                     </div>
                     <div class="col-span-12" v-if="supplierProfile.business_description">
@@ -206,8 +206,37 @@
                     <InputText id="email" v-model="companyForm.email" class="w-full" />
                 </div>
                 <div class="field">
-                    <label for="legal_address" class="font-medium">Dirección Legal *</label>
-                    <Textarea id="legal_address" v-model="companyForm.legal_address" rows="3" class="w-full" />
+                    <label class="font-medium">Dirección Legal</label>
+                    <div class="grid grid-cols-12 gap-2 mt-2">
+                        <div class="col-span-8">
+                            <label for="street" class="text-sm">Calle *</label>
+                            <InputText id="street" v-model="companyForm.street" class="w-full" />
+                        </div>
+                        <div class="col-span-4">
+                            <label for="number" class="text-sm">No. Ext *</label>
+                            <InputText id="number" v-model="companyForm.number" class="w-full" />
+                        </div>
+                        <div class="col-span-4">
+                            <label for="apt" class="text-sm">No. Int</label>
+                            <InputText id="apt" v-model="companyForm.apt" class="w-full" />
+                        </div>
+                        <div class="col-span-8">
+                            <label for="neighborhood" class="text-sm">Colonia *</label>
+                            <InputText id="neighborhood" v-model="companyForm.neighborhood" class="w-full" />
+                        </div>
+                        <div class="col-span-6">
+                            <label for="municipality_city" class="text-sm">Municipio/Ciudad *</label>
+                            <InputText id="municipality_city" v-model="companyForm.municipality_city" class="w-full" />
+                        </div>
+                        <div class="col-span-6">
+                            <label for="state" class="text-sm">Estado *</label>
+                            <InputText id="state" v-model="companyForm.state" class="w-full" />
+                        </div>
+                        <div class="col-span-6">
+                            <label for="postal_code" class="text-sm">CP *</label>
+                            <InputText id="postal_code" v-model="companyForm.postal_code" class="w-full" />
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="col-span-12">
@@ -408,7 +437,14 @@ const editCompanyInfo = () => {
             contact_person: supplierProfile.value.contact_person,
             phone_number: supplierProfile.value.phone_number,
             email: supplierProfile.value.email,
-            legal_address: supplierProfile.value.legal_address,
+            email: supplierProfile.value.email,
+            street: supplierProfile.value.street,
+            number: supplierProfile.value.number,
+            apt: supplierProfile.value.apt,
+            neighborhood: supplierProfile.value.neighborhood,
+            municipality_city: supplierProfile.value.municipality_city,
+            state: supplierProfile.value.state,
+            postal_code: supplierProfile.value.postal_code,
             business_description: supplierProfile.value.business_description
         };
         companyDialog.value = true;
@@ -425,7 +461,14 @@ const saveCompanyInfo = async () => {
                 contact_person: companyForm.value.contact_person,
                 phone_number: companyForm.value.phone_number,
                 email: companyForm.value.email,
-                legal_address: companyForm.value.legal_address,
+                email: companyForm.value.email,
+                street: companyForm.value.street,
+                number: companyForm.value.number,
+                apt: companyForm.value.apt,
+                neighborhood: companyForm.value.neighborhood,
+                municipality_city: companyForm.value.municipality_city,
+                state: companyForm.value.state,
+                postal_code: companyForm.value.postal_code,
                 business_description: companyForm.value.business_description,
                 updated_at: new Date().toISOString()
             })

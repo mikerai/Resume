@@ -47,10 +47,19 @@ const formData = ref({
     biometryResults: null, // Face comparison results
     blacklistResults: null, // Block list validation results
 
-    // Step 2: SAT Data (ONLY RFC + CIEC)
+    // Step 2: SAT Data (ONLY RFC + CIEC) + Address
     rfc: '',
     ciecPassword: '', // CIEC password
     satValidationResults: null,
+    
+    // Address Fields
+    street: '',
+    number: '',
+    apt: '',
+    neighborhood: '',
+    municipality_city: '',
+    state: '',
+    postal_code: '',
 
     // Step 3: Business Documents
     insuranceFiles: [],
@@ -432,6 +441,24 @@ const processINEValidationAsync = async (frontBase64, backBase64, selfieBase64, 
             formData.value.biometryResults = ineValidation.normalized;
 
             // Step 2: Blacklist validation
+            
+            // Populate address fields from INE data (Best effort)
+            const fullAddress = ineValidation.normalized?.domicilio || ineValidation.data?.ocr_data?.domicilio || '';
+            if (fullAddress) {
+                // Put everything in street initially, user must refine
+                formData.value.street = fullAddress;
+                formData.value.postal_code = ineValidation.data?.ocr_data?.cp || '';
+                formData.value.municipality_city = ineValidation.data?.ocr_data?.municipio || '';
+                formData.value.state = ineValidation.data?.ocr_data?.estado || '';
+                
+                toast.add({
+                    severity: 'info',
+                    summary: 'Dirección Extraída',
+                    detail: 'Por favor verifica y completa los detalles de tu dirección en el siguiente paso',
+                    life: 5000
+                });
+            }
+
             try {
                 const blacklistValidation = await nubariumService.queryAllBlockLists(
                     ineValidation.normalized.curp || 'UNKNOWN'
@@ -917,7 +944,16 @@ const saveSupplierData = async () => {
             company_name: formData.value.biometryResults?.nombreCompleto || 'Pending Validation',
             rfc: formData.value.rfc.toUpperCase(),
             sat_password_encrypted: formData.value.ciecPassword ? btoa(formData.value.ciecPassword) : '', // Campo requerido
-            legal_address: legalAddress,
+            
+            // Address Fields (Homologated Schema)
+            street: formData.value.street,
+            number: formData.value.number,
+            apt: formData.value.apt,
+            neighborhood: formData.value.neighborhood,
+            municipality_city: formData.value.municipality_city,
+            state: formData.value.state,
+            postal_code: formData.value.postal_code,
+            // legal_address removed in favor of generated full_address
 
             // Step 2: Información de Contacto
             contact_person: formData.value.biometryResults?.nombreCompleto || 'Pending',
@@ -1460,6 +1496,43 @@ const goToDashboardDummy = () => {
                                     <small class="text-surface-500">
                                         Esta información solamente la usaremos para validar tu RFC y darte de alta automáticamente en el sistema.
                                     </small>
+                                </div>
+
+                                <!-- Address Fields Section -->
+                                <div class="col-span-12 mt-4">
+                                    <h6 class="font-semibold text-lg mb-3">Dirección Fiscal</h6>
+                                    <div class="grid grid-cols-12 gap-4">
+                                        <div class="col-span-12 md:col-span-8">
+                                            <label for="street" class="block font-semibold mb-2">Calle *</label>
+                                            <InputText id="street" v-model="formData.street" class="w-full" placeholder="Calle principal" />
+                                        </div>
+                                        <div class="col-span-6 md:col-span-2">
+                                            <label for="number" class="block font-semibold mb-2">No. Ext *</label>
+                                            <InputText id="number" v-model="formData.number" class="w-full" placeholder="123" />
+                                        </div>
+                                        <div class="col-span-6 md:col-span-2">
+                                            <label for="apt" class="block font-semibold mb-2">No. Int</label>
+                                            <InputText id="apt" v-model="formData.apt" class="w-full" placeholder="Apt 4B" />
+                                        </div>
+                                        
+                                        <div class="col-span-12 md:col-span-6">
+                                            <label for="neighborhood" class="block font-semibold mb-2">Colonia *</label>
+                                            <InputText id="neighborhood" v-model="formData.neighborhood" class="w-full" placeholder="Colonia" />
+                                        </div>
+                                        <div class="col-span-12 md:col-span-6">
+                                            <label for="postal_code" class="block font-semibold mb-2">Código Postal *</label>
+                                            <InputText id="postal_code" v-model="formData.postal_code" class="w-full" placeholder="00000" />
+                                        </div>
+
+                                        <div class="col-span-12 md:col-span-6">
+                                            <label for="municipality_city" class="block font-semibold mb-2">Municipio/Ciudad *</label>
+                                            <InputText id="municipality_city" v-model="formData.municipality_city" class="w-full" placeholder="Municipio" />
+                                        </div>
+                                        <div class="col-span-12 md:col-span-6">
+                                            <label for="state" class="block font-semibold mb-2">Estado *</label>
+                                            <InputText id="state" v-model="formData.state" class="w-full" placeholder="Estado" />
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div v-if="formData.satValidationResults" class="col-span-12 mt-4">

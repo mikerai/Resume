@@ -39,7 +39,7 @@ async function getProfile(userId) {
         // SIN TIMEOUT - dejar que complete o falle naturalmente
         const { data, error } = await supabase
             .from('profiles')
-            .select(`username, role, sub_role, permissions, onboarding_complete`)
+            .select(`username, first_name, last_name, second_last_name, role, sub_role, permissions, onboarding_complete`)
             .eq('id', userId)
             .single();
 
@@ -51,6 +51,9 @@ async function getProfile(userId) {
         if (data) {
             profile.value = {
                 username: data.username,
+                first_name: data.first_name,
+                last_name: data.last_name,
+                second_last_name: data.second_last_name,
                 role: data.role,
                 sub_role: data.sub_role,
                 permissions: data.permissions,
@@ -59,14 +62,14 @@ async function getProfile(userId) {
             console.log('✅ Perfil obtenido:', profile.value);
         } else if (error && error.code !== 'PGRST116') {
             console.error('Error al obtener perfil:', error.message, error);
-            profile.value = { username: null, role: null, sub_role: null, permissions: {}, onboarding_complete: false };
+            profile.value = { username: null, first_name: null, last_name: null, second_last_name: null, role: null, sub_role: null, permissions: {}, onboarding_complete: false };
         } else {
             console.log('ℹ️ Perfil no encontrado, usando predeterminado');
-            profile.value = { username: null, role: null, onboarding_complete: false };
+            profile.value = { username: null, first_name: null, last_name: null, second_last_name: null, role: null, sub_role: null, permissions: {}, onboarding_complete: false };
         }
     } catch (e) {
         console.error('💥 Error crítico al obtener perfil:', e.message);
-        profile.value = { username: null, role: null, onboarding_complete: false };
+        profile.value = { username: null, first_name: null, last_name: null, second_last_name: null, role: null, sub_role: null, permissions: {}, onboarding_complete: false };
     }
 }
 
@@ -191,7 +194,7 @@ async function logout() {
 
         // 3. Limpiar estado inmediatamente (no esperar al listener)
         user.value = null;
-        profile.value = { username: null, role: null, onboarding_complete: false };
+        profile.value = { username: null, first_name: null, last_name: null, second_last_name: null, role: null, sub_role: null, permissions: {}, onboarding_complete: false };
         isLoading.value = false;
 
         console.log('✅ Logout exitoso - sesión completamente limpiada');
@@ -204,7 +207,7 @@ async function logout() {
         console.error('Error crítico en logout:', error);
         // Logout forzado en caso de error
         user.value = null;
-        profile.value = { username: null, role: null, onboarding_complete: false };
+        profile.value = { username: null, first_name: null, last_name: null, second_last_name: null, role: null, sub_role: null, permissions: {}, onboarding_complete: false };
         isLoading.value = false;
 
         // Redirección forzada en caso de error
@@ -307,7 +310,7 @@ async function initializeAuth() {
             console.error('Error obteniendo sesión:', error);
             // Solo limpiar si hay error
             user.value = null;
-            profile.value = { username: null, role: null, onboarding_complete: false };
+            profile.value = { username: null, first_name: null, last_name: null, second_last_name: null, role: null, sub_role: null, permissions: {}, onboarding_complete: false };
         } else if (session?.user) {
             // Sesión válida encontrada - restaurar usuario
             console.log('Sesión válida encontrada para:', session.user.email);
@@ -325,7 +328,7 @@ async function initializeAuth() {
             // No hay sesión - estado limpio
             console.log('No hay sesión activa');
             user.value = null;
-            profile.value = { username: null, role: null, onboarding_complete: false };
+            profile.value = { username: null, first_name: null, last_name: null, second_last_name: null, role: null, sub_role: null, permissions: {}, onboarding_complete: false };
         }
 
         console.log('Autenticación inicializada');
@@ -333,7 +336,7 @@ async function initializeAuth() {
         console.error('Error crítico en initializeAuth:', e);
         // En caso de error crítico, estado limpio
         user.value = null;
-        profile.value = { username: null, role: null, onboarding_complete: false };
+        profile.value = { username: null, first_name: null, last_name: null, second_last_name: null, role: null, sub_role: null, permissions: {}, onboarding_complete: false };
     } finally {
         // Desbloquear router guard
         isLoading.value = false;
@@ -382,7 +385,7 @@ supabase.auth.onAuthStateChange(async (event, session) => {
         } else if (event === 'SIGNED_OUT') {
             console.log('Procesando logout');
             user.value = null;
-            profile.value = { username: null, role: null, onboarding_complete: false };
+            profile.value = { username: null, first_name: null, last_name: null, second_last_name: null, role: null, sub_role: null, permissions: {}, onboarding_complete: false };
         }
     } catch (e) {
         console.error("Error durante el cambio de estado de Auth:", e);

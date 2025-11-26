@@ -89,6 +89,59 @@
                 </ion-select-option>
               </ion-select>
             </ion-item>
+
+            <ion-item-divider>
+              <ion-label>Dirección Fiscal / Oficina Central</ion-label>
+            </ion-item-divider>
+
+            <ion-item>
+              <ion-label position="stacked">Calle *</ion-label>
+              <ion-input v-model="formData.street"></ion-input>
+            </ion-item>
+
+            <ion-grid>
+              <ion-row>
+                <ion-col>
+                  <ion-item lines="none" class="ion-no-padding">
+                    <ion-label position="stacked">Número *</ion-label>
+                    <ion-input v-model="formData.number"></ion-input>
+                  </ion-item>
+                </ion-col>
+                <ion-col>
+                  <ion-item lines="none" class="ion-no-padding">
+                    <ion-label position="stacked">Int.</ion-label>
+                    <ion-input v-model="formData.apt"></ion-input>
+                  </ion-item>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+
+            <ion-item>
+              <ion-label position="stacked">Colonia *</ion-label>
+              <ion-input v-model="formData.neighborhood"></ion-input>
+            </ion-item>
+
+            <ion-item>
+              <ion-label position="stacked">Municipio / Ciudad *</ion-label>
+              <ion-input v-model="formData.municipality_city"></ion-input>
+            </ion-item>
+
+            <ion-grid>
+              <ion-row>
+                <ion-col>
+                  <ion-item lines="none" class="ion-no-padding">
+                    <ion-label position="stacked">Estado *</ion-label>
+                    <ion-input v-model="formData.state"></ion-input>
+                  </ion-item>
+                </ion-col>
+                <ion-col>
+                  <ion-item lines="none" class="ion-no-padding">
+                    <ion-label position="stacked">CP *</ion-label>
+                    <ion-input v-model="formData.postal_code" maxlength="5" type="number"></ion-input>
+                  </ion-item>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
           </ion-list>
         </ion-content>
       </ion-modal>
@@ -97,11 +150,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { 
   IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonButton, IonBackButton,
   IonList, IonItem, IonLabel, IonIcon, IonSpinner,
-  IonModal, IonInput, IonSelect, IonSelectOption,
+  IonModal, IonInput, IonSelect, IonSelectOption, IonItemDivider, IonGrid, IonRow, IonCol,
   toastController
 } from '@ionic/vue';
 import { createOutline } from 'ionicons/icons';
@@ -119,7 +172,14 @@ const formData = ref({
   company_name: '',
   legal_name: '',
   tax_id: '',
-  fiscal_regime: ''
+  fiscal_regime: '',
+  street: '',
+  number: '',
+  apt: '',
+  neighborhood: '',
+  municipality_city: '',
+  state: '',
+  postal_code: ''
 });
 
 const fiscalRegimes = [
@@ -158,7 +218,14 @@ const openEditDialog = () => {
         company_name: company.value?.company_name || '',
         legal_name: company.value?.legal_name || '',
         tax_id: company.value?.tax_id || '',
-        fiscal_regime: company.value?.fiscal_regime || ''
+        fiscal_regime: company.value?.fiscal_regime || '',
+        street: company.value?.street || '',
+        number: company.value?.number || '',
+        apt: company.value?.apt || '',
+        neighborhood: company.value?.neighborhood || '',
+        municipality_city: company.value?.municipality_city || '',
+        state: company.value?.state || '',
+        postal_code: company.value?.postal_code || ''
     };
     showModal.value = true;
 };
@@ -196,6 +263,13 @@ const saveCompany = async () => {
             legal_name: formData.value.legal_name,
             tax_id: formData.value.tax_id,
             fiscal_regime: formData.value.fiscal_regime,
+            street: formData.value.street,
+            number: formData.value.number,
+            apt: formData.value.apt,
+            neighborhood: formData.value.neighborhood,
+            municipality_city: formData.value.municipality_city,
+            state: formData.value.state,
+            postal_code: formData.value.postal_code,
             updated_at: new Date().toISOString()
         })
         .eq('user_id', user.value.id);

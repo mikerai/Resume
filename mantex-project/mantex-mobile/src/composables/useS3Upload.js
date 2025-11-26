@@ -323,6 +323,39 @@ export function useS3Upload() {
     };
 
     /**
+     * Obtiene una URL firmada para un archivo existente en S3
+     * @param {string} s3Key - S3 key del archivo
+     * @returns {Promise<string>} URL firmada
+     */
+    const getSignedUrl = async (s3Key) => {
+        try {
+            const lambdaBaseUrl = import.meta.env.VITE_LAMBDA_NUBARIUM_PROXY_URL;
+            const lambdaUrl = `${lambdaBaseUrl}/s3/signed-url`;
+
+            const response = await fetch(lambdaUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    bucket: S3_BUCKET,
+                    key: s3Key
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to get signed URL');
+            }
+
+            const result = await response.json();
+            return result.signedUrl;
+        } catch (error) {
+            console.error('Error getting signed URL:', error);
+            return null;
+        }
+    };
+
+    /**
      * Obtiene la lista de archivos de un usuario desde S3
      * @param {string} username - Username del usuario
      * @param {string} documentType - Tipo de documento (opcional)
@@ -375,6 +408,7 @@ export function useS3Upload() {
         uploadMultipleDocuments,
         deleteFileFromS3,
         listUserFiles,
+        getSignedUrl,
 
         // Funciones especializadas para CLIENTS + SUPPLIERS
         uploadWorkEvidence,           // 📸 Evidencias de trabajo

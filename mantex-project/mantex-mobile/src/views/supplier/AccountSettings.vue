@@ -12,7 +12,12 @@
         <ion-card-content>
           <div class="profile-header">
             <ion-avatar class="profile-avatar">
-              <div class="avatar-placeholder">
+              <img 
+                v-if="avatarUrl" 
+                :src="avatarUrl" 
+                alt="Avatar"
+              />
+              <div v-else class="avatar-placeholder">
                 {{ getInitials(profile?.username) }}
               </div>
             </ion-avatar>
@@ -77,6 +82,11 @@
           <ion-label>Configuración</ion-label>
         </ion-list-header>
 
+        <ion-item button router-link="/supplier/settings">
+          <ion-icon :icon="settingsOutline" slot="start"></ion-icon>
+          <ion-label>Cuenta y Seguridad</ion-label>
+        </ion-item>
+
         <ion-item button @click="toggleNotifications">
           <ion-icon :icon="notificationsOutline" slot="start"></ion-icon>
           <ion-label>Notificaciones</ion-label>
@@ -133,7 +143,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import {
   IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonCard, IonCardContent,
@@ -143,14 +153,36 @@ import {
 import {
   mailOutline, personOutline, shieldCheckmarkOutline, ribbonOutline,
   notificationsOutline, languageOutline, helpCircleOutline, documentTextOutline,
-  lockClosedOutline, logOutOutline, checkmarkCircleOutline, timeOutline
+  lockClosedOutline, logOutOutline, checkmarkCircleOutline, timeOutline, settingsOutline
 } from 'ionicons/icons';
 import { useAuth } from '@/composables/useAuth.js';
+import { useS3Upload } from '@/composables/useS3Upload';
+import { supabase } from '@/lib/supabaseClient';
 
 const router = useRouter();
 const { user, profile, logout } = useAuth();
+const { getSignedUrl } = useS3Upload();
 
 const notificationsEnabled = ref(true);
+const avatarUrl = ref(null);
+
+const loadAvatar = async () => {
+  try {
+    const { data, error } = await supabase
+      .from('supplier_profiles')
+      .select('avatar_url')
+      .eq('user_id', user.value.id)
+      .single();
+
+    if (error) throw error;
+
+    if (data?.avatar_url) {
+      avatarUrl.value = await getSignedUrl(data.avatar_url);
+    }
+  } catch (e) {
+    console.error('Error loading avatar:', e);
+  }
+};
 
 const isApproved = computed(() => {
   return profile.value?.onboarding_complete === true;
@@ -235,6 +267,12 @@ const handleLogout = async () => {
     await toast.present();
   }
 };
+
+onMounted(() => {
+  if (user.value?.id) {
+    loadAvatar();
+  }
+});
 </script>
 
 <style scoped>

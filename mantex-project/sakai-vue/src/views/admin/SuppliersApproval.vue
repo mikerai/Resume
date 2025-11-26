@@ -85,10 +85,10 @@
                         </template>
                     </Column>
 
-                    <Column field="legal_address" header="Ubicación" sortable style="min-width: 16rem">
+                    <Column field="full_address" header="Ubicación" sortable style="min-width: 16rem">
                         <template #body="slotProps">
                             <div class="text-sm">
-                                {{ slotProps.data.legal_address || 'Sin dirección' }}
+                                {{ slotProps.data.full_address || 'Sin dirección' }}
                             </div>
                         </template>
                     </Column>
@@ -207,7 +207,7 @@
                         </div>
                         <div class="mb-3">
                             <label class="block text-600 mb-1">Dirección:</label>
-                            <p class="text-900 m-0">{{ selectedSupplier.sat_data?.ine_validation?.normalized?.domicilio || selectedSupplier.legal_address || 'Sin dirección' }}</p>
+                            <p class="text-900 m-0">{{ selectedSupplier.sat_data?.ine_validation?.normalized?.domicilio || selectedSupplier.full_address || 'Sin dirección' }}</p>
                         </div>
                     </div>
                     <div class="col-12">
@@ -471,7 +471,7 @@
             </div>
         </template>
     </Dialog>
-
+    
     <!-- Dialog para rechazar proveedor -->
     <Dialog v-model:visible="showRejectDialog" modal :style="{ width: '450px' }" header="Rechazar Proveedor">
         <div class="field">
@@ -700,7 +700,7 @@ const loadSuppliers = async () => {
                 email: 'juan.mendoza@sibajio.com.mx',
                 phone_number: '477-123-4567',
                 rfc: 'SIB8807231G3',
-                legal_address: 'Blvd. Adolfo López Mateos 2505, Centro, 37000 León, Gto.',
+                full_address: 'Blvd. Adolfo López Mateos 2505, Centro, 37000 León, Gto.',
                 status: 'submitted',
                 specialties: ['mantenimiento_preventivo', 'instalaciones_electricas', 'climatizacion'],
                 service_radius_km: 75,
@@ -719,7 +719,7 @@ const loadSuppliers = async () => {
                 email: 'maria.rodriguez@mpcenter.mx',
                 phone_number: '33-1234-5678',
                 rfc: 'MPC9012281H4',
-                legal_address: 'Av. Américas 1500, Col. Providencia, 44630 Guadalajara, Jal.',
+                full_address: 'Av. Américas 1500, Col. Providencia, 44630 Guadalajara, Jal.',
                 status: 'submitted',
                 specialties: ['limpieza_industrial', 'mantenimiento_edificios', 'jardineria'],
                 service_radius_km: 50,
