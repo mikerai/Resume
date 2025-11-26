@@ -183,6 +183,11 @@ const router = createRouter({
                     name: 'SupplierAccount',
                     component: () => import('@/views/supplier/Account.vue')
                 },
+                {
+                    path: 'settings',
+                    name: 'SupplierSettings',
+                    component: () => import('@/views/supplier/Settings.vue')
+                }
             ]
         },
 

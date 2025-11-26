@@ -40,6 +40,11 @@ const model = ref([
         label: 'Mi Cuenta',
         items: [
             {
+                label: 'Configuración',
+                icon: 'pi pi-fw pi-cog',
+                to: '/supplier/settings'
+            },
+            {
                 label: 'Cerrar Sesión',
                 icon: 'pi pi-fw pi-sign-out',
                 command: () => logout()
