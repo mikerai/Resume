@@ -138,15 +138,18 @@ BEGIN
   -- Construir query dinámico según la tabla
   sql_query := format('
     UPDATE %I
-    SET latitude = NULL, longitude = NULL -- Forzar re-geocoding
-    WHERE latitude IS NULL OR longitude IS NULL
-    %s
+    SET street = street  -- Trigger the geocoding by touching the street field
+    WHERE id IN (
+      SELECT id FROM %I
+      WHERE latitude IS NULL OR longitude IS NULL
+      %s
+    )
     RETURNING id, 
-              CONCAT_WS('', '', street, number, municipality_city, state) as address,
+              CONCAT_WS('', '', street, '' '', number, '', '', municipality_city, '', '', state) as address,
               latitude,
               longitude,
               (latitude IS NOT NULL) as success
-  ', table_name, 
+  ', table_name, table_name,
      CASE WHEN limit_rows IS NOT NULL THEN 'LIMIT ' || limit_rows ELSE '' END
   );
   

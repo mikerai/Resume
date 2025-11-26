@@ -3,7 +3,8 @@ import { supabase } from '@/lib/supabaseClient';
 // Helper to transform snake_case DB fields to camelCase for frontend
 const transformTicket = (ticket) => {
   if (!ticket) return null;
-  return {
+
+  const transformed = {
     ...ticket,
     clientId: ticket.client_id,
     supplierId: ticket.supplier_id,
@@ -17,6 +18,39 @@ const transformTicket = (ticket) => {
     clientName: ticket.client?.company_name || ticket.client?.contact_name,
     supplierName: ticket.supplier?.company_name || ticket.supplier?.contact_person
   };
+
+  // Transform Branch (handle nested contact_person)
+  if (ticket.branch) {
+    transformed.branch = {
+      ...ticket.branch,
+      fullAddress: ticket.branch.full_address,
+      contactPerson: ticket.branch.contact_person ?
+        `${ticket.branch.contact_person.first_name} ${ticket.branch.contact_person.last_name_paternal}` : '',
+      phone: ticket.branch.contact_person?.phone || ''
+    };
+  }
+
+  // Transform Client
+  if (ticket.client) {
+    transformed.client = {
+      ...ticket.client,
+      companyName: ticket.client.company_name,
+      contactPerson: ticket.client.contact_person,
+      fullAddress: ticket.client.full_address
+    };
+  }
+
+  // Transform Supplier
+  if (ticket.supplier) {
+    transformed.supplier = {
+      ...ticket.supplier,
+      companyName: ticket.supplier.company_name,
+      contactPerson: ticket.supplier.contact_person,
+      fullAddress: ticket.supplier.full_address
+    };
+  }
+
+  return transformed;
 };
 
 // GET /jobs (tickets)
@@ -53,22 +87,83 @@ export async function getJobs(params = {}) {
 
 // GET /jobs/{id}
 export async function getJob(id) {
-  const { data, error } = await supabase
+  // Fetch the ticket first
+  const { data: ticket, error: ticketError } = await supabase
     .from('tickets')
-    .select(`
-      *,
-      client:clients(company_name, contact_person),
-      supplier:supplier_profiles(company_name, contact_person)
-    `)
+    .select('*')
     .eq('id', id)
     .single();
 
-  if (error) {
-    console.error('Error fetching job:', error);
-    // Don't throw if just not found, return null? 
-    // TicketDetail expects null or object.
-    if (error.code === 'PGRST116') return null; // Not found
-    throw new Error(error.message);
+  if (ticketError) {
+    console.error('Error fetching job:', ticketError);
+    if (ticketError.code === 'PGRST116') return null; // Not found
+    throw new Error(ticketError.message);
+  }
+
+  if (!ticket) return null;
+
+  // Fetch related data separately to avoid ambiguous relationship errors
+  const data = { ...ticket };
+
+  // Fetch client if exists
+  if (ticket.client_id) {
+    const { data: client } = await supabase
+      .from('clients')
+      .select('id, company_name, contact_person, email, phone, full_address')
+      .eq('id', ticket.client_id)
+      .single();
+    data.client = client;
+  }
+
+  // Fetch branch if exists
+  if (ticket.branch_id) {
+    const { data: branch } = await supabase
+      .from('client_branches')
+      .select(`
+        id,
+        name,
+        full_address,
+        latitude,
+        longitude,
+        contact_persons!contact_person_id(
+          first_name,
+          last_name_paternal,
+          phone,
+          email
+        )
+      `)
+      .eq('id', ticket.branch_id)
+      .single();
+
+    if (branch) {
+      data.branch = {
+        ...branch,
+        contact_person: branch.contact_persons ?
+          `${branch.contact_persons.first_name} ${branch.contact_persons.last_name_paternal}` : '',
+        phone: branch.contact_persons?.phone || ''
+      };
+      delete data.branch.contact_persons;
+    }
+  }
+
+  // Fetch asset if exists
+  if (ticket.asset_id) {
+    const { data: asset } = await supabase
+      .from('client_assets')
+      .select('id, name, category, brand, serial_number')
+      .eq('id', ticket.asset_id)
+      .single();
+    data.asset = asset;
+  }
+
+  // Fetch supplier if exists
+  if (ticket.supplier_id) {
+    const { data: supplier } = await supabase
+      .from('supplier_profiles')
+      .select('id, company_name, contact_person, email, phone, full_address, latitude, longitude')
+      .eq('id', ticket.supplier_id)
+      .single();
+    data.supplier = supplier;
   }
 
   return transformTicket(data);

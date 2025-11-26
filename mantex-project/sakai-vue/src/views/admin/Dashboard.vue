@@ -66,7 +66,7 @@
         <div class="col-span-12 lg:col-span-8">
             <div class="card">
                 <div class="flex justify-between items-center mb-4">
-                    <div class="font-semibold text-xl">Suppliers en Tiempo Real</div>
+                    <div class="font-semibold text-xl">Usuarios en Tiempo Real</div>
                     <div class="flex gap-2">
                         <Button
                             icon="pi pi-refresh"
@@ -192,19 +192,27 @@
                     <div class="font-medium mb-2">Acciones Rápidas</div>
                     <div class="flex flex-col gap-2">
                         <Button
-                            label="Asignar Trabajo"
+                            label="Crear Ticket"
                             icon="pi pi-plus"
                             size="small"
                             class="w-full"
                             @click="openJobAssignment"
                         />
                         <Button
-                            label="Ver Todos"
+                            label="Usuarios"
                             icon="pi pi-users"
                             size="small"
                             outlined
                             class="w-full"
-                            @click="viewAllSuppliers"
+                            @click="navigateToUsers"
+                        />
+                         <Button
+                            label="Clientes"
+                            icon="pi pi-building"
+                            size="small"
+                            outlined
+                            class="w-full"
+                            @click="navigateToClients"
                         />
                     </div>
                 </div>
@@ -216,9 +224,9 @@
             <div class="card">
                 <div class="font-semibold text-xl mb-4">Tickets Recientes</div>
                 <DataTable :value="recent" :rows="10" :paginator="true" responsiveLayout="scroll">
-                    <Column field="id" header="ID" sortable style="min-width: 12rem">
+                    <Column field="displayId" header="ID" sortable style="min-width: 12rem">
                         <template #body="slotProps">
-                            <span class="font-medium text-primary">#{{ slotProps.data.id }}</span>
+                            <span class="font-medium text-primary">#{{ slotProps.data.displayId }}</span>
                         </template>
                     </Column>
                     <Column field="title" header="Título" sortable>
@@ -389,152 +397,22 @@ const showAllSuppliers = () => {
     router.push('/admin/suppliers');
 };
 
+// Quick Actions
 const openJobAssignment = () => {
-    // Open job assignment dialog/modal
-    console.log('Open job assignment');
+    router.push('/admin/tickets/create');
 };
 
-const viewAllSuppliers = () => {
-    router.push('/admin/suppliers');
+const navigateToUsers = () => {
+    router.push('/admin/users');
 };
 
-// Load real suppliers and clients from database
-const loadRealData = async () => {
-    try {
-        console.log('[INFO] Cargando datos reales de suppliers y clientes...');
-
-        // Load suppliers (approved and pending)
-        const { data: suppliersData, error: suppliersError } = await supabase
-            .from('suppliers')
-            .select('*')
-            .in('status', ['approved', 'pending'])
-            .order('created_at', { ascending: false });
-
-        if (suppliersError) {
-            console.error('[ERROR] Error loading suppliers:', suppliersError);
-            throw suppliersError;
-        }
-
-        // Load clients
-        const { data: clientsData, error: clientsError } = await supabase
-            .from('clients')
-            .select('*')
-            .order('created_at', { ascending: false });
-
-        if (clientsError) {
-            console.error('[ERROR] Error loading clients:', clientsError);
-            throw clientsError;
-        }
-
-        // Transform suppliers data
-        const suppliersList = (suppliersData || []).map(supplier => ({
-            id: supplier.id,
-            name: supplier.contact_person || supplier.company_name,
-            company: supplier.company_name,
-            status: supplier.status,
-            address: supplier.address,
-            latitude: supplier.latitude,
-            longitude: supplier.longitude,
-            location: getCoordinates(supplier),
-            phone: supplier.phone_number,
-            email: supplier.email,
-            rfc: supplier.rfc,
-            type: 'supplier'
-        }));
-
-        // Transform clients data
-        const clientsList = (clientsData || []).map(client => ({
-            id: client.id,
-            name: client.full_name,
-            status: 'client',
-            address: client.address,
-            latitude: client.latitude,
-            longitude: client.longitude,
-            location: getCoordinates(client),
-            phone: client.phone_number,
-            email: client.email,
-            type: 'client'
-        }));
-
-        // Deduplicate by address
-        const allItems = [...suppliersList, ...clientsList];
-        const deduplicated = deduplicateByAddress(allItems);
-
-        // Store original lists
-        suppliers.value = suppliersList;
-        clients.value = clientsList;
-
-        console.log(`📍 Direcciones únicas: ${deduplicated.length} (de ${allItems.length} total)`);
-        deduplicated.forEach(location => {
-            if (location.items.length > 1) {
-                console.log(`  📌 ${location.address}: ${location.items.length} personas/empresas`);
-            }
-        });
-
-        // Update stats
-        supplierStats.value = {
-            online: approvedSuppliers.value.length,  // En línea = aprobados
-            busy: pendingSuppliers.value.length,     // Ocupados = pendientes
-            offline: 2,                               // Desconectados (dummy)
-            approved: approvedSuppliers.value.length,
-            pending: pendingSuppliers.value.length,
-            clients: clients.value.length
-        };
-
-        console.log(`✅ Cargados: ${suppliers.value.length} suppliers (${supplierStats.value.approved} aprobados, ${supplierStats.value.pending} pendientes), ${clients.value.length} clientes`);
-
-    } catch (error) {
-        console.error('❌ Error loading real data:', error);
-        // Fallback to empty arrays
-        suppliers.value = [];
-        clients.value = [];
-        supplierStats.value = {
-            online: 0,
-            busy: 0,
-            offline: 0,
-            approved: 0,
-            pending: 0,
-            clients: 0
-        };
-    }
-};
-
-// Helper function to get coordinates from supplier/client
-const getCoordinates = (item) => {
-    if (item.latitude && item.longitude) {
-        return { lat: parseFloat(item.latitude), lng: parseFloat(item.longitude) };
-    }
-    return null;
-};
-
-// Deduplicate by address - group items with same address
-const deduplicateByAddress = (items) => {
-    const addressMap = new Map();
-
-    items.forEach(item => {
-        const address = item.address?.trim().toLowerCase();
-        if (!address) return;
-
-        if (!addressMap.has(address)) {
-            addressMap.set(address, {
-                address: item.address,
-                coordinates: getCoordinates(item),
-                items: []
-            });
-        }
-        addressMap.get(address).items.push(item);
-    });
-
-    return Array.from(addressMap.values());
-};
-
-// Helper function to parse address string to coordinates (will be replaced by geocoding)
-const parseAddress = (address, item) => {
-    return getCoordinates(item);
+const navigateToClients = () => {
+    router.push('/admin/clients'); // Need to ensure this route exists or list clients in Users
 };
 
 const loadRealTickets = async () => {
     try {
+        // 1. Load recent tickets for the table
         const { data: ticketsData, error } = await supabase
             .from('tickets')
             .select(`
@@ -552,7 +430,8 @@ const loadRealTickets = async () => {
         if (error) throw error;
         
         recent.value = (ticketsData || []).map(t => ({
-            id: t.ticket_number || t.id,
+            id: t.id, // Use ID for navigation
+            displayId: t.ticket_number || t.id,
             title: t.title,
             priority: t.priority,
             status: t.status,
@@ -560,28 +439,117 @@ const loadRealTickets = async () => {
             createdAt: t.created_at
         }));
         
-        // Calculate real metrics
-        const allTicketsResult = await supabase
+        // 2. Calculate real metrics (Count ALL tickets)
+        // Total Tickets
+        const { count: totalCount, error: totalError } = await supabase
             .from('tickets')
-            .select('status', { count: 'exact' });
+            .select('*', { count: 'exact', head: true });
+            
+        if (!totalError) metrics.value.total = totalCount;
+
+        // Open Tickets
+        const { count: openCount, error: openError } = await supabase
+            .from('tickets')
+            .select('*', { count: 'exact', head: true })
+            .in('status', ['pending', 'opened', 'assigned', 'in_progress']);
+            
+        if (!openError) metrics.value.open = openCount;
+
+        // Completed Tickets
+        const { count: completedCount, error: completedError } = await supabase
+            .from('tickets')
+            .select('*', { count: 'exact', head: true })
+            .in('status', ['completed', 'paid', 'closed']);
+            
+        if (!completedError) metrics.value.completed = completedCount;
         
-        metrics.value.total = allTicketsResult.count || ticketsData.length;
-        metrics.value.open = ticketsData.filter(t => ['pending', 'opened', 'in_progress'].includes(t.status)).length;
-        metrics.value.completed = ticketsData.filter(t => ['completed', 'paid', 'closed'].includes(t.status)).length;
-        
-        // Get active users count
-        const usersResult = await supabase
+        // Active Users
+        const { count: usersCount, error: usersError } = await supabase
             .from('users')
-            .select('id', { count: 'exact' });
+            .select('*', { count: 'exact', head: true });
         
-        metrics.value.activeUsers = usersResult.count || 0;
+        if (!usersError) metrics.value.activeUsers = usersCount;
         
-        console.log('✅ Loaded real tickets:', recent.value.length);
+        console.log('✅ Dashboard metrics loaded');
     } catch (error) {
-        console.error('Error loading tickets:', error);
+        console.error('Error loading dashboard data:', error);
         // Fallback to empty
         recent.value = [];
         metrics.value = { total: 0, open: 0, completed: 0, activeUsers: 0 };
+    }
+};
+
+const loadRealData = async () => {
+    try {
+        console.log('🔍 Loading suppliers and clients for map...');
+
+        // Fetch suppliers with location data
+        const { data: suppliersData, error: suppliersError } = await supabase
+            .from('supplier_profiles')
+            .select('id, company_name, contact_person, status, full_address, latitude, longitude')
+            .not('latitude', 'is', null)
+            .not('longitude', 'is', null);
+
+        console.log('📊 Suppliers query result:', { count: suppliersData?.length || 0, error: suppliersError });
+
+        if (suppliersError) {
+            console.error('Error loading suppliers:', suppliersError);
+        } else {
+            suppliers.value = (suppliersData || []).map(s => ({
+                id: s.id,
+                name: s.company_name || s.contact_person,
+                company: s.company_name,
+                status: s.status,
+                address: s.full_address,
+                location: {
+                    lat: s.latitude,
+                    lng: s.longitude
+                }
+            }));
+
+            console.log('✅ Suppliers mapped:', suppliers.value.length, 'items');
+
+            // Update stats
+            supplierStats.value.approved = suppliers.value.filter(s => s.status === 'approved').length;
+            supplierStats.value.pending = suppliers.value.filter(s => s.status === 'pending').length;
+            supplierStats.value.online = supplierStats.value.approved;
+            supplierStats.value.busy = supplierStats.value.pending;
+        }
+
+        // Fetch clients with location data (from clients table)
+        const { data: clientsData, error: clientsError } = await supabase
+            .from('clients')
+            .select('id, company_name, contact_person, full_address, latitude, longitude')
+            .not('latitude', 'is', null)
+            .not('longitude', 'is', null);
+
+        console.log('📊 Clients query result:', { count: clientsData?.length || 0, error: clientsError });
+
+        if (clientsError) {
+            console.error('Error loading clients:', clientsError);
+        } else {
+            clients.value = (clientsData || []).map(c => ({
+                id: c.id,
+                name: c.company_name || c.contact_person,
+                company: c.company_name,
+                address: c.full_address,
+                location: {
+                    lat: c.latitude,
+                    lng: c.longitude
+                }
+            }));
+
+            console.log('✅ Clients mapped:', clients.value.length, 'items');
+
+            supplierStats.value.clients = clients.value.length;
+        }
+
+        console.log(`✅ Final data for map - Suppliers: ${suppliers.value.length}, Clients: ${clients.value.length}`);
+
+    } catch (error) {
+        console.error('Error loading map data:', error);
+        suppliers.value = [];
+        clients.value = [];
     }
 };
 

@@ -8,19 +8,18 @@
                     <div class="flex flex-col items-center">
                         <!-- Avatar con indicador de Super Admin -->
                         <div class="relative">
-                            <Avatar
-                                :label="profile?.username?.charAt(0).toUpperCase()"
-                                class="border-4 border-white shadow-lg"
-                                :class="isFlynn ? 'flynn-avatar' : adminProfile?.is_super_admin ? 'bg-yellow-500' : 'bg-blue-600'"
-                                size="xlarge"
-                                shape="circle"
-                                style="width: 7rem; height: 7rem; font-size: 2.5rem;"
+                            <AvatarUpload
+                                :currentAvatarUrl="avatarDisplayUrl"
+                                :username="profile?.username || 'admin'"
+                                bucket="avatars"
+                                @upload-success="handleAvatarSuccess"
                             />
+                            
                             <!-- Badge especial para FLYNN -->
                             <div
                                 v-if="isFlynn"
                                 class="flynn-mode-badge absolute -bottom-2 left-1/2 transform -translate-x-1/2 px-3 py-1 border-round-lg flex align-items-center gap-1"
-                                style="font-size: 0.7rem; font-weight: 700;"
+                                style="font-size: 0.7rem; font-weight: 700; z-index: 10;"
                             >
                                 <i class="pi pi-bolt" style="font-size: 0.7rem;"></i>
                                 <span>FLYNN MODE</span>
@@ -29,7 +28,7 @@
                             <div
                                 v-else-if="adminProfile?.is_super_admin"
                                 class="absolute -bottom-2 left-1/2 transform -translate-x-1/2 bg-yellow-400 text-gray-900 px-3 py-1 border-round-lg shadow-md flex align-items-center gap-1"
-                                style="font-size: 0.7rem; font-weight: 700;"
+                                style="font-size: 0.7rem; font-weight: 700; z-index: 10;"
                             >
                                 <i class="pi pi-star-fill" style="font-size: 0.7rem;"></i>
                                 <span>GOD MODE</span>
@@ -368,16 +367,21 @@ import { FilterMatchMode } from '@primevue/core/api';
 import { useToast } from 'primevue/usetoast';
 import { useRouter } from 'vue-router';
 import { useAuth } from '@/composables/useAuth';
+import { useS3Upload } from '@/composables/useS3Upload';
 import { supabase } from '@/lib/supabaseClient';
+import AvatarUpload from '@/components/common/AvatarUpload.vue';
 
 const toast = useToast();
 const router = useRouter();
 const { user, profile } = useAuth();
 
+const { getSignedUrl } = useS3Upload();
+
 // Reactive data
 const dt = ref();
 const admins = ref([]);
 const adminProfile = ref(null);
+const avatarDisplayUrl = ref(null);
 const admin = ref({});
 const selectedAdmins = ref();
 const adminDialog = ref(false);
@@ -423,8 +427,29 @@ const loadAdminProfile = async () => {
 
         if (error && error.code !== 'PGRST116') throw error;
         adminProfile.value = data;
+        
+        if (data?.avatar_url) {
+            avatarDisplayUrl.value = await getSignedUrl(data.avatar_url);
+        }
     } catch (error) {
         console.error('Error loading admin profile:', error);
+    }
+};
+
+const handleAvatarSuccess = async (s3Key) => {
+    try {
+        const { error } = await supabase
+            .from('admins')
+            .update({ avatar_url: s3Key })
+            .eq('user_id', user.value.id);
+
+        if (error) throw error;
+
+        toast.add({ severity: 'success', summary: 'Éxito', detail: 'Avatar actualizado', life: 3000 });
+        await loadAdminProfile();
+    } catch (error) {
+        console.error('Error updating avatar in DB:', error);
+        toast.add({ severity: 'error', summary: 'Error', detail: 'Error al guardar avatar', life: 3000 });
     }
 };
 

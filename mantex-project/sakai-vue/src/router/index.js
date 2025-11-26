@@ -115,6 +115,16 @@ const router = createRouter({
                     component: () => import('@/views/admin/Users.vue')
                 },
                 {
+                    path: 'clients/:id',
+                    name: 'AdminClientDetail',
+                    component: () => import('@/views/admin/ClientDetail.vue')
+                },
+                {
+                    path: 'suppliers/:id',
+                    name: 'AdminSupplierDetail',
+                    component: () => import('@/views/admin/SupplierDetail.vue')
+                },
+                {
                     path: 'suppliers-approval',
                     name: 'AdminSuppliersApproval',
                     component: () => import('@/views/admin/SuppliersApproval.vue')

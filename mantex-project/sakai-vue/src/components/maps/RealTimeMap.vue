@@ -195,58 +195,38 @@ const isTrackingActive = computed(() => googleIntegration.tracking.isTrackingAct
 const initializeMap = async () => {
     try {
         isLoading.value = true;
-        loadingMessage.value = 'Cargando Google Maps...';
+        loadingMessage.value = 'Inicializando servicios...';
 
-        // Para admin/client: inicialización simple, solo mapa
+        // Inicializar integración completa para todos los roles (asegura Firebase y Maps)
+        const success = await googleIntegration.initializeGoogleIntegration();
+
+        if (!success) {
+            throw new Error('Error inicializando Google APIs');
+        }
+
+        loadingMessage.value = 'Configurando mapa...';
+
+        // Inicializar mapa
+        const map = await googleIntegration.maps.initializeMap(mapContainer.value, {
+            zoom: 13,
+            mapTypeControl: true,
+            streetViewControl: false,
+            fullscreenControl: true
+        });
+
+        if (!map) {
+            throw new Error('Error inicializando mapa');
+        }
+
         if (!isSupplier.value) {
-            // Solo cargar Google Maps API
-            await googleIntegration.maps.loadGoogleMapsScript();
-
-            loadingMessage.value = 'Configurando mapa...';
-
-            // Inicializar mapa
-            const map = await googleIntegration.maps.initializeMap(mapContainer.value, {
-                zoom: 13,
-                mapTypeControl: true,
-                streetViewControl: false,
-                fullscreenControl: true
-            });
-
-            if (!map) {
-                throw new Error('Error inicializando mapa');
-            }
-
             // Configurar mapa para admin/client
             await setupClientAdminMap();
-
-            console.log('[OK] Mapa inicializado correctamente');
         } else {
-            // Para suppliers: inicialización completa con tracking
-            loadingMessage.value = 'Inicializando servicios...';
-
-            const success = await googleIntegration.initializeGoogleIntegration();
-
-            if (!success) {
-                throw new Error('Error inicializando Google APIs');
-            }
-
-            loadingMessage.value = 'Configurando mapa...';
-
-            const map = await googleIntegration.maps.initializeMap(mapContainer.value, {
-                zoom: 13,
-                mapTypeControl: true,
-                streetViewControl: false,
-                fullscreenControl: true
-            });
-
-            if (!map) {
-                throw new Error('Error inicializando mapa');
-            }
-
+            // Configurar mapa para suppliers
             await setupSupplierMap();
-
-            console.log('[OK] Mapa inicializado correctamente');
         }
+
+        console.log('[OK] Mapa inicializado correctamente');
 
     } catch (err) {
         console.error('[ERROR] Error inicializando mapa:', err);
@@ -337,16 +317,24 @@ const loadActiveSuppliers = async () => {
             const suppliersWithCoords = props.suppliersData.filter(s => s.location && s.location.lat && s.location.lng);
             activeSuppliers.value = suppliersWithCoords;
             updateSuppliersOnMap(suppliersWithCoords);
-            console.log('[INFO] Loaded', suppliersWithCoords.length, 'suppliers with coordinates');
-        } else {
-            // Fallback a google integration si no hay props
+            console.log('[INFO] Loaded', suppliersWithCoords.length, 'suppliers with coordinates from props');
+            return; // Exit early, don't try Firebase
+        }
+        
+        // Fallback a google integration si no hay props
+        try {
             const suppliers = await googleIntegration.getActiveSuppliersWithLocations();
             activeSuppliers.value = suppliers;
             updateSuppliersOnMap(suppliers);
+            console.log('[INFO] Loaded', suppliers.length, 'suppliers from Firebase');
+        } catch (firebaseError) {
+            console.warn('[WARN] Firebase fallback failed, no suppliers loaded:', firebaseError.message);
+            activeSuppliers.value = [];
         }
 
     } catch (error) {
         console.error('[ERROR] Error cargando suppliers:', error);
+        activeSuppliers.value = [];
     }
 };
 

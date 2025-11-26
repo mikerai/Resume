@@ -61,7 +61,23 @@
                     <div class="font-semibold text-xl">Gestión de Tickets</div>
                     <Button icon="pi pi-plus" label="Crear Ticket" @click="createTicket" />
                 </div>
-                <DataTable :value="tickets" :rows="10" :paginator="true" responsiveLayout="scroll">
+                <DataTable 
+                    :value="tickets" 
+                    :rows="10" 
+                    :paginator="true" 
+                    responsiveLayout="scroll"
+                    :filters="filters"
+                    :loading="loading"
+                    :globalFilterFields="['ticket_number', 'title', 'client.company_name', 'supplier.company_name', 'status']"
+                >
+                    <template #header>
+                        <div class="flex justify-content-end">
+                            <IconField iconPosition="left">
+                                <InputIcon class="pi pi-search" />
+                                <InputText v-model="filters['global'].value" placeholder="Buscar..." />
+                            </IconField>
+                        </div>
+                    </template>
                     <Column field="ticket_number" header="ID" sortable style="min-width: 12rem">
                         <template #body="slotProps">
                             <span class="font-medium text-primary">{{ slotProps.data.ticket_number }}</span>
@@ -109,17 +125,26 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useToast } from 'primevue/usetoast';
+import { useRouter } from 'vue-router';
+import { supabase } from '@/lib/supabaseClient';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Button from 'primevue/button';
 import Tag from 'primevue/tag';
-import { LABELS, getSeverity, getLabel, formatDate } from '@/lib/constants.js';
+import InputText from 'primevue/inputtext';
+import IconField from 'primevue/iconfield';
+import InputIcon from 'primevue/inputicon';
+import { FilterMatchMode } from '@primevue/core/api';
 
 const toast = useToast();
+const router = useRouter();
 
 // Reactive data
 const tickets = ref([]);
 const loading = ref(false);
+const filters = ref({
+    global: { value: null, matchMode: FilterMatchMode.CONTAINS }
+});
 
 // Computed
 const ticketStats = computed(() => {
@@ -134,9 +159,9 @@ const ticketStats = computed(() => {
     const currentYear = new Date().getFullYear();
 
     tickets.value.forEach(ticket => {
-        if (ticket.status === 'pending') stats.pending++;
-        if (ticket.status === 'in_progress') stats.in_progress++;
-        if (ticket.status === 'completed') stats.completed++;
+        if (['pending', 'opened'].includes(ticket.status)) stats.pending++;
+        if (['in_progress', 'assigned'].includes(ticket.status)) stats.in_progress++;
+        if (['completed', 'paid', 'closed'].includes(ticket.status)) stats.completed++;
 
         const ticketDate = new Date(ticket.created_at);
         if (ticketDate.getMonth() === currentMonth && ticketDate.getFullYear() === currentYear) {
@@ -151,48 +176,28 @@ const ticketStats = computed(() => {
 const loadTickets = async () => {
     loading.value = true;
     try {
-        // Mock data for demonstration
-        const mockTickets = [
-            {
-                id: 1,
-                ticket_number: 'TKT-2024-001',
-                title: 'Mantenimiento de aire acondicionado',
-                description: 'Revisión y limpieza del sistema de climatización del edificio principal',
-                status: 'pending',
-                priority: 'high',
-                client: { company_name: 'Empresa ABC' },
-                created_at: '2024-11-15T10:00:00Z'
-            },
-            {
-                id: 2,
-                ticket_number: 'TKT-2024-002',
-                title: 'Reparación de elevador',
-                description: 'Falla en el motor del elevador principal, requiere atención inmediata',
-                status: 'in_progress',
-                priority: 'urgent',
-                client: { company_name: 'Corporativo XYZ' },
-                created_at: '2024-11-14T14:30:00Z'
-            },
-            {
-                id: 3,
-                ticket_number: 'TKT-2024-003',
-                title: 'Limpieza profunda oficinas',
-                description: 'Limpieza completa de todas las oficinas del piso 5',
-                status: 'completed',
-                priority: 'low',
-                client: { company_name: 'StartUp 123' },
-                created_at: '2024-11-13T09:15:00Z'
-            }
-        ];
-        tickets.value = mockTickets;
+        const { data, error } = await supabase
+            .from('tickets')
+            .select(`
+                *,
+                client:client_id(id, company_name, contact_person, full_address),
+                supplier:supplier_id(id, company_name, contact_person),
+                branch:branch_id(id, name, full_address)
+            `)
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        tickets.value = data || [];
     } catch (error) {
         console.error('Error loading tickets:', error);
+        toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudieron cargar los tickets', life: 3000 });
     } finally {
         loading.value = false;
     }
 };
 
 const createTicket = () => {
+    // Future: Navigate to create page or open dialog
     toast.add({
         severity: 'info',
         summary: 'Próximamente',
@@ -202,29 +207,67 @@ const createTicket = () => {
 };
 
 const viewTicket = (ticket) => {
-    toast.add({
-        severity: 'info',
-        summary: 'Ver Ticket',
-        detail: `Viendo detalles de ${ticket.ticket_number}`,
-        life: 3000
-    });
+    router.push(`/admin/tickets/${ticket.id}`);
 };
 
-// Utility functions using constants
+// Utility functions
 const getStatusLabel = (status) => {
-    return getLabel('ticketStatus', status);
+    const labels = {
+        pending: 'Pendiente',
+        opened: 'Abierto',
+        assigned: 'Asignado',
+        in_progress: 'En Proceso',
+        completed: 'Completado',
+        cancelled: 'Cancelado',
+        closed: 'Cerrado',
+        paid: 'Pagado'
+    };
+    return labels[status] || status;
 };
 
 const getStatusSeverity = (status) => {
-    return getSeverity('ticketStatus', status);
+    const severities = {
+        pending: 'warning',
+        opened: 'info',
+        assigned: 'info',
+        in_progress: 'warn', // Orange/Yellow
+        completed: 'success',
+        cancelled: 'danger',
+        closed: 'secondary',
+        paid: 'success'
+    };
+    return severities[status] || 'info';
 };
 
 const getPriorityLabel = (priority) => {
-    return getLabel('priority', priority);
+    const labels = {
+        low: 'Baja',
+        medium: 'Media',
+        high: 'Alta',
+        urgent: 'Urgente'
+    };
+    return labels[priority] || priority;
 };
 
 const getPrioritySeverity = (priority) => {
-    return getSeverity('priority', priority);
+    const severities = {
+        low: 'success',
+        medium: 'info',
+        high: 'warning',
+        urgent: 'danger'
+    };
+    return severities[priority] || 'info';
+};
+
+const formatDate = (dateString) => {
+    if (!dateString) return '';
+    return new Date(dateString).toLocaleDateString('es-MX', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
 };
 
 onMounted(() => {

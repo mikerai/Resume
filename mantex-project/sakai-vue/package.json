@@ -12,6 +12,7 @@
     },
     "dependencies": {
         "@auth0/auth0-vue": "^2.4.0",
+        "@googlemaps/js-api-loader": "^2.0.2",
         "@primeuix/themes": "^1.0.0",
         "@supabase/supabase-js": "^2.81.1",
         "aws-sdk": "^2.1692.0",

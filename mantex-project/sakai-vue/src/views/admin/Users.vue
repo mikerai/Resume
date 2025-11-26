@@ -37,11 +37,21 @@
                     </div>
                 </template>
 
-                <Column selectionMode="multiple" style="width: 3rem" :exportable="false"></Column>
-                <Column field="full_name" header="Nombre" sortable style="min-width: 16rem">
+                <Column header="Avatar" style="width: 4rem">
+                    <template #body="slotProps">
+                        <Avatar 
+                            :label="slotProps.data.full_name?.charAt(0).toUpperCase()" 
+                            shape="circle" 
+                            size="large"
+                            :style="{ 'background-color': getRoleColor(slotProps.data.role), 'color': '#ffffff' }"
+                        />
+                    </template>
+                </Column>
+                <Column field="full_name" header="Nombre / Empresa" sortable style="min-width: 16rem">
                     <template #body="slotProps">
                         <div>
                             <div class="font-medium">{{ slotProps.data.full_name || 'Sin nombre' }}</div>
+                            <div v-if="slotProps.data.company_name" class="text-sm text-primary font-medium">{{ slotProps.data.company_name }}</div>
                             <div class="text-sm text-500">{{ slotProps.data.email }}</div>
                         </div>
                     </template>
@@ -175,9 +185,11 @@
 import { FilterMatchMode } from '@primevue/core/api';
 import { useToast } from 'primevue/usetoast';
 import { onMounted, ref } from 'vue';
+import { useRouter } from 'vue-router';
 import { supabase } from '@/lib/supabaseClient';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
+import Avatar from 'primevue/avatar';
 import Button from 'primevue/button';
 import Toolbar from 'primevue/toolbar';
 import Dialog from 'primevue/dialog';
@@ -250,6 +262,15 @@ function getRoleSeverity(role) {
         case 'supplier': return 'warn';
         case 'client': return 'info';
         default: return 'secondary';
+    }
+}
+
+function getRoleColor(role) {
+    switch (role) {
+        case 'admin': return '#ef4444'; // red-500
+        case 'supplier': return '#f59e0b'; // amber-500
+        case 'client': return '#3b82f6'; // blue-500
+        default: return '#6b7280'; // gray-500
     }
 }
 
@@ -382,91 +403,81 @@ const loadUsers = async () => {
     try {
         console.log('Cargando todos los usuarios de la plataforma...');
 
-        // Get all client profiles
+        // First, get ALL users from the profiles table (this is the source of truth)
+        const { data: allProfiles, error: profilesError } = await supabase
+            .from('profiles')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (profilesError) throw profilesError;
+
+        console.log(`Total profiles found: ${allProfiles?.length || 0}`);
+
+        // Get all client profiles for enrichment
         const { data: clientProfiles, error: clientError } = await supabase
             .from('client_profiles')
-            .select('*')
-            .order('created_at', { ascending: false });
+            .select('user_id, company_name, onboarding_complete, status');
 
-        if (clientError) throw clientError;
+        if (clientError) console.warn('Error loading client profiles:', clientError);
 
-        // Get all supplier profiles
+        // Get all supplier profiles for enrichment
         const { data: supplierProfiles, error: supplierError } = await supabase
             .from('supplier_profiles')
-            .select('*')
-            .order('created_at', { ascending: false });
+            .select('user_id, company_name, onboarding_complete, status');
 
-        if (supplierError) throw supplierError;
+        if (supplierError) console.warn('Error loading supplier profiles:', supplierError);
 
-        // Get all admins
+        // Get all admin profiles for enrichment
         const { data: adminProfiles, error: adminError } = await supabase
             .from('admins')
-            .select('*')
-            .order('created_at', { ascending: false });
+            .select('user_id, status');
 
-        if (adminError) throw adminError;
+        if (adminError) console.warn('Error loading admin profiles:', adminError);
 
-        console.log(`Clients: ${clientProfiles?.length || 0}, Suppliers: ${supplierProfiles?.length || 0}, Admins: ${adminProfiles?.length || 0}`);
+        // Create lookup maps for quick access
+        const clientMap = new Map((clientProfiles || []).map(p => [p.user_id, p]));
+        const supplierMap = new Map((supplierProfiles || []).map(p => [p.user_id, p]));
+        const adminMap = new Map((adminProfiles || []).map(p => [p.user_id, p]));
 
         // Combine all profiles into users array
-        const combinedUsers = [];
+        const combinedUsers = (allProfiles || []).map(profile => {
+            const userId = profile.id;
+            const role = profile.role;
 
-        // Add clients
-        if (clientProfiles) {
-            clientProfiles.forEach(profile => {
-                combinedUsers.push({
-                    id: profile.user_id,
-                    email: profile.email || 'Sin email',
-                    role: 'client',
-                    full_name: profile.full_name,
-                    phone: profile.phone_number,
-                    onboarding_complete: profile.onboarding_complete,
-                    profile_status: profile.status,
-                    created_at: profile.created_at,
-                    last_sign_in_at: null,
-                    profile: profile
-                });
-            });
-        }
+            // Base user object
+            const user = {
+                id: userId,
+                email: profile.email || 'Sin email',
+                role: role,
+                full_name: profile.full_name || 'Sin nombre',
+                company_name: null,
+                phone: profile.phone_number,
+                onboarding_complete: false,
+                profile_status: 'unknown',
+                created_at: profile.created_at,
+                last_sign_in_at: profile.last_sign_in_at,
+                profile: profile
+            };
 
-        // Add suppliers
-        if (supplierProfiles) {
-            supplierProfiles.forEach(profile => {
-                combinedUsers.push({
-                    id: profile.user_id,
-                    email: profile.email || 'Sin email',
-                    role: 'supplier',
-                    full_name: profile.contact_person,
-                    phone: profile.phone_number,
-                    onboarding_complete: profile.onboarding_complete,
-                    profile_status: profile.status,
-                    created_at: profile.created_at,
-                    last_sign_in_at: null,
-                    profile: profile
-                });
-            });
-        }
+            // Enrich with role-specific data
+            if (role === 'client' && clientMap.has(userId)) {
+                const clientProfile = clientMap.get(userId);
+                user.company_name = clientProfile.company_name;
+                user.onboarding_complete = clientProfile.onboarding_complete;
+                user.profile_status = clientProfile.status;
+            } else if (role === 'supplier' && supplierMap.has(userId)) {
+                const supplierProfile = supplierMap.get(userId);
+                user.company_name = supplierProfile.company_name;
+                user.onboarding_complete = supplierProfile.onboarding_complete;
+                user.profile_status = supplierProfile.status;
+            } else if (role === 'admin' && adminMap.has(userId)) {
+                const adminProfile = adminMap.get(userId);
+                user.onboarding_complete = true;
+                user.profile_status = adminProfile.status || 'active';
+            }
 
-        // Add admins
-        if (adminProfiles) {
-            adminProfiles.forEach(profile => {
-                combinedUsers.push({
-                    id: profile.user_id,
-                    email: profile.email || 'Sin email',
-                    role: 'admin',
-                    full_name: profile.full_name || 'Administrador',
-                    phone: null,
-                    onboarding_complete: true,
-                    profile_status: profile.status || 'active',
-                    created_at: profile.created_at,
-                    last_sign_in_at: null,
-                    profile: profile
-                });
-            });
-        }
-
-        // Sort by created_at desc
-        combinedUsers.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            return user;
+        });
 
         users.value = combinedUsers;
 
@@ -474,7 +485,8 @@ const loadUsers = async () => {
         console.log('Desglose por rol:', {
             admins: combinedUsers.filter(u => u.role === 'admin').length,
             clients: combinedUsers.filter(u => u.role === 'client').length,
-            suppliers: combinedUsers.filter(u => u.role === 'supplier').length
+            suppliers: combinedUsers.filter(u => u.role === 'supplier').length,
+            total: combinedUsers.length
         });
 
     } catch (error) {
@@ -490,14 +502,45 @@ const loadUsers = async () => {
     }
 };
 
-function viewUser(userData) {
-    console.log('Ver detalles de usuario:', userData);
-    toast.add({
-        severity: 'info',
-        summary: 'Detalles',
-        detail: `Ver detalles de ${userData.full_name}`,
-        life: 2000
-    });
+const router = useRouter();
+
+async function viewUser(userData) {
+    if (userData.role === 'client') {
+        // Try to get client_id from profile
+        const clientId = userData.profile?.client_id;
+        
+        if (clientId) {
+             router.push(`/admin/clients/${clientId}`);
+        } else {
+            // Fallback: try to fetch client by user_id
+            try {
+                const { data, error } = await supabase
+                    .from('clients')
+                    .select('id')
+                    .eq('user_id', userData.id)
+                    .single();
+                
+                if (data) {
+                    router.push(`/admin/clients/${data.id}`);
+                } else {
+                    toast.add({ severity: 'warn', summary: 'Info', detail: 'No se encontró una empresa asociada a este usuario', life: 3000 });
+                }
+            } catch (e) {
+                console.error(e);
+                toast.add({ severity: 'error', summary: 'Error', detail: 'Error al buscar empresa del cliente', life: 3000 });
+            }
+        }
+    } else if (userData.role === 'supplier') {
+         // Navigate to Supplier Detail using user_id
+         router.push(`/admin/suppliers/${userData.id}`);
+    } else {
+        toast.add({
+            severity: 'info',
+            summary: 'Detalles',
+            detail: `Ver detalles de ${userData.full_name}`,
+            life: 2000
+        });
+    }
 }
 
 function confirmSuspendUser(userData) {
