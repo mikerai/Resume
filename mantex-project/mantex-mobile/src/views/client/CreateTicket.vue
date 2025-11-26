@@ -62,6 +62,51 @@
             <ion-textarea label="Descripción Detallada" label-placement="floating" v-model="form.description" rows="4" placeholder="Describe el problema con detalle..."></ion-textarea>
           </ion-item>
 
+          <!-- Branch Selector -->
+          <ion-item v-if="branches.length > 0">
+            <ion-select 
+              label="Ubicación" 
+              label-placement="floating" 
+              v-model="form.branch_id"
+              interface="action-sheet"
+              placeholder="Selecciona la sucursal"
+            >
+              <ion-select-option :value="null">Sin especificar</ion-select-option>
+              <ion-select-option 
+                v-for="branch in branches" 
+                :key="branch.id" 
+                :value="branch.id"
+              >
+                {{ branch.is_headquarters ? '🏢' : '📍' }} {{ getBranchDisplayName(branch) }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+
+          <!-- Address hint below branch selector -->
+          <ion-note v-if="selectedBranch" class="ion-padding-horizontal ion-padding-top" color="medium">
+            {{ getBranchAddress(selectedBranch) }}
+          </ion-note>
+
+          <!-- Asset Selector (conditional) -->
+          <ion-item v-if="form.branch_id && branchAssets.length > 0">
+            <ion-select 
+              label="Equipo/Activo (Opcional)" 
+              label-placement="floating" 
+              v-model="form.asset_id"
+              interface="popover"
+              placeholder="Selecciona el equipo"
+            >
+              <ion-select-option :value="null">Sin especificar</ion-select-option>
+              <ion-select-option 
+                v-for="asset in branchAssets" 
+                :key="asset.id" 
+                :value="asset.id"
+              >
+                {{ getAssetDisplayName(asset) }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+
           <!-- Photo Upload Section -->
           <ion-item button @click="selectPhoto">
             <ion-icon :icon="cameraOutline" slot="start"></ion-icon>
@@ -93,22 +138,27 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, onMounted, watch } from 'vue';
 import { 
   IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonBackButton,
   IonList, IonItem, IonSelect, IonSelectOption, IonInput, IonTextarea, IonButton,
-  IonIcon, IonLabel, toastController
+  IonIcon, IonLabel, IonNote, toastController
 } from '@ionic/vue';
-import { lockClosedOutline, cameraOutline, closeCircleOutline } from 'ionicons/icons';
+import { lockClosedOutline, cameraOutline, closeCircleOutline, mapOutline } from 'ionicons/icons';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { useRouter } from 'vue-router';
 import { useClientTickets } from '@/composables/useClientTickets.js';
+import { useClientBranches } from '@/composables/useClientBranches.js';
+import { useClientAssets } from '@/composables/useClientAssets.js';
 import { usePermissions } from '@/composables/usePermissions.js';
 import { useAuth } from '@/composables/useAuth.js';
+import { supabase } from '@/lib/supabaseClient';
 
 const router = useRouter();
 const { createTicket, fetchSuppliers } = useClientTickets();
 const { canCreateTicket } = usePermissions();
+const { branches, fetchBranches, getBranchAddress, getBranchDisplayName } = useClientBranches();
+const { fetchAssetsByBranch, getAssetDisplayName } = useClientAssets();
 
 const isSubmitting = ref(false);
 const selectedPhoto = ref(null); // Base64 photo data
@@ -116,17 +166,61 @@ const photoPreview = ref(null); // Preview URL
 const suppliers = ref([]);
 const { user } = useAuth();
 
+// Branch and asset management
+const branchAssets = ref([]);
+const selectedBranch = ref(null);
+
 const form = reactive({
   maintenance_type: 'corrective',
   category: '',
   priority: 'medium',
   title: '',
   description: '',
-  supplier_id: null
+  supplier_id: null,
+  branch_id: null,
+  asset_id: null
 });
 
 onMounted(async () => {
   suppliers.value = await fetchSuppliers();
+  await loadBranches();
+});
+
+// Helper to get client_id from user
+const getClientId = async () => {
+    const { data: clientProfile } = await supabase.from('client_profiles')
+        .select('id')
+        .eq('user_id', user.value.id)
+        .single();
+
+    if (clientProfile) return clientProfile.id;
+
+    const { data: clientData } = await supabase.from('clients')
+        .select('id')
+        .eq('user_id', user.value.id)
+        .single();
+
+    return clientData?.id || null;
+};
+
+// Load branches for branch selector
+const loadBranches = async () => {
+    const clientId = await getClientId();
+    if (clientId) {
+        await fetchBranches(clientId);
+    }
+};
+
+// Watch for branch selection to load associated assets
+watch(() => form.branch_id, async (newBranchId) => {
+    branchAssets.value = [];
+    form.asset_id = null;
+    selectedBranch.value = null;
+    
+    if (newBranchId) {
+        branchAssets.value = await fetchAssetsByBranch(newBranchId);
+        selectedBranch.value = branches.value.find(b => b.id === newBranchId);
+    }
 });
 
 const selectPhoto = async () => {

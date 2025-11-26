@@ -26,7 +26,7 @@ export async function getJobs(params = {}) {
     .select(`
       *,
       client:clients(company_name, contact_person),
-      supplier:suppliers(company_name, contact_person)
+      supplier:supplier_profiles(company_name, contact_person)
     `)
     .order('created_at', { ascending: false });
 
@@ -58,7 +58,7 @@ export async function getJob(id) {
     .select(`
       *,
       client:clients(company_name, contact_person),
-      supplier:suppliers(company_name, contact_person)
+      supplier:supplier_profiles(company_name, contact_person)
     `)
     .eq('id', id)
     .single();

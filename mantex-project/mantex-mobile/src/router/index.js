@@ -79,6 +79,26 @@ const routes = [
   {
     path: '/client/create-ticket',
     component: () => import('@/views/client/CreateTicket.vue')
+  },
+  {
+    path: '/client/company/branches',
+    component: () => import('@/views/client/company/BranchesList.vue')
+  },
+  {
+    path: '/client/company/assets',
+    component: () => import('@/views/client/company/AssetsList.vue')
+  },
+  {
+    path: '/client/company/users',
+    component: () => import('@/views/client/company/UsersList.vue')
+  },
+  {
+    path: '/client/company/info',
+    component: () => import('@/views/client/company/CompanyInfo.vue')
+  },
+  {
+    path: '/client/settings',
+    component: () => import('@/views/client/Settings.vue')
   }
 ]
 

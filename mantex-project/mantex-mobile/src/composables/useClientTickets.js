@@ -12,9 +12,9 @@ export function useClientTickets() {
         loading.value = true;
         error.value = null;
         try {
-            // 1. Get Client Profile ID
+            // 1. Get Client ID from clients table
             const { data: clientData, error: clientError } = await supabase
-                .from('client_profiles')
+                .from('clients')
                 .select('id')
                 .eq('user_id', user.value.id)
                 .single();

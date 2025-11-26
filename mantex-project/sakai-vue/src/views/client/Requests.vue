@@ -79,7 +79,7 @@
     </div>
 
     <!-- Simple create dialog -->
-    <Dialog v-model:visible="showCreateDialog" modal :style="{ width: '600px' }" header="Nueva Solicitud">
+    <Dialog v-model:visible="showCreateDialog" modal :style="{ width: '700px' }" header="Nueva Solicitud">
         <div class="grid">
             <div class="col-span-12">
                 <div class="field">
@@ -98,6 +98,66 @@
                     <label for="category">Categoría *</label>
                     <Dropdown id="category" v-model="newRequest.category" :options="categoryOptions" option-label="label" option-value="value" placeholder="Selecciona la categoría" class="w-full" />
                 </div>
+                
+                <!-- Branch Selector -->
+                <div class="field" v-if="branches.length > 0">
+                    <label for="branch">Ubicación</label>
+                    <Dropdown 
+                        id="branch" 
+                        v-model="newRequest.branch_id" 
+                        :options="branches" 
+                        optionLabel="name" 
+                        optionValue="id" 
+                        placeholder="Selecciona la sucursal" 
+                        class="w-full"
+                        :showClear="true"
+                    >
+                        <template #value="slotProps">
+                            <div v-if="slotProps.value" class="flex align-items-center gap-2">
+                                <i :class="branches.find(b => b.id === slotProps.value)?.is_headquarters ? 'pi pi-building' : 'pi pi-map-marker'"></i>
+                                <span>{{ getBranchDisplayName(branches.find(b => b.id === slotProps.value)) }}</span>
+                            </div>
+                            <span v-else>{{ slotProps.placeholder }}</span>
+                        </template>
+                        <template #option="slotProps">
+                            <div class="flex align-items-center gap-2">
+                                <i :class="slotProps.option.is_headquarters ? 'pi pi-building' : 'pi pi-map-marker'"></i>
+                                <div>
+                                    <div class="font-medium">{{ slotProps.option.name }}</div>
+                                    <div class="text-xs text-500">
+                                        {{ slotProps.option.municipality_city }}, {{ slotProps.option.state }}
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </Dropdown>
+                    <small class="text-500">Selecciona la ubicación donde se requiere el servicio</small>
+                </div>
+
+                <!-- Asset Selector (conditional) -->
+                <div class="field" v-if="newRequest.branch_id && branchAssets.length > 0">
+                    <label for="asset">Equipo/Activo (Opcional)</label>
+                    <Dropdown 
+                        id="asset" 
+                        v-model="newRequest.asset_id" 
+                        :options="branchAssets" 
+                        optionLabel="name" 
+                        optionValue="id" 
+                        placeholder="Selecciona el equipo" 
+                        class="w-full"
+                        :showClear="true"
+                        filter
+                    >
+                        <template #option="slotProps">
+                            <div>
+                                <div class="font-medium">{{ slotProps.option.name }}</div>
+                                <div class="text-xs text-500">{{ slotProps.option.category }}</div>
+                            </div>
+                        </template>
+                    </Dropdown>
+                    <small class="text-500">Si el problema es con un equipo específico, selecciónalo</small>
+                </div>
+                
                 <div class="field">
                     <label for="supplier">Proveedor (Opcional)</label>
                     <Dropdown 
@@ -116,12 +176,42 @@
                     <label for="priority">Prioridad *</label>
                     <Dropdown id="priority" v-model="newRequest.priority" :options="priorityOptions" option-label="label" option-value="value" placeholder="Selecciona la prioridad" class="w-full" />
                 </div>
+
+                <!-- Photo Upload -->
+                <div class="field">
+                    <label>Fotos del Problema (Opcional)</label>
+                    <FileUpload 
+                        mode="basic"
+                        name="photos[]"
+                        accept="image/*"
+                        :maxFileSize="5000000"
+                        :multiple="true"
+                        :auto="false"
+                        chooseLabel="Seleccionar Fotos"
+                        @select="onPhotosSelect"
+                    />
+                    <div v-if="selectedPhotos.length > 0" class="mt-2">
+                        <div class="grid">
+                            <div v-for="(photo, index) in selectedPhotos" :key="index" class="col-6 md:col-4 lg:col-3 p-2">
+                                <div class="border-round overflow-hidden relative" style="aspect-ratio: 1;">
+                                    <img :src="photo.preview" class="w-full h-full" style="object-fit: cover;">
+                                    <Button 
+                                        icon="pi pi-times" 
+                                        class="p-button-danger p-button-rounded p-button-sm absolute" 
+                                        style="top: 0.5rem; right: 0.5rem;"
+                                        @click="removePhoto(index)"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
         <template #footer>
             <Button label="Cancelar" icon="pi pi-times" text @click="closeCreateDialog" />
-            <Button label="Crear Solicitud" icon="pi pi-check" @click="createRequest" :loading="creating" />
+            <Button label="Crear Solicitud" icon="pi pi-check" @click="createRequest" :loading="creating || uploadingPhotos" />
         </template>
     </Dialog>
 
@@ -228,10 +318,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useToast } from 'primevue/usetoast';
 import { useAuth } from '@/composables/useAuth';
+import { useClientBranches } from '@/composables/useClientBranches';
+import { useClientAssets } from '@/composables/useClientAssets';
 import { supabase } from '@/lib/supabaseClient';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
@@ -246,11 +338,14 @@ import TicketChat from '@/components/ticket/TicketChat.vue';
 import InputText from 'primevue/inputtext';
 import Dropdown from 'primevue/dropdown';
 import Textarea from 'primevue/textarea';
+import FileUpload from 'primevue/fileupload';
 import { getLabel, getSeverity, formatDate } from '@/lib/constants.js';
 
 const toast = useToast();
 const router = useRouter();
 const { user } = useAuth();
+const { branches, fetchBranches, getBranchAddress, getBranchDisplayName } = useClientBranches();
+const { fetchAssetsByBranch, getAssetDisplayName } = useClientAssets();
 
 // Reactive data
 const myTickets = ref([]);
@@ -269,8 +364,15 @@ const newRequest = ref({
     maintenance_type: 'corrective',
     category: '',
     priority: 'medium',
-    supplier_id: null
+    supplier_id: null,
+    branch_id: null,
+    asset_id: null
 });
+
+// Branch and asset management
+const branchAssets = ref([]);
+const selectedPhotos = ref([]);
+const uploadingPhotos = ref(false);
 
 // Options
 const maintenanceTypeOptions = [
@@ -311,29 +413,17 @@ const loadSuppliers = async () => {
 const loadMyTickets = async () => {
     loading.value = true;
     try {
-        console.log('🎫 Cargando tickets del usuario:', user.value?.id);
+        console.log('Cargando tickets del usuario:', user.value?.id);
 
-        // Buscar client_id del usuario actual
-        const { data: clientProfile, error: clientError } = await supabase
-            .from('client_profiles')
+        // Buscar client_id del usuario actual en la tabla clients
+        const { data: clientData, error: clientError } = await supabase
+            .from('clients')
             .select('id')
             .eq('user_id', user.value.id)
             .single();
 
-        let clientId = null;
-        if (clientProfile) {
-            clientId = clientProfile.id;
-        } else {
-            // Si no hay client_profile, buscar en la tabla clients por user_id
-            const { data: clientData, error: clientDataError } = await supabase
-                .from('clients')
-                .select('id')
-                .eq('user_id', user.value.id)
-                .single();
-
-            if (clientData) {
-                clientId = clientData.id;
-            }
+        if (clientError && clientError.code !== 'PGRST116') {
+            console.error('Error buscando cliente:', clientError);
         }
 
         // Cargar tickets del cliente
@@ -342,25 +432,25 @@ const loadMyTickets = async () => {
             .select('*')
             .order('created_at', { ascending: false });
 
-        if (clientId) {
-            query = query.eq('client_id', clientId);
+        if (clientData) {
+            query = query.eq('client_id', clientData.id);
         } else {
-            // Si no encuentra client_id, usar user_id directamente como backup
+            // Si no encuentra client, usar created_by como backup
             query = query.eq('created_by', user.value.id);
         }
 
         const { data: tickets, error: ticketsError } = await query;
 
         if (ticketsError) {
-            console.error('❌ Error cargando tickets:', ticketsError);
+            console.error('Error cargando tickets:', ticketsError);
             throw ticketsError;
         }
 
         myTickets.value = tickets || [];
-        console.log(`✅ Cargados ${myTickets.value.length} tickets`);
+        console.log(`Cargados ${myTickets.value.length} tickets`);
 
     } catch (error) {
-        console.error('💥 Error loading tickets:', error);
+        console.error('Error loading tickets:', error);
         toast.add({
             severity: 'error',
             summary: 'Error',
@@ -377,46 +467,44 @@ const createRequest = async () => {
 
     creating.value = true;
     try {
-        console.log('📝 Creando nueva solicitud:', newRequest.value);
+        console.log('Creating new request:', newRequest.value);
 
-        // Buscar client_id del usuario actual
-        const { data: clientProfile } = await supabase
-            .from('client_profiles')
-            .select('id')
-            .eq('user_id', user.value.id)
-            .single();
+        const clientId = await getClientId();
 
-        let clientId = null;
-        if (clientProfile) {
-            clientId = clientProfile.id;
-        } else {
-            // Si no hay client_profile, buscar en clients
-            const { data: clientData } = await supabase
-                .from('clients')
-                .select('id')
-                .eq('user_id', user.value.id)
-                .single();
+        if (!clientId) {
+            throw new Error('No se pudo obtener el ID del cliente');
+        }
 
-            if (clientData) {
-                clientId = clientData.id;
+        // Get branch address if branch is selected
+        let locationAddress = 'Por definir';
+        let locationCity = 'Por definir';
+        let locationState = 'Por definir';
+        
+        if (newRequest.value.branch_id) {
+            const selectedBranch = branches.value.find(b => b.id === newRequest.value.branch_id);
+            if (selectedBranch) {
+                locationAddress = getBranchAddress(selectedBranch);
+                locationCity = selectedBranch.municipality_city;
+                locationState = selectedBranch.state;
             }
         }
 
-        // Crear el ticket en la base de datos
+        // Create ticket in database
         const ticketData = {
-            // ticket_number: Generated by DB trigger
             title: newRequest.value.title,
             description: newRequest.value.description,
             maintenance_type: newRequest.value.maintenance_type,
             priority: newRequest.value.priority,
             status: 'pending',
             category: newRequest.value.category || 'general',
-            supplier_id: newRequest.value.supplier_id || null, // Asignación de proveedor
-            location_address: 'Por definir', // Se puede mejorar después
-            location_city: 'Por definir',
-            location_state: 'Por definir',
+            supplier_id: newRequest.value.supplier_id || null,
+            branch_id: newRequest.value.branch_id || null,
+            asset_id: newRequest.value.asset_id || null,
+            location_address: locationAddress,
+            location_city: locationCity,
+            location_state: locationState,
             client_id: clientId,
-            created_by: user.value.id, // Backup para identificar el creador
+            created_by: user.value.id,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
         };
@@ -428,13 +516,18 @@ const createRequest = async () => {
             .single();
 
         if (error) {
-            console.error('❌ Error creando ticket:', error);
+            console.error('Error creating ticket:', error);
             throw error;
         }
 
-        console.log('✅ Ticket creado:', newTicket);
+        console.log('Ticket created:', newTicket);
 
-        // Agregar el nuevo ticket a la lista local
+        // Upload photos if any selected
+        if (selectedPhotos.value.length > 0) {
+            await uploadPhotosToS3(newTicket.id);
+        }
+
+        // Add new ticket to local list
         myTickets.value.unshift(newTicket);
 
         toast.add({
@@ -446,11 +539,11 @@ const createRequest = async () => {
 
         closeCreateDialog();
 
-        // Recargar tickets para asegurar sincronización
+        // Reload tickets to ensure synchronization
         await loadMyTickets();
 
     } catch (error) {
-        console.error('💥 Error creating request:', error);
+        console.error('Error creating request:', error);
 
         toast.add({
             severity: 'error',
@@ -488,8 +581,12 @@ const closeCreateDialog = () => {
         maintenance_type: 'corrective',
         category: '',
         priority: 'medium',
-        supplier_id: null
+        supplier_id: null,
+        branch_id: null,
+        asset_id: null
     };
+    selectedPhotos.value = [];
+    branchAssets.value = [];
 };
 
 const viewTicket = (ticket) => {
@@ -574,9 +671,108 @@ const truncateText = (text, maxLength) => {
     return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
 };
 
+// Helper to get client_id from user
+const getClientId = async () => {
+    const { data: clientData } = await supabase
+        .from('clients')
+        .select('id')
+        .eq('user_id', user.value.id)
+        .single();
+
+    return clientData?.id || null;
+};
+
+// Load branches for branch selector
+const loadBranches = async () => {
+    const clientId = await getClientId();
+    if (clientId) {
+        await fetchBranches(clientId);
+    }
+};
+
+// Watch for branch selection to load associated assets
+watch(() => newRequest.value.branch_id, async (newBranchId) => {
+    branchAssets.value = [];
+    newRequest.value.asset_id = null;
+    
+    if (newBranchId) {
+        branchAssets.value = await fetchAssetsByBranch(newBranchId);
+    }
+});
+
+// Photo upload handler
+const onPhotosSelect = (event) => {
+    const files = event.files;
+    selectedPhotos.value = [];
+    
+    for (let file of files) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            selectedPhotos.value.push({
+                file: file,
+                preview: e.target.result,
+                name: file.name
+            });
+        };
+        reader.readAsDataURL(file);
+    }
+};
+
+// Remove photo from selection
+const removePhoto = (index) => {
+    selectedPhotos.value.splice(index, 1);
+};
+
+// Upload photos to S3
+const uploadPhotosToS3 = async (ticketId) => {
+    if (selectedPhotos.value.length === 0) return [];
+    
+    uploadingPhotos.value = true;
+    const uploadedUrls = [];
+    
+    try {
+        const username = user.value.email.split('@')[0];
+        
+        for (let photo of selectedPhotos.value) {
+            const base64Data = photo.preview.split(',')[1];
+            const timestamp = Date.now();
+            const key = `users/${username}/evidence/${timestamp}_ticket_${ticketId}_${photo.name}`;
+            
+            const response = await fetch('https://mr04m3gkk9.execute-api.us-east-1.amazonaws.com/dev/s3/upload', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    bucket: 'mantex-documents-1763361307',
+                    key: key,
+                    body: base64Data,
+                    contentType: photo.file.type,
+                    metadata: {
+                        username: username,
+                        documentType: 'evidence',
+                        ticketId: ticketId,
+                        uploadTimestamp: new Date().toISOString()
+                    }
+                })
+            });
+            
+            const result = await response.json();
+            if (result.success) {
+                uploadedUrls.push(result.fileUrl);
+            }
+        }
+    } catch (error) {
+        console.error('Error uploading photos:', error);
+    } finally {
+        uploadingPhotos.value = false;
+    }
+    
+    return uploadedUrls;
+};
+
 onMounted(() => {
     loadMyTickets();
     loadSuppliers();
+    loadBranches();
 });
 </script>
 

@@ -63,11 +63,43 @@
         </ion-item>
       </ion-list>
 
+      <!-- Company Management -->
+      <ion-list>
+        <ion-list-header>
+          <ion-label>Gestión de Empresa</ion-label>
+        </ion-list-header>
+
+        <ion-item button router-link="/client/company/branches">
+          <ion-icon :icon="businessOutline" slot="start"></ion-icon>
+          <ion-label>Sucursales</ion-label>
+        </ion-item>
+
+        <ion-item button router-link="/client/company/assets">
+          <ion-icon :icon="cubeOutline" slot="start"></ion-icon>
+          <ion-label>Activos</ion-label>
+        </ion-item>
+
+        <ion-item button router-link="/client/company/users">
+          <ion-icon :icon="peopleOutline" slot="start"></ion-icon>
+          <ion-label>Usuarios</ion-label>
+        </ion-item>
+
+        <ion-item button router-link="/client/company/info">
+          <ion-icon :icon="informationCircleOutline" slot="start"></ion-icon>
+          <ion-label>Información de Empresa</ion-label>
+        </ion-item>
+      </ion-list>
+
       <!-- Settings -->
       <ion-list>
         <ion-list-header>
           <ion-label>Configuración</ion-label>
         </ion-list-header>
+
+        <ion-item button router-link="/client/settings">
+          <ion-icon :icon="settingsOutline" slot="start"></ion-icon>
+          <ion-label>Cuenta y Seguridad</ion-label>
+        </ion-item>
 
         <ion-item button @click="toggleNotifications">
           <ion-icon :icon="notificationsOutline" slot="start"></ion-icon>
@@ -133,7 +165,8 @@ import {
 import {
   mailOutline, personOutline, shieldCheckmarkOutline, ribbonOutline,
   notificationsOutline, languageOutline, helpCircleOutline, documentTextOutline,
-  lockClosedOutline, logOutOutline
+  lockClosedOutline, logOutOutline, businessOutline, cubeOutline, peopleOutline,
+  informationCircleOutline, settingsOutline
 } from 'ionicons/icons';
 import { useAuth } from '@/composables/useAuth.js';
 

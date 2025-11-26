@@ -168,28 +168,18 @@ const fetchTickets = async () => {
             return;
         }
 
-        // Buscar client_id del usuario actual (same logic as Requests.vue)
-        const { data: clientProfile, error: clientError } = await supabase
-            .from('client_profiles')
+        // Buscar client_id del usuario actual en la tabla clients
+        const { data: clientData, error: clientError } = await supabase
+            .from('clients')
             .select('id')
             .eq('user_id', user.value.id)
             .single();
 
-        let clientId = null;
-        if (clientProfile) {
-            clientId = clientProfile.id;
-        } else {
-            // Si no hay client_profile, buscar en la tabla clients por user_id
-            const { data: clientData, error: clientDataError } = await supabase
-                .from('clients')
-                .select('id')
-                .eq('user_id', user.value.id)
-                .single();
-
-            if (clientData) {
-                clientId = clientData.id;
-            }
+        if (clientError && clientError.code !== 'PGRST116') {
+            console.error('Error buscando cliente:', clientError);
         }
+
+        let clientId = clientData?.id || null;
 
         if (!clientId) {
             console.warn('⚠️ No client_id found for user:', user.value.id);
