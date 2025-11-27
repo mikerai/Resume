@@ -20,7 +20,7 @@ const model = ref([
         label: 'Trabajos',
         items: [
             {
-                label: 'Trabajos Asignados',
+                label: 'Trabajos Disponibles',
                 icon: 'pi pi-fw pi-briefcase',
                 to: '/supplier/jobs'
             },
@@ -30,9 +30,9 @@ const model = ref([
                 to: '/supplier/calendar'
             },
             {
-                label: 'Subir Evidencias',
-                icon: 'pi pi-fw pi-cloud-upload',
-                to: '/supplier/evidence-upload'
+                label: 'Históricos',
+                icon: 'pi pi-fw pi-history',
+                to: '/supplier/history'
             }
         ]
     },

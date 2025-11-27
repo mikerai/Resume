@@ -1,8 +1,8 @@
 <template>
-  <div class="p-4">
-    <Card>
+  <div class="grid grid-cols-12">
+    <Card class="">
       <template #title>
-        <div class="flex justify-content-between align-items-center">
+        <div class="col-span-12">
           <span>Detalle del Ticket</span>
           <Tag v-if="ticket" :value="getStatusLabel(ticket.status)" :severity="getStatusSeverity(ticket.status)" />
         </div>
@@ -35,7 +35,7 @@
               </div>
               <div class="col-12 md:col-6">
                 <div class="mb-3">
-                  <label class="block text-sm font-semibold mb-1">Número de Ticket</label>
+                  <label class="block text-sm font-semibold mb-1">Número de ticket</label>
                   <p class="text-base">{{ ticket.ticketNumber || 'N/A' }}</p>
                 </div>
                 <div class="mb-3">
@@ -43,11 +43,11 @@
                   <Tag :value="getPriorityLabel(ticket.priority)" :severity="getPrioritySeverity(ticket.priority)" />
                 </div>
                 <div class="mb-3">
-                  <label class="block text-sm font-semibold mb-1">Fecha de Creación</label>
+                  <label class="block text-sm font-semibold mb-1">Fecha de creación</label>
                   <p class="text-base">{{ formatDate(ticket.createdAt) }}</p>
                 </div>
                 <div v-if="ticket.scheduledDate" class="mb-3">
-                  <label class="block text-sm font-semibold mb-1">Fecha Programada</label>
+                  <label class="block text-sm font-semibold mb-1">Fecha programada</label>
                   <p class="text-base">{{ formatDate(ticket.scheduledDate) }}</p>
                 </div>
               </div>
@@ -366,7 +366,7 @@ const getStatusLabel = (status) => {
     pending: 'Pendiente',
     opened: 'Abierto',
     assigned: 'Asignado',
-    in_progress: 'En Proceso',
+    in_progress: 'En proceso',
     completed: 'Completado',
     cancelled: 'Cancelado'
   };
@@ -375,7 +375,7 @@ const getStatusLabel = (status) => {
 
 const getStatusSeverity = (status) => {
   const severities = {
-    pending: 'warning',
+    pending: 'warn',
     opened: 'info',
     assigned: 'info',
     in_progress: 'success',
@@ -399,7 +399,7 @@ const getPrioritySeverity = (priority) => {
   const severities = {
     low: 'success',
     medium: 'info',
-    high: 'warning',
+    high: 'warn',
     urgent: 'danger'
   };
   return severities[priority] || 'info';

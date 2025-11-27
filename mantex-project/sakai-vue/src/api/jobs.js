@@ -166,6 +166,21 @@ export async function getJob(id) {
     data.supplier = supplier;
   }
 
+  // Fetch attachments
+  const { data: attachments } = await supabase
+    .from('ticket_attachments')
+    .select('id, file_url, file_type, description, file_name, created_at')
+    .eq('ticket_id', id)
+    .order('created_at', { ascending: true });
+
+  data.attachments = (attachments || []).map(att => ({
+    url: att.file_url,
+    type: att.file_type,
+    description: att.description,
+    filename: att.file_name,
+    createdAt: att.created_at
+  }));
+
   return transformTicket(data);
 }
 

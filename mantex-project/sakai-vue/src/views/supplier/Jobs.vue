@@ -221,8 +221,16 @@
                                 </Message>
 
                                 <div class="flex flex-wrap gap-2 mb-3">
-                                    <Chip :label="getMaintenanceTypeLabel(selectedTicket.maintenance_type)" icon="pi pi-wrench" />
-                                    <Chip :label="getPriorityLabel(selectedTicket.priority)" icon="pi pi-exclamation-circle" />
+                                    <Tag 
+                                        :value="getMaintenanceTypeLabel(selectedTicket.maintenance_type)" 
+                                        icon="pi pi-wrench"
+                                        :severity="getMaintenanceTypeSeverity(selectedTicket.maintenance_type)"
+                                    />
+                                    <Tag 
+                                        :value="getPriorityLabel(selectedTicket.priority)" 
+                                        icon="pi pi-exclamation-circle"
+                                        :severity="getPrioritySeverity(selectedTicket.priority)"
+                                    />
                                     <Chip v-if="selectedTicket.location_city" :label="selectedTicket.location_city" icon="pi pi-map-marker" />
                                 </div>
 
@@ -235,6 +243,47 @@
                                 </div>
 
                                 <p class="text-700 text-sm line-height-3 m-0">{{ selectedTicket.description }}</p>
+
+                                <!-- DEBUG: Log attachments -->
+                                <div v-if="selectedTicket" style="display:none">
+                                    {{ console.log('🖼️ Ticket attachments:', selectedTicket.attachments) }}
+                                </div>
+
+                                <!-- Galería de Imágenes Adjuntas -->
+                                <div v-if="selectedTicket.attachments && selectedTicket.attachments.length > 0" class="mt-4">
+                                    <Divider align="left">
+                                        <span class="text-sm font-semibold">
+                                            <i class="pi pi-images mr-2"></i>
+                                            Imágenes Adjuntas ({{ selectedTicket.attachments.length }})
+                                        </span>
+                                    </Divider>
+                                    
+                                    <div class="grid">
+                                        <div 
+                                            v-for="(attachment, index) in selectedTicket.attachments" 
+                                            :key="index"
+                                            class="col-6 md:col-4"
+                                        >
+                                            <div class="border-1 surface-border border-round overflow-hidden hover:shadow-2 transition-all transition-duration-200 cursor-pointer">
+                                                <Image 
+                                                    :src="attachment.url" 
+                                                    :alt="attachment.description || 'Imagen adjunta'"
+                                                    preview
+                                                    class="w-full"
+                                                    imageClass="w-full h-8rem object-cover"
+                                                />
+                                                <div class="p-2 bg-surface-50">
+                                                    <p class="text-xs text-600 m-0 line-height-2">
+                                                        {{ getAttachmentTypeLabel(attachment.type) }}
+                                                    </p>
+                                                    <p v-if="attachment.description" class="text-xs text-500 m-0 mt-1 line-height-2">
+                                                        {{ attachment.description }}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </SplitterPanel>
 
@@ -357,6 +406,8 @@ import { useAuth } from '@/composables/useAuth';
 import EvidenceUpload from '@/components/ticket/EvidenceUpload.vue';
 import TicketChat from '@/components/ticket/TicketChat.vue';
 import { translateStatus, translatePriority, getPriorityColor, getStatusSeverity, formatDate } from '@/utils/status-utils.js';
+import Image from 'primevue/image';
+import Divider from 'primevue/divider';
 
 const toast = useToast();
 const { user, profile } = useAuth();
@@ -447,11 +498,13 @@ const loadTickets = async () => {
             .from('tickets')
             .select(`
                 *,
-                client:client_profiles(*)
+                client:clients(*),
+                branch:client_branches(*),
+                asset:client_assets(*),
+                supplier:supplier_profiles(*)
             `)
             .order('created_at', { ascending: false });
 
-        // Si el supplier no está aprobado, solo mostrar tickets básicos sin cliente
         if (!isSupplierApproved.value) {
             query = supabase
                 .from('tickets')
@@ -463,13 +516,17 @@ const loadTickets = async () => {
                 .in('status', ['pending', 'opened'])
                 .order('created_at', { ascending: false });
         } else {
-            // Si está aprobado, mostrar todos los tickets relevantes
             query = query.or(`supplier_id.eq.${currentSupplierId.value},supplier_id.is.null,status.eq.pending,status.eq.opened`);
         }
 
         const { data, error } = await query;
 
         if (error) throw error;
+        
+        console.log('📦 Raw tickets data from Supabase:', data);
+        console.log('📦 First ticket attachments (JSONB):', data?.[0]?.attachments);
+        
+        // Attachments are already in JSONB format, no transformation needed
         tickets.value = data || [];
     } catch (error) {
         console.error('Error loading tickets:', error);
@@ -484,13 +541,23 @@ const loadTickets = async () => {
     }
 };
 
-const viewTicket = (ticket) => {
+import { useSecureImage } from '@/composables/useSecureImage';
+
+const { refreshAttachments } = useSecureImage();
+
+const viewTicket = async (ticket) => {
   selectedTicket.value = ticket;
   showTicketDialog.value = true;
-  // Initialize chat for this ticket
-  const { messages, isTyping, sendMessage, markAsRead, setTypingStatus } = useFirebaseChat(ticket.id);
-  // expose to template via refs (optional)
-  chatData.value = { messages, isTyping, sendMessage, markAsRead, setTypingStatus };
+  
+  // Refresh attachment URLs if needed
+  if (ticket.attachments && ticket.attachments.length > 0) {
+      const refreshedAttachments = await refreshAttachments(ticket.attachments);
+      selectedTicket.value = { ...ticket, attachments: refreshedAttachments };
+  }
+
+  // TODO: Initialize chat for this ticket when Firebase chat is implemented
+  // const { messages, isTyping, sendMessage, markAsRead, setTypingStatus } = useFirebaseChat(ticket.id);
+  // chatData.value = { messages, isTyping, sendMessage, markAsRead, setTypingStatus };
 };
 
 const canAcceptTicket = (ticket) => {
@@ -746,11 +813,46 @@ const getPrioritySeverity = (priority) => {
 };
 
 const getMaintenanceTypeLabel = (type) => {
-    return type === 'preventive' ? 'Preventivo' : 'Correctivo';
+    const labels = {
+        preventive: 'Preventivo',
+        corrective: 'Correctivo',
+        installation: 'Instalación'
+    };
+    return labels[type] || type;
+};
+
+const getAttachmentTypeLabel = (type) => {
+    const labels = {
+        branch: 'Foto de la sucursal',
+        asset: 'Foto del activo',
+        problem: 'Descripción del problema',
+        additional: 'Información adicional',
+        evidence: 'Evidencia del trabajo'
+    };
+    return labels[type] || 'Imagen adjunta';
 };
 
 const getMaintenanceTypeSeverity = (type) => {
     return type === 'preventive' ? 'info' : 'warning';
+};
+
+const getMaintenanceTypeClass = (type) => {
+    const classes = {
+        preventive: 'bg-blue-100 text-blue-700',
+        corrective: 'bg-orange-100 text-orange-700',
+        installation: 'bg-purple-100 text-purple-700'
+    };
+    return classes[type] || '';
+};
+
+const getPriorityClass = (priority) => {
+    const classes = {
+        low: 'bg-green-100 text-green-700',
+        medium: 'bg-yellow-100 text-yellow-700',
+        high: 'bg-red-100 text-red-700',
+        urgent: 'bg-red-200 text-red-900'
+    };
+    return classes[priority] || '';
 };
 
 const truncateText = (text, maxLength) => {

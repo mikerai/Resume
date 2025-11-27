@@ -179,6 +179,11 @@ const router = createRouter({
                     component: () => import('@/views/supplier/Jobs.vue')
                 },
                 {
+                    path: 'history',
+                    name: 'SupplierHistory',
+                    component: () => import('@/views/supplier/History.vue')
+                },
+                {
                     path: 'jobs/:id',
                     name: 'SupplierJobDetail',
                     component: () => import('@/views/admin/TicketDetail.vue') // Reusing for now

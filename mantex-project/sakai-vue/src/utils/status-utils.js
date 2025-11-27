@@ -9,16 +9,16 @@
 export const STATUS_TRANSLATIONS = {
     'pending': 'Pendiente',
     'opened': 'Abierto',
-    'in_progress': 'En Progreso',
+    'in_progress': 'En progreso',
     'completed': 'Completado',
-    'under_review': 'En Revisión',
+    'under_review': 'En revisión',
     'approved': 'Aprobado',
-    'ready_for_payment': 'Listo para Pago',
-    'payment_pending': 'Pago Pendiente',
+    'ready_for_payment': 'Listo para pago',
+    'payment_pending': 'Pago pendiente',
     'paid': 'Pagado',
     'closed': 'Cerrado',
     'cancelled': 'Cancelado',
-    'revision_requested': 'Cambios Solicitados'
+    'revision_requested': 'Cambios solicitados'
 };
 
 /**
@@ -36,18 +36,18 @@ export const PRIORITY_TRANSLATIONS = {
  * Following Ionic color system: primary, secondary, tertiary, success, warning, danger, light, medium, dark
  */
 export const STATUS_COLORS = {
-    'pending': 'warning',           // Yellow/Orange
+    'pending': 'warn',           // Yellow/Orange
     'opened': 'secondary',          // Blue-gray
-    'in_progress': 'primary',       // Blue
+    'in_progress': 'info',       // Blue
     'completed': 'success',         // Green
     'under_review': 'tertiary',     // Purple
     'approved': 'success',          // Green
-    'ready_for_payment': 'primary', // Blue (as requested)
-    'payment_pending': 'warning',   // Yellow
+    'ready_for_payment': 'info', // Blue (as requested)
+    'payment_pending': 'warn',   // Yellow
     'paid': 'success',              // Green
     'closed': 'medium',             // Gray
     'cancelled': 'danger',          // Red
-    'revision_requested': 'warning' // Orange
+    'revision_requested': 'warn' // Orange
 };
 
 /**
@@ -55,18 +55,18 @@ export const STATUS_COLORS = {
  * Options: success, info, warning, danger, secondary, contrast
  */
 export const STATUS_SEVERITY = {
-    'pending': 'warning',
+    'pending': 'warn',
     'opened': 'info',
     'in_progress': 'info',
     'completed': 'success',
     'under_review': 'info',
     'approved': 'success',
     'ready_for_payment': 'info',
-    'payment_pending': 'warning',
+    'payment_pending': 'info',
     'paid': 'success',
     'closed': 'secondary',
     'cancelled': 'danger',
-    'revision_requested': 'warning'
+    'revision_requested': 'danger'
 };
 
 /**
@@ -74,7 +74,7 @@ export const STATUS_SEVERITY = {
  */
 export const PRIORITY_COLORS = {
     'low': 'success',
-    'medium': 'warning',
+    'medium': 'warn',
     'high': 'danger',
     'urgent': 'danger'
 };

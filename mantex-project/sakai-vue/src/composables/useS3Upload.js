@@ -34,29 +34,29 @@ export function useS3Upload() {
      *
      * Tipos de documentos soportados:
      *
-     * 🆔 IDENTIFICACIÓN (Clients + Suppliers):
+     *  IDENTIFICACIÓN (Clients + Suppliers):
      * - ine_front, ine_back, ine_selfie
      *
-     * 🏢 INFRAESTRUCTURA (Clients):
+     *  INFRAESTRUCTURA (Clients):
      * - headquarters (fachada, layout)
      * - branches (fachada, layout)
      *
-     * 📋 DOCUMENTOS EMPRESARIALES (Suppliers):
+     *  DOCUMENTOS EMPRESARIALES (Suppliers):
      * - insurance (pólizas de seguro)
      * - legal (documentos legales, actas constitutivas)
      * - certification (certificaciones, títulos)
      *
-     * 📄 EVIDENCIAS DE TRABAJO (Clients + Suppliers):
+     *  EVIDENCIAS DE TRABAJO (Clients + Suppliers):
      * - evidence (fotos de trabajos, antes/después)
      * - receipts (comprobantes, facturas)
      * - contracts (contratos firmados)
      *
-     * 📊 REPORTES Y CHECKLISTS (Clients + Suppliers):
+     *  REPORTES Y CHECKLISTS (Clients + Suppliers):
      * - reports (reportes de trabajo)
      * - checklists (listas de verificación)
      * - inspections (inspecciones, auditorías)
      *
-     * 💰 DOCUMENTOS FINANCIEROS (Clients + Suppliers):
+     *  DOCUMENTOS FINANCIEROS (Clients + Suppliers):
      * - invoices (facturas)
      * - payments (comprobantes de pago)
      * - budgets (presupuestos)
@@ -91,7 +91,7 @@ export function useS3Upload() {
     const uploadFileToS3 = async (file, username, documentType, verificationId = null) => {
         try {
             isUploading.value = true;
-            console.log(`📤 Subiendo archivo ${file.name} a S3...`);
+            console.log(`Subiendo archivo ${file.name} a S3...`);
 
             // Generar key único para S3
             const s3Key = generateS3Key(username, documentType, file.name);
@@ -138,7 +138,7 @@ export function useS3Upload() {
 
             const result = await response.json();
 
-            console.log(`✅ Archivo subido exitosamente a S3: ${result.fileUrl}`);
+            console.log(`Archivo subido exitosamente a S3: ${result.fileUrl}`);
 
             // Retornar información del archivo subido
             return {
@@ -155,7 +155,7 @@ export function useS3Upload() {
             };
 
         } catch (error) {
-            console.error('💥 Error crítico subiendo archivo:', error.message);
+            console.error('Error crítico subiendo archivo:', error.message);
             throw error;
         } finally {
             isUploading.value = false;
@@ -205,7 +205,7 @@ export function useS3Upload() {
      */
     const uploadINEFiles = async (frontFile, backFile, selfieFile, username, verificationId) => {
         try {
-            console.log('📤 Subiendo archivos INE a S3...');
+            console.log('Subiendo archivos INE a S3...');
 
             // Subir archivos en paralelo para mayor eficiencia
             const [frontUpload, backUpload, selfieUpload] = await Promise.all([
@@ -214,7 +214,7 @@ export function useS3Upload() {
                 uploadFileToS3(selfieFile, username, 'ine', verificationId)
             ]);
 
-            console.log('✅ Todos los archivos INE subidos exitosamente');
+            console.log('Todos los archivos INE subidos exitosamente');
 
             return {
                 success: true,
@@ -224,7 +224,7 @@ export function useS3Upload() {
             };
 
         } catch (error) {
-            console.error('💥 Error subiendo archivos INE:', error);
+            console.error('Error subiendo archivos INE:', error);
             throw error;
         }
     };
@@ -238,14 +238,14 @@ export function useS3Upload() {
      */
     const uploadMultipleDocuments = async (files, username, documentType, verificationId = null) => {
         try {
-            console.log(`📤 Subiendo ${files.length} documentos de tipo ${documentType}...`);
+            console.log(`Subiendo ${files.length} documentos de tipo ${documentType}...`);
 
             // Subir archivos en paralelo
             const uploads = await Promise.all(
                 files.map(file => uploadFileToS3(file, username, documentType, verificationId))
             );
 
-            console.log(`✅ ${uploads.length} documentos subidos exitosamente`);
+            console.log(`${uploads.length} documentos subidos exitosamente`);
 
             return {
                 success: true,
@@ -268,7 +268,7 @@ export function useS3Upload() {
      */
     const uploadWorkEvidence = async (files, username, jobId = null) => {
         try {
-            console.log(`📸 Subiendo ${files.length} evidencias de trabajo...`);
+            console.log(`Subiendo ${files.length} evidencias de trabajo...`);
 
             const uploads = await Promise.all(
                 files.map(file => uploadFileToS3(file, username, 'evidence', jobId))
@@ -282,7 +282,7 @@ export function useS3Upload() {
             };
 
         } catch (error) {
-            console.error('💥 Error subiendo evidencias:', error);
+            console.error('Error subiendo evidencias:', error);
             throw error;
         }
     };
@@ -296,7 +296,7 @@ export function useS3Upload() {
      */
     const uploadFinancialDocuments = async (files, username, financialType = 'invoices') => {
         try {
-            console.log(`💰 Subiendo ${files.length} documentos financieros (${financialType})...`);
+            console.log(`Subiendo ${files.length} documentos financieros (${financialType})...`);
 
             const uploads = await Promise.all(
                 files.map(file => uploadFileToS3(file, username, financialType, null))
@@ -310,7 +310,7 @@ export function useS3Upload() {
             };
 
         } catch (error) {
-            console.error('💥 Error subiendo documentos financieros:', error);
+            console.error('Error subiendo documentos financieros:', error);
             throw error;
         }
     };
@@ -324,7 +324,7 @@ export function useS3Upload() {
      */
     const uploadReportsAndChecklists = async (files, username, reportType = 'reports') => {
         try {
-            console.log(`📊 Subiendo ${files.length} ${reportType}...`);
+            console.log(`Subiendo ${files.length} ${reportType}...`);
 
             const uploads = await Promise.all(
                 files.map(file => uploadFileToS3(file, username, reportType, null))
@@ -338,7 +338,7 @@ export function useS3Upload() {
             };
 
         } catch (error) {
-            console.error('💥 Error subiendo reportes:', error);
+            console.error('Error subiendo reportes:', error);
             throw error;
         }
     };
@@ -369,7 +369,7 @@ export function useS3Upload() {
                 throw new Error(`S3 delete failed: ${errorData.message || response.statusText}`);
             }
 
-            console.log('✅ Archivo eliminado exitosamente de S3');
+            console.log('Archivo eliminado exitosamente de S3');
             return { success: true };
 
         } catch (error) {

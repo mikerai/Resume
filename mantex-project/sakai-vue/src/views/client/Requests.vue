@@ -1,5 +1,5 @@
 <template>
-    <div class="grid grid-cols-12 gap-8">
+    <div class="grid-cols-12">
         <!-- Full width table at bottom -->
         <div class="col-span-12">
             <div class="card">
@@ -49,7 +49,7 @@
                                     severity="info" 
                                     text 
                                     rounded 
-                                    @click="viewTicket(slotProps.data)" 
+                                    @click="viewTicketDetails(slotProps.data)" 
                                     v-tooltip.top="'Ver detalles'"
                                 />
                                 <Button 
@@ -257,8 +257,16 @@
                                 </div>
 
                                 <div class="flex flex-wrap gap-2 mb-3">
-                                    <Chip :label="selectedTicket.maintenance_type === 'preventive' ? 'Preventivo' : 'Correctivo'" icon="pi pi-wrench" />
-                                    <Chip :label="getPriorityLabel(selectedTicket.priority)" icon="pi pi-exclamation-circle" />
+                                    <Tag 
+                                        :value="getMaintenanceTypeLabel(selectedTicket.maintenance_type)" 
+                                        icon="pi pi-wrench"
+                                        :severity="getMaintenanceTypeSeverity(selectedTicket.maintenance_type)"
+                                    />
+                                    <Tag 
+                                        :value="getPriorityLabel(selectedTicket.priority)" 
+                                        icon="pi pi-exclamation-circle"
+                                        :severity="getPrioritySeverity(selectedTicket.priority)"
+                                    />
                                     <Chip v-if="selectedTicket.location_city" :label="selectedTicket.location_city" icon="pi pi-map-marker" />
                                 </div>
 
@@ -271,6 +279,42 @@
                                 </div>
 
                                 <p class="text-700 text-sm line-height-3 m-0">{{ selectedTicket.description }}</p>
+
+                                <!-- Galería de Imágenes Adjuntas -->
+                                <div v-if="selectedTicket.attachments && selectedTicket.attachments.length > 0" class="mt-4">
+                                    <Divider align="left">
+                                        <span class="text-sm font-semibold">
+                                            <i class="pi pi-images mr-2"></i>
+                                            Imágenes Adjuntas ({{ selectedTicket.attachments.length }})
+                                        </span>
+                                    </Divider>
+                                    
+                                    <div class="grid">
+                                        <div 
+                                            v-for="(attachment, index) in selectedTicket.attachments" 
+                                            :key="index"
+                                            class="col-6 md:col-4"
+                                        >
+                                            <div class="border-1 surface-border border-round overflow-hidden hover:shadow-2 transition-all transition-duration-200 cursor-pointer">
+                                                <Image 
+                                                    :src="attachment.url" 
+                                                    :alt="attachment.description || 'Imagen adjunta'"
+                                                    preview
+                                                    class="w-full"
+                                                    imageClass="w-full h-8rem object-cover"
+                                                />
+                                                <div class="p-2 bg-surface-50">
+                                                    <p class="text-xs text-600 m-0 line-height-2">
+                                                        {{ getAttachmentTypeLabel(attachment.type) }}
+                                                    </p>
+                                                    <p v-if="attachment.description" class="text-xs text-500 m-0 mt-1 line-height-2">
+                                                        {{ attachment.description }}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </SplitterPanel>
 
@@ -332,6 +376,8 @@ import Tag from 'primevue/tag';
 import Dialog from 'primevue/dialog';
 import Splitter from 'primevue/splitter';
 import SplitterPanel from 'primevue/splitterpanel';
+import Image from 'primevue/image';
+import Divider from 'primevue/divider';
 import Chip from 'primevue/chip';
 import Avatar from 'primevue/avatar';
 import TicketChat from '@/components/ticket/TicketChat.vue';
@@ -524,7 +570,28 @@ const createRequest = async () => {
 
         // Upload photos if any selected
         if (selectedPhotos.value.length > 0) {
-            await uploadPhotosToS3(newTicket.id);
+            const uploadedAttachments = await uploadPhotosToS3(newTicket.id);
+            
+            if (uploadedAttachments.length > 0) {
+                // Update ticket with attachments
+                const { error: updateError } = await supabase
+                    .from('tickets')
+                    .update({ 
+                        attachments: uploadedAttachments,
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('id', newTicket.id);
+                    
+                if (updateError) {
+                    console.error('Error updating ticket with attachments:', updateError);
+                    toast.add({
+                        severity: 'warn',
+                        summary: 'Advertencia',
+                        detail: 'El ticket se creó pero hubo un error al guardar las imágenes',
+                        life: 5000
+                    });
+                }
+            }
         }
 
         // Add new ticket to local list
@@ -563,7 +630,7 @@ const validateForm = () => {
         if (!newRequest.value[field] || newRequest.value[field].trim() === '') {
             toast.add({
                 severity: 'warn',
-                summary: 'Campo Requerido',
+                summary: 'Campo requerido',
                 detail: `El campo es obligatorio`,
                 life: 3000
             });
@@ -589,8 +656,19 @@ const closeCreateDialog = () => {
     branchAssets.value = [];
 };
 
-const viewTicket = (ticket) => {
+import { useSecureImage } from '@/composables/useSecureImage';
+
+const { refreshAttachments } = useSecureImage();
+
+const viewTicketDetails = async (ticket) => {
     selectedTicket.value = ticket;
+    showDetailsDialog.value = true;
+    
+    // Refresh attachment URLs if needed
+    if (ticket.attachments && ticket.attachments.length > 0) {
+        const refreshedAttachments = await refreshAttachments(ticket.attachments);
+        selectedTicket.value = { ...ticket, attachments: refreshedAttachments };
+    }
     // Build Google Maps embed URL
     const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
     const query = encodeURIComponent(`${ticket.location_city}, ${ticket.location_state}`);
@@ -599,7 +677,7 @@ const viewTicket = (ticket) => {
 };
 
 const cancelTicketQuick = async (ticket) => {
-    if (!confirm(`¿Está seguro de cancelar el ticket ${ticket.ticket_number}?`)) return;
+    if (!confirm(`¿Estás seguro de cancelar el ticket ${ticket.ticket_number}?`)) return;
     
     try {
         const { error } = await supabase
@@ -620,7 +698,7 @@ const cancelTicketQuick = async (ticket) => {
 
 const cancelTicket = async () => {
     if (!selectedTicket.value) return;
-    if (!confirm(`¿Está seguro de cancelar el ticket ${selectedTicket.value.ticket_number}?`)) return;
+    if (!confirm(`¿Estás seguro de cancelar el ticket ${selectedTicket.value.ticket_number}?`)) return;
     
     try {
         const { error } = await supabase
@@ -666,9 +744,39 @@ const getMaintenanceTypeSeverity = (type) => {
     return type === 'preventive' ? 'info' : 'warn';
 };
 
+const getMaintenanceTypeClass = (type) => {
+    const classes = {
+        preventive: 'bg-blue-100 text-blue-700',
+        corrective: 'bg-orange-100 text-orange-700',
+        installation: 'bg-purple-100 text-purple-700'
+    };
+    return classes[type] || '';
+};
+
+const getPriorityClass = (priority) => {
+    const classes = {
+        low: 'bg-green-100 text-green-700',
+        medium: 'bg-yellow-100 text-yellow-700',
+        high: 'bg-red-100 text-red-700',
+        urgent: 'bg-red-200 text-red-900'
+    };
+    return classes[priority] || '';
+};
+
 const truncateText = (text, maxLength) => {
     if (!text) return '';
     return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+};
+
+const getAttachmentTypeLabel = (type) => {
+    const labels = {
+        branch: 'Foto de la sucursal',
+        asset: 'Foto del activo',
+        problem: 'Descripción del problema',
+        additional: 'Información adicional',
+        evidence: 'Evidencia del trabajo'
+    };
+    return labels[type] || 'Imagen adjunta';
 };
 
 // Helper to get client_id from user
@@ -724,11 +832,12 @@ const removePhoto = (index) => {
 };
 
 // Upload photos to S3
+// Upload photos to S3
 const uploadPhotosToS3 = async (ticketId) => {
     if (selectedPhotos.value.length === 0) return [];
     
     uploadingPhotos.value = true;
-    const uploadedUrls = [];
+    const uploadedAttachments = [];
     
     try {
         const username = user.value.email.split('@')[0];
@@ -756,8 +865,19 @@ const uploadPhotosToS3 = async (ticketId) => {
             });
             
             const result = await response.json();
+
             if (result.success) {
-                uploadedUrls.push(result.fileUrl);
+                uploadedAttachments.push({
+                    url: result.fileUrl,
+                    type: 'problem', // Photos uploaded during creation are problem descriptions
+                    description: '', // Can be updated later
+                    filename: photo.name,
+                    createdAt: new Date().toISOString(),
+                    key: result.key,
+                    bucket: result.bucket
+                });
+            } else {
+                console.error('Upload failed for photo:', photo.name, result);
             }
         }
     } catch (error) {
@@ -766,7 +886,7 @@ const uploadPhotosToS3 = async (ticketId) => {
         uploadingPhotos.value = false;
     }
     
-    return uploadedUrls;
+    return uploadedAttachments;
 };
 
 onMounted(() => {
