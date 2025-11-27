@@ -39,6 +39,42 @@ const assetTypes = ref([
     { label: 'Otro', value: 'otro' }
 ]);
 
+// Estados de México para dropdown
+const estadosMexico = [
+    { label: 'Aguascalientes', value: 'Aguascalientes' },
+    { label: 'Baja California', value: 'Baja California' },
+    { label: 'Baja California Sur', value: 'Baja California Sur' },
+    { label: 'Campeche', value: 'Campeche' },
+    { label: 'Chiapas', value: 'Chiapas' },
+    { label: 'Chihuahua', value: 'Chihuahua' },
+    { label: 'Ciudad de México', value: 'Ciudad de México' },
+    { label: 'Coahuila', value: 'Coahuila' },
+    { label: 'Colima', value: 'Colima' },
+    { label: 'Durango', value: 'Durango' },
+    { label: 'Guanajuato', value: 'Guanajuato' },
+    { label: 'Guerrero', value: 'Guerrero' },
+    { label: 'Hidalgo', value: 'Hidalgo' },
+    { label: 'Jalisco', value: 'Jalisco' },
+    { label: 'México', value: 'México' },
+    { label: 'Michoacán', value: 'Michoacán' },
+    { label: 'Morelos', value: 'Morelos' },
+    { label: 'Nayarit', value: 'Nayarit' },
+    { label: 'Nuevo León', value: 'Nuevo León' },
+    { label: 'Oaxaca', value: 'Oaxaca' },
+    { label: 'Puebla', value: 'Puebla' },
+    { label: 'Querétaro', value: 'Querétaro' },
+    { label: 'Quintana Roo', value: 'Quintana Roo' },
+    { label: 'San Luis Potosí', value: 'San Luis Potosí' },
+    { label: 'Sinaloa', value: 'Sinaloa' },
+    { label: 'Sonora', value: 'Sonora' },
+    { label: 'Tabasco', value: 'Tabasco' },
+    { label: 'Tamaulipas', value: 'Tamaulipas' },
+    { label: 'Tlaxcala', value: 'Tlaxcala' },
+    { label: 'Veracruz', value: 'Veracruz' },
+    { label: 'Yucatán', value: 'Yucatán' },
+    { label: 'Zacatecas', value: 'Zacatecas' }
+];
+
 // Form data for each step - CLIENT SPECIFICATION
 const formData = ref({
     // Step 1: SAT Data (RFC + optional CIEC)
@@ -784,10 +820,11 @@ const saveClientData = async () => {
             contact_person: contactPerson,
             phone: formData.value.phoneNumber,
             email: user.value.email,
-            address: fullAddress,
-            latitude: latitude,
-            longitude: longitude,
-            city: formData.value.address.city || null,
+            street: formData.value.address.street || null, // Homologado
+            number: formData.value.address.exteriorNumber || null, // Homologado
+            apt: formData.value.address.interiorNumber || null, // Homologado
+            neighborhood: formData.value.address.neighborhood || null, // Homologado
+            municipality_city: formData.value.address.city || null, // Homologado
             state: formData.value.address.state || null,
             postal_code: formData.value.address.postalCode || null,
             rfc: satData?.rfc || null,
@@ -1227,7 +1264,15 @@ onMounted(() => {
 
                                     <div class="col-span-12 md:col-span-6">
                                         <label class="block font-medium mb-2">Estado *</label>
-                                        <InputText v-model="formData.address.state" class="w-full" placeholder="Estado" />
+                                        <Dropdown 
+                                            v-model="formData.address.state" 
+                                            :options="estadosMexico" 
+                                            optionLabel="label" 
+                                            optionValue="value" 
+                                            placeholder="Selecciona un estado" 
+                                            class="w-full"
+                                            showClear
+                                        />
                                     </div>
 
                                     <div class="col-span-12 md:col-span-6">

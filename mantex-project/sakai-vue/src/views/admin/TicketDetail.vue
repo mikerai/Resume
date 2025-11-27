@@ -110,6 +110,11 @@
             </div>
           </Panel>
 
+          <!-- COTIZACIÓN -->
+          <Panel header="Cotización" toggleable :collapsed="false">
+            <QuoteForm :ticketId="id" />
+          </Panel>
+
           <!-- INFORMACIÓN DEL ACTIVO -->
           <Panel v-if="ticket.asset" header="Activo" toggleable>
             <div class="grid">
@@ -280,10 +285,13 @@ import { useToast } from 'primevue/usetoast';
 import GoogleMapView from '@/components/maps/GoogleMapView.vue';
 import ImageGallery from '@/components/common/ImageGallery.vue';
 import TicketChat from '@/components/ticket/TicketChat.vue';
+import QuoteForm from '@/components/quotes/QuoteForm.vue';
 import { getJob, updateJob } from '@/api/jobs.js';
+import { useAuth } from '@/composables/useAuth';
 
 const route = useRoute();
 const toast = useToast();
+const { profile } = useAuth();
 
 const id = route.params.id;
 
