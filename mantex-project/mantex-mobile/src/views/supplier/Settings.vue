@@ -34,6 +34,31 @@
         <p class="text-muted">{{ user?.email }}</p>
       </div>
 
+      <!-- Appearance Section -->
+      <ion-list>
+        <ion-list-header>
+          <ion-label>Apariencia</ion-label>
+        </ion-list-header>
+
+        <ion-item>
+          <ion-label>Tema</ion-label>
+          <ion-select v-model="selectedTheme" interface="action-sheet" @ionChange="onThemeChange">
+            <ion-select-option value="auto">Automático</ion-select-option>
+            <ion-select-option value="light">Claro</ion-select-option>
+            <ion-select-option value="dark">Oscuro</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-item>
+          <ion-label>Tamaño de Texto</ion-label>
+          <ion-select v-model="selectedScale" interface="action-sheet" @ionChange="onScaleChange">
+            <ion-select-option value="small">Pequeño</ion-select-option>
+            <ion-select-option value="medium">Mediano</ion-select-option>
+            <ion-select-option value="large">Grande</ion-select-option>
+          </ion-select>
+        </ion-item>
+      </ion-list>
+
       <!-- Password Section -->
       <ion-list>
         <ion-list-header>
@@ -79,7 +104,7 @@ import { ref, onMounted } from 'vue';
 import { 
   IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonBackButton,
   IonAvatar, IonIcon, IonList, IonListHeader, IonItem, IonLabel, IonInput, IonButton, IonSpinner,
-  IonInputPasswordToggle, toastController
+  IonInputPasswordToggle, IonSelect, IonSelectOption, toastController
 } from '@ionic/vue';
 import { cameraOutline } from 'ionicons/icons';
 import { supabase } from '@/lib/supabaseClient';
@@ -94,6 +119,10 @@ const newPassword = ref('');
 const confirmPassword = ref('');
 const loading = ref(false);
 const fileInput = ref(null);
+
+// Theme and Scale
+const selectedTheme = ref('auto');
+const selectedScale = ref('medium');
 
 const loadAvatar = async () => {
   try {
@@ -111,6 +140,43 @@ const loadAvatar = async () => {
   } catch (e) {
     console.error('Error loading avatar:', e);
   }
+};
+
+const loadPreferences = () => {
+  const theme = localStorage.getItem('mantex_theme') || 'auto';
+  const scale = localStorage.getItem('mantex_scale') || 'medium';
+  selectedTheme.value = theme;
+  selectedScale.value = scale;
+  applyTheme(theme);
+  applyScale(scale);
+};
+
+const applyTheme = (theme) => {
+  if (theme === 'auto') {
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    document.body.classList.toggle('dark', prefersDark);
+  } else {
+    document.body.classList.toggle('dark', theme === 'dark');
+  }
+};
+
+const applyScale = (scale) => {
+  document.documentElement.classList.remove('scale-small', 'scale-medium', 'scale-large');
+  document.documentElement.classList.add(`scale-${scale}`);
+};
+
+const onThemeChange = (event) => {
+  const theme = event.detail.value;
+  localStorage.setItem('mantex_theme', theme);
+  applyTheme(theme);
+  showToast('Tema actualizado', 'success');
+};
+
+const onScaleChange = (event) => {
+  const scale = event.detail.value;
+  localStorage.setItem('mantex_scale', scale);
+  applyScale(scale);
+  showToast('Tamaño de texto actualizado', 'success');
 };
 
 const triggerFileInput = () => {
@@ -184,6 +250,7 @@ const showToast = async (message, color = 'success') => {
 onMounted(() => {
   if (user.value?.id) {
     loadAvatar();
+    loadPreferences();
   }
 });
 </script>

@@ -206,13 +206,10 @@
                         <!-- Panel 2: Detalles (20%) -->
                         <SplitterPanel :size="20" :minSize="15">
                             <div class="p-3 h-full overflow-y-auto">
-                                <div class="flex align-items-center justify-content-between mb-3">
-                                    <h6 class="m-0">
-                                        <i class="pi pi-info-circle mr-2"></i>
-                                        Detalles del Ticket
-                                    </h6>
-                                    <Tag :value="getStatusLabel(selectedTicket.status)" :severity="selectedTicket.status === 'revision_requested' ? 'warning' : getStatusSeverity(selectedTicket.status)" />
-                                </div>
+                                <h6 class="m-0 mb-3">
+                                    <i class="pi pi-info-circle mr-2"></i>
+                                    Detalles del Ticket
+                                </h6>
 
                                 <!-- Revision Comments Alert -->
                                 <Message v-if="selectedTicket.status === 'revision_requested' && selectedTicket.revision_comments" severity="warn" :closable="false" class="mb-3">
@@ -220,7 +217,22 @@
                                     <p class="mt-2 mb-0">{{ selectedTicket.revision_comments }}</p>
                                 </Message>
 
-                                <div class="flex flex-wrap gap-2 mb-3">
+                                <div class="flex align-items-center gap-2 mb-3" v-if="isSupplierApproved && selectedTicket.client">
+                                    <Avatar :label="selectedTicket.client.company_name[0]" shape="circle" />
+                                    <div>
+                                        <div class="font-semibold text-sm">{{ selectedTicket.client.company_name }}</div>
+                                        <div class="text-xs text-500">{{ selectedTicket.client.contact_person }}</div>
+                                    </div>
+                                </div>
+
+                                <p class="text-700 text-sm line-height-3 mb-3">{{ selectedTicket.description }}</p>
+
+                                <!-- Indicadores (Status movido aquí) -->
+                                <div class="flex flex-wrap gap-2">
+                                    <Tag 
+                                        :value="getStatusLabel(selectedTicket.status)" 
+                                        :severity="selectedTicket.status === 'revision_requested' ? 'warning' : getStatusSeverity(selectedTicket.status)" 
+                                    />
                                     <Tag 
                                         :value="getMaintenanceTypeLabel(selectedTicket.maintenance_type)" 
                                         icon="pi pi-wrench"
@@ -233,75 +245,79 @@
                                     />
                                     <Chip v-if="selectedTicket.location_city" :label="selectedTicket.location_city" icon="pi pi-map-marker" />
                                 </div>
-
-                                <div class="flex align-items-center gap-2 mb-3" v-if="isSupplierApproved && selectedTicket.client">
-                                    <Avatar :label="selectedTicket.client.company_name[0]" shape="circle" />
-                                    <div>
-                                        <div class="font-semibold text-sm">{{ selectedTicket.client.company_name }}</div>
-                                        <div class="text-xs text-500">{{ selectedTicket.client.contact_person }}</div>
-                                    </div>
-                                </div>
-
-                                <p class="text-700 text-sm line-height-3 m-0">{{ selectedTicket.description }}</p>
-
-                                <!-- DEBUG: Log attachments -->
-                                <div v-if="selectedTicket" style="display:none">
-                                    {{ console.log('🖼️ Ticket attachments:', selectedTicket.attachments) }}
-                                </div>
-
-                                <!-- Galería de Imágenes Adjuntas -->
-                                <div v-if="selectedTicket.attachments && selectedTicket.attachments.length > 0" class="mt-4">
-                                    <Divider align="left">
-                                        <span class="text-sm font-semibold">
-                                            <i class="pi pi-images mr-2"></i>
-                                            Imágenes Adjuntas ({{ selectedTicket.attachments.length }})
-                                        </span>
-                                    </Divider>
-                                    
-                                    <div class="grid">
-                                        <div 
-                                            v-for="(attachment, index) in selectedTicket.attachments" 
-                                            :key="index"
-                                            class="col-6 md:col-4"
-                                        >
-                                            <div class="border-1 surface-border border-round overflow-hidden hover:shadow-2 transition-all transition-duration-200 cursor-pointer">
-                                                <Image 
-                                                    :src="attachment.url" 
-                                                    :alt="attachment.description || 'Imagen adjunta'"
-                                                    preview
-                                                    class="w-full"
-                                                    imageClass="w-full h-8rem object-cover"
-                                                />
-                                                <div class="p-2 bg-surface-50">
-                                                    <p class="text-xs text-600 m-0 line-height-2">
-                                                        {{ getAttachmentTypeLabel(attachment.type) }}
-                                                    </p>
-                                                    <p v-if="attachment.description" class="text-xs text-500 m-0 mt-1 line-height-2">
-                                                        {{ attachment.description }}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
                         </SplitterPanel>
 
-                        <!-- Panel 3: Chat (80%) -->
+                        <!-- Panel 3: Tabs (Imágenes, Cotización, Chat) (80%) -->
                         <SplitterPanel :size="80" :minSize="50">
-                            <div class="h-full flex flex-column">
-                                <div class="p-3 surface-100 border-bottom-1 surface-border">
-                                    <h6 class="m-0 flex align-items-center">
-                                        <i class="pi pi-comments mr-2"></i>
-                                        Chat
-                                    </h6>
-                                </div>
-                                <div class="flex-1" v-if="isSupplierApproved">
-                                    <TicketChat :ticketId="selectedTicket.id" />
-                                </div>
-                                <div v-else class="flex-1 flex align-items-center justify-content-center text-500">
-                                    <i class="pi pi-lock mr-2"></i> Chat disponible al aprobarse
-                                </div>
+                            <div class="card h-full">
+                                <Tabs value="0" class="h-full">
+                                    <TabList>
+                                        <Tab value="0">
+                                            <i class="pi pi-images mr-2"></i>
+                                            Imágenes
+                                        </Tab>
+                                        <Tab value="1">
+                                            <i class="pi pi-file-edit mr-2"></i>
+                                            Cotización
+                                        </Tab>
+                                        <Tab value="2">
+                                            <i class="pi pi-comments mr-2"></i>
+                                            Chat
+                                        </Tab>
+                                    </TabList>
+                                    <TabPanels class="h-full overflow-y-auto">
+                                        <!-- Tab 1: Galería de Imágenes -->
+                                        <TabPanel value="0">
+                                            <div v-if="selectedTicket.attachments && selectedTicket.attachments.length > 0">
+                                                <Galleria 
+                                                    :value="selectedTicket.attachments" 
+                                                    :responsiveOptions="galleriaResponsiveOptions" 
+                                                    :numVisible="5"
+                                                    :circular="true"
+                                                    containerStyle="max-width: 100%"
+                                                >
+                                                    <template #item="slotProps">
+                                                        <img :src="slotProps.item.url" :alt="slotProps.item.description || 'Imagen adjunta'" style="width: 100%; display: block;" />
+                                                    </template>
+                                                    <template #thumbnail="slotProps">
+                                                        <img :src="slotProps.item.url" :alt="slotProps.item.description || 'Imagen adjunta'" style="display: block;" />
+                                                    </template>
+                                                    <template #caption="slotProps">
+                                                        <div class="text-center p-3">
+                                                            <h4 class="mb-2">{{ getAttachmentTypeLabel(slotProps.item.type) }}</h4>
+                                                            <p v-if="slotProps.item.description">{{ slotProps.item.description }}</p>
+                                                        </div>
+                                                    </template>
+                                                </Galleria>
+                                            </div>
+                                            <div v-else class="flex flex-column align-items-center justify-content-center p-5 text-500">
+                                                <i class="pi pi-images text-4xl mb-3"></i>
+                                                <p>No hay imágenes adjuntas</p>
+                                            </div>
+                                        </TabPanel>
+
+                                        <!-- Tab 2: Cotización -->
+                                        <TabPanel value="1">
+                                            <div v-if="isSupplierApproved">
+                                                <QuoteForm :ticketId="selectedTicket.id" />
+                                            </div>
+                                            <div v-else class="flex align-items-center justify-content-center text-500 p-5">
+                                                <i class="pi pi-lock mr-2"></i> Cotizaciones disponibles al aprobarse
+                                            </div>
+                                        </TabPanel>
+
+                                        <!-- Tab 3: Chat -->
+                                        <TabPanel value="2">
+                                            <div v-if="isSupplierApproved">
+                                                <TicketChat :ticketId="selectedTicket.id" />
+                                            </div>
+                                            <div v-else class="flex align-items-center justify-content-center text-500 p-5">
+                                                <i class="pi pi-lock mr-2"></i> Chat disponible al aprobarse
+                                            </div>
+                                        </TabPanel>
+                                    </TabPanels>
+                                </Tabs>
                             </div>
                         </SplitterPanel>
                     </Splitter>
@@ -405,9 +421,16 @@ import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/composables/useAuth';
 import EvidenceUpload from '@/components/ticket/EvidenceUpload.vue';
 import TicketChat from '@/components/ticket/TicketChat.vue';
+import QuoteForm from '@/components/quotes/QuoteForm.vue';
 import { translateStatus, translatePriority, getPriorityColor, getStatusSeverity, formatDate } from '@/utils/status-utils.js';
 import Image from 'primevue/image';
 import Divider from 'primevue/divider';
+import Tabs from 'primevue/tabs';
+import TabList from 'primevue/tablist';
+import Tab from 'primevue/tab';
+import TabPanels from 'primevue/tabpanels';
+import TabPanel from 'primevue/tabpanel';
+import Galleria from 'primevue/galleria';
 
 const toast = useToast();
 const { user, profile } = useAuth();
@@ -426,6 +449,14 @@ const ticketToReject = ref(null);
 const currentSupplier = ref(null);
 const showEvidenceDialog = ref(false);
 const evidenceTicket = ref(null);
+
+// Galleria responsive options
+const galleriaResponsiveOptions = ref([
+    { breakpoint: '1024px', numVisible: 5 },
+    { breakpoint: '960px', numVisible: 4 },
+    { breakpoint: '768px', numVisible: 3 },
+    { breakpoint: '560px', numVisible: 1 }
+]);
 
 
 // Computed properties
@@ -811,7 +842,7 @@ const getPrioritySeverity = (priority) => {
     const severities = {
         'low': 'secondary',
         'medium': 'info',
-        'high': 'warning',
+        'high': 'warn',
         'urgent': 'danger'
     };
     return severities[priority] || 'secondary';

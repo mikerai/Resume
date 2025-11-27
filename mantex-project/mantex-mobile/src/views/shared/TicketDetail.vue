@@ -108,6 +108,12 @@
           </ion-item>
         </div>
 
+        <!-- Quote Section -->
+        <div class="section">
+          <h3>Cotización</h3>
+          <QuoteForm :ticketId="ticketId" />
+        </div>
+
         <!-- Technician Actions -->
         <div class="action-footer" v-if="isTechnician">
           <!-- Pending -> Open/Reject -->
@@ -394,6 +400,7 @@ import { useTechnicianTickets } from '@/composables/useTechnicianTickets.js';
 import { useClientTickets } from '@/composables/useClientTickets.js';
 import { useGoogleMaps } from '@/composables/useGoogleMaps.js';
 import TicketChat from '@/components/TicketChat.vue';
+import QuoteForm from '@/components/quotes/QuoteForm.vue';
 import { translateStatus, translatePriority, getPriorityColor, getStatusColor, formatDate } from '@/utils/status-utils.js';
 
 const route = useRoute();

@@ -1020,13 +1020,21 @@ const saveSupplierData = async () => {
                 biometry_results: formData.value.biometryResults,
                 blacklist_results: formData.value.blacklistResults,
                 sat_validation: formData.value.satValidationResults,
-                proof_of_address_validation: {
-                    validated: formData.value.proofOfAddressValidated || false,
-                    data: formData.value.proofOfAddressData || null
-                },
                 working_hours: `${workingDays.value} ${workingHoursStart.value}-${workingHoursEnd.value}`,
                 service_radius_km: parseInt(formData.value.serviceRadius) || 50
             },
+
+            // Comprobante de Domicilio (columnas planas)
+            proof_of_address_type: formData.value.proofOfAddressData?.type || null,
+            proof_of_address_name: formData.value.proofOfAddressData?.name || null,
+            proof_of_address_street: formData.value.proofOfAddressData?.street || null,
+            proof_of_address_colonia: formData.value.proofOfAddressData?.colonia || null,
+            proof_of_address_city: formData.value.proofOfAddressData?.city || null,
+            proof_of_address_cp: formData.value.proofOfAddressData?.cp || null,
+            proof_of_address_validated: formData.value.proofOfAddressValidated || false,
+            proof_of_address_validation_code: formData.value.proofOfAddressData?.validation_code || null,
+            proof_of_address_validated_at: formData.value.proofOfAddressValidated ? new Date().toISOString() : null,
+            proof_of_address_raw_data: formData.value.proofOfAddressData || null,
 
             // Metadatos
             submitted_at: new Date().toISOString()

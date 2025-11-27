@@ -124,6 +124,16 @@
         </ion-button>
       </div>
 
+      <!-- Quote Section -->
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>Cotización</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <QuoteForm :ticketId="ticketId" />
+        </ion-card-content>
+      </ion-card>
+
       <!-- Chat Section -->
       <ion-card>
         <ion-card-header>
@@ -300,6 +310,7 @@ import { Pagination } from 'swiper/modules';
 import { supabase } from '@/lib/supabaseClient';
 import { useS3Upload } from '@/composables/useS3Upload';
 import { useAuth } from '@/composables/useAuth';
+import QuoteForm from '@/components/quotes/QuoteForm.vue';
 import 'swiper/css';
 import 'swiper/css/pagination';
 
