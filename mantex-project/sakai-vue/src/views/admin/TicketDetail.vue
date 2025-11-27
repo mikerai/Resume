@@ -56,7 +56,7 @@
 
           <!-- INFORMACIÓN DEL CLIENTE -->
           <Panel header="Cliente" toggleable>
-            <div class="grid">
+            <div class="grid grid-cols-12">
               <div class="col-12 md:col-6">
                 <div class="mb-3">
                   <label class="block text-sm font-semibold mb-1">Empresa</label>

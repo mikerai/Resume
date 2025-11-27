@@ -154,6 +154,42 @@ const workingHoursEndOptions = [
     { label: '24/7', value: '24/7' }
 ];
 
+// Estados de México para dropdown
+const estadosMexico = [
+    { label: 'Aguascalientes', value: 'Aguascalientes' },
+    { label: 'Baja California', value: 'Baja California' },
+    { label: 'Baja California Sur', value: 'Baja California Sur' },
+    { label: 'Campeche', value: 'Campeche' },
+    { label: 'Chiapas', value: 'Chiapas' },
+    { label: 'Chihuahua', value: 'Chihuahua' },
+    { label: 'Ciudad de México', value: 'Ciudad de México' },
+    { label: 'Coahuila', value: 'Coahuila' },
+    { label: 'Colima', value: 'Colima' },
+    { label: 'Durango', value: 'Durango' },
+    { label: 'Guanajuato', value: 'Guanajuato' },
+    { label: 'Guerrero', value: 'Guerrero' },
+    { label: 'Hidalgo', value: 'Hidalgo' },
+    { label: 'Jalisco', value: 'Jalisco' },
+    { label: 'México', value: 'México' },
+    { label: 'Michoacán', value: 'Michoacán' },
+    { label: 'Morelos', value: 'Morelos' },
+    { label: 'Nayarit', value: 'Nayarit' },
+    { label: 'Nuevo León', value: 'Nuevo León' },
+    { label: 'Oaxaca', value: 'Oaxaca' },
+    { label: 'Puebla', value: 'Puebla' },
+    { label: 'Querétaro', value: 'Querétaro' },
+    { label: 'Quintana Roo', value: 'Quintana Roo' },
+    { label: 'San Luis Potosí', value: 'San Luis Potosí' },
+    { label: 'Sinaloa', value: 'Sinaloa' },
+    { label: 'Sonora', value: 'Sonora' },
+    { label: 'Tabasco', value: 'Tabasco' },
+    { label: 'Tamaulipas', value: 'Tamaulipas' },
+    { label: 'Tlaxcala', value: 'Tlaxcala' },
+    { label: 'Veracruz', value: 'Veracruz' },
+    { label: 'Yucatán', value: 'Yucatán' },
+    { label: 'Zacatecas', value: 'Zacatecas' }
+];
+
 // Form fields for working hours
 const workingDays = ref('weekdays');
 const workingHoursStart = ref('08:00');
@@ -984,6 +1020,10 @@ const saveSupplierData = async () => {
                 biometry_results: formData.value.biometryResults,
                 blacklist_results: formData.value.blacklistResults,
                 sat_validation: formData.value.satValidationResults,
+                proof_of_address_validation: {
+                    validated: formData.value.proofOfAddressValidated || false,
+                    data: formData.value.proofOfAddressData || null
+                },
                 working_hours: `${workingDays.value} ${workingHoursStart.value}-${workingHoursEnd.value}`,
                 service_radius_km: parseInt(formData.value.serviceRadius) || 50
             },
@@ -1040,17 +1080,21 @@ const saveSupplierData = async () => {
         // URLs ya extraídas arriba, solo usar las variables existentes
         // faceSimilarityScore también ya está declarado arriba
 
-        // Guardar en tabla suppliers
+        // Guardar en tabla suppliers (sincronizar dirección con supplier_profiles)
         const supplierMainData = {
             user_id: user.value.id,
             company_name: companyName,
             contact_person: contactPerson,
             phone: user.value.phone || null,
             email: user.value.email,
-            address: null, // Suppliers no proporcionan dirección en onboarding
-            city: null,
-            state: null,
-            postal_code: null,
+            // Sincronizar dirección con supplier_profiles
+            street: formData.value.street,
+            number: formData.value.number,
+            apt: formData.value.apt,
+            neighborhood: formData.value.neighborhood,
+            municipality_city: formData.value.municipality_city,
+            state: formData.value.state,
+            postal_code: formData.value.postal_code,
             rfc: satData?.rfc || null,
             ciec_validated: satData?.ciec ? true : false,
             ine_front_url: ineFrontUrl,
@@ -1183,21 +1227,15 @@ const onProofOfAddressSelect = async (event) => {
     
     formData.value.proofOfAddressFile = file;
     
-    // Automatically validate proof of address
-    await processProofOfAddressValidation();
+    // Iniciar validación asíncrona SIN ESPERAR (no bloquea al usuario)
+    processProofOfAddressValidation();
 };
 
-// Process proof of address validation (NEW)
+// Process proof of address validation (ASYNC - NO BLOQUEA)
 const processProofOfAddressValidation = async () => {
     if (!formData.value.proofOfAddressFile) return;
     
-    loading.value = true;
-    toast.add({
-        severity: 'info',
-        summary: 'Validando Comprobante',
-        detail: 'Procesando comprobante de domicilio con OCR...',
-        life: 3000
-    });
+    console.log('Iniciando validación asíncrona de comprobante de domicilio...');
     
     try {
         // Convert file to base64
@@ -1209,34 +1247,18 @@ const processProofOfAddressValidation = async () => {
         if (result.success) {
             formData.value.proofOfAddressData = result.normalized;
             formData.value.proofOfAddressValidated = true;
-            
-            toast.add({
-                severity: 'success',
-                summary: 'Comprobante Validado',
-                detail: `${result.normalized.tipo} validado - ${result.normalized.nombre}`,
-                life: 5000
-            });
+            console.log('Comprobante validado exitosamente:', result.normalized);
         } else {
             formData.value.proofOfAddressValidated = false;
-            toast.add({
-                severity: 'error',
-                summary: 'Validación Falló',
-                detail: result.error || 'No se pudo validar el comprobante',
-                life: 5000
-            });
+            console.log('Validación de comprobante falló:', result.error);
         }
     } catch (error) {
         console.error('Error validando comprobante:', error);
         formData.value.proofOfAddressValidated = false;
-        toast.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: 'Error al procesar el comprobante',
-            life: 5000
-        });
-    } finally {
-        loading.value = false;
     }
+    
+    // NO mostrar toasts ni bloquear loading
+    // El resultado se guardará en DB para que el admin lo revise
 };
 
 // PickList handlers
@@ -1530,7 +1552,16 @@ const goToDashboardDummy = () => {
                                         </div>
                                         <div class="col-span-12 md:col-span-6">
                                             <label for="state" class="block font-semibold mb-2">Estado *</label>
-                                            <InputText id="state" v-model="formData.state" class="w-full" placeholder="Estado" />
+                                            <Dropdown 
+                                                id="state" 
+                                                v-model="formData.state" 
+                                                :options="estadosMexico" 
+                                                optionLabel="label" 
+                                                optionValue="value" 
+                                                placeholder="Selecciona un estado" 
+                                                class="w-full"
+                                                showClear
+                                            />
                                         </div>
                                     </div>
                                 </div>
@@ -1597,7 +1628,7 @@ const goToDashboardDummy = () => {
                                     </small>
                                 </div>
 
-                                <!-- Proof of Address (NEW) -->
+                                <!-- Proof of Address (NEW) - Validación Asíncrona -->
                                 <div class="mt-6 pt-6 border-t border-surface-200">
                                     <h5 class="font-semibold mb-3">Comprobante de Domicilio *</h5>
                                     <p class="text-sm text-color-secondary mb-3">
@@ -1613,33 +1644,17 @@ const goToDashboardDummy = () => {
                                         class="mb-3"
                                     />
 
-                                    <!-- Validation Status -->
+                                    <!-- Solo mostrar confirmación de archivo subido -->
                                     <div v-if="formData.proofOfAddressFile" class="mt-3">
-                                        <Message v-if="formData.proofOfAddressValidated" severity="success" :closable="false">
-                                            <div class="flex flex-column gap-2">
-                                                <div class="font-semibold">✅ Comprobante Validado</div>
-                                                <div class="text-sm">
-                                                    <strong>Tipo:</strong> {{ formData.proofOfAddressData?.tipo }}<br>
-                                                    <strong>Titular:</strong> {{ formData.proofOfAddressData?.nombre }}<br>
-                                                    <strong>Dirección:</strong> {{ formData.proofOfAddressData?.direccion?.calle }}, 
-                                                    {{ formData.proofOfAddressData?.direccion?.colonia }}, 
-                                                    {{ formData.proofOfAddressData?.direccion?.ciudad }}<br>
-                                                    <strong>CP:</strong> {{ formData.proofOfAddressData?.direccion?.cp }}
-                                                </div>
-                                            </div>
-                                        </Message>
-
-                                        <Message v-else-if="!loading" severity="error" :closable="false">
-                                            <div class="font-semibold">❌ No se pudo validar el comprobante</div>
-                                            <div class="text-sm">Por favor verifica que el documento sea legible y esté en formato correcto</div>
-                                        </Message>
-
-                                        <Message v-else severity="info" :closable="false">
+                                        <Message severity="success" :closable="false">
                                             <div class="flex align-items-center gap-2">
-                                                <ProgressSpinner style="width: 20px; height: 20px" strokeWidth="4" />
-                                                <span>Validando comprobante de domicilio...</span>
+                                                <i class="pi pi-check-circle"></i>
+                                                <span>Comprobante cargado. La validación se realizará en segundo plano.</span>
                                             </div>
                                         </Message>
+                                        <small class="text-surface-500 block mt-2">
+                                            El equipo de Mantex revisará tu comprobante durante el proceso de aprobación.
+                                        </small>
                                     </div>
                                 </div>
                             </div>

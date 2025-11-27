@@ -656,17 +656,22 @@ const closeCreateDialog = () => {
     branchAssets.value = [];
 };
 
-import { useSecureImage } from '@/composables/useSecureImage';
+import { useS3Upload } from '@/composables/useS3Upload';
 
-const { refreshAttachments } = useSecureImage();
+const { getSignedUrl } = useS3Upload();
 
 const viewTicketDetails = async (ticket) => {
     selectedTicket.value = ticket;
     showDetailsDialog.value = true;
     
-    // Refresh attachment URLs if needed
+    // Refresh signed URLs for attachments if needed
     if (ticket.attachments && ticket.attachments.length > 0) {
-        const refreshedAttachments = await refreshAttachments(ticket.attachments);
+        const refreshedAttachments = await Promise.all(
+            ticket.attachments.map(async (att) => ({
+                ...att,
+                url: att.key ? await getSignedUrl(att.key) : att.url
+            }))
+        );
         selectedTicket.value = { ...ticket, attachments: refreshedAttachments };
     }
     // Build Google Maps embed URL
@@ -847,7 +852,8 @@ const uploadPhotosToS3 = async (ticketId) => {
             const timestamp = Date.now();
             const key = `users/${username}/evidence/${timestamp}_ticket_${ticketId}_${photo.name}`;
             
-            const response = await fetch('https://mr04m3gkk9.execute-api.us-east-1.amazonaws.com/dev/s3/upload', {
+            const lambdaUrl = `${import.meta.env.VITE_AWS_LAMBDA_URL}/s3/upload`;
+            const response = await fetch(lambdaUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

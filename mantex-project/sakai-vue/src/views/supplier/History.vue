@@ -4,7 +4,7 @@ import { useToast } from 'primevue/usetoast';
 import { useAuth } from '@/composables/useAuth';
 import { supabase } from '@/lib/supabaseClient';
 import { formatDate } from '@/lib/constants.js';
-import { useSecureImage } from '@/composables/useSecureImage';
+import { useS3Upload } from '@/composables/useS3Upload';
 
 // PrimeVue Components
 import DataTable from 'primevue/datatable';
@@ -23,7 +23,7 @@ import Chip from 'primevue/chip';
 
 const toast = useToast();
 const { user } = useAuth();
-const { refreshAttachments } = useSecureImage();
+const { getSignedUrl } = useS3Upload();
 
 // State
 const loading = ref(true);
@@ -109,9 +109,14 @@ const viewTicket = async (ticket) => {
     selectedTicket.value = ticket;
     showTicketDialog.value = true;
     
-    // Refresh attachment URLs if needed
+    // Refresh signed URLs for attachments if needed
     if (ticket.attachments && ticket.attachments.length > 0) {
-        const refreshedAttachments = await refreshAttachments(ticket.attachments);
+        const refreshedAttachments = await Promise.all(
+            ticket.attachments.map(async (att) => ({
+                ...att,
+                url: att.key ? await getSignedUrl(att.key) : att.url
+            }))
+        );
         selectedTicket.value = { ...ticket, attachments: refreshedAttachments };
     }
 };

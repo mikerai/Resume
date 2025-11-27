@@ -541,17 +541,22 @@ const loadTickets = async () => {
     }
 };
 
-import { useSecureImage } from '@/composables/useSecureImage';
+import { useS3Upload } from '@/composables/useS3Upload';
 
-const { refreshAttachments } = useSecureImage();
+const { getSignedUrl } = useS3Upload();
 
 const viewTicket = async (ticket) => {
   selectedTicket.value = ticket;
   showTicketDialog.value = true;
   
-  // Refresh attachment URLs if needed
+  // Refresh signed URLs for attachments if needed
   if (ticket.attachments && ticket.attachments.length > 0) {
-      const refreshedAttachments = await refreshAttachments(ticket.attachments);
+      const refreshedAttachments = await Promise.all(
+          ticket.attachments.map(async (att) => ({
+              ...att,
+              url: att.key ? await getSignedUrl(att.key) : att.url
+          }))
+      );
       selectedTicket.value = { ...ticket, attachments: refreshedAttachments };
   }
 
