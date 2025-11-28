@@ -1301,12 +1301,307 @@ if (window.DEBUG) {
 
 ---
 
+## Additional Documentation
+
+### Comprehensive Guides
+
+- [USER_MANUAL.md](file:///Users/mikerai/Documents/GitHub/Resume/mantex-project/USER_MANUAL.md) - Complete user manual for all roles
+- [SETUP.md](file:///Users/mikerai/Documents/GitHub/Resume/mantex-project/sakai-vue/SETUP.md) - Detailed setup guide
+- [DEPLOYMENT.md](file:///Users/mikerai/Documents/GitHub/Resume/mantex-project/sakai-vue/DEPLOYMENT.md) - Deployment procedures
+- [GOOGLE_APIS_SETUP.md](file:///Users/mikerai/Documents/GitHub/Resume/mantex-project/sakai-vue/GOOGLE_APIS_SETUP.md) - Google APIs configuration
+- [STORAGE_STRUCTURE.md](file:///Users/mikerai/Documents/GitHub/Resume/mantex-project/sakai-vue/STORAGE_STRUCTURE.md) - Storage structure details
+
+---
+
+## Data Synchronization System
+
+### Overview
+
+The system maintains data consistency across multiple tables through a combination of direct updates during onboarding and automated triggers for specific operations.
+
+### Tables Involved
+
+- `profiles`: Basic user information (full_name, role)
+- `client_profiles`: Complete client onboarding data
+- `supplier_profiles`: Complete supplier onboarding data
+- `clients`: Operational client data
+- `suppliers`: Operational supplier data
+
+### Synchronization Strategy
+
+#### During Onboarding
+
+Both `OnboardingClient.vue` and `OnboardingSupplier.vue` save data to ALL relevant tables:
+
+**Client Onboarding** saves to:
+1. `profiles.full_name` - Extracted from INE
+2. `client_profiles` - All fields including company_name, RFC, email, phone, address
+3. `clients` - Operational data with full_address and geocoded coordinates
+
+**Supplier Onboarding** saves to:
+1. `profiles.full_name` - Extracted from INE
+2. `supplier_profiles` - Complete onboarding data
+3. `suppliers` - Operational data with full_address
+
+#### Automated Triggers
+
+**Quote Estimated Cost System**:
+```sql
+-- When a quote is approved, automatically update ticket's estimated_cost
+CREATE TRIGGER trigger_update_estimated_cost
+AFTER INSERT OR UPDATE OF status, total_amount ON quotes
+FOR EACH ROW
+WHEN (NEW.status = 'approved')
+EXECUTE FUNCTION update_ticket_estimated_cost();
+```
+
+This trigger ensures that when a client approves a quote, the `tickets.estimated_cost` field is automatically updated with the quote's `total_amount`.
+
+### Database Scripts
+
+Located in `sakai-vue/database/`:
+
+- `sync_user_data.sql` - Contains the estimated_cost trigger and helper functions
+- `client-supplier-profiles.sql` - Profile table definitions
+- `create_quotes_tables.sql` - Quotes system tables
+
+---
+
+## Onboarding System
+
+### Client Onboarding Flow
+
+**Steps**:
+1. **SAT Validation**
+   - RFC verification
+   - Optional CIEC for automatic validation
+   
+2. **Identity Verification**
+   - INE front and back photos
+   - Selfie for biometric validation
+   
+3. **Company Information**
+   - Company name (extracted from SAT)
+   - Fiscal address
+   - Contact information
+   
+4. **Asset Registration** (Optional)
+   - Equipment and facilities requiring maintenance
+
+**Data Saved**:
+- Extracts company name from SAT tax status
+- Extracts contact person from INE OCR
+- Geocodes address for location services
+- Saves to profiles, client_profiles, and clients tables
+
+### Supplier Onboarding Flow
+
+**Steps**:
+1. **Identity Verification**
+   - INE front and back photos
+   - Selfie with biometric comparison
+   
+2. **SAT Validation**
+   - RFC verification
+   - CIEC (mandatory for suppliers)
+   
+3. **Legal Documentation**
+   - Insurance policies
+   - Legal documents
+   - Certifications (optional)
+   
+4. **Operational Information**
+   - Specialties (HVAC, electrical, plumbing, etc.)
+   - Service areas
+   - Working hours
+   
+5. **Review and Submit**
+   - Final verification before admin approval
+
+**Approval Process**:
+- Suppliers start with status `pending`
+- Admin reviews all verification results
+- Admin can approve, reject, or request more information
+- Once approved, supplier can receive job assignments
+
+---
+
+## Quotes System
+
+### Overview
+
+The quotes system allows suppliers to submit price estimates for tickets, which clients can approve or reject.
+
+### Workflow
+
+1. **Ticket Creation**: Client creates a maintenance request
+2. **Assignment**: Admin assigns ticket to one or more suppliers
+3. **Quote Submission**: Supplier creates and submits quote with:
+   - Description of work
+   - Cost breakdown (labor, materials, other)
+   - Estimated time
+   - Notes
+4. **Client Review**: Client reviews quote details
+5. **Approval/Rejection**: 
+   - If approved → `tickets.estimated_cost` updated automatically
+   - If rejected → Supplier can submit revised quote
+
+### Database Schema
+
+```sql
+CREATE TABLE quotes (
+  id UUID PRIMARY KEY,
+  ticket_id UUID REFERENCES tickets(id),
+  supplier_id UUID REFERENCES suppliers(id),
+  description TEXT,
+  labor_cost DECIMAL(10,2),
+  materials_cost DECIMAL(10,2),
+  other_costs DECIMAL(10,2),
+  total_amount DECIMAL(10,2),
+  estimated_hours INTEGER,
+  status TEXT DEFAULT 'pending',
+  notes TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+```
+
+### Components
+
+- `QuoteForm.vue` - Form for creating/editing quotes
+- `quotes.js` API - CRUD operations for quotes
+- Integrated in `TicketDetail.vue` for viewing and approval
+
+---
+
+## Shared Utilities
+
+### Status Utils (`status-utils.js`)
+
+Centralized utility for consistent status and priority handling across the application.
+
+**Functions**:
+
+```javascript
+import { 
+    translateStatus,      // 'pending' → 'Pendiente'
+    getStatusSeverity,    // 'pending' → 'warning'
+    translatePriority,    // 'high' → 'Alta'
+    getPrioritySeverity,  // 'high' → 'warning'
+    formatDate            // ISO → 'dd MMM yyyy'
+} from '@/utils/status-utils.js';
+```
+
+**Status Translations**:
+- `pending` → Pendiente (warning)
+- `opened` → Abierto (info)
+- `assigned` → Asignado (info)
+- `in_progress` → En Proceso (primary)
+- `completed` → Completado (success)
+- `cancelled` → Cancelado (danger)
+
+**Priority Translations**:
+- `low` → Baja (success)
+- `medium` → Media (info)
+- `high` → Alta (warning)
+- `urgent` → Urgente (danger)
+
+**Usage**:
+```vue
+<Tag 
+    :value="translateStatus(ticket.status)" 
+    :severity="getStatusSeverity(ticket.status)" 
+/>
+```
+
+---
+
+## Admin UI Components
+
+### Dashboard
+
+**Features**:
+- Metrics cards (total tickets by status)
+- Recent tickets table with proper translations
+- Suppliers pending approval count
+- Interactive map with client/supplier locations
+
+**Recent Updates**:
+- Integrated `status-utils.js` for consistent translations
+- Fixed color coding for statuses and priorities
+- Improved responsive layout
+
+### Detail Views
+
+**SupplierDetail.vue**:
+- Modern card-based layout
+- Avatar with company initials
+- Two-column structure (contact/address on left, tabs on right)
+- Tabs: Info, Documents, History, Stats
+- Integrated Google Maps for location
+
+**ClientDetail.vue**:
+- Matching design to SupplierDetail
+- Company information with avatar
+- Tabs: Branches, Assets, Tickets, Users
+- Geocoded addresses on map
+
+**TicketDetail.vue**:
+- Comprehensive ticket information
+- Quote management
+- Real-time chat integration
+- Status and priority management
+- Image attachments
+
+---
+
+## Maintenance Scripts
+
+### Database Maintenance
+
+Located in `sakai-vue/database/`:
+
+**Synchronization**:
+```bash
+psql -U postgres -d mantex -f database/sync_user_data.sql
+```
+
+**Geocoding**:
+```bash
+psql -U postgres -d mantex -f database/execute_geocoding.sql
+```
+
+**Cleanup**:
+```bash
+psql -U postgres -d mantex -f database/cleanup_orphaned_records.sql
+```
+
+### System Checks
+
+Located in `sakai-vue/`:
+
+**Check All Status**:
+```bash
+node check-all-status.js
+```
+
+**Check Suppliers**:
+```bash
+node check-all-suppliers.js
+```
+
+**Check Schema**:
+```bash
+node check-schema.js
+```
+
+---
+
 ## License
 
 Proprietary - Mantex Platform
 
 ---
 
-**Last Updated:** November 23, 2025  
+**Last Updated:** November 27, 2025  
 **Version:** 1.0.0  
 **Status:** Active Development
