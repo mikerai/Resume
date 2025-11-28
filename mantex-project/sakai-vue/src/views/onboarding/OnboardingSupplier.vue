@@ -1085,10 +1085,34 @@ const saveSupplierData = async () => {
                            satData?.verification_response?.sat_validation?.normalized?.nombre ||
                            `Proveedor ${user.value.email}`;
 
-        // URLs ya extraídas arriba, solo usar las variables existentes
-        // faceSimilarityScore también ya está declarado arriba
+        // 1. ACTUALIZAR TABLA PROFILES (solo full_name)
+        const { error: profilesError } = await supabase
+            .from('profiles')
+            .update({
+                full_name: contactPerson,
+                updated_at: new Date().toISOString()
+            })
+            .eq('id', user.value.id);
 
-        // Guardar en tabla suppliers (sincronizar dirección con supplier_profiles)
+        if (profilesError) {
+            console.warn('Error al actualizar profiles:', profilesError);
+            // No lanzar error, continuar con supplier_profiles
+        } else {
+            console.log('✅ Tabla profiles actualizada');
+        }
+
+        // Construir dirección completa
+        const fullAddress = [
+            formData.value.street,
+            formData.value.number,
+            formData.value.apt,
+            formData.value.neighborhood,
+            formData.value.municipality_city,
+            formData.value.state,
+            formData.value.postal_code
+        ].filter(Boolean).join(', ');
+
+        // 2. GUARDAR EN TABLA SUPPLIERS (con full_address)
         const supplierMainData = {
             user_id: user.value.id,
             company_name: companyName,
@@ -1103,6 +1127,7 @@ const saveSupplierData = async () => {
             municipality_city: formData.value.municipality_city,
             state: formData.value.state,
             postal_code: formData.value.postal_code,
+            full_address: fullAddress, // ✅ AGREGADO
             rfc: satData?.rfc || null,
             ciec_validated: satData?.ciec ? true : false,
             ine_front_url: ineFrontUrl,
@@ -1132,8 +1157,10 @@ const saveSupplierData = async () => {
             console.error('Error al guardar en tabla suppliers:', supplierError);
             // No lanzar error, la tabla supplier_profiles ya se guardó
         } else {
-            console.log('Proveedor guardado en tabla suppliers exitosamente');
+            console.log('✅ Proveedor guardado en tabla suppliers exitosamente');
         }
+
+        console.log('🎉 Datos del proveedor guardados en TODAS las tablas: profiles, supplier_profiles, suppliers');
 
         // TODO: En producción, implementar subida de archivos a Supabase Storage
         if (formData.value.insuranceFiles.length > 0 ||

@@ -714,10 +714,58 @@ const saveClientData = async () => {
             .limit(1)
             .single();
 
-        // Guardar perfil del cliente
+        // Obtener datos completos de SAT e INE
+        const { data: satData } = await supabase
+            .from('sat_verifications')
+            .select('rfc, ciec, verification_response, tax_status')
+            .eq('user_id', user.value.id)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .single();
+
+        const { data: ineData } = await supabase
+            .from('ine_verifications')
+            .select('verification_response')
+            .eq('user_id', user.value.id)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .single();
+
+        // Extraer nombre de contacto del INE
+        const ineNormalized = ineData?.verification_response?.normalized || ineData?.verification_response?.ocr_data;
+        const contactPerson = ineNormalized ?
+            `${ineNormalized.nombre || ''} ${ineNormalized.apellidoPaterno || ''} ${ineNormalized.apellidoMaterno || ''}`.trim()
+            : null;
+
+        // Extraer razón social del SAT
+        const companyName = satData?.tax_status?.nombreRazonSocial ||
+                           satData?.verification_response?.rfc_name?.normalized?.nombre ||
+                           `Cliente ${user.value.email}`;
+
+        // 1. ACTUALIZAR TABLA PROFILES (solo full_name)
+        const { error: profilesError } = await supabase
+            .from('profiles')
+            .update({
+                full_name: contactPerson,
+                updated_at: new Date().toISOString()
+            })
+            .eq('id', user.value.id);
+
+        if (profilesError) {
+            console.warn('Error al actualizar profiles:', profilesError);
+            // No lanzar error, continuar con client_profiles
+        } else {
+            console.log('✅ Tabla profiles actualizada');
+        }
+
+        // 2. GUARDAR EN CLIENT_PROFILES (con TODOS los campos)
         const clientProfileData = {
             user_id: user.value.id,
+            company_name: companyName, // ✅ AGREGADO
+            contact_person: contactPerson, // ✅ AGREGADO
             phone_number: formData.value.phoneNumber,
+            email: user.value.email, // ✅ AGREGADO
+            rfc: satData?.rfc || null, // ✅ AGREGADO
             same_as_ine: formData.value.sameAsINE,
             street: formData.value.address.street || null,
             exterior_number: formData.value.address.exteriorNumber || null,
@@ -747,24 +795,7 @@ const saveClientData = async () => {
             throw new Error(`Error de base de datos: ${profileError.message}`);
         }
 
-        console.log('Perfil del cliente guardado exitosamente');
-
-        // Obtener datos completos de SAT e INE para tabla clients
-        const { data: satData } = await supabase
-            .from('sat_verifications')
-            .select('rfc, ciec, verification_response, tax_status')
-            .eq('user_id', user.value.id)
-            .order('created_at', { ascending: false })
-            .limit(1)
-            .single();
-
-        const { data: ineData } = await supabase
-            .from('ine_verifications')
-            .select('verification_response')
-            .eq('user_id', user.value.id)
-            .order('created_at', { ascending: false })
-            .limit(1)
-            .single();
+        console.log('✅ Perfil del cliente guardado exitosamente');
 
         const { data: documents } = await supabase
             .from('documents')
@@ -795,38 +826,29 @@ const saveClientData = async () => {
             console.log('[OK] Dirección geocodificada:', { latitude, longitude });
         } catch (error) {
             console.warn('[WARN] No se pudo geocodificar la dirección:', error.message);
-            // No fallar el onboarding si falla geocoding
         }
-
-        // Extraer nombre de contacto del INE
-        const ineNormalized = ineData?.verification_response?.normalized || ineData?.verification_response?.ocr_data;
-        const contactPerson = ineNormalized ?
-            `${ineNormalized.nombre || ''} ${ineNormalized.apellidoPaterno || ''} ${ineNormalized.apellidoMaterno || ''}`.trim()
-            : null;
-
-        // Extraer razón social del SAT
-        const companyName = satData?.tax_status?.nombreRazonSocial ||
-                           satData?.verification_response?.rfc_name?.normalized?.nombre ||
-                           `Cliente ${user.value.email}`;
 
         // Obtener URLs de documentos
         const ineFrontUrl = documents?.find(d => d.document_type === 'ine_front')?.file_url || null;
         const selfieUrl = documents?.find(d => d.document_type === 'selfie')?.file_url || null;
 
-        // Guardar en tabla clients
+        // 3. GUARDAR EN TABLA CLIENTS (con TODOS los campos)
         const clientData = {
             user_id: user.value.id,
             company_name: companyName,
             contact_person: contactPerson,
             phone: formData.value.phoneNumber,
             email: user.value.email,
-            street: formData.value.address.street || null, // Homologado
-            number: formData.value.address.exteriorNumber || null, // Homologado
-            apt: formData.value.address.interiorNumber || null, // Homologado
-            neighborhood: formData.value.address.neighborhood || null, // Homologado
-            municipality_city: formData.value.address.city || null, // Homologado
+            street: formData.value.address.street || null,
+            number: formData.value.address.exteriorNumber || null,
+            apt: formData.value.address.interiorNumber || null,
+            neighborhood: formData.value.address.neighborhood || null,
+            municipality_city: formData.value.address.city || null,
             state: formData.value.address.state || null,
             postal_code: formData.value.address.postalCode || null,
+            full_address: fullAddress, // ✅ AGREGADO
+            latitude: latitude,
+            longitude: longitude,
             rfc: satData?.rfc || null,
             ciec_validated: satData?.ciec ? true : false,
             ine_front_url: ineFrontUrl,
@@ -850,7 +872,7 @@ const saveClientData = async () => {
             console.error('Error al guardar en tabla clients:', clientError);
             // No lanzar error, la tabla client_profiles ya se guardó
         } else {
-            console.log('Cliente guardado en tabla clients exitosamente');
+            console.log('✅ Cliente guardado en tabla clients exitosamente');
         }
 
         // Guardar activos si hay alguno
@@ -873,12 +895,12 @@ const saveClientData = async () => {
 
             if (assetsError) {
                 console.error('Error al guardar activos:', assetsError);
-                // No lanzar error, los activos son opcionales
             } else {
-                console.log(`${validAssets.length} activos guardados exitosamente`);
+                console.log(`✅ ${validAssets.length} activos guardados exitosamente`);
             }
         }
 
+        console.log('🎉 Datos del cliente guardados en TODAS las tablas: profiles, client_profiles, clients');
         return profileData;
 
     } catch (error) {
