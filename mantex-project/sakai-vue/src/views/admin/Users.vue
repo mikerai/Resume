@@ -201,6 +201,7 @@ import IconField from 'primevue/iconfield';
 import InputIcon from 'primevue/inputicon';
 import Password from 'primevue/password';
 import Checkbox from 'primevue/checkbox';
+import { translateProfileStatus, getProfileStatusSeverity as getProfileStatusSev } from '@/utils/status-utils.js';
 
 const toast = useToast();
 const dt = ref();
@@ -278,38 +279,8 @@ function getOnboardingLabel(isComplete) {
     return isComplete ? 'Completo' : 'Pendiente';
 }
 
-function getProfileStatusLabel(status) {
-    if (!status) return 'Sin perfil';
-    switch (status) {
-        case 'draft': return 'Borrador';
-        case 'submitted': return 'Enviado';
-        case 'under_review': return 'En revisión';
-        case 'approved': return 'Aprobado';
-        case 'rejected': return 'Rechazado';
-        case 'suspended': return 'Suspendido';
-        case 'active': return 'Activo';
-        default: return status;
-    }
-}
-
-function getProfileStatusSeverity(status) {
-    if (!status) return 'secondary';
-    switch (status) {
-        case 'approved':
-        case 'active':
-            return 'success';
-        case 'submitted':
-        case 'under_review':
-            return 'info';
-        case 'draft':
-            return 'warning';
-        case 'rejected':
-        case 'suspended':
-            return 'danger';
-        default:
-            return 'secondary';
-    }
-}
+const getProfileStatusLabel = translateProfileStatus;
+const getProfileStatusSeverity = getProfileStatusSev;
 
 function openNew() {
     user.value = {
@@ -416,14 +387,14 @@ const loadUsers = async () => {
         // Get all client profiles for enrichment
         const { data: clientProfiles, error: clientError } = await supabase
             .from('client_profiles')
-            .select('user_id, company_name, onboarding_complete, status');
+            .select('user_id, company_name, onboarding_complete, status, phone_number');
 
         if (clientError) console.warn('Error loading client profiles:', clientError);
 
         // Get all supplier profiles for enrichment
         const { data: supplierProfiles, error: supplierError } = await supabase
             .from('supplier_profiles')
-            .select('user_id, company_name, onboarding_complete, status');
+            .select('user_id, company_name, onboarding_complete, status, phone_number');
 
         if (supplierError) console.warn('Error loading supplier profiles:', supplierError);
 
@@ -465,11 +436,13 @@ const loadUsers = async () => {
                 user.company_name = clientProfile.company_name;
                 user.onboarding_complete = clientProfile.onboarding_complete;
                 user.profile_status = clientProfile.status;
+                if (clientProfile.phone_number) user.phone = clientProfile.phone_number;
             } else if (role === 'supplier' && supplierMap.has(userId)) {
                 const supplierProfile = supplierMap.get(userId);
                 user.company_name = supplierProfile.company_name;
                 user.onboarding_complete = supplierProfile.onboarding_complete;
                 user.profile_status = supplierProfile.status;
+                if (supplierProfile.phone_number) user.phone = supplierProfile.phone_number;
             } else if (role === 'admin' && adminMap.has(userId)) {
                 const adminProfile = adminMap.get(userId);
                 user.onboarding_complete = true;
@@ -543,14 +516,43 @@ async function viewUser(userData) {
     }
 }
 
+const suspendUserDialog = ref(false);
+const userToSuspend = ref(null);
+
 function confirmSuspendUser(userData) {
-    console.log('Suspender usuario:', userData);
-    toast.add({
-        severity: 'warn',
-        summary: 'Suspender',
-        detail: `Funcionalidad de suspensión para ${userData.full_name} en desarrollo`,
-        life: 3000
-    });
+    userToSuspend.value = userData;
+    suspendUserDialog.value = true;
+}
+
+async function suspendUser() {
+    if (!userToSuspend.value) return;
+    
+    try {
+        const user = userToSuspend.value;
+        let table = '';
+        
+        if (user.role === 'client') table = 'client_profiles';
+        else if (user.role === 'supplier') table = 'supplier_profiles';
+        else {
+             toast.add({ severity: 'warn', summary: 'Aviso', detail: 'No se puede suspender este tipo de usuario', life: 3000 });
+             return;
+        }
+
+        const { error } = await supabase
+            .from(table)
+            .update({ status: 'suspended' })
+            .eq('user_id', user.id);
+
+        if (error) throw error;
+
+        toast.add({ severity: 'success', summary: 'Suspendido', detail: 'Usuario suspendido exitosamente', life: 3000 });
+        await loadUsers();
+        suspendUserDialog.value = false;
+        userToSuspend.value = null;
+    } catch (error) {
+        console.error('Error suspending user:', error);
+        toast.add({ severity: 'error', summary: 'Error', detail: 'Error al suspender usuario', life: 3000 });
+    }
 }
 
 onMounted(() => {

@@ -32,6 +32,26 @@ export const PRIORITY_TRANSLATIONS = {
 };
 
 /**
+ * Maintenance Type translation map
+ */
+export const MAINTENANCE_TYPE_TRANSLATIONS = {
+    'preventive': 'Preventivo',
+    'corrective': 'Correctivo',
+    'installation': 'Instalación'
+};
+
+/**
+ * Attachment Type translation map
+ */
+export const ATTACHMENT_TYPE_TRANSLATIONS = {
+    'branch': 'Foto de la sucursal',
+    'asset': 'Foto del activo',
+    'problem': 'Descripción del problema',
+    'additional': 'Información adicional',
+    'evidence': 'Evidencia del trabajo'
+};
+
+/**
  * Ionic color mapping for status badges/chips
  * Following Ionic color system: primary, secondary, tertiary, success, warning, danger, light, medium, dark
  */
@@ -102,6 +122,35 @@ export function translatePriority(priority) {
 }
 
 /**
+ * Translate maintenance type to Spanish
+ * @param {string} type - Maintenance type in English
+ * @returns {string} Translated maintenance type
+ */
+export function getMaintenanceTypeLabel(type) {
+    if (!type) return '';
+    return MAINTENANCE_TYPE_TRANSLATIONS[type] || type;
+}
+
+/**
+ * Translate attachment type to Spanish
+ * @param {string} type - Attachment type in English
+ * @returns {string} Translated attachment type
+ */
+export function getAttachmentTypeLabel(type) {
+    if (!type) return 'Imagen adjunta';
+    return ATTACHMENT_TYPE_TRANSLATIONS[type] || 'Imagen adjunta';
+}
+
+/**
+ * Get severity for maintenance type
+ * @param {string} type - Maintenance type
+ * @returns {string} PrimeVue severity
+ */
+export function getMaintenanceTypeSeverity(type) {
+    return type === 'preventive' ? 'info' : 'warning';
+}
+
+/**
  * Get Ionic color for status badge/chip
  * @param {string} status - Ticket status
  * @returns {string} Ionic color name
@@ -135,6 +184,23 @@ export function getPriorityColor(priority) {
 }
 
 /**
+ * Get priority severity for PrimeVue Tag
+ * @param {string} priority - Priority level
+ * @returns {string} PrimeVue severity
+ */
+export function getPrioritySeverity(priority) {
+    if (!priority) return 'info';
+    const normalized = priority.toLowerCase().trim();
+    const severities = {
+        low: 'success',
+        medium: 'warn', // PrimeVue uses 'warn' not 'warning'
+        high: 'danger',
+        urgent: 'danger'
+    };
+    return severities[normalized] || 'info';
+}
+
+/**
  * Format date to Spanish locale
  * @param {string|Date} dateString - Date to format
  * @param {object} options - Intl.DateTimeFormat options
@@ -151,4 +217,54 @@ export function formatDate(dateString, options = {}) {
         minute: '2-digit'
     };
     return date.toLocaleDateString('es-MX', { ...defaultOptions, ...options });
+}
+
+/**
+ * Profile Status translation map
+ */
+export const PROFILE_STATUS_TRANSLATIONS = {
+    'draft': 'Borrador',
+    'submitted': 'Enviado',
+    'under_review': 'En revisión',
+    'approved': 'Aprobado',
+    'rejected': 'Rechazado',
+    'suspended': 'Suspendido',
+    'active': 'Activo',
+    'inactive': 'Inactivo'
+};
+
+/**
+ * Profile Status severity map
+ */
+export const PROFILE_STATUS_SEVERITY = {
+    'draft': 'secondary',
+    'submitted': 'info',
+    'under_review': 'warn',
+    'approved': 'success',
+    'active': 'success',
+    'rejected': 'danger',
+    'suspended': 'danger',
+    'inactive': 'secondary'
+};
+
+/**
+ * Translate profile status to Spanish
+ * @param {string} status - Profile status
+ * @returns {string} Translated status
+ */
+export function translateProfileStatus(status) {
+    if (!status) return 'Sin estado';
+    const normalized = status.toLowerCase().trim();
+    return PROFILE_STATUS_TRANSLATIONS[normalized] || status;
+}
+
+/**
+ * Get severity for profile status
+ * @param {string} status - Profile status
+ * @returns {string} PrimeVue severity
+ */
+export function getProfileStatusSeverity(status) {
+    if (!status) return 'secondary';
+    const normalized = status.toLowerCase().trim();
+    return PROFILE_STATUS_SEVERITY[normalized] || 'secondary';
 }

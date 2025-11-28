@@ -248,15 +248,27 @@
                         <!-- Panel 2: Detalles (20%) -->
                         <SplitterPanel :size="20" :minSize="15">
                             <div class="p-3 h-full overflow-y-auto">
-                                <div class="flex align-items-center justify-content-between mb-3">
-                                    <h6 class="m-0">
-                                        <i class="pi pi-info-circle mr-2"></i>
-                                        Detalles del Ticket
-                                    </h6>
-                                    <Tag :value="getStatusLabel(selectedTicket.status)" :severity="getStatusSeverity(selectedTicket.status)" />
+                                <h6 class="m-0 mb-3">
+                                    <i class="pi pi-info-circle mr-2"></i>
+                                    Detalles del Ticket
+                                </h6>
+
+                                <div class="flex align-items-center gap-2 mb-3" v-if="selectedTicket.supplier">
+                                    <Avatar :label="selectedTicket.supplier.company_name[0]" shape="circle" />
+                                    <div>
+                                        <div class="font-semibold text-sm">{{ selectedTicket.supplier.company_name }}</div>
+                                        <div class="text-xs text-500">{{ selectedTicket.supplier.contact_person }}</div>
+                                    </div>
                                 </div>
 
-                                <div class="flex flex-wrap gap-2 mb-3">
+                                <p class="text-700 text-sm line-height-3 mb-3">{{ selectedTicket.description }}</p>
+
+                                <!-- Indicadores (Status movido aquí) -->
+                                <div class="flex flex-wrap gap-2">
+                                    <Tag 
+                                        :value="getStatusLabel(selectedTicket.status)" 
+                                        :severity="getStatusSeverity(selectedTicket.status)" 
+                                    />
                                     <Tag 
                                         :value="getMaintenanceTypeLabel(selectedTicket.maintenance_type)" 
                                         icon="pi pi-wrench"
@@ -269,67 +281,73 @@
                                     />
                                     <Chip v-if="selectedTicket.location_city" :label="selectedTicket.location_city" icon="pi pi-map-marker" />
                                 </div>
-
-                                <div class="flex align-items-center gap-2 mb-3" v-if="selectedTicket.supplier">
-                                    <Avatar :label="selectedTicket.supplier.company_name[0]" shape="circle" />
-                                    <div>
-                                        <div class="font-semibold text-sm">{{ selectedTicket.supplier.company_name }}</div>
-                                        <div class="text-xs text-500">{{ selectedTicket.supplier.contact_person }}</div>
-                                    </div>
-                                </div>
-
-                                <p class="text-700 text-sm line-height-3 m-0">{{ selectedTicket.description }}</p>
-
-                                <!-- Galería de Imágenes Adjuntas -->
-                                <div v-if="selectedTicket.attachments && selectedTicket.attachments.length > 0" class="mt-4">
-                                    <Divider align="left">
-                                        <span class="text-sm font-semibold">
-                                            <i class="pi pi-images mr-2"></i>
-                                            Imágenes Adjuntas ({{ selectedTicket.attachments.length }})
-                                        </span>
-                                    </Divider>
-                                    
-                                    <div class="grid">
-                                        <div 
-                                            v-for="(attachment, index) in selectedTicket.attachments" 
-                                            :key="index"
-                                            class="col-6 md:col-4"
-                                        >
-                                            <div class="border-1 surface-border border-round overflow-hidden hover:shadow-2 transition-all transition-duration-200 cursor-pointer">
-                                                <Image 
-                                                    :src="attachment.url" 
-                                                    :alt="attachment.description || 'Imagen adjunta'"
-                                                    preview
-                                                    class="w-full"
-                                                    imageClass="w-full h-8rem object-cover"
-                                                />
-                                                <div class="p-2 bg-surface-50">
-                                                    <p class="text-xs text-600 m-0 line-height-2">
-                                                        {{ getAttachmentTypeLabel(attachment.type) }}
-                                                    </p>
-                                                    <p v-if="attachment.description" class="text-xs text-500 m-0 mt-1 line-height-2">
-                                                        {{ attachment.description }}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
                         </SplitterPanel>
 
-                        <!-- Panel 3: Chat (80%) -->
+                        <!-- Panel 3: Tabs (Imágenes, Cotización, Chat) (80%) -->
                         <SplitterPanel :size="80" :minSize="50">
-                            <div class="h-full flex flex-column">
-                                <div class="p-3 surface-100 border-bottom-1 surface-border">
-                                    <h6 class="m-0 flex align-items-center">
-                                        <i class="pi pi-comments mr-2"></i>
-                                        Chat
-                                    </h6>
-                                </div>
-                                <div class="flex-1">
-                                    <TicketChat :ticketId="selectedTicket.id" />
-                                </div>
+                            <div class="card h-full">
+                                <Tabs value="0" class="h-full">
+                                    <TabList>
+                                        <Tab value="0">
+                                            <i class="pi pi-images mr-2"></i>
+                                            Imágenes
+                                        </Tab>
+                                        <Tab value="1">
+                                            <i class="pi pi-file-edit mr-2"></i>
+                                            Cotización
+                                        </Tab>
+                                        <Tab value="2">
+                                            <i class="pi pi-comments mr-2"></i>
+                                            Chat
+                                        </Tab>
+                                    </TabList>
+                                    <TabPanels class="h-full overflow-y-auto">
+                                        <!-- Tab 1: Galería de Imágenes -->
+                                        <TabPanel value="0">
+                                            <div v-if="selectedTicket.attachments && selectedTicket.attachments.length > 0">
+                                                <Galleria 
+                                                    :value="selectedTicket.attachments" 
+                                                    :responsiveOptions="galleriaResponsiveOptions" 
+                                                    :numVisible="5"
+                                                    :circular="true"
+                                                    containerStyle="max-width: 100%"
+                                                >
+                                                    <template #item="slotProps">
+                                                        <img :src="slotProps.item.url" :alt="slotProps.item.description || 'Imagen adjunta'" style="width: 100%; display: block;" />
+                                                    </template>
+                                                    <template #thumbnail="slotProps">
+                                                        <img :src="slotProps.item.url" :alt="slotProps.item.description || 'Imagen adjunta'" style="display: block;" />
+                                                    </template>
+                                                    <template #caption="slotProps">
+                                                        <div class="text-center p-3">
+                                                            <h4 class="mb-2">{{ getAttachmentTypeLabel(slotProps.item.type) }}</h4>
+                                                            <p v-if="slotProps.item.description">{{ slotProps.item.description }}</p>
+                                                        </div>
+                                                    </template>
+                                                </Galleria>
+                                            </div>
+                                            <div v-else class="flex flex-column align-items-center justify-content-center p-5 text-500">
+                                                <i class="pi pi-images text-4xl mb-3"></i>
+                                                <p>No hay imágenes adjuntas</p>
+                                            </div>
+                                        </TabPanel>
+
+                                        <!-- Tab 2: Cotización -->
+                                        <TabPanel value="1">
+                                            <div class="p-3">
+                                                <QuoteForm :ticketId="selectedTicket.id" />
+                                            </div>
+                                        </TabPanel>
+
+                                        <!-- Tab 3: Chat -->
+                                        <TabPanel value="2">
+                                            <div class="flex-1">
+                                                <TicketChat :ticketId="selectedTicket.id" />
+                                            </div>
+                                        </TabPanel>
+                                    </TabPanels>
+                                </Tabs>
                             </div>
                         </SplitterPanel>
                     </Splitter>
@@ -385,7 +403,15 @@ import InputText from 'primevue/inputtext';
 import Dropdown from 'primevue/dropdown';
 import Textarea from 'primevue/textarea';
 import FileUpload from 'primevue/fileupload';
-import { getLabel, getSeverity, formatDate } from '@/lib/constants.js';
+
+import Tabs from 'primevue/tabs';
+import TabList from 'primevue/tablist';
+import Tab from 'primevue/tab';
+import TabPanels from 'primevue/tabpanels';
+import TabPanel from 'primevue/tabpanel';
+import Galleria from 'primevue/galleria';
+import QuoteForm from '@/components/quotes/QuoteForm.vue';
+import { translateStatus, translatePriority, getPriorityColor, getStatusSeverity, formatDate, getMaintenanceTypeLabel, getMaintenanceTypeSeverity, getAttachmentTypeLabel } from '@/utils/status-utils.js';
 
 const toast = useToast();
 const router = useRouter();
@@ -401,7 +427,14 @@ const creating = ref(false);
 const showCreateDialog = ref(false);
 const showDetailsDialog = ref(false);
 const selectedTicket = ref(null);
+
 const mapSrc = ref('');
+const galleriaResponsiveOptions = ref([
+    { breakpoint: '1024px', numVisible: 5 },
+    { breakpoint: '960px', numVisible: 4 },
+    { breakpoint: '768px', numVisible: 3 },
+    { breakpoint: '560px', numVisible: 1 }
+]);
 
 // Form data for new request
 const newRequest = ref({
@@ -725,63 +758,15 @@ const cancelTicket = async () => {
 };
 
 // Utility functions using constants
-const getStatusLabel = (status) => {
-    return getLabel('ticketStatus', status);
-};
+// Utility functions using status-utils
+const getStatusLabel = (status) => translateStatus(status);
+const getPriorityLabel = (priority) => translatePriority(priority);
 
-const getStatusSeverity = (status) => {
-    return getSeverity('ticketStatus', status);
-};
-
-const getPriorityLabel = (priority) => {
-    return getLabel('priority', priority);
-};
-
-const getPrioritySeverity = (priority) => {
-    return getSeverity('priority', priority);
-};
-
-const getMaintenanceTypeLabel = (type) => {
-    return type === 'preventive' ? 'Preventivo' : 'Correctivo';
-};
-
-const getMaintenanceTypeSeverity = (type) => {
-    return type === 'preventive' ? 'info' : 'warn';
-};
-
-const getMaintenanceTypeClass = (type) => {
-    const classes = {
-        preventive: 'bg-blue-100 text-blue-700',
-        corrective: 'bg-orange-100 text-orange-700',
-        installation: 'bg-purple-100 text-purple-700'
-    };
-    return classes[type] || '';
-};
-
-const getPriorityClass = (priority) => {
-    const classes = {
-        low: 'bg-green-100 text-green-700',
-        medium: 'bg-yellow-100 text-yellow-700',
-        high: 'bg-red-100 text-red-700',
-        urgent: 'bg-red-200 text-red-900'
-    };
-    return classes[priority] || '';
-};
+// getMaintenanceTypeLabel, getMaintenanceTypeSeverity, getAttachmentTypeLabel imported directly
 
 const truncateText = (text, maxLength) => {
     if (!text) return '';
     return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
-};
-
-const getAttachmentTypeLabel = (type) => {
-    const labels = {
-        branch: 'Foto de la sucursal',
-        asset: 'Foto del activo',
-        problem: 'Descripción del problema',
-        additional: 'Información adicional',
-        evidence: 'Evidencia del trabajo'
-    };
-    return labels[type] || 'Imagen adjunta';
 };
 
 // Helper to get client_id from user

@@ -241,12 +241,12 @@
                     </Column>
                     <Column field="priority" header="Prioridad" sortable>
                         <template #body="slotProps">
-                            <Tag :value="slotProps.data.priority" :severity="getPrioritySeverity(slotProps.data.priority)" />
+                            <Tag :value="translatePriority(slotProps.data.priority)" :severity="getPrioritySeverity(slotProps.data.priority)" />
                         </template>
                     </Column>
                     <Column field="status" header="Estado" sortable>
                         <template #body="slotProps">
-                            <Tag :value="slotProps.data.status" :severity="getStatusSeverity(slotProps.data.status)" />
+                            <Tag :value="translateStatus(slotProps.data.status)" :severity="getStatusSeverity(slotProps.data.status)" />
                         </template>
                     </Column>
                     <Column field="createdAt" header="Fecha" sortable>
@@ -340,24 +340,7 @@ const offlineSuppliers = computed(() => {
     ];
 });
 
-const getPrioritySeverity = (priority) => {
-    switch (priority) {
-        case 'alta': return 'danger';
-        case 'media': return 'warn';
-        case 'baja': return 'success';
-        default: return 'info';
-    }
-};
-
-const getStatusSeverity = (status) => {
-    switch (status) {
-        case 'abierto': return 'info';
-        case 'en_progreso': return 'warn';
-        case 'completado': return 'success';
-        case 'cerrado': return 'secondary';
-        default: return 'info';
-    }
-};
+import { translateStatus, getStatusSeverity, translatePriority, getPrioritySeverity } from '@/utils/status-utils.js';
 
 const formatDate = (date) => {
     return new Date(date).toLocaleDateString('es-ES', {

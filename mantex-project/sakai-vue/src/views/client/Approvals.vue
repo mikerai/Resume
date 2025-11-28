@@ -209,43 +209,88 @@ const selectedJob = ref(null);
 const showDialog = ref(false);
 const loading = ref(false);
 const approving = ref(false);
+const stats = ref({
+    approvedCountMonth: 0,
+    avgTimeMonth: 0
+});
 
 // Computed stats
 const completedJobsCount = computed(() => jobs.value.length);
-const approvedJobsCount = computed(() => jobs.value.filter(job => job.status === 'approved_for_payment').length);
-const totalValue = computed(() => jobs.value.reduce((sum, job) => sum + (job.cost || 0), 0));
+
+// Total value of pending approvals for the current month
+const totalValue = computed(() => {
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    
+    return jobs.value
+        .filter(job => {
+            if (!job.completedAt) return false;
+            const jobDate = new Date(job.completedAt);
+            return jobDate.getMonth() === currentMonth && jobDate.getFullYear() === currentYear;
+        })
+        .reduce((sum, job) => sum + (job.cost || 0), 0);
+});
+
+const approvedJobsCount = computed(() => stats.value.approvedCountMonth);
 
 // Methods
+const getClientId = async () => {
+    const { data: clientProfile } = await supabase
+        .from('client_profiles')
+        .select('id')
+        .eq('user_id', user.value.id)
+        .single();
+
+    if (clientProfile) return clientProfile.id;
+
+    const { data: clientData } = await supabase
+        .from('clients')
+        .select('id')
+        .eq('user_id', user.value.id)
+        .single();
+
+    return clientData?.id || null;
+};
+
+const loadStats = async (clientId) => {
+    if (!clientId) return;
+
+    const now = new Date();
+    const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+    const lastDayOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString();
+
+    try {
+        // Get approved count for this month
+        const { count, error } = await supabase
+            .from('tickets')
+            .select('*', { count: 'exact', head: true })
+            .eq('client_id', clientId)
+            .eq('status', 'approved_for_payment')
+            .gte('approved_at', firstDayOfMonth)
+            .lte('approved_at', lastDayOfMonth);
+
+        if (error) throw error;
+        stats.value.approvedCountMonth = count || 0;
+
+    } catch (error) {
+        console.error('Error loading stats:', error);
+    }
+};
+
 const loadJobs = async () => {
     loading.value = true;
     try {
-        // Get client_id first
-        const { data: clientProfile, error: clientError } = await supabase
-            .from('client_profiles')
-            .select('id')
-            .eq('user_id', user.value.id)
-            .single();
-
-        let clientId = null;
-        if (clientProfile) {
-            clientId = clientProfile.id;
-        } else {
-            const { data: clientData } = await supabase
-                .from('clients')
-                .select('id')
-                .eq('user_id', user.value.id)
-                .single();
-
-            if (clientData) {
-                clientId = clientData.id;
-            }
-        }
+        const clientId = await getClientId();
 
         if (!clientId) {
             console.warn('No client_id found');
             jobs.value = [];
             return;
         }
+
+        // Load stats
+        loadStats(clientId);
 
         // Load tickets that are completed but not yet ready for payment (pre-approval)
         const { data: ticketsData, error } = await supabase
@@ -312,6 +357,9 @@ const approveJob = async (job) => {
 
         // Remove from list
         jobs.value = jobs.value.filter(j => j.id !== job.id);
+        
+        // Update stats
+        stats.value.approvedCountMonth++;
 
         toast.add({
             severity: 'success',

@@ -778,10 +778,11 @@ const approveSupplier = async (supplier) => {
         const currentUser = (await supabase.auth.getUser()).data.user;
 
         // Usar la función SQL personalizada para aprobar
+        // Updated to use p_ prefix as per DB schema hint
         const { data, error } = await supabase.rpc('approve_supplier', {
-            supplier_profile_id: supplier.id,
-            admin_user_id: currentUser?.id,
-            notes: `Aprobado por admin el ${new Date().toLocaleString('es-MX')}`
+            p_supplier_profile_id: supplier.id,
+            p_admin_user_id: currentUser?.id,
+            p_notes: `Aprobado por admin el ${new Date().toLocaleString('es-MX')}`
         });
 
         if (error) {
@@ -817,6 +818,20 @@ const rejectSupplier = (supplier) => {
     showRejectDialog.value = true;
 };
 
+// Extracted function for actual rejection logic
+const executeRejectSupplier = async (supplier, reason, adminUser) => {
+    // Usar la función SQL personalizada para rechazar
+    // Updated to use p_ prefix as per DB schema hint
+    const { data, error } = await supabase.rpc('reject_supplier', {
+        p_supplier_profile_id: supplier.id,
+        p_admin_user_id: adminUser?.id,
+        p_rejection_reason: reason
+    });
+
+    if (error) throw error;
+    return data;
+};
+
 const confirmReject = async () => {
     if (!rejectionReason.value.trim()) {
         toast.add({
@@ -833,17 +848,7 @@ const confirmReject = async () => {
 
         const currentUser = (await supabase.auth.getUser()).data.user;
 
-        // Usar la función SQL personalizada para rechazar
-        const { data, error } = await supabase.rpc('reject_supplier', {
-            supplier_profile_id: supplierToReject.value.id,
-            admin_user_id: currentUser?.id,
-            rejection_reason: rejectionReason.value
-        });
-
-        if (error) {
-            console.error('❌ Error rechazando supplier:', error);
-            throw error;
-        }
+        await executeRejectSupplier(supplierToReject.value, rejectionReason.value, currentUser);
 
         console.log('✅ Supplier rechazado exitosamente');
 
@@ -871,7 +876,7 @@ const confirmReject = async () => {
 const suspendSupplier = async (supplier) => {
     try {
         const { error } = await supabase
-            .from('suppliers')
+            .from('supplier_profiles') // Fixed table name
             .update({ status: 'suspended' })
             .eq('id', supplier.id);
 
@@ -978,8 +983,10 @@ const rejectSelectedSuppliers = () => {
         acceptClass: 'p-button-danger',
         accept: async () => {
             try {
+                const currentUser = (await supabase.auth.getUser()).data.user;
+                
                 for (const supplier of selectedSuppliers.value) {
-                    await rejectSupplier(supplier, 'Rechazo masivo por administrador');
+                    await executeRejectSupplier(supplier, 'Rechazo masivo por administrador', currentUser);
                 }
 
                 toast.add({
