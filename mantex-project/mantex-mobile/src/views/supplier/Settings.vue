@@ -143,7 +143,7 @@ const loadAvatar = async () => {
 };
 
 const loadPreferences = () => {
-  const theme = localStorage.getItem('mantex_theme') || 'auto';
+  const theme = localStorage.getItem('mantex_theme') || 'dark';
   const scale = localStorage.getItem('mantex_scale') || 'medium';
   selectedTheme.value = theme;
   selectedScale.value = scale;

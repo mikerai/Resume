@@ -4,43 +4,51 @@
  */
 
 :root {
-  /* --- CORE PALETTE --- */
-  --mantex-primary: #011126;
-  /* Deepest Blue/Black */
-  --mantex-surface: #0F3740;
-  /* Deep Teal */
-  --mantex-background: #285459;
-  /* Muted Teal */
-  --mantex-secondary: #4A8C8C;
-  /* Soft Teal */
-  --mantex-accent: #5BA6A6;
-  /* Bright Teal/Cyan */
+  /* --- CORE PALETTE (OCEAN THEME) --- */
+  --mantex-primary: #003840;
+  /* Ocean 1 - Deepest Background */
+  --mantex-surface: #005A5B;
+  /* Ocean 2 - Cards/Surface */
+  --mantex-background: #003840;
+  /* Ocean 1 - App Background */
+
+  --mantex-secondary: #008C72;
+  /* Ocean 4 - Secondary Elements */
+  --mantex-accent: #02A676;
+  /* Ocean 5 - Primary Accent/Buttons */
+
   --mantex-light: #F2F2F2;
-  /* Off White */
+  /* Off White - Text */
 
   /* --- STATUS COLORS --- */
-  --mantex-success: #37A667;
+  --mantex-success: #02A676;
+  /* Ocean 5 doubles as success */
   --mantex-warning: #F2913D;
+  /* Keep original warning for visibility */
   --mantex-danger: #D9483B;
+  /* Keep original danger for visibility */
 
   /* --- DERIVED VARIABLES FOR UI --- */
   --mantex-bg-app: var(--mantex-primary);
-  --mantex-bg-card: rgba(15, 55, 64, 0.7);
-  /* Surface with transparency */
-  --mantex-text-primary: var(--mantex-light);
-  --mantex-text-secondary: var(--mantex-secondary);
+  --mantex-bg-card: rgba(0, 90, 91, 0.7);
+  /* Ocean 2 with transparency */
 
-  /* --- GRADIENTS (Deep Ocean Neon) --- */
-  /* Combines the deep primary with the brighter accent for a glow effect */
-  --mantex-gradient-primary: linear-gradient(135deg, var(--mantex-primary) 0%, var(--mantex-surface) 100%);
-  --mantex-gradient-glow: linear-gradient(135deg, var(--mantex-surface) 0%, var(--mantex-accent) 100%);
-  --mantex-gradient-card: linear-gradient(180deg, rgba(15, 55, 64, 0.8) 0%, rgba(1, 17, 38, 0.9) 100%);
+  --mantex-text-primary: var(--mantex-light);
+  --mantex-text-secondary: #008C72;
+  /* Ocean 4 */
+
+  /* --- GRADIENTS (Ocean Theme) --- */
+  --mantex-gradient-primary: linear-gradient(135deg, #003840 0%, #005A5B 100%);
+  --mantex-gradient-glow: linear-gradient(135deg, #005A5B 0%, #02A676 100%);
+  --mantex-gradient-card: linear-gradient(180deg, rgba(0, 90, 91, 0.8) 0%, rgba(0, 56, 64, 0.9) 100%);
 
   /* --- GLASSMORPHISM --- */
-  --mantex-glass-bg: rgba(15, 55, 64, 0.4);
-  --mantex-glass-border: rgba(91, 166, 166, 0.2);
-  /* Accent color border */
-  --mantex-glass-shadow: 0 8px 32px 0 rgba(1, 17, 38, 0.5);
+  --mantex-glass-bg: rgba(0, 90, 91, 0.4);
+  /* Ocean 2 */
+  --mantex-glass-border: rgba(2, 166, 118, 0.2);
+  /* Ocean 5 */
+  --mantex-glass-shadow: 0 8px 32px 0 rgba(0, 56, 64, 0.5);
+  /* Ocean 1 */
   --mantex-glass-blur: blur(16px);
 }
 

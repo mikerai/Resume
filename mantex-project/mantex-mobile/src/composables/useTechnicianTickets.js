@@ -53,7 +53,7 @@ export function useTechnicianTickets() {
                 .from('tickets')
                 .select(`
           *,
-          client:clients(company_name, address, city, phone)
+          client:clients(company_name, full_address, phone)
         `)
                 .order('scheduled_date', { ascending: true });
 
@@ -142,7 +142,7 @@ export function useTechnicianTickets() {
                 .from('tickets')
                 .select(`
                 *,
-                client: clients(company_name, contact_person, phone, address, city)
+                client: clients(company_name, contact_person, phone, full_address)
                     `)
                 .eq('id', ticketId)
                 .single();

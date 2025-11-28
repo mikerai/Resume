@@ -32,8 +32,8 @@ a {
     -webkit-backdrop-filter: blur(5px);
     border: 1px solid rgba(255, 255, 255, 0.3);
     padding: 1rem;
-    width: 50%;
-    margin: 2% 25%;
+    margin: 5rem 0;
+    width: 100%;
 }
 
 .intro h1.clear,
@@ -43,8 +43,8 @@ a.clear {
 }
 
 #home>#hero {
-    background: url("public/demo/images/landing/helmets_hero.jpg");
+    background: url("public/demo/images/landing/hero.jpg");
     background-repeat: no-repeat;
     background-size: cover;
-
+    background-position: center center;
 }

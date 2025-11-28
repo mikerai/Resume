@@ -79,7 +79,7 @@ const routes = [
   // 🎟️ SHARED TICKET ROUTES
   {
     path: '/tickets/:id',
-    component: () => import('@/views/shared/TicketDetail.vue')
+    component: () => import('@/views/supplier/TicketDetail.vue')
   },
   {
     path: '/client/create-ticket',

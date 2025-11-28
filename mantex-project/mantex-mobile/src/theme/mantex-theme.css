@@ -14,9 +14,19 @@
 }
 
 /* Headings override */
-h1, h2, h3, h4, h5, h6,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
 ion-title,
-.ion-page h1, .ion-page h2, .ion-page h3, .ion-page h4, .ion-page h5, .ion-page h6 {
+.ion-page h1,
+.ion-page h2,
+.ion-page h3,
+.ion-page h4,
+.ion-page h5,
+.ion-page h6 {
   font-family: 'Urbanist', sans-serif;
   font-weight: 600;
 }
@@ -25,45 +35,70 @@ ion-title,
    COLOR SYSTEM
    ============================================================ */
 
+/* ============================================================
+   FONT SCALING
+   ============================================================ */
+html.scale-small {
+  font-size: 14px;
+}
+
+html.scale-medium {
+  font-size: 16px;
+  /* Default */
+}
+
+html.scale-large {
+  font-size: 18px;
+}
+
+/* ============================================================
+   COLOR SYSTEM - LIGHT THEME (DEFAULT)
+   ============================================================ */
 :root {
-  --primary: #011126;
-  --secondary: #4A8C8C;
-  --accent: #5BA6A6;
-  --success: #37A667;
+  /* Light Ocean Palette */
+  --primary: #003840;
+  /* Ocean 1 - Text/Primary Elements */
+  --secondary: #008C72;
+  /* Ocean 4 */
+  --accent: #02A676;
+  /* Ocean 5 */
+  --success: #02A676;
   --warning: #F2913D;
   --danger: #D9483B;
 
-  --background: #285459;
-  --surface: #0F3740;
+  --background: #F4F7F7;
+  /* Very Light Teal/Gray */
+  --surface: #FFFFFF;
+  /* White */
 
-  /* Ionic token bindings */
+  /* Ionic token bindings - Light */
   --ion-color-primary: var(--primary);
-  --ion-color-primary-rgb: 1, 17, 38;
+  --ion-color-primary-rgb: 0, 56, 64;
   --ion-color-primary-contrast: #ffffff;
   --ion-color-primary-contrast-rgb: 255, 255, 255;
-  --ion-color-primary-shade: #010f21;
-  --ion-color-primary-tint: #1a2939;
+  --ion-color-primary-shade: #003138;
+  --ion-color-primary-tint: #1a4c53;
 
   --ion-color-secondary: var(--secondary);
-  --ion-color-secondary-rgb: 74, 140, 140;
+  --ion-color-secondary-rgb: 0, 140, 114;
   --ion-color-secondary-contrast: #ffffff;
   --ion-color-secondary-contrast-rgb: 255, 255, 255;
-  --ion-color-secondary-shade: #427b7b;
-  --ion-color-secondary-tint: #5d9595;
+  --ion-color-secondary-shade: #007b64;
+  --ion-color-secondary-tint: #1a9880;
 
   --ion-color-tertiary: var(--accent);
-  --ion-color-tertiary-rgb: 91, 166, 166;
+  --ion-color-tertiary-rgb: 2, 166, 118;
   --ion-color-tertiary-contrast: #ffffff;
   --ion-color-tertiary-contrast-rgb: 255, 255, 255;
-  --ion-color-tertiary-shade: #509292;
-  --ion-color-tertiary-tint: #6bb0b0;
+  --ion-color-tertiary-shade: #029268;
+  --ion-color-tertiary-tint: #1baf84;
 
   --ion-color-success: var(--success);
-  --ion-color-success-rgb: 55, 166, 103;
+  --ion-color-success-rgb: 2, 166, 118;
   --ion-color-success-contrast: #ffffff;
   --ion-color-success-contrast-rgb: 255, 255, 255;
-  --ion-color-success-shade: #309347;
-  --ion-color-success-tint: #4aaf6f;
+  --ion-color-success-shade: #029268;
+  --ion-color-success-tint: #1baf84;
 
   --ion-color-warning: var(--warning);
   --ion-color-warning-rgb: 242, 145, 61;
@@ -79,19 +114,95 @@ ion-title,
   --ion-color-danger-shade: #bf4734;
   --ion-color-danger-tint: #db5e4d;
 
-  /* Background and text colors */
+  /* Background and text colors - Light */
   --ion-background-color: var(--background);
-  --ion-background-color-rgb: 40, 84, 89;
-  --ion-text-color: #ffffff;
-  --ion-text-color-rgb: 255, 255, 255;
+  --ion-background-color-rgb: 244, 247, 247;
+  --ion-text-color: #003840;
+  /* Ocean 1 */
+  --ion-text-color-rgb: 0, 56, 64;
 
-  /* Card and surface colors */
+  /* Card and surface colors - Light */
   --ion-card-background: var(--surface);
   --ion-item-background: var(--surface);
 
-  /* Border and divider colors */
-  --ion-border-color: rgba(255, 255, 255, 0.08);
-  --ion-item-border-color: rgba(255, 255, 255, 0.08);
+  /* Border and divider colors - Light */
+  --ion-border-color: rgba(0, 56, 64, 0.1);
+  --ion-item-border-color: rgba(0, 56, 64, 0.1);
+}
+
+/* ============================================================
+   COLOR SYSTEM - DARK THEME (DEEP OCEAN)
+   ============================================================ */
+body.dark {
+  /* Ocean 1: #003840 (0, 56, 64) */
+  --primary: #003840;
+  --secondary: #008C72;
+  --accent: #02A676;
+  --success: #02A676;
+  --warning: #F2913D;
+  --danger: #D9483B;
+
+  /* Ocean 1: #003840 */
+  --background: #003840;
+  /* Ocean 2: #005A5B */
+  --surface: #005A5B;
+
+  /* Ionic token bindings - Dark */
+  --ion-color-primary: var(--primary);
+  --ion-color-primary-rgb: 0, 56, 64;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #003138;
+  --ion-color-primary-tint: #1a4c53;
+
+  --ion-color-secondary: var(--secondary);
+  --ion-color-secondary-rgb: 0, 140, 114;
+  --ion-color-secondary-contrast: #ffffff;
+  --ion-color-secondary-contrast-rgb: 255, 255, 255;
+  --ion-color-secondary-shade: #007b64;
+  --ion-color-secondary-tint: #1a9880;
+
+  --ion-color-tertiary: var(--accent);
+  --ion-color-tertiary-rgb: 2, 166, 118;
+  --ion-color-tertiary-contrast: #ffffff;
+  --ion-color-tertiary-contrast-rgb: 255, 255, 255;
+  --ion-color-tertiary-shade: #029268;
+  --ion-color-tertiary-tint: #1baf84;
+
+  --ion-color-success: var(--success);
+  --ion-color-success-rgb: 2, 166, 118;
+  --ion-color-success-contrast: #ffffff;
+  --ion-color-success-contrast-rgb: 255, 255, 255;
+  --ion-color-success-shade: #029268;
+  --ion-color-success-tint: #1baf84;
+
+  --ion-color-warning: var(--warning);
+  --ion-color-warning-rgb: 242, 145, 61;
+  --ion-color-warning-contrast: #000000;
+  --ion-color-warning-contrast-rgb: 0, 0, 0;
+  --ion-color-warning-shade: #d38036;
+  --ion-color-warning-tint: #f49a4f;
+
+  --ion-color-danger: var(--danger);
+  --ion-color-danger-rgb: 217, 72, 59;
+  --ion-color-danger-contrast: #ffffff;
+  --ion-color-danger-contrast-rgb: 255, 255, 255;
+  --ion-color-danger-shade: #bf4734;
+  --ion-color-danger-tint: #db5e4d;
+
+  /* Background and text colors - Dark */
+  --ion-background-color: var(--background);
+  --ion-background-color-rgb: 0, 56, 64;
+  --ion-text-color: #ffffff;
+  --ion-text-color-rgb: 255, 255, 255;
+
+  /* Card and surface colors - Dark */
+  --ion-card-background: var(--surface);
+  --ion-item-background: var(--surface);
+
+  /* Border and divider colors - Dark */
+  --ion-border-color: rgba(255, 255, 255, 0.1);
+  --ion-item-border-color: rgba(255, 255, 255, 0.1);
 }
 
 /* Surface levels */
@@ -149,7 +260,10 @@ ion-button {
 }
 
 /* Inputs */
-ion-input, ion-textarea, ion-select, ion-searchbar {
+ion-input,
+ion-textarea,
+ion-select,
+ion-searchbar {
   --color: #ffffff;
   --background: var(--surface);
   --placeholder-color: rgba(255, 255, 255, 0.55);
@@ -406,20 +520,56 @@ ion-card:active {
 }
 
 /* Color utilities */
-.text-primary { color: var(--primary) !important; }
-.text-secondary { color: var(--secondary) !important; }
-.text-accent { color: var(--accent) !important; }
-.text-success { color: var(--success) !important; }
-.text-warning { color: var(--warning) !important; }
-.text-danger { color: var(--danger) !important; }
+.text-primary {
+  color: var(--primary) !important;
+}
+
+.text-secondary {
+  color: var(--secondary) !important;
+}
+
+.text-accent {
+  color: var(--accent) !important;
+}
+
+.text-success {
+  color: var(--success) !important;
+}
+
+.text-warning {
+  color: var(--warning) !important;
+}
+
+.text-danger {
+  color: var(--danger) !important;
+}
 
 /* Background utilities */
-.bg-surface { background: var(--surface) !important; }
-.bg-primary { background: var(--primary) !important; }
-.bg-secondary { background: var(--secondary) !important; }
+.bg-surface {
+  background: var(--surface) !important;
+}
+
+.bg-primary {
+  background: var(--primary) !important;
+}
+
+.bg-secondary {
+  background: var(--secondary) !important;
+}
 
 /* Status indicators */
-.status-pending { color: var(--warning) !important; }
-.status-progress { color: var(--accent) !important; }
-.status-completed { color: var(--success) !important; }
-.status-urgent { color: var(--danger) !important; }
+.status-pending {
+  color: var(--warning) !important;
+}
+
+.status-progress {
+  color: var(--accent) !important;
+}
+
+.status-completed {
+  color: var(--success) !important;
+}
+
+.status-urgent {
+  color: var(--danger) !important;
+}

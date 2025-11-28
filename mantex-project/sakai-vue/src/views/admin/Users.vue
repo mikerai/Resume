@@ -40,7 +40,14 @@
                 <Column header="Avatar" style="width: 4rem">
                     <template #body="slotProps">
                         <Avatar 
-                            :label="slotProps.data.full_name?.charAt(0).toUpperCase()" 
+                            v-if="slotProps.data.avatar_url"
+                            :image="slotProps.data.avatar_url"
+                            shape="circle" 
+                            size="large"
+                        />
+                        <Avatar 
+                            v-else
+                            :label="getAvatarInitials(slotProps.data)" 
                             shape="circle" 
                             size="large"
                             :style="{ 'background-color': getRoleColor(slotProps.data.role), 'color': '#ffffff' }"
@@ -50,9 +57,10 @@
                 <Column field="full_name" header="Nombre / Empresa" sortable style="min-width: 16rem">
                     <template #body="slotProps">
                         <div>
-                            <div class="font-medium">{{ slotProps.data.full_name || 'Sin nombre' }}</div>
-                            <div v-if="slotProps.data.company_name" class="text-sm text-primary font-medium">{{ slotProps.data.company_name }}</div>
-                            <div class="text-sm text-500">{{ slotProps.data.email }}</div>
+                            <div v-if="slotProps.data.full_name" class="font-medium">{{ slotProps.data.full_name }}</div>
+                            <div v-if="slotProps.data.company_name" class="text-sm text-contrast font-medium">{{ slotProps.data.company_name }}</div>
+                            <div v-if="slotProps.data.email" class="text-sm text-500">{{ slotProps.data.email }}</div>
+                            <div v-else class="text-sm text-400 italic">Sin email</div>
                         </div>
                     </template>
                 </Column>
@@ -70,7 +78,7 @@
                     <template #body="slotProps">
                         <Tag
                             :value="getOnboardingLabel(slotProps.data.onboarding_complete)"
-                            :severity="slotProps.data.onboarding_complete ? 'success' : 'warning'"
+                            :severity="slotProps.data.onboarding_complete ? 'success' : 'secondary'"
                         />
                     </template>
                 </Column>
@@ -275,6 +283,28 @@ function getRoleColor(role) {
     }
 }
 
+function getAvatarInitials(userData) {
+    // Try full_name first
+    if (userData.full_name) {
+        const names = userData.full_name.trim().split(' ');
+        if (names.length >= 2) {
+            return (names[0].charAt(0) + names[names.length - 1].charAt(0)).toUpperCase();
+        }
+        return userData.full_name.charAt(0).toUpperCase();
+    }
+    // Fallback to company_name
+    if (userData.company_name) {
+        return userData.company_name.substring(0, 2).toUpperCase();
+    }
+    // Last resort: use role letter
+    switch (userData.role) {
+        case 'client': return 'C';
+        case 'supplier': return 'P'; // Proveedor
+        case 'admin': return 'A';
+        default: return '?';
+    }
+}
+
 function getOnboardingLabel(isComplete) {
     return isComplete ? 'Completo' : 'Pendiente';
 }
@@ -374,7 +404,7 @@ const loadUsers = async () => {
     try {
         console.log('Cargando todos los usuarios de la plataforma...');
 
-        // First, get ALL users from the profiles table (this is the source of truth)
+        // First, get ALL users from the profiles table (this is the source of truth for auth users)
         const { data: allProfiles, error: profilesError } = await supabase
             .from('profiles')
             .select('*')
@@ -384,19 +414,33 @@ const loadUsers = async () => {
 
         console.log(`Total profiles found: ${allProfiles?.length || 0}`);
 
-        // Get all client profiles for enrichment
+        // Get all client_profiles for enrichment (Source of truth for client data)
         const { data: clientProfiles, error: clientError } = await supabase
             .from('client_profiles')
-            .select('user_id, company_name, onboarding_complete, status, phone_number');
+            .select('user_id, company_name, status, phone_number, onboarding_completed_at');
 
-        if (clientError) console.warn('Error loading client profiles:', clientError);
+        if (clientError) console.warn('Error loading client_profiles:', clientError);
 
-        // Get all supplier profiles for enrichment
+        // Get all clients for email and phone
+        const { data: clients, error: clientsError } = await supabase
+            .from('clients')
+            .select('user_id, email, phone');
+
+        if (clientsError) console.warn('Error loading clients:', clientsError);
+
+        // Get all supplier_profiles for enrichment (Source of truth for supplier data)
         const { data: supplierProfiles, error: supplierError } = await supabase
             .from('supplier_profiles')
-            .select('user_id, company_name, onboarding_complete, status, phone_number');
+            .select('user_id, company_name, status, phone_number, email, submitted_at, approved_at');
 
-        if (supplierError) console.warn('Error loading supplier profiles:', supplierError);
+        if (supplierError) console.warn('Error loading supplier_profiles:', supplierError);
+
+        // Get all suppliers for phone
+        const { data: suppliers, error: suppliersError } = await supabase
+            .from('suppliers')
+            .select('user_id, phone');
+
+        if (suppliersError) console.warn('Error loading suppliers:', suppliersError);
 
         // Get all admin profiles for enrichment
         const { data: adminProfiles, error: adminError } = await supabase
@@ -406,9 +450,11 @@ const loadUsers = async () => {
         if (adminError) console.warn('Error loading admin profiles:', adminError);
 
         // Create lookup maps for quick access
-        const clientMap = new Map((clientProfiles || []).map(p => [p.user_id, p]));
-        const supplierMap = new Map((supplierProfiles || []).map(p => [p.user_id, p]));
-        const adminMap = new Map((adminProfiles || []).map(p => [p.user_id, p]));
+        const clientProfileMap = new Map((clientProfiles || []).map(c => [c.user_id, c]));
+        const clientEmailMap = new Map((clients || []).map(c => [c.user_id, c]));
+        const supplierMap = new Map((supplierProfiles || []).map(s => [s.user_id, s]));
+        const supplierPhoneMap = new Map((suppliers || []).map(s => [s.user_id, s]));
+        const adminMap = new Map((adminProfiles || []).map(a => [a.user_id, a]));
 
         // Combine all profiles into users array
         const combinedUsers = (allProfiles || []).map(profile => {
@@ -418,11 +464,12 @@ const loadUsers = async () => {
             // Base user object
             const user = {
                 id: userId,
-                email: profile.email || 'Sin email',
+                email: profile.email || null,
                 role: role,
-                full_name: profile.full_name || 'Sin nombre',
+                full_name: profile.full_name || null,
                 company_name: null,
                 phone: profile.phone_number,
+                avatar_url: null,
                 onboarding_complete: false,
                 profile_status: 'unknown',
                 created_at: profile.created_at,
@@ -430,19 +477,34 @@ const loadUsers = async () => {
                 profile: profile
             };
 
-            // Enrich with role-specific data
-            if (role === 'client' && clientMap.has(userId)) {
-                const clientProfile = clientMap.get(userId);
-                user.company_name = clientProfile.company_name;
-                user.onboarding_complete = clientProfile.onboarding_complete;
-                user.profile_status = clientProfile.status;
-                if (clientProfile.phone_number) user.phone = clientProfile.phone_number;
+            // Enrich with role-specific data from the correct profile tables
+            if (role === 'client') {
+                // Get profile data
+                if (clientProfileMap.has(userId)) {
+                    const clientData = clientProfileMap.get(userId);
+                    user.company_name = clientData.company_name;
+                    user.onboarding_complete = !!clientData.onboarding_completed_at;
+                    user.profile_status = clientData.status || 'unknown';
+                    if (clientData.phone_number) user.phone = clientData.phone_number;
+                }
+                // Get email and phone from clients table
+                if (clientEmailMap.has(userId)) {
+                    const clientData = clientEmailMap.get(userId);
+                    if (clientData.email) user.email = clientData.email;
+                    if (clientData.phone) user.phone = clientData.phone;
+                }
             } else if (role === 'supplier' && supplierMap.has(userId)) {
-                const supplierProfile = supplierMap.get(userId);
-                user.company_name = supplierProfile.company_name;
-                user.onboarding_complete = supplierProfile.onboarding_complete;
-                user.profile_status = supplierProfile.status;
-                if (supplierProfile.phone_number) user.phone = supplierProfile.phone_number;
+                const supplierData = supplierMap.get(userId);
+                user.company_name = supplierData.company_name;
+                user.onboarding_complete = !!(supplierData.submitted_at || supplierData.approved_at);
+                user.profile_status = supplierData.status || 'unknown';
+                if (supplierData.phone_number) user.phone = supplierData.phone_number;
+                if (supplierData.email) user.email = supplierData.email;
+                // Override phone from suppliers table if available
+                if (supplierPhoneMap.has(userId)) {
+                    const supplierPhone = supplierPhoneMap.get(userId);
+                    if (supplierPhone.phone) user.phone = supplierPhone.phone;
+                }
             } else if (role === 'admin' && adminMap.has(userId)) {
                 const adminProfile = adminMap.get(userId);
                 user.onboarding_complete = true;
