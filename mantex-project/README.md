@@ -39,6 +39,8 @@ Mantex is a comprehensive field service management (FSM) platform designed for t
 - Real-time chat for ticket communication
 - Push notifications (APNs/FCM)
 - Google Maps integration for routing
+- **Landing Page**: High-conversion public site with "Ocean" theme
+
 
 ---
 
@@ -1602,6 +1604,6 @@ Proprietary - Mantex Platform
 
 ---
 
-**Last Updated:** November 27, 2025  
-**Version:** 1.0.0  
+**Last Updated:** November 28, 2025
+**Version:** 1.1.0  
 **Status:** Active Development

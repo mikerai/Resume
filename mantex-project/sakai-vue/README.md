@@ -270,7 +270,14 @@ pending → opened → assigned → in_progress → completed
 - `admin/ClientDetail.vue`: Vista completa del cliente
 - `admin/TicketDetail.vue`: Detalle de ticket con chat
 
-### 5. Utilidades Compartidas
+### 5. Landing Page
+Sitio público optimizado para conversión:
+- **Hero Section**: Propuesta de valor y CTAs
+- **Social Proof**: Métricas y confianza
+- **Pricing**: Tabla de precios destacada
+- **Cómo Funciona**: Timeline interactivo
+
+### 6. Utilidades Compartidas
 
 **`status-utils.js`**: Centraliza traducciones y colores
 ```javascript
@@ -438,5 +445,5 @@ Ver [LICENSE.md](file:///Users/mikerai/Documents/GitHub/Resume/mantex-project/sa
 
 ---
 
-**Última actualización**: 2025-11-27
-**Versión**: 1.0.0
+**Última actualización**: 2025-11-28
+**Versión**: 1.1.0

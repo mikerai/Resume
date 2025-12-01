@@ -437,5 +437,5 @@ npm run test:e2e
 
 ---
 
-**Última actualización**: 2025-11-27
-**Versión**: 1.0.0
+**Última actualización**: 2025-11-28
+**Versión**: 1.1.0
