@@ -33,6 +33,11 @@ const model = ref([
                 label: 'Calendario',
                 icon: 'pi pi-fw pi-calendar',
                 to: '/client/calendar'
+            },
+            {
+                label: 'Validar Proveedor',
+                icon: 'pi pi-fw pi-id-card',
+                to: '/client/validate'
             }
         ]
     },

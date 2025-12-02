@@ -108,6 +108,15 @@ const routes = [
   {
     path: '/supplier/settings',
     component: () => import('@/views/supplier/Settings.vue')
+  },
+  // 📱 QR & VALIDATION ROUTES
+  {
+    path: '/supplier/qr',
+    component: () => import('@/views/supplier/TechnicianQr.vue')
+  },
+  {
+    path: '/client/scan',
+    component: () => import('@/views/client/ClientScanner.vue')
   }
 ]
 

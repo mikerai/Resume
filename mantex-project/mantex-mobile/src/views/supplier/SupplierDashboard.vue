@@ -111,6 +111,11 @@
             <ion-icon :icon="cameraOutline" slot="start"></ion-icon>
             Tomar Evidencia
           </ion-button>
+
+          <ion-button expand="block" fill="solid" color="secondary" @click="router.push('/supplier/qr')">
+            <ion-icon :icon="qrCodeOutline" slot="start"></ion-icon>
+            Mi Identificación
+          </ion-button>
         </div>
       </div>
     </ion-content>
@@ -125,7 +130,8 @@ import {
 } from '@ionic/vue';
 import {
   constructOutline, checkmarkCircleOutline, timeOutline, locationOutline,
-  refreshOutline, warningOutline, cameraOutline, businessOutline, calendarOutline
+  refreshOutline, warningOutline, cameraOutline, businessOutline, calendarOutline,
+  qrCodeOutline
 } from 'ionicons/icons';
 import { useTechnicianTickets } from '@/composables/useTechnicianTickets.js';
 import { useRouter } from 'vue-router';

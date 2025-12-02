@@ -58,6 +58,7 @@ export function useDeviceData() {
 
 
             // 4. Save Reference in Supabase
+            console.log('Device ID Object:', id);
             const { error: dbError } = await supabase
                 .from('user_device_logs')
                 .insert({

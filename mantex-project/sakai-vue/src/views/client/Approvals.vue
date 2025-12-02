@@ -6,9 +6,11 @@
                 <div class="flex justify-between mb-4">
                     <div>
                         <span class="block text-muted-color font-medium mb-4">Trabajos Completados</span>
-                        <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{ completedJobsCount }}</div>
+                        <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{ completedJobsCount }}
+                        </div>
                     </div>
-                    <div class="flex items-center justify-center bg-green-100 dark:bg-green-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
+                    <div class="flex items-center justify-center bg-green-100 dark:bg-green-400/10 rounded-border"
+                        style="width: 2.5rem; height: 2.5rem">
                         <i class="pi pi-check-circle text-green-500 !text-xl"></i>
                     </div>
                 </div>
@@ -21,9 +23,11 @@
                 <div class="flex justify-between mb-4">
                     <div>
                         <span class="block text-muted-color font-medium mb-4">Valor Total</span>
-                        <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">${{ totalValue.toLocaleString() }}</div>
+                        <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">${{
+                            totalValue.toLocaleString() }}</div>
                     </div>
-                    <div class="flex items-center justify-center bg-blue-100 dark:bg-blue-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
+                    <div class="flex items-center justify-center bg-blue-100 dark:bg-blue-400/10 rounded-border"
+                        style="width: 2.5rem; height: 2.5rem">
                         <i class="pi pi-dollar text-blue-500 !text-xl"></i>
                     </div>
                 </div>
@@ -38,7 +42,8 @@
                         <span class="block text-muted-color font-medium mb-4">Tiempo Promedio</span>
                         <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">2.5 días</div>
                     </div>
-                    <div class="flex items-center justify-center bg-orange-100 dark:bg-orange-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
+                    <div class="flex items-center justify-center bg-orange-100 dark:bg-orange-400/10 rounded-border"
+                        style="width: 2.5rem; height: 2.5rem">
                         <i class="pi pi-clock text-orange-500 !text-xl"></i>
                     </div>
                 </div>
@@ -51,9 +56,11 @@
                 <div class="flex justify-between mb-4">
                     <div>
                         <span class="block text-muted-color font-medium mb-4">Aprobaciones</span>
-                        <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{ approvedJobsCount }}</div>
+                        <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{ approvedJobsCount }}
+                        </div>
                     </div>
-                    <div class="flex items-center justify-center bg-purple-100 dark:bg-purple-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
+                    <div class="flex items-center justify-center bg-purple-100 dark:bg-purple-400/10 rounded-border"
+                        style="width: 2.5rem; height: 2.5rem">
                         <i class="pi pi-thumbs-up text-purple-500 !text-xl"></i>
                     </div>
                 </div>
@@ -79,7 +86,8 @@
                         <template #body="slotProps">
                             <div>
                                 <div class="font-medium">{{ slotProps.data.title }}</div>
-                                <div class="text-sm text-muted-color">{{ slotProps.data.description?.substring(0, 50) }}...</div>
+                                <div class="text-sm text-muted-color">{{ slotProps.data.description?.substring(0, 50)
+                                    }}...</div>
                             </div>
                         </template>
                     </Column>
@@ -90,7 +98,8 @@
                     </Column>
                     <Column field="status" header="Estado" sortable>
                         <template #body="slotProps">
-                            <Tag :value="getStatusLabel(slotProps.data.status)" :severity="getStatusSeverity(slotProps.data.status)" />
+                            <Tag :value="getStatusLabel(slotProps.data.status)"
+                                :severity="getStatusSeverity(slotProps.data.status)" />
                         </template>
                     </Column>
                     <Column field="completedAt" header="Fecha Completado" sortable>
@@ -105,17 +114,14 @@
                     </Column>
                     <Column header="Acciones" :exportable="false" style="min-width: 10rem">
                         <template #body="slotProps">
-                            <Button icon="pi pi-eye" severity="info" text rounded @click="viewJob(slotProps.data)" v-tooltip="'Ver detalles'" />
-                            <Button
-                                icon="pi pi-check"
-                                severity="success"
-                                text
-                                rounded
+                            <Button icon="pi pi-eye" severity="info" text rounded @click="viewJob(slotProps.data)"
+                                v-tooltip="'Ver detalles'" />
+                            <Button icon="pi pi-check" severity="success" text rounded
                                 @click="approveJob(slotProps.data)"
                                 :disabled="slotProps.data.status === 'approved_for_payment'"
-                                v-tooltip="'Aprobar trabajo'"
-                            />
-                            <Button icon="pi pi-times" severity="danger" text rounded @click="rejectJob(slotProps.data)" v-tooltip="'Rechazar trabajo'" />
+                                v-tooltip="'Aprobar trabajo'" />
+                            <Button icon="pi pi-times" severity="danger" text rounded @click="rejectJob(slotProps.data)"
+                                v-tooltip="'Rechazar trabajo'" />
                         </template>
                     </Column>
                 </DataTable>
@@ -145,7 +151,8 @@
                 </div>
                 <div class="field">
                     <label>Estado:</label>
-                    <Tag :value="getStatusLabel(selectedJob.status)" :severity="getStatusSeverity(selectedJob.status)" class="mt-1" />
+                    <Tag :value="getStatusLabel(selectedJob.status)" :severity="getStatusSeverity(selectedJob.status)"
+                        class="mt-1" />
                 </div>
                 <div class="field">
                     <label>Costo:</label>
@@ -154,12 +161,10 @@
                 <div v-if="selectedJob.attachments && selectedJob.attachments.length > 0" class="field">
                     <label>Evidencias:</label>
                     <div class="flex flex-wrap gap-2 mt-2">
-                        <img v-for="(attachment, index) in selectedJob.attachments"
-                             :key="index"
-                             :src="attachment.url"
-                             :alt="attachment.name"
-                             class="w-20 h-20 object-cover rounded border cursor-pointer hover:opacity-80"
-                             @click="openImagePreview(attachment)" />
+                        <img v-for="(attachment, index) in selectedJob.attachments" :key="index" :src="attachment.url"
+                            :alt="attachment.name"
+                            class="w-20 h-20 object-cover rounded border cursor-pointer hover:opacity-80"
+                            @click="openImagePreview(attachment)" />
                     </div>
                 </div>
             </div>
@@ -169,19 +174,9 @@
             <div class="flex justify-between">
                 <Button label="Cerrar" icon="pi pi-times" text @click="showDialog = false" />
                 <div class="flex gap-2">
-                    <Button
-                        label="Rechazar"
-                        icon="pi pi-times"
-                        severity="danger"
-                        @click="rejectJob(selectedJob)"
-                    />
-                    <Button
-                        label="Aprobar"
-                        icon="pi pi-check"
-                        @click="approveJob(selectedJob)"
-                        :loading="approving"
-                        :disabled="selectedJob.status === 'approved_for_payment'"
-                    />
+                    <Button label="Rechazar" icon="pi pi-times" severity="danger" @click="rejectJob(selectedJob)" />
+                    <Button label="Aprobar" icon="pi pi-check" @click="approveJob(selectedJob)" :loading="approving"
+                        :disabled="selectedJob.status === 'approved_for_payment'" />
                 </div>
             </div>
         </template>
@@ -222,7 +217,7 @@ const totalValue = computed(() => {
     const now = new Date();
     const currentMonth = now.getMonth();
     const currentYear = now.getFullYear();
-    
+
     return jobs.value
         .filter(job => {
             if (!job.completedAt) return false;
@@ -302,13 +297,13 @@ const loadJobs = async () => {
                 description,
                 status,
                 completed_at,
-                total_cost,
+                final_cost,
                 supplier:supplier_id(company_name)
             `)
             .eq('client_id', clientId)
             .eq('status', 'completed')
             .order('completed_at', { ascending: false });
-        
+
         if (error) throw error;
 
         jobs.value = (ticketsData || []).map(t => ({
@@ -318,7 +313,7 @@ const loadJobs = async () => {
             supplier: t.supplier?.company_name || 'No asignado',
             status: t.status,
             completedAt: t.completed_at,
-            cost: t.total_cost || 0,
+            cost: t.final_cost || 0,
             attachments: [] // TODO: Load from storage
         }));
 
@@ -347,7 +342,7 @@ const approveJob = async (job) => {
         // Update ticket status to approved_for_payment
         const { error } = await supabase
             .from('tickets')
-            .update({ 
+            .update({
                 status: 'approved_for_payment',
                 approved_at: new Date().toISOString()
             })
@@ -357,7 +352,7 @@ const approveJob = async (job) => {
 
         // Remove from list
         jobs.value = jobs.value.filter(j => j.id !== job.id);
-        
+
         // Update stats
         stats.value.approvedCountMonth++;
 
@@ -387,7 +382,7 @@ const rejectJob = async (job) => {
         // Update ticket status to rejected
         const { error } = await supabase
             .from('tickets')
-            .update({ 
+            .update({
                 status: 'rejected',
                 rejected_at: new Date().toISOString()
             })

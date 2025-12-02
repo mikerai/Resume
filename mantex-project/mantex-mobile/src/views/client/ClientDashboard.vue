@@ -50,9 +50,13 @@
 
         <!-- Quick Actions -->
         <div class="quick-actions" v-if="canCreateTicket">
-          <button class="mantex-button-primary full-width" @click="navigateToCreateTicket">
             <ion-icon :icon="addCircleOutline" style="font-size: 1.2rem; margin-right: 8px;"></ion-icon>
             Solicitar Nuevo Servicio
+          </button>
+
+          <button class="mantex-button-secondary full-width ion-margin-top" @click="router.push('/client/scan')">
+            <ion-icon :icon="scanOutline" style="font-size: 1.2rem; margin-right: 8px;"></ion-icon>
+            Validar Técnico
           </button>
         </div>
         <div v-else class="permission-notice">
@@ -91,7 +95,7 @@ import {
   IonProgressBar, IonSpinner
 } from '@ionic/vue';
 import { 
-  refreshOutline, personCircleOutline, addCircleOutline 
+  refreshOutline, personCircleOutline, addCircleOutline, scanOutline
 } from 'ionicons/icons';
 import { useRouter } from 'vue-router';
 import { useClientTickets } from '@/composables/useClientTickets.js';

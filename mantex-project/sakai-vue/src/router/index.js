@@ -257,6 +257,11 @@ const router = createRouter({
                     name: 'ClientSettings',
                     component: () => import('@/views/client/Settings.vue')
                 },
+                {
+                    path: 'validate',
+                    name: 'ClientProviderValidation',
+                    component: () => import('@/views/client/ProviderValidation.vue')
+                }
             ]
         },
 

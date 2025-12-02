@@ -21,9 +21,9 @@ export function useTechnicianTickets() {
             }
 
             const { data, error: dbError } = await supabase
-                .from('suppliers')
+                .from('supplier_profiles')
                 .select('id')
-                .eq('user_id', user.value.id)
+                .eq('id', user.value.id)
                 .single();
 
             if (dbError) throw dbError;
