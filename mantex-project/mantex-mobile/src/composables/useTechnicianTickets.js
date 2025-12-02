@@ -24,10 +24,17 @@ export function useTechnicianTickets() {
                 .from('supplier_profiles')
                 .select('id')
                 .eq('id', user.value.id)
-                .single();
+                .maybeSingle();
 
-            if (dbError) throw dbError;
-            if (!data) throw new Error('Supplier profile not found');
+            if (dbError) {
+                console.error('Error fetching supplier profile:', dbError);
+            }
+
+            if (!data) {
+                console.log('No supplier profile found, using user.id directly');
+                supplierId.value = user.value.id;
+                return user.value.id;
+            }
 
             supplierId.value = data.id;
             return data.id;
@@ -45,10 +52,7 @@ export function useTechnicianTickets() {
         try {
             const sId = await fetchSupplierProfile();
 
-            if (!sId && sId !== 'FLYNN_ACCESS') {
-                throw new Error('No supplier profile linked to this user');
-            }
-
+            // sId can be null (handled by fetchSupplierProfile), user.id, or 'FLYNN_ACCESS'
             let query = supabase
                 .from('tickets')
                 .select(`
@@ -58,7 +62,7 @@ export function useTechnicianTickets() {
                 .order('scheduled_date', { ascending: true });
 
             // If not Flynn, filter by supplier_id
-            if (sId !== 'FLYNN_ACCESS') {
+            if (sId && sId !== 'FLYNN_ACCESS') {
                 query = query.eq('supplier_id', sId);
             }
 

@@ -39,7 +39,7 @@ async function getProfile(userId) {
         // SIN TIMEOUT - dejar que complete o falle naturalmente
         const { data, error } = await supabase
             .from('profiles')
-            .select(`username, first_name, last_name, second_last_name, role, sub_role, permissions, onboarding_complete`)
+            .select(`username, first_name, last_name, second_last_name, role, sub_role, permissions, onboarding_complete, avatar_url`)
             .eq('id', userId)
             .single();
 
@@ -58,6 +58,7 @@ async function getProfile(userId) {
                 sub_role: data.sub_role,
                 permissions: data.permissions,
                 onboarding_complete: data.onboarding_complete,
+                avatar_url: data.avatar_url,
             };
             console.log('✅ Perfil obtenido:', profile.value);
         } else if (error && error.code !== 'PGRST116') {

@@ -28,8 +28,7 @@
                                             size="large" shape="circle" class="mr-3" />
                                         <div>
                                             <div class="text-900 font-medium text-xl">{{ provider.full_name }}</div>
-                                            <div class="text-500">{{ provider.company_name || 'Proveedor Independiente'
-                                                }}</div>
+                                            <div class="text-500">{{ provider.company_name }}</div>
                                         </div>
                                     </div>
 
@@ -62,8 +61,10 @@
 import { ref } from 'vue';
 import { supabase } from '@/lib/supabaseClient';
 import { useToast } from 'primevue/usetoast';
+import { useS3Upload } from '@/composables/useS3Upload';
 
 const toast = useToast();
+const { getSignedUrl } = useS3Upload();
 const searchQuery = ref('');
 const loading = ref(false);
 const hasSearched = ref(false);
@@ -89,7 +90,27 @@ const searchProvider = async () => {
         }
 
         if (data && data.found) {
-            providers.value = data.providers;
+            // Process avatars to get signed URLs
+            const providersWithSignedUrls = await Promise.all(
+                data.providers.map(async (provider) => {
+                    let signedPhotoUrl = null;
+
+                    if (provider.photo_url) {
+                        try {
+                            signedPhotoUrl = await getSignedUrl(provider.photo_url);
+                        } catch (e) {
+                            console.error('Error getting signed URL for avatar:', e);
+                        }
+                    }
+
+                    return {
+                        ...provider,
+                        photo_url: signedPhotoUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(provider.full_name || 'User')}`
+                    };
+                })
+            );
+
+            providers.value = providersWithSignedUrls;
         }
         hasSearched.value = true;
 

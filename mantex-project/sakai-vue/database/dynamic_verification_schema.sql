@@ -170,19 +170,22 @@ BEGIN
     SELECT jsonb_agg(
         jsonb_build_object(
             'id', p.id,
-            'full_name', p.first_name || ' ' || p.last_name,
-            'company_name', sp.company_name,
+            'full_name', COALESCE(p.first_name || ' ' || p.last_name, p.username, 'Sin nombre'),
+            'company_name', COALESCE(sp.company_name, 'Sin empresa'),
             'photo_url', p.avatar_url,
-            'public_id', p.username
+            'public_id', p.username,
+            'email', au.email
         )
     )
     INTO v_providers
     FROM profiles p
     LEFT JOIN supplier_profiles sp ON p.id = sp.id
+    LEFT JOIN auth.users au ON p.id = au.id
     WHERE p.role = 'supplier'
     AND (
         p.username ILIKE '%' || p_query || '%' OR
-        (p.first_name || ' ' || p.last_name) ILIKE '%' || p_query || '%'
+        (p.first_name || ' ' || p.last_name) ILIKE '%' || p_query || '%' OR
+        au.email ILIKE '%' || p_query || '%'
     )
     LIMIT 5;
 
