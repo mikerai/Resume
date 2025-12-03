@@ -10,9 +10,11 @@ import { onMounted } from 'vue';
 import { supabase } from '@/lib/supabaseClient';
 import { useDeviceData } from '@/composables/useDeviceData';
 import { usePushNotifications } from '@/composables/usePushNotifications';
+import { useGeolocation } from '@/composables/useGeolocation';
 
 const { collectAndUploadDeviceData } = useDeviceData();
 const { initialize } = usePushNotifications();
+const { requestLocationPermission } = useGeolocation();
 
 onMounted(() => {
   // Listen for auth changes
@@ -28,6 +30,9 @@ onMounted(() => {
       } else {
         console.warn('Push notifications initialization failed:', result.error);
       }
+      
+      // Request location permissions
+      await requestLocationPermission();
     }
   });
 
@@ -44,6 +49,9 @@ onMounted(() => {
       } else {
         console.warn('Push notifications initialization failed:', result.error);
       }
+      
+      // Request location permissions
+      await requestLocationPermission();
     }
   });
 });

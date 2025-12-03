@@ -59,6 +59,18 @@
         </ion-item>
       </ion-list>
 
+      <!-- Notifications Section -->
+      <ion-list>
+        <ion-list-header>
+          <ion-label>Notificaciones</ion-label>
+        </ion-list-header>
+
+        <ion-item>
+          <ion-label>Notificaciones Push</ion-label>
+          <ion-toggle v-model="notificationsEnabled" @ionChange="onNotificationToggle"></ion-toggle>
+        </ion-item>
+      </ion-list>
+
       <!-- Password Section -->
       <ion-list>
         <ion-list-header>
@@ -104,15 +116,17 @@ import { ref, onMounted } from 'vue';
 import { 
   IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonBackButton,
   IonAvatar, IonIcon, IonList, IonListHeader, IonItem, IonLabel, IonInput, IonButton, IonSpinner,
-  IonInputPasswordToggle, IonSelect, IonSelectOption, toastController
+  IonInputPasswordToggle, IonSelect, IonSelectOption, IonToggle, toastController
 } from '@ionic/vue';
 import { cameraOutline } from 'ionicons/icons';
 import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/composables/useAuth';
 import { useS3Upload } from '@/composables/useS3Upload';
+import { usePushNotifications } from '@/composables/usePushNotifications';
 
 const { user, profile, updateProfileLocally } = useAuth();
 const { uploadFileToS3, getSignedUrl } = useS3Upload();
+const { initialize, permissionStatus } = usePushNotifications();
 
 const avatarUrl = ref(null);
 const newPassword = ref('');
@@ -123,6 +137,7 @@ const fileInput = ref(null);
 // Theme and Scale
 const selectedTheme = ref('auto');
 const selectedScale = ref('medium');
+const notificationsEnabled = ref(false);
 
 const loadAvatar = async () => {
   try {
@@ -177,6 +192,29 @@ const onScaleChange = (event) => {
   localStorage.setItem('mantex_scale', scale);
   applyScale(scale);
   showToast('Tamaño de texto actualizado', 'success');
+};
+
+const onNotificationToggle = async (event) => {
+  const enabled = event.detail.checked;
+  try {
+    if (enabled) {
+      const result = await initialize(user.value?.id);
+      if (result.success) {
+        notificationsEnabled.value = true;
+        showToast('Notificaciones activadas', 'success');
+      } else {
+        notificationsEnabled.value = false;
+        showToast('No se pudieron activar las notificaciones', 'danger');
+      }
+    } else {
+      notificationsEnabled.value = false;
+      showToast('Notificaciones desactivadas', 'success');
+    }
+  } catch (error) {
+    console.error('Error toggling notifications:', error);
+    notificationsEnabled.value = false;
+    showToast('Error al cambiar configuración', 'danger');
+  }
 };
 
 const triggerFileInput = () => {
@@ -251,6 +289,7 @@ onMounted(() => {
   if (user.value?.id) {
     loadAvatar();
     loadPreferences();
+    notificationsEnabled.value = permissionStatus.value === 'granted';
   }
 });
 </script>

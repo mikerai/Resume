@@ -116,10 +116,10 @@ BEGIN
         p.last_name, 
         p.avatar_url,
         sp.company_name,
-        sp.contact_phone
+        sp.phone_number
     INTO v_provider
     FROM profiles p
-    LEFT JOIN supplier_profiles sp ON p.id = sp.id
+    LEFT JOIN supplier_profiles sp ON p.id = sp.user_id
     WHERE p.id = v_record.user_id;
 
     -- Get Active Tickets for this Provider LINKED TO THIS CLIENT

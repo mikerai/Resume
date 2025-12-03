@@ -41,6 +41,8 @@
 	<string>Esta app necesita acceso a tu galería de fotos para adjuntar evidencias de trabajos</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Esta app necesita acceso a tu galería de fotos para guardar evidencias de trabajos realizados</string>
+	<key>NSUserNotificationsUsageDescription</key>
+	<string>Esta app necesita enviar notificaciones para mantenerte informado sobre el estado de tus servicios</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Esta app necesita acceso a tu ubicación para registrar la posición donde se realizan los trabajos</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>

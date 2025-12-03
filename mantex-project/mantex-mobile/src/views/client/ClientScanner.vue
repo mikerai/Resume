@@ -54,10 +54,11 @@
               <ion-badge :color="getStatusColor(ticket.status)">{{ ticket.status }}</ion-badge>
             </ion-item>
           </ion-list>
-          
+
           <div v-else class="no-tickets ion-padding">
             <ion-text color="warning">
-              <p>Este técnico es válido pero <strong>no tiene tickets activos asignados a ti</strong> en este momento.</p>
+              <p>Este técnico es válido pero <strong>no tiene tickets activos asignados a ti</strong> en este momento.
+              </p>
             </ion-text>
           </div>
 
@@ -86,10 +87,10 @@
 
 <script setup>
 import { ref } from 'vue';
-import { 
-  IonPage, IonHeader, IonToolbar, IonTitle, IonContent, 
+import {
+  IonPage, IonHeader, IonToolbar, IonTitle, IonContent,
   IonButtons, IonBackButton, IonButton, IonIcon, IonCard,
-  IonCardContent, IonAvatar, IonChip, IonLabel, IonList, 
+  IonCardContent, IonAvatar, IonChip, IonLabel, IonList,
   IonListHeader, IonItem, IonBadge, IonText, alertController
 } from '@ionic/vue';
 import { scanOutline, checkmarkCircle, closeCircle } from 'ionicons/icons';
@@ -114,7 +115,7 @@ const startScan = async () => {
     }
 
     scanning.value = true;
-    
+
     // Start scanning
     const { barcodes } = await BarcodeScanner.scan({
       formats: ['QR_CODE']
@@ -134,9 +135,54 @@ const startScan = async () => {
 
 const validateToken = async (token) => {
   try {
+    console.log('Validating QR token:', token);
     const { data, error } = await supabase.rpc('validate_qr_token', { p_token: token });
     
-    if (error) throw error;
+    if (error) {
+      console.error('RPC error:', error);
+      throw error;
+    }
+    
+    console.log('Validation data received:', data);
+    
+    // Fetch signed URL for photo if exists
+    if (data.valid && data.provider.photo_url) {
+      console.log('Provider has photo_url:', data.provider.photo_url);
+      
+      // Remove leading slash if present
+      let photoKey = data.provider.photo_url;
+      if (photoKey.startsWith('/')) {
+        photoKey = photoKey.substring(1);
+        console.log('Removed leading slash, new key:', photoKey);
+      }
+      
+      try {
+        const { data: urlData, error: urlError } = await supabase.storage
+          .from('profile-photos')
+          .createSignedUrl(photoKey, 3600);
+        
+        if (urlError) {
+          console.error('Error from profile-photos:', urlError);
+          const { data: urlData2, error: urlError2 } = await supabase.storage
+            .from('avatars')
+            .createSignedUrl(photoKey, 3600);
+          
+          if (urlError2) {
+            console.error('Error from avatars:', urlError2);
+          } else if (urlData2?.signedUrl) {
+            console.log('✅ Got signed URL from avatars');
+            data.provider.photo_url = urlData2.signedUrl;
+          }
+        } else if (urlData?.signedUrl) {
+          console.log('✅ Got signed URL from profile-photos');
+          data.provider.photo_url = urlData.signedUrl;
+        }
+      } catch (urlFetchError) {
+        console.error('Exception fetching signed URL:', urlFetchError);
+      }
+    } else {
+      console.log('No photo_url in provider data');
+    }
     
     scanResult.value = data;
   } catch (e) {
@@ -203,8 +249,13 @@ const getStatusColor = (status) => {
   margin-bottom: 10px;
 }
 
-.success .status-icon { color: var(--ion-color-success); }
-.error .status-icon { color: var(--ion-color-danger); }
+.success .status-icon {
+  color: var(--ion-color-success);
+}
+
+.error .status-icon {
+  color: var(--ion-color-danger);
+}
 
 .large-avatar {
   width: 80px;

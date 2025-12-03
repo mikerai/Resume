@@ -160,8 +160,8 @@ const loadData = async () => {
   tickets.value = await fetchTickets();
 };
 
-const refreshData = () => {
-  loadData();
+const refreshData = async () => {
+  await loadData();
 };
 
 const navigateToCreateTicket = () => {

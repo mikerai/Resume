@@ -4,9 +4,11 @@
 import { ref, computed } from 'vue';
 import { Capacitor } from '@capacitor/core';
 import { PushNotifications } from '@capacitor/push-notifications';
+import { Preferences } from '@capacitor/preferences';
 import { ref as dbRef, set, serverTimestamp } from 'firebase/database';
 import { database } from '@/lib/firebaseConfig';
 import { useAuth } from './useAuth';
+import { supabase } from '@/lib/supabaseClient';
 
 const isRegistered = ref(false);
 const deviceToken = ref(null);
@@ -51,6 +53,31 @@ export function usePushNotifications() {
                 // Register with FCM (this triggers 'registration' event if token changes or is fresh)
                 await PushNotifications.register();
 
+                // CRITICAL: iOS often doesn't fire 'registration' event on subsequent app launches
+                // Force token retrieval by waiting a moment then checking
+                console.log('🟠 Waiting for registration event or forcing token check...');
+
+                // Wait 2 seconds for event to fire naturally
+                await new Promise(resolve => setTimeout(resolve, 2000));
+
+                // If we still don't have a token after 2s, something's wrong
+                // Try to get delivered notifications which might trigger token fetch
+                try {
+                    const delivered = await PushNotifications.getDeliveredNotifications();
+                    console.log('🟠 Delivered notifications check:', delivered);
+                } catch (e) {
+                    console.log('🟠 Could not check delivered notifications:', e);
+                }
+
+                // Check if token was registered
+                if (!isRegistered.value && storedToken) {
+                    console.log('🟠 Event did not fire, but we have stored token - using it');
+                    // Token was already registered during stored token check
+                } else if (!isRegistered.value) {
+                    console.warn('⚠️ Push notification registered but no token received!');
+                    console.warn('⚠️ This may indicate an APNs configuration issue');
+                }
+
                 return { success: true };
             } else {
                 console.warn('Push notification permission denied');
@@ -68,42 +95,68 @@ export function usePushNotifications() {
      * @param {string} [explicitUserId] - Optional user ID
      */
     const registerToken = async (token, explicitUserId = null) => {
+        console.log('🔵 registerToken called with token:', token);
+        console.log('🔵 explicitUserId:', explicitUserId);
+
         let userId = explicitUserId || user.value?.id;
+        console.log('🔵 userId from state or param:', userId);
 
         if (!userId) {
-            console.log('User ID not found in state, checking session...');
+            console.log('🔵 User ID not found in state, checking session...');
             const { data } = await supabase.auth.getSession();
             userId = data.session?.user?.id;
+            console.log('🔵 userId from session:', userId);
         }
 
         if (!userId) {
-            console.warn('Cannot register token: user not logged in');
+            console.warn('⚠️ Cannot register token: user not logged in');
             return { success: false, error: 'User not logged in' };
         }
 
         try {
-            console.log(`Registering device token for user ${userId}...`);
-            console.log('Firebase Database URL:', database.app.options.databaseURL);
+            console.log(`🟢 Registering device token for user ${userId}...`);
+            console.log('🟢 Firebase Database URL:', database?.app?.options?.databaseURL);
+            console.log('🟢 Database object exists:', !!database);
+
+            if (!database) {
+                throw new Error('Firebase database not initialized');
+            }
 
             // Path: users/{userId}/fcmTokens/{token}
-            const tokenRef = dbRef(database, `users/${userId}/fcmTokens/${token}`);
+            const path = `users/${userId}/fcmTokens/${token}`;
+            console.log('🟢 Firebase path:', path);
 
-            await set(tokenRef, {
+            const tokenRef = dbRef(database, path);
+            console.log('🟢 Token ref created');
+
+            const tokenData = {
                 token: token,
                 platform: Capacitor.getPlatform(),
                 updatedAt: serverTimestamp(),
                 isActive: true
-            });
+            };
+            console.log('🟢 Token data to save:', tokenData);
+
+            await set(tokenRef, tokenData);
+            console.log('🟢 Firebase set() completed');
 
             deviceToken.value = token;
             isRegistered.value = true;
+
+            // Persist token locally
+            await Preferences.set({
+                key: 'fcm_token',
+                value: token
+            });
+            console.log('🟢 Token saved to local preferences');
 
             console.log('✅ Device token registered successfully in Firebase!');
             return { success: true };
         } catch (error) {
             console.error('❌ Error registering device token:', error);
-            console.error('Error code:', error.code);
-            console.error('Error message:', error.message);
+            console.error('❌ Error code:', error.code);
+            console.error('❌ Error message:', error.message);
+            console.error('❌ Error stack:', error.stack);
             return { success: false, error: error.message };
         }
     };
@@ -144,34 +197,35 @@ export function usePushNotifications() {
      */
     const setupListeners = (userId = null) => {
         if (!Capacitor.isNativePlatform()) {
+            console.log('⚪ Skipping listener setup: not a native platform');
             return;
         }
-        console.log('Setting up push notification listeners...');
+        console.log('🟡 Setting up push notification listeners with userId:', userId);
 
         // Registration success
         PushNotifications.addListener('registration', async (token) => {
-            console.log('Push registration success, token:', token.value);
-            // Always try to register with backend when we get a fresh token
-            await registerToken(token.value, userId);
+            console.log('🟢 PUSH REGISTRATION EVENT FIRED!');
+            console.log('🟢 Token received:', token.value);
+            console.log('🟢 Calling registerToken...');
+
+            const result = await registerToken(token.value, userId);
+            console.log('🟢 registerToken result:', result);
         });
 
         // Registration error
         PushNotifications.addListener('registrationError', (error) => {
-            console.error('Push registration error:', error);
+            console.error('❌ Push registration error event:', error);
         });
 
-        // Notification received (app in foreground)
+        // Receive notification
         PushNotifications.addListener('pushNotificationReceived', (notification) => {
-            console.log('Push notification received:', notification);
-            lastNotification.value = {
-                ...notification,
-                receivedAt: new Date().toISOString()
-            };
+            console.log('📩 Push notification received:', notification);
+            lastNotification.value = notification;
         });
 
-        // Notification tapped (app in background/closed)
+        // Action performed
         PushNotifications.addListener('pushNotificationActionPerformed', (notification) => {
-            console.log('Push notification action performed:', notification);
+            console.log('🔔 Push notification action performed:', notification);
             lastNotification.value = {
                 ...notification.notification,
                 actionId: notification.actionId,
