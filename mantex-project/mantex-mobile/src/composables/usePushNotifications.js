@@ -19,8 +19,9 @@ export function usePushNotifications() {
     /**
      * Initialize push notifications
      * Call this on app startup after user login
+     * @param {string} [userId] - Optional user ID to ensure registration works immediately
      */
-    const initialize = async () => {
+    const initialize = async (userId = null) => {
         if (!Capacitor.isNativePlatform()) {
             console.log('Push notifications only available on native platforms');
             return { success: false, error: 'Not a native platform' };
@@ -29,6 +30,17 @@ export function usePushNotifications() {
         try {
             console.log('Initializing push notifications...');
 
+            // CRITICAL: Setup listeners FIRST, before register()
+            setupListeners(userId);
+
+            // Check for stored token first and register it immediately
+            // This handles cases where 'registration' event doesn't fire on subsequent launches
+            const { value: storedToken } = await Preferences.get({ key: 'fcm_token' });
+            if (storedToken) {
+                console.log('Found stored FCM token, registering immediately:', storedToken);
+                await registerToken(storedToken, userId);
+            }
+
             // Request permission
             const permResult = await PushNotifications.requestPermissions();
             permissionStatus.value = permResult.receive;
@@ -36,7 +48,7 @@ export function usePushNotifications() {
             if (permResult.receive === 'granted') {
                 console.log('Push notification permission granted');
 
-                // Register with FCM
+                // Register with FCM (this triggers 'registration' event if token changes or is fresh)
                 await PushNotifications.register();
 
                 return { success: true };
@@ -53,30 +65,27 @@ export function usePushNotifications() {
     /**
      * Register device token with Firebase Realtime Database
      * @param {string} token - FCM device token
+     * @param {string} [explicitUserId] - Optional user ID
      */
-    const registerToken = async (token) => {
-        if (!user.value) {
+    const registerToken = async (token, explicitUserId = null) => {
+        let userId = explicitUserId || user.value?.id;
+
+        if (!userId) {
+            console.log('User ID not found in state, checking session...');
+            const { data } = await supabase.auth.getSession();
+            userId = data.session?.user?.id;
+        }
+
+        if (!userId) {
             console.warn('Cannot register token: user not logged in');
             return { success: false, error: 'User not logged in' };
         }
 
         try {
-            console.log('Registering device token with Firebase...');
+            console.log(`Registering device token for user ${userId}...`);
+            console.log('Firebase Database URL:', database.app.options.databaseURL);
 
-            const userId = user.value.id;
-            // Path: fcm_tokens/{userId}/{deviceId}
-            // We use the token itself as the key or a device ID if available. 
-            // For simplicity and uniqueness, we can use the token as the key or just store it under the user.
-            // Let's store it as: fcm_tokens/{userId} = { token: "...", platform: "...", updatedAt: ... }
-            // If we want multiple devices per user, we should use push() or a unique device ID.
-            // Since we don't have a stable device ID easily, we'll use the token as the key to allow multiple devices.
-
-            // Sanitize token for use as a key if needed, but usually we store it as a value.
-            // Structure: fcm_tokens/{userId}/{sanitizedToken}
-
-            // Actually, let's just use a simple list for now or map by device type if needed.
-            // A common pattern is: users/{userId}/fcmTokens/{token} = true (or metadata)
-
+            // Path: users/{userId}/fcmTokens/{token}
             const tokenRef = dbRef(database, `users/${userId}/fcmTokens/${token}`);
 
             await set(tokenRef, {
@@ -89,10 +98,12 @@ export function usePushNotifications() {
             deviceToken.value = token;
             isRegistered.value = true;
 
-            console.log('Device token registered successfully');
+            console.log('✅ Device token registered successfully in Firebase!');
             return { success: true };
         } catch (error) {
-            console.error('Error registering device token:', error);
+            console.error('❌ Error registering device token:', error);
+            console.error('Error code:', error.code);
+            console.error('Error message:', error.message);
             return { success: false, error: error.message };
         }
     };
@@ -118,6 +129,7 @@ export function usePushNotifications() {
 
             isRegistered.value = false;
             deviceToken.value = null;
+            await Preferences.remove({ key: 'fcm_token' }); // Remove from local storage
 
             console.log('Device token unregistered');
             return { success: true };
@@ -130,15 +142,17 @@ export function usePushNotifications() {
     /**
      * Setup notification listeners
      */
-    const setupListeners = () => {
+    const setupListeners = (userId = null) => {
         if (!Capacitor.isNativePlatform()) {
             return;
         }
+        console.log('Setting up push notification listeners...');
 
         // Registration success
         PushNotifications.addListener('registration', async (token) => {
             console.log('Push registration success, token:', token.value);
-            await registerToken(token.value);
+            // Always try to register with backend when we get a fresh token
+            await registerToken(token.value, userId);
         });
 
         // Registration error

@@ -32,8 +32,8 @@ export function useClientTickets() {
                 .select(`
                     *,
                     supplier:supplier_profiles(company_name, contact_person),
-                    branch:client_branches(name, address),
-                    asset:client_assets(name, model)
+                    branch:client_branches(name, full_address),
+                    asset:client_assets(name, category)
                 `)
                 .order('created_at', { ascending: false });
 
@@ -113,7 +113,7 @@ export function useClientTickets() {
                     *,
                     supplier:supplier_profiles(company_name, contact_person, phone_number),
                     branch:client_branches(name, address),
-                    asset:client_assets(name, model)
+                    asset:client_assets(name, category)
                 `)
                 .eq('id', ticketId)
                 .single();

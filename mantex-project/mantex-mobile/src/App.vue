@@ -12,10 +12,7 @@ import { useDeviceData } from '@/composables/useDeviceData';
 import { usePushNotifications } from '@/composables/usePushNotifications';
 
 const { collectAndUploadDeviceData } = useDeviceData();
-const { initialize, setupListeners } = usePushNotifications();
-
-// Setup push notification listeners immediately
-setupListeners();
+const { initialize } = usePushNotifications();
 
 onMounted(() => {
   // Listen for auth changes
@@ -25,7 +22,7 @@ onMounted(() => {
       await collectAndUploadDeviceData(session.user.id);
       
       // Initialize push notifications after login
-      const result = await initialize();
+      const result = await initialize(session.user.id);
       if (result.success) {
         console.log('Push notifications initialized successfully');
       } else {
@@ -41,7 +38,7 @@ onMounted(() => {
       await collectAndUploadDeviceData(session.user.id);
       
       // Initialize push notifications for existing session
-      const result = await initialize();
+      const result = await initialize(session.user.id);
       if (result.success) {
         console.log('Push notifications initialized successfully');
       } else {
