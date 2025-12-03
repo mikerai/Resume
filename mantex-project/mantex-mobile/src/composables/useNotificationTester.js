@@ -6,46 +6,46 @@ export function useNotificationTester() {
   const testResults = ref([]);
   const isTestingPush = ref(false);
 
-  // Simular notificaciones de trabajo
+  // Simulate job notifications
   const testJobNotifications = async () => {
     isTestingPush.value = true;
     testResults.value = [];
 
     const testScenarios = [
       {
-        title: 'Nuevo Trabajo Asignado',
-        body: 'Se te ha asignado: Mantenimiento Aire Acondicionado',
+        title: 'New Job Assigned',
+        body: 'You have been assigned: AC Maintenance',
         data: { type: 'job_assigned', jobId: '123' },
         delay: 1000
       },
       {
-        title: 'Recordatorio de Trabajo',
-        body: 'Tienes un trabajo mañana a las 10:00 AM',
+        title: 'Job Reminder',
+        body: 'You have a job tomorrow at 10:00 AM',
         data: { type: 'job_reminder', jobId: '123' },
         delay: 3000
       },
       {
-        title: 'Trabajo Actualizado',
-        body: 'La ubicación del trabajo ha cambiado',
+        title: 'Job Updated',
+        body: 'Job location has changed',
         data: { type: 'job_updated', jobId: '123' },
         delay: 5000
       },
       {
-        title: 'Mensaje del Cliente',
-        body: 'El cliente ha enviado un mensaje sobre el trabajo',
+        title: 'Client Message',
+        body: 'Client sent a message regarding the job',
         data: { type: 'client_message', jobId: '123' },
         delay: 7000
       }
     ];
 
-    console.log('🧪 Iniciando pruebas de notificaciones...');
+    console.log('Starting notification tests...');
 
     for (const scenario of testScenarios) {
       setTimeout(async () => {
         try {
-          console.log(`📱 Enviando: ${scenario.title}`);
+          console.log(`Sending: ${scenario.title}`);
 
-          // En web mostrará notification nativa del navegador
+          // Show native browser notification if available
           if ('Notification' in window && Notification.permission === 'granted') {
             new Notification(scenario.title, {
               body: scenario.body,
@@ -57,7 +57,7 @@ export function useNotificationTester() {
             });
           }
 
-          // También simulamos la respuesta de Firebase
+          // Simulate Firebase response
           const result = await simulateFirebaseResponse(scenario);
 
           testResults.value.push({
@@ -67,10 +67,10 @@ export function useNotificationTester() {
             platform: 'web'
           });
 
-          console.log(`✅ Notificación enviada: ${scenario.title}`);
+          console.log(`Notification sent: ${scenario.title}`);
 
         } catch (error) {
-          console.error(`❌ Error enviando notificación:`, error);
+          console.error(`Error sending notification:`, error);
           testResults.value.push({
             ...scenario,
             timestamp: new Date().toLocaleTimeString(),
@@ -82,17 +82,17 @@ export function useNotificationTester() {
       }, scenario.delay);
     }
 
-    // Finalizar pruebas después del último escenario
+    // Finish tests
     setTimeout(() => {
       isTestingPush.value = false;
-      console.log('🎯 Pruebas de notificaciones completadas');
+      console.log('Notification tests completed');
       showTestSummary();
     }, 9000);
   };
 
-  // Simular respuesta de Firebase
+  // Simulate Firebase response
   const simulateFirebaseResponse = async (notification) => {
-    // Simular delay de red
+    // Simulate network delay
     await new Promise(resolve => setTimeout(resolve, 200));
 
     return {
@@ -103,12 +103,12 @@ export function useNotificationTester() {
     };
   };
 
-  // Probar notificaciones web del navegador
+  // Test browser notifications
   const testBrowserNotifications = async () => {
     try {
-      console.log('🌐 Probando notificaciones del navegador...');
+      console.log('Testing browser notifications...');
 
-      // Pedir permisos si no los tenemos
+      // Request permissions if needed
       if ('Notification' in window) {
         let permission = Notification.permission;
 
@@ -117,49 +117,49 @@ export function useNotificationTester() {
         }
 
         if (permission === 'granted') {
-          // Notificación de prueba simple
-          const notification = new Notification('✅ Mantex Mobile', {
-            body: 'Las notificaciones del navegador están funcionando correctamente',
+          // Simple test notification
+          const notification = new Notification('Mantex Mobile', {
+            body: 'Browser notifications are working correctly',
             icon: '/favicon.ico',
             tag: 'test-notification'
           });
 
           notification.onclick = () => {
-            console.log('👆 Notificación clickeada');
+            console.log('Notification clicked');
             notification.close();
           };
 
-          console.log('✅ Notificación del navegador enviada');
+          console.log('Browser notification sent');
           return { success: true, type: 'browser' };
         } else {
-          throw new Error('Permisos de notificación denegados');
+          throw new Error('Notification permissions denied');
         }
       } else {
-        throw new Error('Notificaciones no soportadas en este navegador');
+        throw new Error('Notifications not supported in this browser');
       }
     } catch (error) {
-      console.error('❌ Error con notificaciones del navegador:', error);
+      console.error('Error with browser notifications:', error);
       return { success: false, error: error.message, type: 'browser' };
     }
   };
 
-  // Probar Service Worker y FCM
+  // Test Service Worker and FCM
   const testServiceWorkerFCM = async () => {
     try {
-      console.log('⚙️ Probando Service Worker y FCM...');
+      console.log('Testing Service Worker and FCM...');
 
       if ('serviceWorker' in navigator) {
         const registration = await navigator.serviceWorker.ready;
-        console.log('✅ Service Worker está activo:', registration);
+        console.log('Service Worker is active:', registration);
 
-        // Simular mensaje FCM
+        // Simulate FCM message
         if (registration.active) {
           registration.active.postMessage({
             type: 'TEST_FCM',
             payload: {
               notification: {
-                title: '🔥 FCM Test',
-                body: 'Service Worker está recibiendo mensajes correctamente',
+                title: 'FCM Test',
+                body: 'Service Worker is receiving messages correctly',
                 icon: '/favicon.ico'
               },
               data: {
@@ -169,33 +169,33 @@ export function useNotificationTester() {
             }
           });
 
-          console.log('✅ Mensaje de prueba enviado al Service Worker');
+          console.log('Test message sent to Service Worker');
           return { success: true, type: 'service-worker' };
         }
       } else {
-        throw new Error('Service Workers no soportados');
+        throw new Error('Service Workers not supported');
       }
     } catch (error) {
-      console.error('❌ Error con Service Worker/FCM:', error);
+      console.error('Error with Service Worker/FCM:', error);
       return { success: false, error: error.message, type: 'service-worker' };
     }
   };
 
-  // Mostrar resumen de pruebas
+  // Show test summary
   const showTestSummary = () => {
     const successful = testResults.value.filter(r => r.success).length;
     const total = testResults.value.length;
 
     console.log(`
-    📊 RESUMEN DE PRUEBAS DE NOTIFICACIONES
+    NOTIFICATION TEST SUMMARY
     ======================================
-    ✅ Exitosas: ${successful}/${total}
-    ❌ Fallidas: ${total - successful}/${total}
+    Successful: ${successful}/${total}
+    Failed: ${total - successful}/${total}
 
-    Detalles:`);
+    Details:`);
 
     testResults.value.forEach((result, index) => {
-      const status = result.success ? '✅' : '❌';
+      const status = result.success ? 'OK' : 'FAIL';
       console.log(`${status} ${index + 1}. ${result.title} (${result.timestamp})`);
       if (result.error) {
         console.log(`    Error: ${result.error}`);
@@ -203,7 +203,7 @@ export function useNotificationTester() {
     });
   };
 
-  // Verificar estado de permisos
+  // Check notification status
   const checkNotificationStatus = () => {
     const status = {
       browserSupport: 'Notification' in window,
@@ -214,16 +214,16 @@ export function useNotificationTester() {
       platform: navigator.platform
     };
 
-    console.log('📱 Estado de Notificaciones:', status);
+    console.log('Notification Status:', status);
     return status;
   };
 
-  // Simular notificación de job específico
+  // Simulate specific job notification
   const simulateJobNotification = async (jobData) => {
     try {
       const notification = {
-        title: `Trabajo: ${jobData.title}`,
-        body: `Cliente: ${jobData.client_name}\nUbicación: ${jobData.location}`,
+        title: `Job: ${jobData.title}`,
+        body: `Client: ${jobData.client_name}\nLocation: ${jobData.location}`,
         data: {
           type: 'job_notification',
           jobId: jobData.id,
@@ -238,40 +238,40 @@ export function useNotificationTester() {
           tag: `job-${jobData.id}`,
           data: notification.data,
           actions: [
-            { action: 'view', title: 'Ver Detalles' },
-            { action: 'dismiss', title: 'Descartar' }
+            { action: 'view', title: 'View Details' },
+            { action: 'dismiss', title: 'Dismiss' }
           ]
         });
 
         browserNotification.onclick = () => {
-          console.log('🔗 Navegando a detalles del trabajo:', jobData.id);
-          // Aquí navegarías a la página del trabajo
+          console.log('Navigating to job details:', jobData.id);
+          // Here you would navigate to the job page
           browserNotification.close();
         };
       }
 
-      console.log('✅ Notificación de trabajo simulada:', jobData.title);
+      console.log('Job notification simulated:', jobData.title);
       return { success: true, jobId: jobData.id };
 
     } catch (error) {
-      console.error('❌ Error simulando notificación de trabajo:', error);
+      console.error('Error simulating job notification:', error);
       return { success: false, error: error.message };
     }
   };
 
   return {
-    // Estado
+    // State
     testResults,
     isTestingPush,
 
-    // Métodos de prueba
+    // Test methods
     testJobNotifications,
     testBrowserNotifications,
     testServiceWorkerFCM,
     simulateJobNotification,
     checkNotificationStatus,
 
-    // Utilidades
+    // Utilities
     showTestSummary
   };
 }

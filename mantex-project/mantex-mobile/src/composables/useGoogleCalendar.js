@@ -1,7 +1,8 @@
 // src/composables/useGoogleCalendar.js
 
 import { ref, computed } from 'vue';
-import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
+//import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
+import { GoogleAuth } from '@capacitor-community/google-auth';
 import { useAuth } from './useAuth.js';
 
 export function useGoogleCalendar() {

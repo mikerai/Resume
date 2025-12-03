@@ -9,21 +9,17 @@ export function useTechnicianTickets() {
     const error = ref(null);
     const supplierId = ref(null);
 
-    // Fetch the supplier profile ID for the current user
+    // Fetch the supplier profile for the current user
     const fetchSupplierProfile = async () => {
         try {
             if (isFlynn.value) {
-                // Flynn bypass: return a mock or the first supplier found for testing
-                // For now, let's try to find a real supplier to impersonate or just return null to see all?
-                // Let's just fetch the first available supplier for testing purposes if needed, 
-                // or handle "view all" logic in fetchTickets.
-                return 'FLYNN_ACCESS';
+                return { id: 'FLYNN_ACCESS', status: 'approved' };
             }
 
             const { data, error: dbError } = await supabase
                 .from('supplier_profiles')
-                .select('id')
-                .eq('id', user.value.id)
+                .select('id, status') // Fetch status too
+                .eq('user_id', user.value.id)
                 .maybeSingle();
 
             if (dbError) {
@@ -31,50 +27,79 @@ export function useTechnicianTickets() {
             }
 
             if (!data) {
-                console.log('No supplier profile found, using user.id directly');
+                console.log('No supplier profile found for user_id:', user.value.id);
+                // Fallback
                 supplierId.value = user.value.id;
-                return user.value.id;
+                return { id: user.value.id, status: 'pending' };
             }
 
             supplierId.value = data.id;
-            return data.id;
+            return data;
         } catch (e) {
             console.error('Error fetching supplier profile:', e);
             error.value = e.message;
-            return null;
+            return { id: user.value.id, status: 'pending' };
         }
     };
 
     // Fetch tickets for the current technician
     const fetchTickets = async () => {
         loading.value = true;
-        error.value = null;
         try {
-            const sId = await fetchSupplierProfile();
+            // Get supplier profile with status
+            const profile = await fetchSupplierProfile();
+            const supplierProfileId = profile.id;
+            const isApproved = profile.status === 'approved';
 
-            // sId can be null (handled by fetchSupplierProfile), user.id, or 'FLYNN_ACCESS'
-            let query = supabase
-                .from('tickets')
-                .select(`
-          *,
-          client:clients(company_name, full_address, phone)
-        `)
-                .order('scheduled_date', { ascending: true });
+            console.log('Supplier:', supplierProfileId, 'Status:', profile.status);
 
-            // If not Flynn, filter by supplier_id
-            if (sId && sId !== 'FLYNN_ACCESS') {
-                query = query.eq('supplier_id', sId);
+            let query;
+
+            if (!isApproved) {
+                // Logic for NOT APPROVED suppliers (Limited view)
+                // Matches Desktop: if (!isSupplierApproved.value)
+                query = supabase
+                    .from('tickets')
+                    .select(`
+                        id, ticket_number, title, description, maintenance_type,
+                        priority, location_city, location_state, location_address,
+                        scheduled_date, status, created_at, category
+                    `)
+                    .in('status', ['pending', 'opened'])
+                    .order('created_at', { ascending: false });
+            } else {
+                // Logic for APPROVED suppliers (Full view)
+                // Matches Desktop: else { ... }
+                query = supabase
+                    .from('tickets')
+                    .select(`
+                        *,
+                        client:clients(*),
+                        branch:client_branches(*),
+                        asset:client_assets(*),
+                        supplier:supplier_profiles(*)
+                    `)
+                    .order('created_at', { ascending: false });
+
+                // EXACT Desktop Filter
+                query = query.or(`supplier_id.eq.${supplierProfileId},supplier_id.is.null,status.eq.pending,status.eq.opened`);
             }
 
-            const { data, error: ticketsError } = await query;
+            const { data, error: fetchError } = await query;
 
-            if (ticketsError) throw ticketsError;
+            if (fetchError) {
+                console.error('Error fetching tickets:', fetchError);
+                throw fetchError;
+            }
+
+            console.log('Tickets loaded:', data?.length);
 
             tickets.value = data || [];
-            return data;
-        } catch (e) {
-            console.error('Error fetching technician tickets:', e);
-            error.value = e.message;
+            return data || [];
+        } catch (err) {
+            console.error('Fatal error fetching tickets:', err);
+            error.value = err.message;
+            tickets.value = [];
             return [];
         } finally {
             loading.value = false;
@@ -122,20 +147,42 @@ export function useTechnicianTickets() {
         }
     };
 
-    // Computed Stats
+    // Computed Stats - MATCH DESKTOP EXACTLY
     const stats = computed(() => {
         const all = tickets.value;
+        // Use supplierId (profile ID) for comparison, not user ID
+        const currentSupplierId = supplierId.value;
+
+        // Filter for tickets assigned to this user
+        const myTickets = all.filter(t => t.supplier_id === currentSupplierId);
+
         return {
-            pending: all.filter(t => t.status === 'pending' || t.status === 'assigned').length,
-            completed: all.filter(t => t.status === 'completed').length,
-            urgent: all.filter(t => t.priority === 'high').length,
+            // "Trabajos Asignados" in Desktop = pending, opened, in_progress
+            assigned: myTickets.filter(t => ['pending', 'opened', 'in_progress'].includes(t.status)).length,
+
+            // "Completados" - completed tickets
+            completed: myTickets.filter(t => t.status === 'completed').length,
+
+            // "Urgentes" - high priority from assigned (active) tickets
+            urgent: myTickets.filter(t => t.priority === 'high' && ['pending', 'opened', 'in_progress'].includes(t.status)).length,
+
+            // "Programados" - future scheduled tickets from active ones
+            scheduled: myTickets.filter(t => {
+                if (!t.scheduled_date || !['pending', 'opened', 'in_progress'].includes(t.status)) return false;
+                return new Date(t.scheduled_date) > new Date();
+            }).length,
+
+            // Legacy - for compatibility
+            pending: myTickets.filter(t => ['pending', 'opened'].includes(t.status)).length,
             total: all.length
         };
     });
 
     const nextJobs = computed(() => {
+        const currentSupplierId = supplierId.value;
         return tickets.value
-            .filter(t => ['pending', 'assigned', 'in_progress'].includes(t.status))
+            .filter(t => t.supplier_id === currentSupplierId && ['pending', 'opened', 'in_progress'].includes(t.status))
+            .sort((a, b) => new Date(a.scheduled_date || 0) - new Date(b.scheduled_date || 0))
             .slice(0, 5);
     });
 
@@ -167,6 +214,7 @@ export function useTechnicianTickets() {
         fetchTicketById,
         updateTicketStatus,
         stats,
-        nextJobs
+        nextJobs,
+        supplierId
     };
 }

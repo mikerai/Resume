@@ -28,7 +28,8 @@
         <!-- Active Service Status -->
         <div v-if="activeTickets.length > 0" class="active-service-section">
           <h3 class="mantex-text-light ion-margin-bottom">Servicios Activos</h3>
-          <ion-card v-for="ticket in activeTickets" :key="ticket.id" class="mantex-card ion-margin-bottom" @click="viewTicketDetails(ticket)">
+          <ion-card v-for="ticket in activeTickets" :key="ticket.id" class="mantex-card ion-margin-bottom"
+            @click="viewTicketDetails(ticket)">
             <ion-card-header>
               <ion-card-subtitle class="mantex-text-accent">SERVICIO EN CURSO</ion-card-subtitle>
               <ion-card-title class="mantex-text-light">{{ ticket.title }}</ion-card-title>
@@ -43,13 +44,15 @@
                   <ion-label>{{ ticket.supplier.company_name || ticket.supplier.contact_person }}</ion-label>
                 </ion-chip>
               </div>
-              <ion-progress-bar v-if="ticket.status === 'in_progress'" type="indeterminate" color="accent"></ion-progress-bar>
+              <ion-progress-bar v-if="ticket.status === 'in_progress'" type="indeterminate"
+                color="accent"></ion-progress-bar>
             </ion-card-content>
           </ion-card>
         </div>
 
         <!-- Quick Actions -->
         <div class="quick-actions" v-if="canCreateTicket">
+          <button class="mantex-button-primary full-width" @click="navigateToCreateTicket">
             <ion-icon :icon="addCircleOutline" style="font-size: 1.2rem; margin-right: 8px;"></ion-icon>
             Solicitar Nuevo Servicio
           </button>
@@ -67,7 +70,8 @@
         <div class="history-section">
           <h3 class="mantex-text-light">Historial Reciente</h3>
           <div v-if="recentTickets.length > 0" class="history-list">
-            <div v-for="ticket in recentTickets" :key="ticket.id" class="history-item mantex-glass-card" @click="viewTicketDetails(ticket)">
+            <div v-for="ticket in recentTickets" :key="ticket.id" class="history-item mantex-glass-card"
+              @click="viewTicketDetails(ticket)">
               <div class="history-content">
                 <h4 class="mantex-text-light">{{ ticket.title }}</h4>
                 <p class="mantex-text-secondary">{{ formatDate(ticket.created_at) }}</p>
@@ -89,12 +93,12 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue';
-import { 
+import {
   IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonButton, IonIcon,
   IonCard, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCardContent, IonChip,
   IonProgressBar, IonSpinner
 } from '@ionic/vue';
-import { 
+import {
   refreshOutline, personCircleOutline, addCircleOutline, scanOutline
 } from 'ionicons/icons';
 import { useRouter } from 'vue-router';
@@ -120,21 +124,21 @@ const recentTickets = computed(() => {
 
 const displayName = computed(() => {
   if (!profile.value) return 'Cliente';
-  
+
   // Try to build full name from profile fields
   const firstName = profile.value.first_name;
   const lastName = profile.value.last_name;
   const secondLastName = profile.value.second_last_name;
-  
+
   if (firstName || lastName || secondLastName) {
     return [firstName, lastName, secondLastName].filter(Boolean).join(' ');
   }
-  
+
   // Fallback to company name if available
   if (profile.value.company_name) {
     return profile.value.company_name;
   }
-  
+
   // Final fallback
   return 'Cliente';
 });
@@ -229,10 +233,21 @@ onMounted(() => {
   border-radius: 50%;
 }
 
-.status-dot.status-pending { background-color: var(--mantex-warning); }
-.status-dot.status-in_progress { background-color: var(--mantex-accent); }
-.status-dot.status-completed { background-color: var(--mantex-success); }
-.status-dot.status-cancelled { background-color: var(--mantex-danger); }
+.status-dot.status-pending {
+  background-color: var(--mantex-warning);
+}
+
+.status-dot.status-in_progress {
+  background-color: var(--mantex-accent);
+}
+
+.status-dot.status-completed {
+  background-color: var(--mantex-success);
+}
+
+.status-dot.status-cancelled {
+  background-color: var(--mantex-danger);
+}
 
 .status-text {
   font-size: 0.85rem;
@@ -243,7 +258,16 @@ ion-chip {
   --background: rgba(255, 255, 255, 0.1);
   --color: var(--mantex-light);
 }
-ion-chip.status-pending { --color: var(--mantex-warning); }
-ion-chip.status-in_progress { --color: var(--mantex-accent); }
-ion-chip.status-completed { --color: var(--mantex-success); }
+
+ion-chip.status-pending {
+  --color: var(--mantex-warning);
+}
+
+ion-chip.status-in_progress {
+  --color: var(--mantex-accent);
+}
+
+ion-chip.status-completed {
+  --color: var(--mantex-success);
+}
 </style>

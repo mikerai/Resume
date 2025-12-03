@@ -1,4 +1,5 @@
 service: mantex-lambdas
+useDotenv: true
 
 provider:
   name: aws
@@ -9,6 +10,10 @@ provider:
   timeout: 30
   environment:
     AWS_S3_BUCKET: mantex-documents-1763361307
+    VITE_FIREBASE_DATABASE_URL: https://mantex-production-1cd9d-default-rtdb.firebaseio.com/
+    VITE_FIREBASE_PROJECT_ID: mantex-production-1cd9d
+    FIREBASE_CLIENT_EMAIL: ${env:FIREBASE_CLIENT_EMAIL}
+    FIREBASE_PRIVATE_KEY: ${env:FIREBASE_PRIVATE_KEY}
   iam:
     role:
       statements:
@@ -86,6 +91,20 @@ functions:
           method: any
           cors: true
     description: Proxy for all Nubarium API endpoints (ocr, sat, ine, biometrics)
+
+  # Notifications
+  sendNotification:
+    handler: send-notification-lambda.handler
+    events:
+      - http:
+          path: /notifications/send
+          method: post
+          cors: true
+      - http:
+          path: /notifications/send
+          method: options
+          cors: true
+    description: Send push notifications via Firebase Cloud Messaging
 
 resources:
   Outputs:

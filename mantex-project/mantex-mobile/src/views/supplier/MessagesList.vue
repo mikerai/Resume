@@ -9,7 +9,7 @@
           </ion-button>
         </ion-buttons>
       </ion-toolbar>
-      
+
       <!-- Filter Tabs -->
       <ion-toolbar>
         <ion-segment v-model="selectedFilter" @ionChange="filterTickets">
@@ -35,13 +35,8 @@
 
       <!-- Messages List -->
       <div v-else-if="filteredTickets.length > 0" class="messages-grid">
-        <ion-card
-          v-for="ticket in filteredTickets"
-          :key="ticket.id"
-          class="message-card"
-          button
-          @click="openTicketChat(ticket)"
-        >
+        <ion-card v-for="ticket in filteredTickets" :key="ticket.id" class="message-card" button
+          @click="openTicketChat(ticket)">
           <ion-card-content>
             <div class="card-header">
               <div class="avatar-section">
@@ -107,44 +102,47 @@ import {
   locationOutline, calendarOutline
 } from 'ionicons/icons';
 import { useTechnicianTickets } from '@/composables/useTechnicianTickets.js';
+import { useAuth } from '@/composables/useAuth.js';
 import { translateStatus, getStatusColor } from '@/utils/status-utils.js';
 
 const router = useRouter();
-const { fetchTickets, loading } = useTechnicianTickets();
+const { fetchTickets, loading, supplierId } = useTechnicianTickets();
+const { user } = useAuth();
 
 const allTickets = ref([]);
 const selectedFilter = ref('active');
 
 const ticketCounts = computed(() => ({
   all: allTickets.value.length,
-  active: allTickets.value.filter(t => 
+  active: allTickets.value.filter(t =>
     ['pending', 'opened', 'in_progress', 'under_review', 'revision_requested'].includes(t.status)
   ).length,
-  completed: allTickets.value.filter(t => 
+  completed: allTickets.value.filter(t =>
     ['completed', 'approved', 'ready_for_payment', 'paid'].includes(t.status)
   ).length
 }));
 
 const filteredTickets = computed(() => {
   let tickets = allTickets.value;
-  
+
   if (selectedFilter.value === 'active') {
-    tickets = tickets.filter(t => 
+    tickets = tickets.filter(t =>
       ['pending', 'opened', 'in_progress', 'under_review', 'revision_requested'].includes(t.status)
     );
   } else if (selectedFilter.value === 'completed') {
-    tickets = tickets.filter(t => 
+    tickets = tickets.filter(t =>
       ['completed', 'approved', 'ready_for_payment', 'paid'].includes(t.status)
     );
   }
-  
+
   // Exclude cancelled and closed
   return tickets.filter(t => !['cancelled', 'closed'].includes(t.status));
 });
 
 const refreshData = async () => {
   const tickets = await fetchTickets();
-  allTickets.value = tickets || [];
+  // Only show tickets assigned to the current user for messages
+  allTickets.value = tickets ? tickets.filter(t => t.supplier_id === supplierId.value) : [];
 };
 
 const filterTickets = () => {

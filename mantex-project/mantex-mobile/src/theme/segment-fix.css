@@ -1,0 +1,13 @@
+/* Ion Segment Button Checked Color Fix - Proper Contrast */
+ion-segment-button {
+    --color: rgba(255, 255, 255, 0.7);
+    --background: transparent;
+}
+
+ion-segment-button.segment-button-checked {
+    --background: rgba(255, 255, 255, 0.95);
+    --background-checked: rgba(255, 255, 255, 0.95);
+    --color: #003840;
+    --color-checked: #003840;
+    --indicator-color: transparent;
+}

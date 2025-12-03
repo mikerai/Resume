@@ -39,6 +39,9 @@ import '@ionic/vue/css/palettes/dark.system.css';
 /* Theme variables */
 import './theme/variables.css';
 
+/* Segment button color fix */
+import './theme/segment-fix.css';
+
 // Mantex SCSS Theme System - LAST to override everything
 import './global.scss';
 

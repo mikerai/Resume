@@ -10,7 +10,8 @@
     "remove": "serverless remove"
   },
   "dependencies": {
-    "aws-sdk": "^2.1691.0"
+    "aws-sdk": "^2.1691.0",
+    "firebase-admin": "^13.6.0"
   },
   "devDependencies": {
     "serverless": "^3.38.0",

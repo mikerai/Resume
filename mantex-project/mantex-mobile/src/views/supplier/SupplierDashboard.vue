@@ -17,10 +17,10 @@
         <ion-card>
           <ion-card-content>
             <div class="stat-item">
-              <ion-icon :icon="constructOutline" class="stat-icon pending"></ion-icon>
+              <ion-icon :icon="briefcaseOutline" class="stat-icon assigned"></ion-icon>
               <div class="stat-text">
-                <h3>{{ stats.pending }}</h3>
-                <p>Pendientes</p>
+                <h3>{{ stats.assigned }}</h3>
+                <p>Asignados</p>
               </div>
             </div>
           </ion-card-content>
@@ -49,12 +49,24 @@
             </div>
           </ion-card-content>
         </ion-card>
+
+        <ion-card>
+          <ion-card-content>
+            <div class="stat-item">
+              <ion-icon :icon="calendarOutline" class="stat-icon scheduled"></ion-icon>
+              <div class="stat-text">
+                <h3>{{ stats.scheduled }}</h3>
+                <p>Programados</p>
+              </div>
+            </div>
+          </ion-card-content>
+        </ion-card>
       </div>
 
       <!-- Next Jobs -->
       <div class="section">
         <h2 class="text-heading">Próximos Trabajos</h2>
-        
+
         <div v-if="loading" class="ion-text-center ion-padding">
           <ion-spinner></ion-spinner>
         </div>
@@ -93,30 +105,12 @@
         </div>
       </div>
 
-      <!-- Quick Actions -->
+      <!-- QR Code Button -->
       <div class="section">
-        <h2 class="text-heading">Acciones Rápidas</h2>
-        <div class="quick-actions">
-          <ion-button expand="block" fill="outline" @click="checkIn">
-            <ion-icon :icon="locationOutline" slot="start"></ion-icon>
-            Check-in en Ubicación
-          </ion-button>
-
-          <ion-button expand="block" fill="outline" @click="reportIssue">
-            <ion-icon :icon="warningOutline" slot="start"></ion-icon>
-            Reportar Problema
-          </ion-button>
-
-          <ion-button expand="block" fill="outline" @click="takePhoto">
-            <ion-icon :icon="cameraOutline" slot="start"></ion-icon>
-            Tomar Evidencia
-          </ion-button>
-
-          <ion-button expand="block" fill="solid" color="secondary" @click="router.push('/supplier/qr')">
-            <ion-icon :icon="qrCodeOutline" slot="start"></ion-icon>
-            Mi Identificación
-          </ion-button>
-        </div>
+        <ion-button expand="block" fill="solid" color="secondary" @click="router.push('/supplier/qr')">
+          <ion-icon :icon="qrCodeOutline" slot="start"></ion-icon>
+          Mi Identificación
+        </ion-button>
       </div>
     </ion-content>
   </ion-page>
@@ -131,7 +125,7 @@ import {
 import {
   constructOutline, checkmarkCircleOutline, timeOutline, locationOutline,
   refreshOutline, warningOutline, cameraOutline, businessOutline, calendarOutline,
-  qrCodeOutline
+  qrCodeOutline, briefcaseOutline
 } from 'ionicons/icons';
 import { useTechnicianTickets } from '@/composables/useTechnicianTickets.js';
 import { useRouter } from 'vue-router';
@@ -165,7 +159,7 @@ onMounted(() => {
 <style scoped>
 .stats-container {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 0.5rem;
   padding: 1rem;
 }
@@ -182,9 +176,21 @@ onMounted(() => {
   font-size: 1.8rem;
 }
 
-.stat-icon.pending { color: var(--ion-color-warning); }
-.stat-icon.completed { color: var(--ion-color-success); }
-.stat-icon.urgent { color: var(--ion-color-danger); }
+.stat-icon.assigned {
+  color: var(--ion-color-primary);
+}
+
+.stat-icon.completed {
+  color: var(--ion-color-success);
+}
+
+.stat-icon.urgent {
+  color: var(--ion-color-danger);
+}
+
+.stat-icon.scheduled {
+  color: var(--ion-color-tertiary);
+}
 
 .stat-text h3 {
   margin: 0;

@@ -9,18 +9,18 @@
           </ion-button>
         </ion-buttons>
       </ion-toolbar>
-      
+
       <!-- Status Filter Tabs -->
       <ion-toolbar>
-        <ion-segment v-model="selectedFilter" @ionChange="filterJobs">
-          <ion-segment-button value="all">
-            <ion-label>Todos ({{ jobCounts.all }})</ion-label>
+        <ion-segment v-model="selectedFilter" @ionChange="filterJobs" scrollable>
+          <ion-segment-button value="marketplace">
+            <ion-label>Todos ({{ jobCounts.marketplace }})</ion-label>
           </ion-segment-button>
-          <ion-segment-button value="pending">
-            <ion-label>Pendientes ({{ jobCounts.pending }})</ion-label>
+          <ion-segment-button value="my_jobs">
+            <ion-label>Mis Trabajos ({{ jobCounts.myJobs }})</ion-label>
           </ion-segment-button>
           <ion-segment-button value="in_progress">
-            <ion-label>En Curso ({{ jobCounts.inProgress }})</ion-label>
+            <ion-label>En Progreso ({{ jobCounts.inProgress }})</ion-label>
           </ion-segment-button>
           <ion-segment-button value="completed">
             <ion-label>Completados ({{ jobCounts.completed }})</ion-label>
@@ -39,20 +39,12 @@
       <!-- Jobs List -->
       <div v-else>
         <!-- Search Bar -->
-        <ion-searchbar
-          v-model="searchQuery"
-          placeholder="Buscar por título, cliente o ubicación"
-          @ionInput="searchJobs"
-        ></ion-searchbar>
+        <ion-searchbar v-model="searchQuery" placeholder="Buscar por título, cliente o ubicación"
+          @ionInput="searchJobs"></ion-searchbar>
 
         <!-- Jobs Cards -->
         <div v-if="filteredJobs.length > 0">
-          <ion-card
-            v-for="job in filteredJobs"
-            :key="job.id"
-            class="job-card"
-            @click="openJobDetail(job)"
-          >
+          <ion-card v-for="job in filteredJobs" :key="job.id" class="job-card" @click="openJobDetail(job)">
             <ion-card-header>
               <div class="card-header-content">
                 <ion-card-subtitle>{{ job.ticket_number }}</ion-card-subtitle>
@@ -90,6 +82,12 @@
                     {{ translatePriority(job.priority) }}
                   </ion-chip>
                 </div>
+
+                <!-- Price (Only if assigned or approved) -->
+                <div class="detail-row" v-if="job.estimated_cost">
+                  <ion-icon :icon="cashOutline" color="medium"></ion-icon>
+                  <span class="text-green-600 font-bold">${{ formatCurrency(job.estimated_cost) }}</span>
+                </div>
               </div>
             </ion-card-content>
           </ion-card>
@@ -124,38 +122,68 @@ import {
 } from '@ionic/vue';
 import {
   refreshOutline, businessOutline, locationOutline, calendarOutline,
-  flagOutline, briefcaseOutline
+  flagOutline, briefcaseOutline, cashOutline
 } from 'ionicons/icons';
 import { useTechnicianTickets } from '@/composables/useTechnicianTickets.js';
+import { useAuth } from '@/composables/useAuth.js';
 import { translateStatus, translatePriority, getPriorityColor, getStatusColor, formatDate } from '@/utils/status-utils.js';
 
 const router = useRouter();
-const { fetchTickets, loading } = useTechnicianTickets();
+const { fetchTickets, loading, supplierId } = useTechnicianTickets();
+const { user } = useAuth();
 
 const jobs = ref([]);
-const selectedFilter = ref('all');
+const selectedFilter = ref('marketplace'); // Changed default filter to marketplace
 const searchQuery = ref('');
 
-const jobCounts = computed(() => ({
-  all: jobs.value.length,
-  pending: jobs.value.filter(j => ['pending', 'opened'].includes(j.status)).length,
-  inProgress: jobs.value.filter(j => j.status === 'in_progress').length,
-  completed: jobs.value.filter(j => ['completed', 'under_review', 'approved', 'ready_for_payment', 'paid', 'closed'].includes(j.status)).length
-}));
+const formatCurrency = (value) => {
+  return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(value).replace('MX$', '');
+};
+
+const jobCounts = computed(() => {
+  const allJobs = jobs.value;
+  const currentSupplierId = supplierId.value;
+
+  // "Todos": ALL tickets in the system
+  const marketplace = allJobs.length;
+
+  // "Mis Trabajos": Tickets assigned to this user (Any status)
+  const myJobs = allJobs.filter(j => j.supplier_id === currentSupplierId).length;
+
+  // "En Progreso": Assigned to me AND status is 'in_progress'
+  const inProgress = allJobs.filter(j => j.supplier_id === currentSupplierId && j.status === 'in_progress').length;
+
+  // "Completados": Assigned to me AND status is 'completed'
+  const completed = allJobs.filter(j => j.supplier_id === currentSupplierId && j.status === 'completed').length;
+
+  return {
+    marketplace,
+    myJobs,
+    inProgress,
+    completed
+  };
+});
 
 const filteredJobs = computed(() => {
   let result = jobs.value;
+  const currentSupplierId = supplierId.value;
 
   // Filter by status
-  if (selectedFilter.value !== 'all') {
-    if (selectedFilter.value === 'pending') {
-      result = result.filter(j => ['pending', 'opened'].includes(j.status));
-    } else if (selectedFilter.value === 'in_progress') {
-      result = result.filter(j => j.status === 'in_progress');
-    } else if (selectedFilter.value === 'completed') {
-      result = result.filter(j => ['completed', 'under_review', 'approved', 'ready_for_payment', 'paid', 'closed'].includes(j.status));
-    }
+  if (selectedFilter.value === 'marketplace') {
+    // "Todos" = ALL tickets (no filter)
+    result = jobs.value;
+  } else if (selectedFilter.value === 'my_jobs') {
+    // "Mis Trabajos" = Assigned to me
+    result = result.filter(j => j.supplier_id === currentSupplierId);
+  } else if (selectedFilter.value === 'in_progress') {
+    // "En Progreso" = Assigned to me AND In Progress
+    result = result.filter(j => j.supplier_id === currentSupplierId && j.status === 'in_progress');
+  } else if (selectedFilter.value === 'completed') {
+    // "Completados" = Assigned to me AND Completed
+    result = result.filter(j => j.supplier_id === currentSupplierId && j.status === 'completed');
   }
+  // Fallback or 'all' if it existed would be here, but we are using strict tabs now.
+
 
   // Filter by search query
   if (searchQuery.value) {
@@ -193,7 +221,7 @@ const getEmptyStateMessage = () => {
   if (searchQuery.value) {
     return `No se encontraron trabajos que coincidan con "${searchQuery.value}"`;
   }
-  
+
   switch (selectedFilter.value) {
     case 'pending':
       return 'No hay trabajos pendientes en este momento';

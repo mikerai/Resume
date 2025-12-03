@@ -12,6 +12,8 @@ export function useClientTickets() {
         loading.value = true;
         error.value = null;
         try {
+            console.log('Fetching tickets for user:', user.value?.id);
+
             // 1. Get Client ID from clients table
             const { data: clientData, error: clientError } = await supabase
                 .from('clients')
@@ -19,37 +21,36 @@ export function useClientTickets() {
                 .eq('user_id', user.value.id)
                 .single();
 
-            if (clientError) throw clientError;
-            if (!clientData) throw new Error('Client profile not found');
+            if (clientError && clientError.code !== 'PGRST116') {
+                console.error('Error finding client:', clientError);
+            }
 
-            const clientId = clientData.id;
-
-            // 2. Fetch Tickets
-            const { data: tickets, error: ticketsError } = await supabase
+            // 2. Build Query
+            // Use join to get supplier info efficiently, matching desktop if possible
+            let query = supabase
                 .from('tickets')
-                .select('*')
-                .eq('client_id', clientId)
+                .select(`
+                    *,
+                    supplier:supplier_profiles(company_name, contact_person),
+                    branch:client_branches(name, address),
+                    asset:client_assets(name, model)
+                `)
                 .order('created_at', { ascending: false });
+
+            if (clientData) {
+                // If client profile exists, filter by client_id
+                query = query.eq('client_id', clientData.id);
+            } else {
+                // Fallback: filter by created_by (user.id)
+                console.log('Client profile not found, using created_by fallback');
+                query = query.eq('created_by', user.value.id);
+            }
+
+            const { data: tickets, error: ticketsError } = await query;
 
             if (ticketsError) throw ticketsError;
 
-            // 3. Manually fetch supplier data for each ticket
-            const ticketsWithSuppliers = await Promise.all(
-                (tickets || []).map(async (ticket) => {
-                    if (ticket.supplier_id) {
-                        const { data: supplierData, error: supplierError } = await supabase
-                            .from('supplier_profiles')
-                            .select('company_name, contact_person')
-                            .eq('id', ticket.supplier_id)
-                            .single();
-
-                        return { ...ticket, supplier: supplierData };
-                    }
-                    return { ...ticket, supplier: null };
-                })
-            );
-
-            return ticketsWithSuppliers;
+            return tickets || [];
         } catch (e) {
             console.error('Error fetching tickets:', e);
             error.value = e.message;
@@ -85,7 +86,9 @@ export function useClientTickets() {
                     maintenance_type: ticketData.maintenance_type,
                     status: 'pending',
                     created_by: user.value.id,
-                    supplier_id: ticketData.supplier_id || null // Optional supplier assignment
+                    supplier_id: ticketData.supplier_id || null, // Optional supplier assignment
+                    branch_id: ticketData.branch_id || null,     // Optional branch
+                    asset_id: ticketData.asset_id || null        // Optional asset
                 }])
                 .select();
 
@@ -108,8 +111,10 @@ export function useClientTickets() {
                 .from('tickets')
                 .select(`
                     *,
-                    supplier: supplier_profiles(company_name, contact_person, phone_number)
-                        `)
+                    supplier:supplier_profiles(company_name, contact_person, phone_number),
+                    branch:client_branches(name, address),
+                    asset:client_assets(name, model)
+                `)
                 .eq('id', ticketId)
                 .single();
 

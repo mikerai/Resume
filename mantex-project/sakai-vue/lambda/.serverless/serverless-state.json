@@ -7,12 +7,16 @@
     "provider": {
       "name": "aws",
       "runtime": "nodejs18.x",
-      "stage": "dev",
+      "stage": "prod",
       "region": "us-east-1",
       "memorySize": 256,
       "timeout": 30,
       "environment": {
-        "AWS_S3_BUCKET": "mantex-documents-1763361307"
+        "AWS_S3_BUCKET": "mantex-documents-1763361307",
+        "VITE_FIREBASE_DATABASE_URL": "https://mantex-production-1cd9d-default-rtdb.firebaseio.com/",
+        "VITE_FIREBASE_PROJECT_ID": "mantex-production-1cd9d",
+        "FIREBASE_CLIENT_EMAIL": "firebase-adminsdk-fbsvc@mantex-production-1cd9d.iam.gserviceaccount.com",
+        "FIREBASE_PRIVATE_KEY": "----BEGIN PRIVATE KEY-----\\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDQbHutFOZ8tlRG\\nuKjOAM3Y8/mEM1jaQTzVzkWh6NPyhs+hdPqKchTQD39zmi9pW3espzaQVbHMvSE+\\nridC6pa5P+lfS7iKDgJlVrJkc4a5/erWZ0Nhrsju8Md3F68TxWqRTNgOHE+Hgami\\ncZQjw0a30E1901HiYxsRnEJXfocdpsElpshvniAcrwipS7R34+CqpyGxasZzJW6d\\nRgjaDwPTlXEdrnysEGhEayyksIKVqzedEf6cpEKGlTvOMH2aARh4Vu/tB2IqG2uN\\nsiMNpIuOxDiKd3idKG5+nOtjuQx4QGGXkrAO4r0yxtaTZ+I9cvZE5dQvqUSxX6w6\\nFbkviiQ1AgMBAAECggEAD8gvIz+CZm4d+o7wBU1NSQDMY4TJ1Rj8hMoOPsDVD7fC\\nkBy9/e6+gbSyt2u07FrnOHUe7hX3FSQ7GLZyNaBy0kszHiqrKhT+fHLwpieTS5Ed\\nD6gZE5P7FhC4Yd2yvaIEvETf1U2yffXFBQ5po72dJL0KqRzvxd8wRQiag2qKy6Va\\nNF5lXa9mCE3eHEXcedYVW3Jg0l55JcBMbKM8zjNX/Ws+NYVKQfsACYyC3W3pfB/d\\no04Q2KeAka2fsp72NMCxxcL0cypxkgjxTg0vpO1epFtJXomNbjB4hLfrySjlzuot\\njKWT22n3bSbPRkdnWkv3IEv0gSGA6DQgBSmM1muJnwKBgQD+eR6Jsrrw8uYJj/T1\\nIraO5SnpJApjlmVBr93lwEqIfDtJipPIGuvBP8x+1uv94Bv6pb8NJdWxzpTUsZst\\nbp2iKjS9SH7VBSsbqT+Hjshr9e/bdoSKPjJ6ICIhwJdASJjhSIawa+PgU8BqB1il\\nVbG439XopxvtOgETtUcXcKraMwKBgQDRrKFUej/StYNvmk69FBja8IAfKKNLJYRM\\nwoEBQ0mKVubTUdI2HQ8w/BRnmNnaoBTPE8N/f0z+R6/bMgJnECFGW4I3R4B92ZHQ\\nKdu7Pc7crVbKFxLxReugYDX/DSI2Qiy56iLnKL5jK+3SJJfBf8PZVBX95Nc2T57C\\nInP+XxTv9wKBgA6VinaB08zzXtO1eGiEMMpHv/sooZ/Lgsoc9i6wspTX6d3xHz8c\\nq95LdcDfOG84ZOIclbJ/NJwYJtd5xlb4O/iLSrJ+cSZsQWg4bvep6zqkwbZmOHpj\\nzijJpqsgioqYnopqya1awZidtC1fdmkjXCgoS+4lhag25tDmVsi1IFWZAoGBAM3K\\nVJG4ZtnlQ3qPBgb4KakBcY6jcRn5WY+JO9rEcvJvdqAj52ErRlS6pUBEulWk1qej\\n6zZA+I1+SLCntcn3/+CxQe4FpKxglYes/bgZ4uWez9cLrJDYInrG01hgSJreek2C\\n6vzcdXiajhG5zqShRNUSfX8zUrNAlD5QWG5qXf9jAoGBAKhQI6Bm8gnvrNzPX51C\\nIBDEpVkxBPTp6QMFRMjhZ2NfSNH5lCw9QnjS1MfDHIZr83okaB2kDd+GgtVOphwL\\n06S2Be1j0G9/CMmndEplnlLfWi/cjmQfophLx7HAE65yN1TuyYW7Y/uFcFpumpCX\\nRyELiMoOHxY4EjFSR2VPdw0Y\\n-----END PRIVATE KEY-----\\n"
       },
       "iam": {
         "role": {
@@ -110,31 +114,37 @@
           "S3UploadLogGroup": {
             "Type": "AWS::Logs::LogGroup",
             "Properties": {
-              "LogGroupName": "/aws/lambda/mantex-lambdas-dev-s3Upload"
+              "LogGroupName": "/aws/lambda/mantex-lambdas-prod-s3Upload"
             }
           },
           "S3DeleteLogGroup": {
             "Type": "AWS::Logs::LogGroup",
             "Properties": {
-              "LogGroupName": "/aws/lambda/mantex-lambdas-dev-s3Delete"
+              "LogGroupName": "/aws/lambda/mantex-lambdas-prod-s3Delete"
             }
           },
           "S3ListLogGroup": {
             "Type": "AWS::Logs::LogGroup",
             "Properties": {
-              "LogGroupName": "/aws/lambda/mantex-lambdas-dev-s3List"
+              "LogGroupName": "/aws/lambda/mantex-lambdas-prod-s3List"
             }
           },
           "S3SignedUrlLogGroup": {
             "Type": "AWS::Logs::LogGroup",
             "Properties": {
-              "LogGroupName": "/aws/lambda/mantex-lambdas-dev-s3SignedUrl"
+              "LogGroupName": "/aws/lambda/mantex-lambdas-prod-s3SignedUrl"
             }
           },
           "NubariumProxyLogGroup": {
             "Type": "AWS::Logs::LogGroup",
             "Properties": {
-              "LogGroupName": "/aws/lambda/mantex-lambdas-dev-nubariumProxy"
+              "LogGroupName": "/aws/lambda/mantex-lambdas-prod-nubariumProxy"
+            }
+          },
+          "SendNotificationLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/mantex-lambdas-prod-sendNotification"
             }
           },
           "IamRoleLambdaExecution": {
@@ -163,7 +173,7 @@
                       "-",
                       [
                         "mantex-lambdas",
-                        "dev",
+                        "prod",
                         "lambda"
                       ]
                     ]
@@ -180,7 +190,7 @@
                         ],
                         "Resource": [
                           {
-                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/mantex-lambdas-dev*:*"
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/mantex-lambdas-prod*:*"
                           }
                         ]
                       },
@@ -191,7 +201,7 @@
                         ],
                         "Resource": [
                           {
-                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/mantex-lambdas-dev*:*:*"
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/mantex-lambdas-prod*:*:*"
                           }
                         ]
                       },
@@ -208,7 +218,7 @@
                   "-",
                   [
                     "mantex-lambdas",
-                    "dev",
+                    "prod",
                     {
                       "Ref": "AWS::Region"
                     },
@@ -225,17 +235,21 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/mantex-lambdas/dev/1764104822241-2025-11-25T21:07:02.241Z/mantex-lambdas.zip"
+                "S3Key": "serverless/mantex-lambdas/prod/1764751013656-2025-12-03T08:36:53.656Z/mantex-lambdas.zip"
               },
               "Handler": "s3-upload-lambda.handler",
               "Runtime": "nodejs18.x",
-              "FunctionName": "mantex-lambdas-dev-s3Upload",
+              "FunctionName": "mantex-lambdas-prod-s3Upload",
               "MemorySize": 256,
               "Timeout": 30,
               "Description": "Upload files to S3 with proper structure",
               "Environment": {
                 "Variables": {
-                  "AWS_S3_BUCKET": "mantex-documents-1763361307"
+                  "AWS_S3_BUCKET": "mantex-documents-1763361307",
+                  "VITE_FIREBASE_DATABASE_URL": "https://mantex-production-1cd9d-default-rtdb.firebaseio.com/",
+                  "VITE_FIREBASE_PROJECT_ID": "mantex-production-1cd9d",
+                  "FIREBASE_CLIENT_EMAIL": "firebase-adminsdk-fbsvc@mantex-production-1cd9d.iam.gserviceaccount.com",
+                  "FIREBASE_PRIVATE_KEY": "----BEGIN PRIVATE KEY-----\\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDQbHutFOZ8tlRG\\nuKjOAM3Y8/mEM1jaQTzVzkWh6NPyhs+hdPqKchTQD39zmi9pW3espzaQVbHMvSE+\\nridC6pa5P+lfS7iKDgJlVrJkc4a5/erWZ0Nhrsju8Md3F68TxWqRTNgOHE+Hgami\\ncZQjw0a30E1901HiYxsRnEJXfocdpsElpshvniAcrwipS7R34+CqpyGxasZzJW6d\\nRgjaDwPTlXEdrnysEGhEayyksIKVqzedEf6cpEKGlTvOMH2aARh4Vu/tB2IqG2uN\\nsiMNpIuOxDiKd3idKG5+nOtjuQx4QGGXkrAO4r0yxtaTZ+I9cvZE5dQvqUSxX6w6\\nFbkviiQ1AgMBAAECggEAD8gvIz+CZm4d+o7wBU1NSQDMY4TJ1Rj8hMoOPsDVD7fC\\nkBy9/e6+gbSyt2u07FrnOHUe7hX3FSQ7GLZyNaBy0kszHiqrKhT+fHLwpieTS5Ed\\nD6gZE5P7FhC4Yd2yvaIEvETf1U2yffXFBQ5po72dJL0KqRzvxd8wRQiag2qKy6Va\\nNF5lXa9mCE3eHEXcedYVW3Jg0l55JcBMbKM8zjNX/Ws+NYVKQfsACYyC3W3pfB/d\\no04Q2KeAka2fsp72NMCxxcL0cypxkgjxTg0vpO1epFtJXomNbjB4hLfrySjlzuot\\njKWT22n3bSbPRkdnWkv3IEv0gSGA6DQgBSmM1muJnwKBgQD+eR6Jsrrw8uYJj/T1\\nIraO5SnpJApjlmVBr93lwEqIfDtJipPIGuvBP8x+1uv94Bv6pb8NJdWxzpTUsZst\\nbp2iKjS9SH7VBSsbqT+Hjshr9e/bdoSKPjJ6ICIhwJdASJjhSIawa+PgU8BqB1il\\nVbG439XopxvtOgETtUcXcKraMwKBgQDRrKFUej/StYNvmk69FBja8IAfKKNLJYRM\\nwoEBQ0mKVubTUdI2HQ8w/BRnmNnaoBTPE8N/f0z+R6/bMgJnECFGW4I3R4B92ZHQ\\nKdu7Pc7crVbKFxLxReugYDX/DSI2Qiy56iLnKL5jK+3SJJfBf8PZVBX95Nc2T57C\\nInP+XxTv9wKBgA6VinaB08zzXtO1eGiEMMpHv/sooZ/Lgsoc9i6wspTX6d3xHz8c\\nq95LdcDfOG84ZOIclbJ/NJwYJtd5xlb4O/iLSrJ+cSZsQWg4bvep6zqkwbZmOHpj\\nzijJpqsgioqYnopqya1awZidtC1fdmkjXCgoS+4lhag25tDmVsi1IFWZAoGBAM3K\\nVJG4ZtnlQ3qPBgb4KakBcY6jcRn5WY+JO9rEcvJvdqAj52ErRlS6pUBEulWk1qej\\n6zZA+I1+SLCntcn3/+CxQe4FpKxglYes/bgZ4uWez9cLrJDYInrG01hgSJreek2C\\n6vzcdXiajhG5zqShRNUSfX8zUrNAlD5QWG5qXf9jAoGBAKhQI6Bm8gnvrNzPX51C\\nIBDEpVkxBPTp6QMFRMjhZ2NfSNH5lCw9QnjS1MfDHIZr83okaB2kDd+GgtVOphwL\\n06S2Be1j0G9/CMmndEplnlLfWi/cjmQfophLx7HAE65yN1TuyYW7Y/uFcFpumpCX\\nRyELiMoOHxY4EjFSR2VPdw0Y\\n-----END PRIVATE KEY-----\\n"
                 }
               },
               "Role": {
@@ -256,17 +270,21 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/mantex-lambdas/dev/1764104822241-2025-11-25T21:07:02.241Z/mantex-lambdas.zip"
+                "S3Key": "serverless/mantex-lambdas/prod/1764751013656-2025-12-03T08:36:53.656Z/mantex-lambdas.zip"
               },
               "Handler": "s3-delete-lambda.handler",
               "Runtime": "nodejs18.x",
-              "FunctionName": "mantex-lambdas-dev-s3Delete",
+              "FunctionName": "mantex-lambdas-prod-s3Delete",
               "MemorySize": 256,
               "Timeout": 30,
               "Description": "Delete files from S3",
               "Environment": {
                 "Variables": {
-                  "AWS_S3_BUCKET": "mantex-documents-1763361307"
+                  "AWS_S3_BUCKET": "mantex-documents-1763361307",
+                  "VITE_FIREBASE_DATABASE_URL": "https://mantex-production-1cd9d-default-rtdb.firebaseio.com/",
+                  "VITE_FIREBASE_PROJECT_ID": "mantex-production-1cd9d",
+                  "FIREBASE_CLIENT_EMAIL": "firebase-adminsdk-fbsvc@mantex-production-1cd9d.iam.gserviceaccount.com",
+                  "FIREBASE_PRIVATE_KEY": "----BEGIN PRIVATE KEY-----\\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDQbHutFOZ8tlRG\\nuKjOAM3Y8/mEM1jaQTzVzkWh6NPyhs+hdPqKchTQD39zmi9pW3espzaQVbHMvSE+\\nridC6pa5P+lfS7iKDgJlVrJkc4a5/erWZ0Nhrsju8Md3F68TxWqRTNgOHE+Hgami\\ncZQjw0a30E1901HiYxsRnEJXfocdpsElpshvniAcrwipS7R34+CqpyGxasZzJW6d\\nRgjaDwPTlXEdrnysEGhEayyksIKVqzedEf6cpEKGlTvOMH2aARh4Vu/tB2IqG2uN\\nsiMNpIuOxDiKd3idKG5+nOtjuQx4QGGXkrAO4r0yxtaTZ+I9cvZE5dQvqUSxX6w6\\nFbkviiQ1AgMBAAECggEAD8gvIz+CZm4d+o7wBU1NSQDMY4TJ1Rj8hMoOPsDVD7fC\\nkBy9/e6+gbSyt2u07FrnOHUe7hX3FSQ7GLZyNaBy0kszHiqrKhT+fHLwpieTS5Ed\\nD6gZE5P7FhC4Yd2yvaIEvETf1U2yffXFBQ5po72dJL0KqRzvxd8wRQiag2qKy6Va\\nNF5lXa9mCE3eHEXcedYVW3Jg0l55JcBMbKM8zjNX/Ws+NYVKQfsACYyC3W3pfB/d\\no04Q2KeAka2fsp72NMCxxcL0cypxkgjxTg0vpO1epFtJXomNbjB4hLfrySjlzuot\\njKWT22n3bSbPRkdnWkv3IEv0gSGA6DQgBSmM1muJnwKBgQD+eR6Jsrrw8uYJj/T1\\nIraO5SnpJApjlmVBr93lwEqIfDtJipPIGuvBP8x+1uv94Bv6pb8NJdWxzpTUsZst\\nbp2iKjS9SH7VBSsbqT+Hjshr9e/bdoSKPjJ6ICIhwJdASJjhSIawa+PgU8BqB1il\\nVbG439XopxvtOgETtUcXcKraMwKBgQDRrKFUej/StYNvmk69FBja8IAfKKNLJYRM\\nwoEBQ0mKVubTUdI2HQ8w/BRnmNnaoBTPE8N/f0z+R6/bMgJnECFGW4I3R4B92ZHQ\\nKdu7Pc7crVbKFxLxReugYDX/DSI2Qiy56iLnKL5jK+3SJJfBf8PZVBX95Nc2T57C\\nInP+XxTv9wKBgA6VinaB08zzXtO1eGiEMMpHv/sooZ/Lgsoc9i6wspTX6d3xHz8c\\nq95LdcDfOG84ZOIclbJ/NJwYJtd5xlb4O/iLSrJ+cSZsQWg4bvep6zqkwbZmOHpj\\nzijJpqsgioqYnopqya1awZidtC1fdmkjXCgoS+4lhag25tDmVsi1IFWZAoGBAM3K\\nVJG4ZtnlQ3qPBgb4KakBcY6jcRn5WY+JO9rEcvJvdqAj52ErRlS6pUBEulWk1qej\\n6zZA+I1+SLCntcn3/+CxQe4FpKxglYes/bgZ4uWez9cLrJDYInrG01hgSJreek2C\\n6vzcdXiajhG5zqShRNUSfX8zUrNAlD5QWG5qXf9jAoGBAKhQI6Bm8gnvrNzPX51C\\nIBDEpVkxBPTp6QMFRMjhZ2NfSNH5lCw9QnjS1MfDHIZr83okaB2kDd+GgtVOphwL\\n06S2Be1j0G9/CMmndEplnlLfWi/cjmQfophLx7HAE65yN1TuyYW7Y/uFcFpumpCX\\nRyELiMoOHxY4EjFSR2VPdw0Y\\n-----END PRIVATE KEY-----\\n"
                 }
               },
               "Role": {
@@ -287,17 +305,21 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/mantex-lambdas/dev/1764104822241-2025-11-25T21:07:02.241Z/mantex-lambdas.zip"
+                "S3Key": "serverless/mantex-lambdas/prod/1764751013656-2025-12-03T08:36:53.656Z/mantex-lambdas.zip"
               },
               "Handler": "s3-list-lambda.handler",
               "Runtime": "nodejs18.x",
-              "FunctionName": "mantex-lambdas-dev-s3List",
+              "FunctionName": "mantex-lambdas-prod-s3List",
               "MemorySize": 256,
               "Timeout": 30,
               "Description": "List files from S3 by user and type",
               "Environment": {
                 "Variables": {
-                  "AWS_S3_BUCKET": "mantex-documents-1763361307"
+                  "AWS_S3_BUCKET": "mantex-documents-1763361307",
+                  "VITE_FIREBASE_DATABASE_URL": "https://mantex-production-1cd9d-default-rtdb.firebaseio.com/",
+                  "VITE_FIREBASE_PROJECT_ID": "mantex-production-1cd9d",
+                  "FIREBASE_CLIENT_EMAIL": "firebase-adminsdk-fbsvc@mantex-production-1cd9d.iam.gserviceaccount.com",
+                  "FIREBASE_PRIVATE_KEY": "----BEGIN PRIVATE KEY-----\\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDQbHutFOZ8tlRG\\nuKjOAM3Y8/mEM1jaQTzVzkWh6NPyhs+hdPqKchTQD39zmi9pW3espzaQVbHMvSE+\\nridC6pa5P+lfS7iKDgJlVrJkc4a5/erWZ0Nhrsju8Md3F68TxWqRTNgOHE+Hgami\\ncZQjw0a30E1901HiYxsRnEJXfocdpsElpshvniAcrwipS7R34+CqpyGxasZzJW6d\\nRgjaDwPTlXEdrnysEGhEayyksIKVqzedEf6cpEKGlTvOMH2aARh4Vu/tB2IqG2uN\\nsiMNpIuOxDiKd3idKG5+nOtjuQx4QGGXkrAO4r0yxtaTZ+I9cvZE5dQvqUSxX6w6\\nFbkviiQ1AgMBAAECggEAD8gvIz+CZm4d+o7wBU1NSQDMY4TJ1Rj8hMoOPsDVD7fC\\nkBy9/e6+gbSyt2u07FrnOHUe7hX3FSQ7GLZyNaBy0kszHiqrKhT+fHLwpieTS5Ed\\nD6gZE5P7FhC4Yd2yvaIEvETf1U2yffXFBQ5po72dJL0KqRzvxd8wRQiag2qKy6Va\\nNF5lXa9mCE3eHEXcedYVW3Jg0l55JcBMbKM8zjNX/Ws+NYVKQfsACYyC3W3pfB/d\\no04Q2KeAka2fsp72NMCxxcL0cypxkgjxTg0vpO1epFtJXomNbjB4hLfrySjlzuot\\njKWT22n3bSbPRkdnWkv3IEv0gSGA6DQgBSmM1muJnwKBgQD+eR6Jsrrw8uYJj/T1\\nIraO5SnpJApjlmVBr93lwEqIfDtJipPIGuvBP8x+1uv94Bv6pb8NJdWxzpTUsZst\\nbp2iKjS9SH7VBSsbqT+Hjshr9e/bdoSKPjJ6ICIhwJdASJjhSIawa+PgU8BqB1il\\nVbG439XopxvtOgETtUcXcKraMwKBgQDRrKFUej/StYNvmk69FBja8IAfKKNLJYRM\\nwoEBQ0mKVubTUdI2HQ8w/BRnmNnaoBTPE8N/f0z+R6/bMgJnECFGW4I3R4B92ZHQ\\nKdu7Pc7crVbKFxLxReugYDX/DSI2Qiy56iLnKL5jK+3SJJfBf8PZVBX95Nc2T57C\\nInP+XxTv9wKBgA6VinaB08zzXtO1eGiEMMpHv/sooZ/Lgsoc9i6wspTX6d3xHz8c\\nq95LdcDfOG84ZOIclbJ/NJwYJtd5xlb4O/iLSrJ+cSZsQWg4bvep6zqkwbZmOHpj\\nzijJpqsgioqYnopqya1awZidtC1fdmkjXCgoS+4lhag25tDmVsi1IFWZAoGBAM3K\\nVJG4ZtnlQ3qPBgb4KakBcY6jcRn5WY+JO9rEcvJvdqAj52ErRlS6pUBEulWk1qej\\n6zZA+I1+SLCntcn3/+CxQe4FpKxglYes/bgZ4uWez9cLrJDYInrG01hgSJreek2C\\n6vzcdXiajhG5zqShRNUSfX8zUrNAlD5QWG5qXf9jAoGBAKhQI6Bm8gnvrNzPX51C\\nIBDEpVkxBPTp6QMFRMjhZ2NfSNH5lCw9QnjS1MfDHIZr83okaB2kDd+GgtVOphwL\\n06S2Be1j0G9/CMmndEplnlLfWi/cjmQfophLx7HAE65yN1TuyYW7Y/uFcFpumpCX\\nRyELiMoOHxY4EjFSR2VPdw0Y\\n-----END PRIVATE KEY-----\\n"
                 }
               },
               "Role": {
@@ -318,17 +340,21 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/mantex-lambdas/dev/1764104822241-2025-11-25T21:07:02.241Z/mantex-lambdas.zip"
+                "S3Key": "serverless/mantex-lambdas/prod/1764751013656-2025-12-03T08:36:53.656Z/mantex-lambdas.zip"
               },
               "Handler": "s3-signed-url-lambda.handler",
               "Runtime": "nodejs18.x",
-              "FunctionName": "mantex-lambdas-dev-s3SignedUrl",
+              "FunctionName": "mantex-lambdas-prod-s3SignedUrl",
               "MemorySize": 256,
               "Timeout": 30,
               "Description": "Generate signed URLs for S3 objects",
               "Environment": {
                 "Variables": {
-                  "AWS_S3_BUCKET": "mantex-documents-1763361307"
+                  "AWS_S3_BUCKET": "mantex-documents-1763361307",
+                  "VITE_FIREBASE_DATABASE_URL": "https://mantex-production-1cd9d-default-rtdb.firebaseio.com/",
+                  "VITE_FIREBASE_PROJECT_ID": "mantex-production-1cd9d",
+                  "FIREBASE_CLIENT_EMAIL": "firebase-adminsdk-fbsvc@mantex-production-1cd9d.iam.gserviceaccount.com",
+                  "FIREBASE_PRIVATE_KEY": "----BEGIN PRIVATE KEY-----\\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDQbHutFOZ8tlRG\\nuKjOAM3Y8/mEM1jaQTzVzkWh6NPyhs+hdPqKchTQD39zmi9pW3espzaQVbHMvSE+\\nridC6pa5P+lfS7iKDgJlVrJkc4a5/erWZ0Nhrsju8Md3F68TxWqRTNgOHE+Hgami\\ncZQjw0a30E1901HiYxsRnEJXfocdpsElpshvniAcrwipS7R34+CqpyGxasZzJW6d\\nRgjaDwPTlXEdrnysEGhEayyksIKVqzedEf6cpEKGlTvOMH2aARh4Vu/tB2IqG2uN\\nsiMNpIuOxDiKd3idKG5+nOtjuQx4QGGXkrAO4r0yxtaTZ+I9cvZE5dQvqUSxX6w6\\nFbkviiQ1AgMBAAECggEAD8gvIz+CZm4d+o7wBU1NSQDMY4TJ1Rj8hMoOPsDVD7fC\\nkBy9/e6+gbSyt2u07FrnOHUe7hX3FSQ7GLZyNaBy0kszHiqrKhT+fHLwpieTS5Ed\\nD6gZE5P7FhC4Yd2yvaIEvETf1U2yffXFBQ5po72dJL0KqRzvxd8wRQiag2qKy6Va\\nNF5lXa9mCE3eHEXcedYVW3Jg0l55JcBMbKM8zjNX/Ws+NYVKQfsACYyC3W3pfB/d\\no04Q2KeAka2fsp72NMCxxcL0cypxkgjxTg0vpO1epFtJXomNbjB4hLfrySjlzuot\\njKWT22n3bSbPRkdnWkv3IEv0gSGA6DQgBSmM1muJnwKBgQD+eR6Jsrrw8uYJj/T1\\nIraO5SnpJApjlmVBr93lwEqIfDtJipPIGuvBP8x+1uv94Bv6pb8NJdWxzpTUsZst\\nbp2iKjS9SH7VBSsbqT+Hjshr9e/bdoSKPjJ6ICIhwJdASJjhSIawa+PgU8BqB1il\\nVbG439XopxvtOgETtUcXcKraMwKBgQDRrKFUej/StYNvmk69FBja8IAfKKNLJYRM\\nwoEBQ0mKVubTUdI2HQ8w/BRnmNnaoBTPE8N/f0z+R6/bMgJnECFGW4I3R4B92ZHQ\\nKdu7Pc7crVbKFxLxReugYDX/DSI2Qiy56iLnKL5jK+3SJJfBf8PZVBX95Nc2T57C\\nInP+XxTv9wKBgA6VinaB08zzXtO1eGiEMMpHv/sooZ/Lgsoc9i6wspTX6d3xHz8c\\nq95LdcDfOG84ZOIclbJ/NJwYJtd5xlb4O/iLSrJ+cSZsQWg4bvep6zqkwbZmOHpj\\nzijJpqsgioqYnopqya1awZidtC1fdmkjXCgoS+4lhag25tDmVsi1IFWZAoGBAM3K\\nVJG4ZtnlQ3qPBgb4KakBcY6jcRn5WY+JO9rEcvJvdqAj52ErRlS6pUBEulWk1qej\\n6zZA+I1+SLCntcn3/+CxQe4FpKxglYes/bgZ4uWez9cLrJDYInrG01hgSJreek2C\\n6vzcdXiajhG5zqShRNUSfX8zUrNAlD5QWG5qXf9jAoGBAKhQI6Bm8gnvrNzPX51C\\nIBDEpVkxBPTp6QMFRMjhZ2NfSNH5lCw9QnjS1MfDHIZr83okaB2kDd+GgtVOphwL\\n06S2Be1j0G9/CMmndEplnlLfWi/cjmQfophLx7HAE65yN1TuyYW7Y/uFcFpumpCX\\nRyELiMoOHxY4EjFSR2VPdw0Y\\n-----END PRIVATE KEY-----\\n"
                 }
               },
               "Role": {
@@ -349,17 +375,21 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/mantex-lambdas/dev/1764104822241-2025-11-25T21:07:02.241Z/mantex-lambdas.zip"
+                "S3Key": "serverless/mantex-lambdas/prod/1764751013656-2025-12-03T08:36:53.656Z/mantex-lambdas.zip"
               },
               "Handler": "nubarium-proxy-lambda.handler",
               "Runtime": "nodejs18.x",
-              "FunctionName": "mantex-lambdas-dev-nubariumProxy",
+              "FunctionName": "mantex-lambdas-prod-nubariumProxy",
               "MemorySize": 256,
               "Timeout": 60,
               "Description": "Proxy for all Nubarium API endpoints (ocr, sat, ine, biometrics)",
               "Environment": {
                 "Variables": {
-                  "AWS_S3_BUCKET": "mantex-documents-1763361307"
+                  "AWS_S3_BUCKET": "mantex-documents-1763361307",
+                  "VITE_FIREBASE_DATABASE_URL": "https://mantex-production-1cd9d-default-rtdb.firebaseio.com/",
+                  "VITE_FIREBASE_PROJECT_ID": "mantex-production-1cd9d",
+                  "FIREBASE_CLIENT_EMAIL": "firebase-adminsdk-fbsvc@mantex-production-1cd9d.iam.gserviceaccount.com",
+                  "FIREBASE_PRIVATE_KEY": "----BEGIN PRIVATE KEY-----\\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDQbHutFOZ8tlRG\\nuKjOAM3Y8/mEM1jaQTzVzkWh6NPyhs+hdPqKchTQD39zmi9pW3espzaQVbHMvSE+\\nridC6pa5P+lfS7iKDgJlVrJkc4a5/erWZ0Nhrsju8Md3F68TxWqRTNgOHE+Hgami\\ncZQjw0a30E1901HiYxsRnEJXfocdpsElpshvniAcrwipS7R34+CqpyGxasZzJW6d\\nRgjaDwPTlXEdrnysEGhEayyksIKVqzedEf6cpEKGlTvOMH2aARh4Vu/tB2IqG2uN\\nsiMNpIuOxDiKd3idKG5+nOtjuQx4QGGXkrAO4r0yxtaTZ+I9cvZE5dQvqUSxX6w6\\nFbkviiQ1AgMBAAECggEAD8gvIz+CZm4d+o7wBU1NSQDMY4TJ1Rj8hMoOPsDVD7fC\\nkBy9/e6+gbSyt2u07FrnOHUe7hX3FSQ7GLZyNaBy0kszHiqrKhT+fHLwpieTS5Ed\\nD6gZE5P7FhC4Yd2yvaIEvETf1U2yffXFBQ5po72dJL0KqRzvxd8wRQiag2qKy6Va\\nNF5lXa9mCE3eHEXcedYVW3Jg0l55JcBMbKM8zjNX/Ws+NYVKQfsACYyC3W3pfB/d\\no04Q2KeAka2fsp72NMCxxcL0cypxkgjxTg0vpO1epFtJXomNbjB4hLfrySjlzuot\\njKWT22n3bSbPRkdnWkv3IEv0gSGA6DQgBSmM1muJnwKBgQD+eR6Jsrrw8uYJj/T1\\nIraO5SnpJApjlmVBr93lwEqIfDtJipPIGuvBP8x+1uv94Bv6pb8NJdWxzpTUsZst\\nbp2iKjS9SH7VBSsbqT+Hjshr9e/bdoSKPjJ6ICIhwJdASJjhSIawa+PgU8BqB1il\\nVbG439XopxvtOgETtUcXcKraMwKBgQDRrKFUej/StYNvmk69FBja8IAfKKNLJYRM\\nwoEBQ0mKVubTUdI2HQ8w/BRnmNnaoBTPE8N/f0z+R6/bMgJnECFGW4I3R4B92ZHQ\\nKdu7Pc7crVbKFxLxReugYDX/DSI2Qiy56iLnKL5jK+3SJJfBf8PZVBX95Nc2T57C\\nInP+XxTv9wKBgA6VinaB08zzXtO1eGiEMMpHv/sooZ/Lgsoc9i6wspTX6d3xHz8c\\nq95LdcDfOG84ZOIclbJ/NJwYJtd5xlb4O/iLSrJ+cSZsQWg4bvep6zqkwbZmOHpj\\nzijJpqsgioqYnopqya1awZidtC1fdmkjXCgoS+4lhag25tDmVsi1IFWZAoGBAM3K\\nVJG4ZtnlQ3qPBgb4KakBcY6jcRn5WY+JO9rEcvJvdqAj52ErRlS6pUBEulWk1qej\\n6zZA+I1+SLCntcn3/+CxQe4FpKxglYes/bgZ4uWez9cLrJDYInrG01hgSJreek2C\\n6vzcdXiajhG5zqShRNUSfX8zUrNAlD5QWG5qXf9jAoGBAKhQI6Bm8gnvrNzPX51C\\nIBDEpVkxBPTp6QMFRMjhZ2NfSNH5lCw9QnjS1MfDHIZr83okaB2kDd+GgtVOphwL\\n06S2Be1j0G9/CMmndEplnlLfWi/cjmQfophLx7HAE65yN1TuyYW7Y/uFcFpumpCX\\nRyELiMoOHxY4EjFSR2VPdw0Y\\n-----END PRIVATE KEY-----\\n"
                 }
               },
               "Role": {
@@ -373,65 +403,111 @@
               "NubariumProxyLogGroup"
             ]
           },
-          "S3UploadLambdaVersionRMvYMKMd218vBjG2AOBDByTnlvPOvKnJdxYqRSUe6U": {
+          "SendNotificationLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": {
+                  "Ref": "ServerlessDeploymentBucket"
+                },
+                "S3Key": "serverless/mantex-lambdas/prod/1764751013656-2025-12-03T08:36:53.656Z/mantex-lambdas.zip"
+              },
+              "Handler": "send-notification-lambda.handler",
+              "Runtime": "nodejs18.x",
+              "FunctionName": "mantex-lambdas-prod-sendNotification",
+              "MemorySize": 256,
+              "Timeout": 30,
+              "Description": "Send push notifications via Firebase Cloud Messaging",
+              "Environment": {
+                "Variables": {
+                  "AWS_S3_BUCKET": "mantex-documents-1763361307",
+                  "VITE_FIREBASE_DATABASE_URL": "https://mantex-production-1cd9d-default-rtdb.firebaseio.com/",
+                  "VITE_FIREBASE_PROJECT_ID": "mantex-production-1cd9d",
+                  "FIREBASE_CLIENT_EMAIL": "firebase-adminsdk-fbsvc@mantex-production-1cd9d.iam.gserviceaccount.com",
+                  "FIREBASE_PRIVATE_KEY": "----BEGIN PRIVATE KEY-----\\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDQbHutFOZ8tlRG\\nuKjOAM3Y8/mEM1jaQTzVzkWh6NPyhs+hdPqKchTQD39zmi9pW3espzaQVbHMvSE+\\nridC6pa5P+lfS7iKDgJlVrJkc4a5/erWZ0Nhrsju8Md3F68TxWqRTNgOHE+Hgami\\ncZQjw0a30E1901HiYxsRnEJXfocdpsElpshvniAcrwipS7R34+CqpyGxasZzJW6d\\nRgjaDwPTlXEdrnysEGhEayyksIKVqzedEf6cpEKGlTvOMH2aARh4Vu/tB2IqG2uN\\nsiMNpIuOxDiKd3idKG5+nOtjuQx4QGGXkrAO4r0yxtaTZ+I9cvZE5dQvqUSxX6w6\\nFbkviiQ1AgMBAAECggEAD8gvIz+CZm4d+o7wBU1NSQDMY4TJ1Rj8hMoOPsDVD7fC\\nkBy9/e6+gbSyt2u07FrnOHUe7hX3FSQ7GLZyNaBy0kszHiqrKhT+fHLwpieTS5Ed\\nD6gZE5P7FhC4Yd2yvaIEvETf1U2yffXFBQ5po72dJL0KqRzvxd8wRQiag2qKy6Va\\nNF5lXa9mCE3eHEXcedYVW3Jg0l55JcBMbKM8zjNX/Ws+NYVKQfsACYyC3W3pfB/d\\no04Q2KeAka2fsp72NMCxxcL0cypxkgjxTg0vpO1epFtJXomNbjB4hLfrySjlzuot\\njKWT22n3bSbPRkdnWkv3IEv0gSGA6DQgBSmM1muJnwKBgQD+eR6Jsrrw8uYJj/T1\\nIraO5SnpJApjlmVBr93lwEqIfDtJipPIGuvBP8x+1uv94Bv6pb8NJdWxzpTUsZst\\nbp2iKjS9SH7VBSsbqT+Hjshr9e/bdoSKPjJ6ICIhwJdASJjhSIawa+PgU8BqB1il\\nVbG439XopxvtOgETtUcXcKraMwKBgQDRrKFUej/StYNvmk69FBja8IAfKKNLJYRM\\nwoEBQ0mKVubTUdI2HQ8w/BRnmNnaoBTPE8N/f0z+R6/bMgJnECFGW4I3R4B92ZHQ\\nKdu7Pc7crVbKFxLxReugYDX/DSI2Qiy56iLnKL5jK+3SJJfBf8PZVBX95Nc2T57C\\nInP+XxTv9wKBgA6VinaB08zzXtO1eGiEMMpHv/sooZ/Lgsoc9i6wspTX6d3xHz8c\\nq95LdcDfOG84ZOIclbJ/NJwYJtd5xlb4O/iLSrJ+cSZsQWg4bvep6zqkwbZmOHpj\\nzijJpqsgioqYnopqya1awZidtC1fdmkjXCgoS+4lhag25tDmVsi1IFWZAoGBAM3K\\nVJG4ZtnlQ3qPBgb4KakBcY6jcRn5WY+JO9rEcvJvdqAj52ErRlS6pUBEulWk1qej\\n6zZA+I1+SLCntcn3/+CxQe4FpKxglYes/bgZ4uWez9cLrJDYInrG01hgSJreek2C\\n6vzcdXiajhG5zqShRNUSfX8zUrNAlD5QWG5qXf9jAoGBAKhQI6Bm8gnvrNzPX51C\\nIBDEpVkxBPTp6QMFRMjhZ2NfSNH5lCw9QnjS1MfDHIZr83okaB2kDd+GgtVOphwL\\n06S2Be1j0G9/CMmndEplnlLfWi/cjmQfophLx7HAE65yN1TuyYW7Y/uFcFpumpCX\\nRyELiMoOHxY4EjFSR2VPdw0Y\\n-----END PRIVATE KEY-----\\n"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "SendNotificationLogGroup"
+            ]
+          },
+          "S3UploadLambdaVersionpG36D4bmpKrY2sYR6iBKnYnl5NCaErL6SYTesDUJzU": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "S3UploadLambdaFunction"
               },
-              "CodeSha256": "rtNg5BeVc2BxQ9JtjUtQ/0GhLWQy1Jlx6sgdtmkPIYE=",
+              "CodeSha256": "aw/eQCE07AkAhDHRQk1RulgjTh1iL4yKKxrezww/jns=",
               "Description": "Upload files to S3 with proper structure"
             }
           },
-          "S3DeleteLambdaVersionLSPVagVMoQzRzTH5Gc5AhbBfTgJpJAri69kLRGkC4g": {
+          "S3DeleteLambdaVersionMg9t5I4XPiRXyPsKajTCIdb013iGlf9VSC8PjxTb42g": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "S3DeleteLambdaFunction"
               },
-              "CodeSha256": "rtNg5BeVc2BxQ9JtjUtQ/0GhLWQy1Jlx6sgdtmkPIYE=",
+              "CodeSha256": "aw/eQCE07AkAhDHRQk1RulgjTh1iL4yKKxrezww/jns=",
               "Description": "Delete files from S3"
             }
           },
-          "S3ListLambdaVersion5OEtXogpa5qfWoqFFoA6do3VBQ5XuMZCINntDrKN70": {
+          "S3ListLambdaVersions79stECU8mARCIxCnOWx1AYh0Mo7X523eJUQBvKD0s": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "S3ListLambdaFunction"
               },
-              "CodeSha256": "rtNg5BeVc2BxQ9JtjUtQ/0GhLWQy1Jlx6sgdtmkPIYE=",
+              "CodeSha256": "aw/eQCE07AkAhDHRQk1RulgjTh1iL4yKKxrezww/jns=",
               "Description": "List files from S3 by user and type"
             }
           },
-          "S3SignedUrlLambdaVersionnIwlwOZX9eTiRAbRDACyGaZ7ouApoC9UFxqXfpDXI": {
+          "S3SignedUrlLambdaVersiongwgoVaaBfJhQtHQqSxCG9GBG3pKwpjA5HyOkndE65c": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "S3SignedUrlLambdaFunction"
               },
-              "CodeSha256": "rtNg5BeVc2BxQ9JtjUtQ/0GhLWQy1Jlx6sgdtmkPIYE=",
+              "CodeSha256": "aw/eQCE07AkAhDHRQk1RulgjTh1iL4yKKxrezww/jns=",
               "Description": "Generate signed URLs for S3 objects"
             }
           },
-          "NubariumProxyLambdaVersioncZIsuH1IDGr3jrv2igzThkqgtU563jDU09UP8yoERg": {
+          "NubariumProxyLambdaVersionTwDGkJGt80VFuEnIqNEuKXdz0sETjxvRjpbyMVH4174": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "NubariumProxyLambdaFunction"
               },
-              "CodeSha256": "rtNg5BeVc2BxQ9JtjUtQ/0GhLWQy1Jlx6sgdtmkPIYE=",
+              "CodeSha256": "aw/eQCE07AkAhDHRQk1RulgjTh1iL4yKKxrezww/jns=",
               "Description": "Proxy for all Nubarium API endpoints (ocr, sat, ine, biometrics)"
+            }
+          },
+          "SendNotificationLambdaVersionYZeIay2vMz3YjSJoRE7mkOfD9kAxlGeehGI1V0U8Zio": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "SendNotificationLambdaFunction"
+              },
+              "CodeSha256": "aw/eQCE07AkAhDHRQk1RulgjTh1iL4yKKxrezww/jns=",
+              "Description": "Send push notifications via Firebase Cloud Messaging"
             }
           },
           "ApiGatewayRestApi": {
             "Type": "AWS::ApiGateway::RestApi",
             "Properties": {
-              "Name": "dev-mantex-lambdas",
+              "Name": "prod-mantex-lambdas",
               "EndpointConfiguration": {
                 "Types": [
                   "EDGE"
@@ -525,6 +601,33 @@
                 "Ref": "ApiGatewayResourceNubarium"
               },
               "PathPart": "{proxy+}",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayResourceNotifications": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Fn::GetAtt": [
+                  "ApiGatewayRestApi",
+                  "RootResourceId"
+                ]
+              },
+              "PathPart": "notifications",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayResourceNotificationsSend": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Ref": "ApiGatewayResourceNotifications"
+              },
+              "PathPart": "send",
               "RestApiId": {
                 "Ref": "ApiGatewayRestApi"
               }
@@ -867,6 +970,79 @@
               }
             }
           },
+          "ApiGatewayMethodNotificationsSendOptions": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "AuthorizationType": "NONE",
+              "HttpMethod": "OPTIONS",
+              "MethodResponses": [
+                {
+                  "StatusCode": "200",
+                  "ResponseParameters": {
+                    "method.response.header.Access-Control-Allow-Origin": true,
+                    "method.response.header.Access-Control-Allow-Headers": true,
+                    "method.response.header.Access-Control-Allow-Methods": true
+                  },
+                  "ResponseModels": {}
+                }
+              ],
+              "RequestParameters": {},
+              "Integration": {
+                "Type": "AWS_PROXY",
+                "RequestTemplates": {
+                  "application/json": "{statusCode:200}"
+                },
+                "ContentHandling": "CONVERT_TO_TEXT",
+                "IntegrationResponses": [
+                  {
+                    "StatusCode": "200",
+                    "ResponseParameters": {
+                      "method.response.header.Access-Control-Allow-Origin": "'*'",
+                      "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent,X-Amzn-Trace-Id'",
+                      "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,POST'"
+                    },
+                    "ResponseTemplates": {
+                      "application/json": ""
+                    }
+                  }
+                ],
+                "IntegrationHttpMethod": "POST",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "SendNotificationLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceNotificationsSend"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "ApiKeyRequired": false
+            },
+            "DependsOn": [
+              "SendNotificationLambdaPermissionApiGateway"
+            ]
+          },
           "ApiGatewayMethodS3UploadPost": {
             "Type": "AWS::ApiGateway::Method",
             "Properties": {
@@ -1097,13 +1273,59 @@
               "NubariumProxyLambdaPermissionApiGateway"
             ]
           },
-          "ApiGatewayDeployment1764104816914": {
+          "ApiGatewayMethodNotificationsSendPost": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "POST",
+              "RequestParameters": {},
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceNotificationsSend"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "ApiKeyRequired": false,
+              "AuthorizationType": "NONE",
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "SendNotificationLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": []
+            },
+            "DependsOn": [
+              "SendNotificationLambdaPermissionApiGateway"
+            ]
+          },
+          "ApiGatewayDeployment1764751007974": {
             "Type": "AWS::ApiGateway::Deployment",
             "Properties": {
               "RestApiId": {
                 "Ref": "ApiGatewayRestApi"
               },
-              "StageName": "dev"
+              "StageName": "prod"
             },
             "DependsOn": [
               "ApiGatewayMethodS3UploadOptions",
@@ -1111,6 +1333,7 @@
               "ApiGatewayMethodS3ListOptions",
               "ApiGatewayMethodS3SignedDashurlOptions",
               "ApiGatewayMethodNubariumProxyVarOptions",
+              "ApiGatewayMethodNotificationsSendOptions",
               "ApiGatewayMethodS3UploadPost",
               "ApiGatewayMethodS3UploadOptions",
               "ApiGatewayMethodS3DeletePost",
@@ -1119,7 +1342,9 @@
               "ApiGatewayMethodS3ListOptions",
               "ApiGatewayMethodS3SignedDashurlPost",
               "ApiGatewayMethodS3SignedDashurlOptions",
-              "ApiGatewayMethodNubariumProxyVarAny"
+              "ApiGatewayMethodNubariumProxyVarAny",
+              "ApiGatewayMethodNotificationsSendPost",
+              "ApiGatewayMethodNotificationsSendOptions"
             ]
           },
           "S3UploadLambdaPermissionApiGateway": {
@@ -1306,6 +1531,43 @@
                 ]
               }
             }
+          },
+          "SendNotificationLambdaPermissionApiGateway": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "SendNotificationLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "ApiGatewayRestApi"
+                    },
+                    "/*/*"
+                  ]
+                ]
+              }
+            }
           }
         },
         "Outputs": {
@@ -1314,52 +1576,61 @@
               "Ref": "ServerlessDeploymentBucket"
             },
             "Export": {
-              "Name": "sls-mantex-lambdas-dev-ServerlessDeploymentBucketName"
+              "Name": "sls-mantex-lambdas-prod-ServerlessDeploymentBucketName"
             }
           },
           "S3UploadLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "S3UploadLambdaVersionRMvYMKMd218vBjG2AOBDByTnlvPOvKnJdxYqRSUe6U"
+              "Ref": "S3UploadLambdaVersionpG36D4bmpKrY2sYR6iBKnYnl5NCaErL6SYTesDUJzU"
             },
             "Export": {
-              "Name": "sls-mantex-lambdas-dev-S3UploadLambdaFunctionQualifiedArn"
+              "Name": "sls-mantex-lambdas-prod-S3UploadLambdaFunctionQualifiedArn"
             }
           },
           "S3DeleteLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "S3DeleteLambdaVersionLSPVagVMoQzRzTH5Gc5AhbBfTgJpJAri69kLRGkC4g"
+              "Ref": "S3DeleteLambdaVersionMg9t5I4XPiRXyPsKajTCIdb013iGlf9VSC8PjxTb42g"
             },
             "Export": {
-              "Name": "sls-mantex-lambdas-dev-S3DeleteLambdaFunctionQualifiedArn"
+              "Name": "sls-mantex-lambdas-prod-S3DeleteLambdaFunctionQualifiedArn"
             }
           },
           "S3ListLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "S3ListLambdaVersion5OEtXogpa5qfWoqFFoA6do3VBQ5XuMZCINntDrKN70"
+              "Ref": "S3ListLambdaVersions79stECU8mARCIxCnOWx1AYh0Mo7X523eJUQBvKD0s"
             },
             "Export": {
-              "Name": "sls-mantex-lambdas-dev-S3ListLambdaFunctionQualifiedArn"
+              "Name": "sls-mantex-lambdas-prod-S3ListLambdaFunctionQualifiedArn"
             }
           },
           "S3SignedUrlLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "S3SignedUrlLambdaVersionnIwlwOZX9eTiRAbRDACyGaZ7ouApoC9UFxqXfpDXI"
+              "Ref": "S3SignedUrlLambdaVersiongwgoVaaBfJhQtHQqSxCG9GBG3pKwpjA5HyOkndE65c"
             },
             "Export": {
-              "Name": "sls-mantex-lambdas-dev-S3SignedUrlLambdaFunctionQualifiedArn"
+              "Name": "sls-mantex-lambdas-prod-S3SignedUrlLambdaFunctionQualifiedArn"
             }
           },
           "NubariumProxyLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "NubariumProxyLambdaVersioncZIsuH1IDGr3jrv2igzThkqgtU563jDU09UP8yoERg"
+              "Ref": "NubariumProxyLambdaVersionTwDGkJGt80VFuEnIqNEuKXdz0sETjxvRjpbyMVH4174"
             },
             "Export": {
-              "Name": "sls-mantex-lambdas-dev-NubariumProxyLambdaFunctionQualifiedArn"
+              "Name": "sls-mantex-lambdas-prod-NubariumProxyLambdaFunctionQualifiedArn"
+            }
+          },
+          "SendNotificationLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "SendNotificationLambdaVersionYZeIay2vMz3YjSJoRE7mkOfD9kAxlGeehGI1V0U8Zio"
+            },
+            "Export": {
+              "Name": "sls-mantex-lambdas-prod-SendNotificationLambdaFunctionQualifiedArn"
             }
           },
           "ServiceEndpoint": {
@@ -1380,12 +1651,12 @@
                   {
                     "Ref": "AWS::URLSuffix"
                   },
-                  "/dev"
+                  "/prod"
                 ]
               ]
             },
             "Export": {
-              "Name": "sls-mantex-lambdas-dev-ServiceEndpoint"
+              "Name": "sls-mantex-lambdas-prod-ServiceEndpoint"
             }
           },
           "S3UploadUrl": {
@@ -1401,7 +1672,7 @@
                   ".execute-api.",
                   "us-east-1",
                   ".amazonaws.com/",
-                  "dev",
+                  "prod",
                   "/s3/upload"
                 ]
               ]
@@ -1420,7 +1691,7 @@
                   ".execute-api.",
                   "us-east-1",
                   ".amazonaws.com/",
-                  "dev",
+                  "prod",
                   "/s3/delete"
                 ]
               ]
@@ -1439,7 +1710,7 @@
                   ".execute-api.",
                   "us-east-1",
                   ".amazonaws.com/",
-                  "dev",
+                  "prod",
                   "/s3/list"
                 ]
               ]
@@ -1458,7 +1729,7 @@
                   ".execute-api.",
                   "us-east-1",
                   ".amazonaws.com/",
-                  "dev",
+                  "prod",
                   "/nubarium"
                 ]
               ]
@@ -1608,13 +1879,13 @@
           }
         ],
         "description": "Upload files to S3 with proper structure",
-        "name": "mantex-lambdas-dev-s3Upload",
+        "name": "mantex-lambdas-prod-s3Upload",
         "package": {},
         "memory": 256,
         "timeout": 30,
         "runtime": "nodejs18.x",
         "vpc": {},
-        "versionLogicalId": "S3UploadLambdaVersionRMvYMKMd218vBjG2AOBDByTnlvPOvKnJdxYqRSUe6U"
+        "versionLogicalId": "S3UploadLambdaVersionpG36D4bmpKrY2sYR6iBKnYnl5NCaErL6SYTesDUJzU"
       },
       "s3Delete": {
         "handler": "s3-delete-lambda.handler",
@@ -1669,13 +1940,13 @@
           }
         ],
         "description": "Delete files from S3",
-        "name": "mantex-lambdas-dev-s3Delete",
+        "name": "mantex-lambdas-prod-s3Delete",
         "package": {},
         "memory": 256,
         "timeout": 30,
         "runtime": "nodejs18.x",
         "vpc": {},
-        "versionLogicalId": "S3DeleteLambdaVersionLSPVagVMoQzRzTH5Gc5AhbBfTgJpJAri69kLRGkC4g"
+        "versionLogicalId": "S3DeleteLambdaVersionMg9t5I4XPiRXyPsKajTCIdb013iGlf9VSC8PjxTb42g"
       },
       "s3List": {
         "handler": "s3-list-lambda.handler",
@@ -1730,13 +2001,13 @@
           }
         ],
         "description": "List files from S3 by user and type",
-        "name": "mantex-lambdas-dev-s3List",
+        "name": "mantex-lambdas-prod-s3List",
         "package": {},
         "memory": 256,
         "timeout": 30,
         "runtime": "nodejs18.x",
         "vpc": {},
-        "versionLogicalId": "S3ListLambdaVersion5OEtXogpa5qfWoqFFoA6do3VBQ5XuMZCINntDrKN70"
+        "versionLogicalId": "S3ListLambdaVersions79stECU8mARCIxCnOWx1AYh0Mo7X523eJUQBvKD0s"
       },
       "s3SignedUrl": {
         "handler": "s3-signed-url-lambda.handler",
@@ -1791,13 +2062,13 @@
           }
         ],
         "description": "Generate signed URLs for S3 objects",
-        "name": "mantex-lambdas-dev-s3SignedUrl",
+        "name": "mantex-lambdas-prod-s3SignedUrl",
         "package": {},
         "memory": 256,
         "timeout": 30,
         "runtime": "nodejs18.x",
         "vpc": {},
-        "versionLogicalId": "S3SignedUrlLambdaVersionnIwlwOZX9eTiRAbRDACyGaZ7ouApoC9UFxqXfpDXI"
+        "versionLogicalId": "S3SignedUrlLambdaVersiongwgoVaaBfJhQtHQqSxCG9GBG3pKwpjA5HyOkndE65c"
       },
       "nubariumProxy": {
         "handler": "nubarium-proxy-lambda.handler",
@@ -1829,12 +2100,73 @@
           }
         ],
         "description": "Proxy for all Nubarium API endpoints (ocr, sat, ine, biometrics)",
-        "name": "mantex-lambdas-dev-nubariumProxy",
+        "name": "mantex-lambdas-prod-nubariumProxy",
         "package": {},
         "memory": 256,
         "runtime": "nodejs18.x",
         "vpc": {},
-        "versionLogicalId": "NubariumProxyLambdaVersioncZIsuH1IDGr3jrv2igzThkqgtU563jDU09UP8yoERg"
+        "versionLogicalId": "NubariumProxyLambdaVersionTwDGkJGt80VFuEnIqNEuKXdz0sETjxvRjpbyMVH4174"
+      },
+      "sendNotification": {
+        "handler": "send-notification-lambda.handler",
+        "events": [
+          {
+            "http": {
+              "path": "notifications/send",
+              "method": "post",
+              "cors": {
+                "origin": "*",
+                "methods": [
+                  "OPTIONS",
+                  "POST"
+                ],
+                "headers": [
+                  "Content-Type",
+                  "X-Amz-Date",
+                  "Authorization",
+                  "X-Api-Key",
+                  "X-Amz-Security-Token",
+                  "X-Amz-User-Agent",
+                  "X-Amzn-Trace-Id"
+                ],
+                "allowCredentials": false
+              },
+              "integration": "AWS_PROXY"
+            }
+          },
+          {
+            "http": {
+              "path": "notifications/send",
+              "method": "options",
+              "cors": {
+                "origin": "*",
+                "methods": [
+                  "OPTIONS",
+                  "OPTIONS"
+                ],
+                "headers": [
+                  "Content-Type",
+                  "X-Amz-Date",
+                  "Authorization",
+                  "X-Api-Key",
+                  "X-Amz-Security-Token",
+                  "X-Amz-User-Agent",
+                  "X-Amzn-Trace-Id"
+                ],
+                "allowCredentials": false
+              },
+              "integration": "AWS_PROXY"
+            }
+          }
+        ],
+        "description": "Send push notifications via Firebase Cloud Messaging",
+        "name": "mantex-lambdas-prod-sendNotification",
+        "package": {},
+        "memory": 256,
+        "timeout": 30,
+        "runtime": "nodejs18.x",
+        "vpc": {},
+        "versionLogicalId": "SendNotificationLambdaVersionYZeIay2vMz3YjSJoRE7mkOfD9kAxlGeehGI1V0U8Zio"
       }
     },
     "resources": {
@@ -1852,7 +2184,7 @@
                 ".execute-api.",
                 "us-east-1",
                 ".amazonaws.com/",
-                "dev",
+                "prod",
                 "/s3/upload"
               ]
             ]
@@ -1871,7 +2203,7 @@
                 ".execute-api.",
                 "us-east-1",
                 ".amazonaws.com/",
-                "dev",
+                "prod",
                 "/s3/delete"
               ]
             ]
@@ -1890,7 +2222,7 @@
                 ".execute-api.",
                 "us-east-1",
                 ".amazonaws.com/",
-                "dev",
+                "prod",
                 "/s3/list"
               ]
             ]
@@ -1909,7 +2241,7 @@
                 ".execute-api.",
                 "us-east-1",
                 ".amazonaws.com/",
-                "dev",
+                "prod",
                 "/nubarium"
               ]
             ]
@@ -1922,6 +2254,7 @@
     "serviceFilename": "serverless.yml",
     "initialServerlessConfig": {
       "service": "mantex-lambdas",
+      "useDotenv": true,
       "provider": {
         "$ref": "$[\"service\"][\"provider\"]"
       },
@@ -1940,7 +2273,7 @@
     "artifact": "/Users/mikerai/Documents/GitHub/Resume/mantex-project/sakai-vue/lambda/.serverless/mantex-lambdas.zip"
   },
   "package": {
-    "artifactDirectoryName": "serverless/mantex-lambdas/dev/1764104822241-2025-11-25T21:07:02.241Z",
+    "artifactDirectoryName": "serverless/mantex-lambdas/prod/1764751013656-2025-12-03T08:36:53.656Z",
     "artifact": "mantex-lambdas.zip"
   }
 }
