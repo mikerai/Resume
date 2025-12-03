@@ -114,12 +114,25 @@ const { profile } = useAuth();
 
 const tickets = ref([]);
 
+// Homologated with Desktop Dashboard.vue logic
 const activeTickets = computed(() => {
-  return tickets.value.filter(t => ['pending', 'opened', 'in_progress', 'assigned'].includes(t.status));
+  // Active = NOT in ['closed', 'cancelled', 'paid'] (matches desktop)
+  return tickets.value.filter(t => !['closed', 'cancelled', 'paid'].includes(t.status));
 });
 
 const recentTickets = computed(() => {
-  return tickets.value.filter(t => !['pending', 'opened', 'in_progress', 'assigned'].includes(t.status));
+  // Recent = last 5 tickets, sorted by date
+  return [...tickets.value]
+    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+    .slice(0, 5);
+});
+
+// Stats matching desktop Dashboard
+const stats = computed(() => {
+  const active = tickets.value.filter(t => !['closed', 'cancelled', 'paid'].includes(t.status)).length;
+  const pendingApproval = tickets.value.filter(t => ['under_review', 'completed'].includes(t.status)).length;
+  const total = tickets.value.length;
+  return { active, pendingApproval, total };
 });
 
 const displayName = computed(() => {
