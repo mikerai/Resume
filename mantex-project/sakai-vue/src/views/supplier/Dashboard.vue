@@ -47,8 +47,7 @@
                         <i class="pi pi-star text-yellow-500 !text-xl"></i>
                     </div>
                 </div>
-                <span class="text-muted-color">{{ averageRating > 0 ? 'Basado en trabajos completados' : 'Sin
-                    calificaciones aún' }}</span>
+                <span class="text-muted-color">{{ averageRating > 0 ? 'Basado en trabajos completados' : 'Sin calificaciones aún' }}</span>
             </div>
         </div>
         <div class="col-span-12 lg:col-span-6 xl:col-span-3">
