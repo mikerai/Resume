@@ -38,14 +38,8 @@
       <!-- Photo Gallery -->
       <div v-if="photos.length > 0" class="photo-gallery">
         <h3 class="ion-padding-horizontal">Fotos del Ticket</h3>
-        <swiper
-          :modules="modules"
-          :slides-per-view="1.2"
-          :space-between="10"
-          :pagination="{ clickable: true }"
-          :centered-slides="true"
-          class="photo-swiper"
-        >
+        <swiper :modules="modules" :slides-per-view="1.2" :space-between="10" :pagination="{ clickable: true }"
+          :centered-slides="true" class="photo-swiper">
           <swiper-slide v-for="(photo, index) in photos" :key="index">
             <img :src="photo.url" :alt="`Foto ${index + 1}`" @click="openPhotoModal(index)" />
           </swiper-slide>
@@ -113,14 +107,15 @@
 
       <!-- Action Buttons -->
       <div class="ion-padding" v-if="showActionButtons">
-        <ion-button 
-          v-if="canCancel" 
-          expand="block" 
-          color="danger" 
-          @click="confirmCancelTicket"
-        >
+        <ion-button v-if="canCancel" expand="block" color="danger" @click="confirmCancelTicket">
           <ion-icon :icon="closeCircleOutline" slot="start"></ion-icon>
           Cancelar Ticket
+        </ion-button>
+
+        <!-- Rating Button -->
+        <ion-button v-if="canRate" expand="block" color="warning" @click="openRatingModal">
+          <ion-icon :icon="starOutline" slot="start"></ion-icon>
+          {{ existingReview ? 'Editar Calificación' : 'Calificar Servicio' }}
         </ion-button>
       </div>
 
@@ -145,11 +140,8 @@
             <div v-if="messages.length === 0" class="empty-chat">
               <p>No hay mensajes aún. Inicia la conversación.</p>
             </div>
-            <div 
-              v-for="message in messages" 
-              :key="message.id"
-              :class="['message', message.sender_role === 'client' ? 'message-sent' : 'message-received']"
-            >
+            <div v-for="message in messages" :key="message.id"
+              :class="['message', message.sender_role === 'client' ? 'message-sent' : 'message-received']">
               <div class="message-header">
                 <strong>{{ message.sender_name }}</strong>
                 <span class="message-time">{{ formatMessageTime(message.created_at) }}</span>
@@ -161,17 +153,9 @@
           <!-- Message Input -->
           <div class="message-input-container">
             <ion-item lines="none">
-              <ion-textarea
-                v-model="newMessage"
-                placeholder="Escribe un mensaje..."
-                :rows="2"
-                @keyup.enter.exact="sendMessage"
-              ></ion-textarea>
-              <ion-button 
-                slot="end" 
-                @click="sendMessage" 
-                :disabled="!newMessage.trim() || sendingMessage"
-              >
+              <ion-textarea v-model="newMessage" placeholder="Escribe un mensaje..." :rows="2"
+                @keyup.enter.exact="sendMessage"></ion-textarea>
+              <ion-button slot="end" @click="sendMessage" :disabled="!newMessage.trim() || sendingMessage">
                 <ion-icon :icon="sendOutline"></ion-icon>
               </ion-button>
             </ion-item>
@@ -182,14 +166,8 @@
       <!-- Evidence Gallery (After Work) -->
       <div v-if="evidence.length > 0" class="ion-padding">
         <h3>Evidencias del Trabajo</h3>
-        <swiper
-          :modules="modules"
-          :slides-per-view="1.2"
-          :space-between="10"
-          :pagination="{ clickable: true }"
-          :centered-slides="true"
-          class="evidence-swiper"
-        >
+        <swiper :modules="modules" :slides-per-view="1.2" :space-between="10" :pagination="{ clickable: true }"
+          :centered-slides="true" class="evidence-swiper">
           <swiper-slide v-for="(item, index) in evidence" :key="index">
             <img :src="item.url" :alt="`Evidencia ${index + 1}`" @click="openEvidenceModal(index)" />
           </swiper-slide>
@@ -198,13 +176,9 @@
     </ion-content>
 
     <!-- Cancel Confirmation Alert -->
-    <ion-alert
-      :is-open="showCancelAlert"
-      header="Cancelar Ticket"
-      message="¿Estás seguro de que deseas cancelar este ticket?"
-      :buttons="cancelAlertButtons"
-      @didDismiss="showCancelAlert = false"
-    ></ion-alert>
+    <ion-alert :is-open="showCancelAlert" header="Cancelar Ticket"
+      message="¿Estás seguro de que deseas cancelar este ticket?" :buttons="cancelAlertButtons"
+      @didDismiss="showCancelAlert = false"></ion-alert>
 
     <!-- Edit Modal -->
     <ion-modal :is-open="showEditModal" @didDismiss="closeEditModal">
@@ -245,11 +219,8 @@
             <ion-label position="stacked">Fecha Programada</ion-label>
             <ion-datetime-button datetime="scheduled-datetime"></ion-datetime-button>
             <ion-modal :keep-contents-mounted="true">
-              <ion-datetime 
-                id="scheduled-datetime" 
-                v-model="editForm.scheduled_date"
-                presentation="date-time"
-              ></ion-datetime>
+              <ion-datetime id="scheduled-datetime" v-model="editForm.scheduled_date"
+                presentation="date-time"></ion-datetime>
             </ion-modal>
           </ion-item>
         </ion-list>
@@ -282,7 +253,50 @@
         </ion-toolbar>
       </ion-header>
       <ion-content class="ion-padding">
-        <img v-if="evidence[currentEvidenceIndex]" :src="evidence[currentEvidenceIndex].url" style="width: 100%; height: auto;" />
+        <img v-if="evidence[currentEvidenceIndex]" :src="evidence[currentEvidenceIndex].url"
+          style="width: 100%; height: auto;" />
+      </ion-content>
+    </ion-modal>
+
+    <!-- Rating Modal -->
+    <ion-modal :is-open="showRatingModal" @didDismiss="closeRatingModal">
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>Calificar Servicio</ion-title>
+          <ion-buttons slot="end">
+            <ion-button @click="closeRatingModal">Cerrar</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+        <div class="rating-container">
+          <h2>¿Qué te pareció el servicio?</h2>
+          <p class="rating-subtitle">Tu opinión nos ayuda a mejorar</p>
+
+          <!-- Star Rating -->
+          <div class="stars-container">
+            <ion-icon v-for="star in 5" :key="star" :icon="star <= ratingValue ? star : starOutline"
+              :class="['star-icon', { 'star-active': star <= ratingValue }]" @click="ratingValue = star"></ion-icon>
+          </div>
+
+          <p v-if="ratingValue > 0" class="rating-text">
+            {{ getRatingText(ratingValue) }}
+          </p>
+
+          <!-- Comment -->
+          <ion-item class="comment-item">
+            <ion-label position="stacked">Comentarios (Opcional)</ion-label>
+            <ion-textarea v-model="ratingComment" :rows="4"
+              placeholder="Cuéntanos sobre tu experiencia..."></ion-textarea>
+          </ion-item>
+
+          <!-- Submit Button -->
+          <ion-button expand="block" @click="submitRating" :disabled="ratingValue === 0 || submittingRating"
+            class="submit-rating-btn">
+            <ion-icon :icon="checkmarkOutline" slot="start"></ion-icon>
+            {{ submittingRating ? 'Guardando...' : 'Enviar Calificación' }}
+          </ion-button>
+        </div>
       </ion-content>
     </ion-modal>
 
@@ -303,7 +317,7 @@ import {
 import {
   createOutline, businessOutline, cubeOutline, calendarOutline, personOutline,
   checkmarkCircleOutline, timeOutline, alertCircleOutline, closeCircleOutline,
-  hourglassOutline, sendOutline
+  hourglassOutline, sendOutline, starOutline, star, checkmarkOutline
 } from 'ionicons/icons';
 import { Swiper, SwiperSlide } from 'swiper/vue';
 import { Pagination } from 'swiper/modules';
@@ -354,7 +368,18 @@ const canCancel = computed(() => {
 });
 
 const showActionButtons = computed(() => {
-  return canCancel.value;
+  return canCancel.value || canRate.value;
+});
+
+// Rating state
+const showRatingModal = ref(false);
+const ratingValue = ref(0);
+const ratingComment = ref('');
+const submittingRating = ref(false);
+const existingReview = ref(null);
+
+const canRate = computed(() => {
+  return ticket.value && ['completed', 'closed', 'paid'].includes(ticket.value.status);
 });
 
 const cancelAlertButtons = [
@@ -460,7 +485,7 @@ const loadMessages = async () => {
 
     if (error) throw error;
     messages.value = data || [];
-    
+
     // Scroll to bottom after messages load
     await nextTick();
     scrollToBottom();
@@ -753,14 +778,14 @@ const formatMessageTime = (dateString) => {
   const date = new Date(dateString);
   const now = new Date();
   const diffInHours = (now - date) / (1000 * 60 * 60);
-  
+
   if (diffInHours < 24) {
     return date.toLocaleTimeString('es-MX', {
       hour: '2-digit',
       minute: '2-digit'
     });
   }
-  
+
   return date.toLocaleDateString('es-MX', {
     month: 'short',
     day: 'numeric',
@@ -776,6 +801,74 @@ const showToast = async (message, color = 'success') => {
     color
   });
   await toast.present();
+};
+
+// Rating functions
+const openRatingModal = async () => {
+  ratingValue.value = 0;
+  ratingComment.value = '';
+
+  // Cargar review existente si hay
+  try {
+    const { data: review } = await supabase
+      .from('reviews')
+      .select('*')
+      .eq('ticket_id', ticket.value.id)
+      .single();
+
+    if (review) {
+      existingReview.value = review;
+      ratingValue.value = review.rating;
+      ratingComment.value = review.comment || '';
+    }
+  } catch (e) {
+    // No existe review previa
+    existingReview.value = null;
+  }
+
+  showRatingModal.value = true;
+};
+
+const closeRatingModal = () => {
+  showRatingModal.value = false;
+};
+
+const getRatingText = (rating) => {
+  const texts = {
+    1: '😞 Muy insatisfecho',
+    2: '😕 Insatisfecho',
+    3: '😐 Aceptable',
+    4: '😊 Satisfecho',
+    5: '🤩 Excelente'
+  };
+  return texts[rating] || '';
+};
+
+const submitRating = async () => {
+  if (ratingValue.value === 0) return;
+
+  submittingRating.value = true;
+  try {
+    const { error } = await supabase.from('reviews').upsert({
+      ticket_id: ticket.value.id,
+      reviewer_id: user.value.id,
+      reviewed_supplier_id: ticket.value.supplier_id,
+      rating: ratingValue.value,
+      comment: ratingComment.value
+    }, {
+      onConflict: 'ticket_id'
+    });
+
+    if (error) throw error;
+
+    await showToast('¡Gracias por tu calificación!', 'success');
+    closeRatingModal();
+  } catch (e) {
+    console.error('Error submitting rating:', e);
+    await showToast('Error al guardar la calificación', 'danger');
+  } finally {
+    submittingRating.value = false;
+  }
 };
 
 onMounted(() => {
@@ -799,12 +892,35 @@ onUnmounted(() => {
   justify-content: center;
 }
 
-.status-pending { background: var(--ion-color-warning-tint); color: var(--ion-color-warning-contrast); }
-.status-opened { background: var(--ion-color-primary-tint); color: var(--ion-color-primary-contrast); }
-.status-in_progress { background: var(--ion-color-tertiary-tint); color: var(--ion-color-tertiary-contrast); }
-.status-completed { background: var(--ion-color-success-tint); color: var(--ion-color-success-contrast); }
-.status-cancelled { background: var(--ion-color-medium-tint); color: var(--ion-color-medium-contrast); }
-.status-rejected { background: var(--ion-color-danger-tint); color: var(--ion-color-danger-contrast); }
+.status-pending {
+  background: var(--ion-color-warning-tint);
+  color: var(--ion-color-warning-contrast);
+}
+
+.status-opened {
+  background: var(--ion-color-primary-tint);
+  color: var(--ion-color-primary-contrast);
+}
+
+.status-in_progress {
+  background: var(--ion-color-tertiary-tint);
+  color: var(--ion-color-tertiary-contrast);
+}
+
+.status-completed {
+  background: var(--ion-color-success-tint);
+  color: var(--ion-color-success-contrast);
+}
+
+.status-cancelled {
+  background: var(--ion-color-medium-tint);
+  color: var(--ion-color-medium-contrast);
+}
+
+.status-rejected {
+  background: var(--ion-color-danger-tint);
+  color: var(--ion-color-danger-contrast);
+}
 
 .ticket-number {
   color: var(--ion-color-medium);
@@ -818,15 +934,18 @@ onUnmounted(() => {
   margin-top: 0.5rem;
 }
 
-.photo-gallery, .evidence-gallery {
+.photo-gallery,
+.evidence-gallery {
   margin: 1rem 0;
 }
 
-.photo-swiper, .evidence-swiper {
+.photo-swiper,
+.evidence-swiper {
   padding-bottom: 2rem;
 }
 
-.photo-swiper img, .evidence-swiper img {
+.photo-swiper img,
+.evidence-swiper img {
   width: 100%;
   height: 250px;
   object-fit: cover;
@@ -911,5 +1030,57 @@ onUnmounted(() => {
 
 .message-input-container ion-button {
   margin-left: 0.5rem;
+}
+
+/* Rating Modal Styles */
+.rating-container {
+  text-align: center;
+  padding: 1rem;
+}
+
+.rating-container h2 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: var(--ion-color-dark);
+}
+
+.rating-subtitle {
+  color: var(--ion-color-medium);
+  margin-bottom: 2rem;
+}
+
+.stars-container {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 2rem 0;
+}
+
+.star-icon {
+  font-size: 3rem;
+  color: var(--ion-color-medium);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.star-icon.star-active {
+  color: var(--ion-color-warning);
+  transform: scale(1.1);
+}
+
+.rating-text {
+  font-size: 1.2rem;
+  font-weight: 500;
+  margin: 1rem 0;
+  min-height: 2rem;
+}
+
+.comment-item {
+  margin: 2rem 0;
+  text-align: left;
+}
+
+.submit-rating-btn {
+  margin-top: 1.5rem;
 }
 </style>

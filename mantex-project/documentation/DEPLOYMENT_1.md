@@ -1,371 +1,261 @@
-# 🚀 Mantex Project Deployment Guide
+# Guía Completa de Deployment - Mantex
 
-## Overview
+## Resumen
 
-Guía completa para deployment de los dos proyectos Mantex:
-- **Web Application** (sakai-vue): Panel administrativo
-- **Mobile App** (mantex-mobile): App móvil para técnicos
+Esta guía te lleva paso a paso para hacer el deployment completo de Mantex con:
+- **Frontend**: Vue.js + Vite + PrimeVue
+- **Backend**: Supabase (PostgreSQL + Auth)
+- **Storage**: AWS S3
+- **Webhooks**: AWS Lambda + API Gateway
+- **APIs**: Nubarium integration
 
-## 🌐 Web Application Deployment
+## Pre-requisitos
 
-### Opciones de Hosting
-
-#### 1. Netlify (Recomendado - Gratis/Fácil)
+### 1. Herramientas Requeridas
 ```bash
-cd sakai-vue
+# Node.js 18+
+node --version
 
-# Build para producción
-npm run build
+# AWS CLI
+aws --version
 
-# Deploy manual (primera vez)
-npm install -g netlify-cli
-netlify deploy --dir dist --prod
-
-# Auto-deploy con Git
-netlify init
+# Git
+git --version
 ```
 
-**Configuración Netlify:**
-- Build command: `npm run build`
-- Publish directory: `dist`
-- Environment variables: Configurar en Netlify dashboard
+### 2. Cuentas Necesarias
+- Supabase account (supabase.com)
+- AWS account (aws.amazon.com)
+- Nubarium credentials (ya configuradas)
 
-#### 2. Vercel
+## Step 1: Setup Supabase Database
+
+### 1.1 Crear Proyecto
+1. Ve a [supabase.com](https://supabase.com)
+2. Crear nuevo proyecto
+3. Anota tu `Project URL` y `anon key`
+
+### 1.2 Ejecutar Schema
+```sql
+-- Copia y pega todo el contenido de database/supabase-schema.sql
+-- En el Supabase SQL Editor
+```
+
+### 1.3 Obtener Service Key
+1. Settings > API
+2. Copia el `service_role` key (para Lambda)
+
+## Step 2: AWS Infrastructure
+
+### 2.1 Configurar AWS CLI
 ```bash
-cd sakai-vue
-
-# Build
-npm run build
+aws configure
+# AWS Access Key ID: tu_access_key
+# AWS Secret Access Key: tu_secret_key
+# Default region: us-east-1
+# Default output format: json
 ```
 
-#### 3. AWS S3 + CloudFront
+### 2.2 Setup Automático (Recomendado)
 ```bash
-# Build
-npm run build
+# Configurar variables para Lambda
+export SUPABASE_URL="https://tu-proyecto.supabase.co"
+export SUPABASE_SERVICE_KEY="tu_service_role_key"
 
-# Sync to S3
-aws s3 sync dist/ s3://tu-bucket-web --delete
-
-# Invalidate CloudFront
-aws cloudfront create-invalidation --distribution-id ABCD123 --paths "/*"
+# Ejecutar setup completo
+chmod +x aws-setup.sh
+./aws-setup.sh
 ```
 
-### Variables de Entorno para Web
+El script automático creará:
+- S3 bucket con security
+- IAM roles para Lambda
+- Lambda function
+- API Gateway endpoint
+- Todas las permissions
 
-**Netlify/Vercel Environment Variables:**
+### 2.3 Setup Manual (Alternativo)
+Si prefieres hacerlo paso a paso:
+
+#### S3 Bucket
+```bash
+aws s3 mb s3://mantex-documents-$(date +%s) --region us-east-1
 ```
+
+#### Lambda Function
+```bash
+cd lambda/nubarium-webhook
+chmod +x deploy.sh
+./deploy.sh
+```
+
+## Step 3: Frontend Configuration
+
+### 3.1 Variables de Entorno
+Crea `.env.development` y `.env.production`:
+
+```bash
+# Supabase
 VITE_SUPABASE_URL=https://tu-proyecto.supabase.co
-VITE_SUPABASE_ANON_KEY=eyJhbGc...
-VITE_FIREBASE_API_KEY=AIzaSyXXX...
-VITE_FIREBASE_PROJECT_ID=mantex-prod
-VITE_FIREBASE_DATABASE_URL=https://mantex-prod-rtdb.firebaseio.com/
-VITE_GOOGLE_MAPS_API_KEY=AIzaSyYYY...
-AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
-AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG...
-AWS_S3_BUCKET=mantex-documents
+VITE_SUPABASE_ANON_KEY=tu_anon_key
+
+# AWS S3
+VITE_AWS_S3_BUCKET=mantex-documents-123456789
+VITE_AWS_REGION=us-east-1
+VITE_AWS_ACCESS_KEY_ID=tu_access_key
+VITE_AWS_SECRET_ACCESS_KEY=tu_secret_key
+
+# Lambda Webhook (del output de aws-setup.sh)
+VITE_LAMBDA_WEBHOOK_URL=https://api-id.execute-api.us-east-1.amazonaws.com/dev/webhook/sat
 ```
 
-## 📱 Mobile App Deployment
-
-### iOS App Store
-
-#### 1. Preparar Build de Producción
+### 3.2 Instalar Dependencias
 ```bash
-cd mantex-mobile
+npm install
+```
 
-# Build para producción
+### 3.3 Desarrollo Local
+```bash
+npm run dev
+```
+
+### 3.4 Build para Producción
+```bash
 npm run build
-
-# Sync con iOS
-npm run ios:sync
-
-# Abrir Xcode
-npm run ios:open
 ```
 
-#### 2. Configurar Xcode
-1. **Signing & Capabilities**:
-   - Team: Seleccionar Apple Developer account
-   - Bundle Identifier: `com.mantex.technicians`
-   - Signing Certificate: Distribution certificate
+## Step 4: Testing
 
-2. **Build Settings**:
-   - Code Signing Identity: iPhone Distribution
-   - Provisioning Profile: App Store distribution profile
-
-3. **Info.plist Verificar**:
-   - Version: Incrementar para cada release
-   - Display Name: "Mantex"
-   - Permissions: Camera, Location, Notifications
-
-#### 3. Archive y Upload
+### 4.1 Test Frontend Local
 ```bash
-# En Xcode:
-# Product > Archive
-# Window > Organizer > Upload to App Store
+npm run dev
+# Abrir http://localhost:5173
 ```
 
-#### 4. App Store Connect
-1. Crear nueva versión en App Store Connect
-2. Completar metadata (descripción, screenshots, etc.)
-3. Configurar precios y disponibilidad
-4. Enviar para review
-
-### Android Play Store
-
-#### 1. Preparar Build
+### 4.2 Test Lambda Webhook
 ```bash
-cd mantex-mobile
+curl -X POST https://tu-webhook-url/webhook/sat \
+  -H "Content-Type: application/json" \
+  -d '{"codigoValidacion": "test123", "estatus": "OK"}'
+```
 
-# Agregar plataforma Android (si no existe)
-npx cap add android
+### 4.3 Test Nubarium APIs
+En la consola del browser:
+```javascript
+// Test OCR
+const result = await nubariumService.validateINEOCR(base64Image);
+console.log(result);
+```
 
-# Build
+## URLs Importantes
+
+Después del deployment tendrás:
+- **Frontend Dev**: http://localhost:5173
+- **Supabase**: https://app.supabase.com/project/tu-proyecto
+- **AWS Console**: https://console.aws.amazon.com
+- **Lambda Webhook**: https://api-id.execute-api.us-east-1.amazonaws.com/dev/webhook/sat
+
+## Servicios Implementados
+
+### Nubarium APIs:
+- OCR INE/IFE: `nubariumService.validateINEOCR()`
+- Lista Nominal: `nubariumService.validateINENominalList()`
+- Face Comparison: `nubariumService.validateFaceComparison()`
+- RFC Validation: `nubariumService.validateRFC()`
+- SAT Invoices: `nubariumService.getInvoicesFromSAT()`
+- Block Lists 69: `nubariumService.queryBlockList69()`
+- Block Lists 69-B: `nubariumService.queryBlockList69B()`
+
+### Flujos Completos:
+- Clients: OCR + Lista Nominal + Face Comparison
+- Suppliers: OCR + SAT + Block Lists
+- Documents: Upload automático a S3
+- Webhooks: Recepción async de resultados SAT
+
+## Deployment a Producción
+
+### Frontend (S3 + CloudFront)
+
+#### Build
+```bash
 npm run build
-npx cap sync android
-
-# Abrir Android Studio
-npx cap open android
 ```
 
-#### 2. Configurar Android Studio
-1. **Signing Config**:
-   - Crear keystore: `keytool -genkey -v -keystore mantex.keystore -keyalg RSA -keysize 2048 -validity 10000 -alias mantex`
-   - Configurar en `android/app/build.gradle`
-
-2. **Build Variants**:
-   - Seleccionar "release"
-   - Build > Generate Signed Bundle/APK
-
-#### 3. Upload a Play Store
-1. Crear aplicación en Play Console
-2. Completar información de la tienda
-3. Upload AAB file
-4. Configurar release tracks (internal/alpha/beta/production)
-
-### Configuración de Push Notifications
-
-#### iOS (APNs)
+#### Deploy a S3
 ```bash
-# 1. Configurar en Apple Developer Portal
-# - Certificates: Apple Push Notification service SSL
-# - Identifiers: App ID con Push Notifications enabled
-# - Profiles: Provisioning profile actualizado
-
-# 2. Configurar en Firebase
-# - Project Settings > Cloud Messaging
-# - Upload APNs certificate (.p8 key)
+# Sync directo al bucket (asume bucket ya configurado)
+aws s3 sync dist/ s3://dev.mantex.mx
 ```
 
-#### Android (FCM)
+#### Invalidar CloudFront (si aplica)
 ```bash
-# 1. Descargar google-services.json de Firebase
-# 2. Colocar en android/app/google-services.json
-# 3. Verificar en android/app/build.gradle:
-# apply plugin: 'com.google.gms.google-services'
+# Obtener distribution ID
+aws cloudfront list-distributions \
+  --query "DistributionList.Items[?Aliases.Items[?contains(@, 'dev.mantex.mx')]].Id" \
+  --output text
+
+# Invalidar cache
+aws cloudfront create-invalidation \
+  --distribution-id DISTRIBUTION_ID \
+  --paths "/*"
 ```
 
-## 🔧 CI/CD Automation
-
-### GitHub Actions para Web
-
-`.github/workflows/web-deploy.yml`:
-```yaml
-name: Deploy Web App
-on:
-  push:
-    branches: [main]
-    paths: ['sakai-vue/**']
-
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
-
-      - name: Install dependencies
-        run: cd sakai-vue && npm ci
-
-      - name: Build
-        run: cd sakai-vue && npm run build
-        env:
-          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
-
-      - name: Deploy to Netlify
-        uses: nwtgck/actions-netlify@v1.2
-        with:
-          publish-dir: './sakai-vue/dist'
-        env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-```
-
-### GitHub Actions para Mobile
-
-`.github/workflows/mobile-build.yml`:
-```yaml
-name: Build Mobile App
-on:
-  push:
-    branches: [main]
-    paths: ['mantex-mobile/**']
-
-jobs:
-  ios-build:
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
-
-      - name: Install dependencies
-        run: cd mantex-mobile && npm ci
-
-      - name: Capacitor sync
-        run: cd mantex-mobile && npx cap sync ios
-
-      - name: Build iOS
-        run: |
-          cd mantex-mobile/ios/App
-          xcodebuild -scheme App -configuration Release -archivePath App.xcarchive archive
-```
-
-## 🌍 Configuración de Dominios
-
-### Web Application
-1. **Dominio personalizado**: `admin.mantex.mx`
-2. **SSL Certificate**: Auto-configurado por Netlify/Vercel
-3. **DNS**: Apuntar CNAME a hosting provider
-
-### Mobile Deep Links
-```javascript
-// capacitor.config.ts
-{
-  plugins: {
-    App: {
-      appUrlScheme: 'mantex'
-    }
-  }
-}
-
-// URLs como: mantex://job/123
-```
-
-## 📊 Monitoreo y Analytics
-
-### Error Tracking
+### Backend (Lambda)
 ```bash
-# Instalar Sentry
-npm install @sentry/vue @sentry/capacitor
+# Ya deployado con aws-setup.sh
+# Para updates:
+cd lambda/nubarium-webhook
+./deploy.sh
 
-# Configurar en main.js
-import * as Sentry from "@sentry/vue";
-Sentry.init({
-  dsn: "your-sentry-dsn"
-});
+# Lambda Proxy updates:
+cd lambda
+npm run deploy:dev  # o deploy:prod
 ```
 
-### Analytics
-```javascript
-// Google Analytics 4
-gtag('config', 'GA_MEASUREMENT_ID', {
-  app_name: 'Mantex',
-  app_version: '1.0.0'
-});
-```
+## Troubleshooting
 
-## 🔒 Seguridad
-
-### Secrets Management
-- **Never commit** .env files
-- Use hosting provider's environment variables
-- Rotate API keys regularly
-- Use least-privilege access for AWS IAM
-
-### Content Security Policy
-```javascript
-// Para web app
-{
-  "Content-Security-Policy":
-    "default-src 'self'; connect-src 'self' https://*.supabase.co https://*.googleapis.com"
-}
-```
-
-## 🧪 Testing en Producción
-
-### Web Application
+### Error: AWS CLI not configured
 ```bash
-# Health checks
-curl https://admin.mantex.mx/health
-curl https://admin.mantex.mx/api/status
+aws configure
 ```
 
-### Mobile App
+### Error: Supabase connection failed
+- Verificar VITE_SUPABASE_URL y VITE_SUPABASE_ANON_KEY
+- Verificar que el proyecto Supabase esté activo
+
+### Error: Lambda deployment failed
 ```bash
-# TestFlight (iOS)
-# - Upload build to App Store Connect
-# - Add internal/external testers
-# - Distribute test build
+# Verificar IAM permissions
+aws sts get-caller-identity
 
-# Play Console Internal Testing (Android)
-# - Upload AAB to internal track
-# - Add test users
-# - Share testing link
+# Verificar variables de entorno
+echo $SUPABASE_URL
+echo $SUPABASE_SERVICE_KEY
 ```
 
-## 📋 Checklist de Deploy
+### Error: S3 upload failed
+- Verificar AWS credentials
+- Verificar bucket permissions
+- Verificar region configuration
 
-### Pre-Deploy
-- [ ] Todos los tests pasan
-- [ ] Build exitoso localmente
+## Checklist Final
+
+- [ ] Supabase proyecto creado y schema ejecutado
+- [ ] AWS CLI configurado
+- [ ] aws-setup.sh ejecutado exitosamente
 - [ ] Variables de entorno configuradas
-- [ ] Backups de base de datos
-- [ ] SSL certificates válidos
+- [ ] Frontend corriendo local
+- [ ] Lambda webhook respondiendo
+- [ ] Tests de Nubarium APIs funcionando
+- [ ] S3 uploads funcionando
+- [ ] CloudFront invalidation funcionando (si aplica)
 
-### Post-Deploy
-- [ ] Health checks passed
-- [ ] Logs sin errores críticos
-- [ ] Funcionalidad core probada
-- [ ] Performance monitoring activo
-- [ ] Error tracking funcionando
+## Stack Completo
 
-## 🚨 Rollback Plan
-
-### Web Application
-```bash
-# Netlify
-netlify rollback
-
-# Vercel
-vercel rollback [deployment-url]
-
-# Manual
-git revert [commit-hash]
-npm run build
-netlify deploy --prod
-```
-
-### Mobile Apps
-- iOS: Remover versión de App Store Connect
-- Android: Promover versión anterior en Play Console
-
-## 📞 Support & Monitoring
-
-### Status Pages
-- Web: https://status.mantex.mx
-- Uptime monitoring: UptimeRobot, Pingdom
-
-### Alerting
-- Slack/Discord webhooks para errores críticos
-- Email notifications para downtime
-- SMS para incidentes de seguridad
-
----
-
-**Última actualización**: Noviembre 2024
-**Versión**: 1.0.0
+Tu stack completo está listo:
+- **Auth**: Supabase
+- **Database**: PostgreSQL (Supabase)
+- **Storage**: AWS S3
+- **APIs**: Nubarium integration
+- **Webhooks**: AWS Lambda
+- **UI**: Vue.js + PrimeVue + Sakai

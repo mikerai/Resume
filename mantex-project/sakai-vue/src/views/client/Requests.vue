@@ -859,10 +859,27 @@ const ratingComment = ref('');
 const submittingReview = ref(false);
 const ticketToRate = ref(null);
 
-const openRatingDialog = (ticket) => {
+const openRatingDialog = async (ticket) => {
     ticketToRate.value = ticket;
     ratingValue.value = 0;
     ratingComment.value = '';
+
+    // Intentar cargar review existente
+    try {
+        const { data: existingReview } = await supabase
+            .from('reviews')
+            .select('*')
+            .eq('ticket_id', ticket.id)
+            .single();
+
+        if (existingReview) {
+            ratingValue.value = existingReview.rating;
+            ratingComment.value = existingReview.comment || '';
+        }
+    } catch (e) {
+        // No existe review previa, está bien
+    }
+
     showRatingDialog.value = true;
 };
 
@@ -873,31 +890,24 @@ const submitReview = async () => {
     try {
         const { user } = useAuth();
 
-        // Insert review
-        const { error } = await supabase.from('reviews').insert({
+        // Upsert review (insert o update si ya existe)
+        const { error } = await supabase.from('reviews').upsert({
             ticket_id: ticketToRate.value.id,
             reviewer_id: user.value.id,
             reviewed_supplier_id: ticketToRate.value.supplier_id,
             rating: ratingValue.value,
             comment: ratingComment.value
+        }, {
+            onConflict: 'ticket_id' // Unique constraint
         });
 
         if (error) throw error;
 
-        toast.add({ severity: 'success', summary: '¡Gracias!', detail: 'Tu calificación ha sido enviada.', life: 3000 });
+        toast.add({ severity: 'success', summary: '¡Gracias!', detail: 'Tu calificación ha sido guardada.', life: 3000 });
         showRatingDialog.value = false;
-
-        // Optional: refresh tickets to maybe disable button or show 'Rated'
-        // For now, simpler is better.
     } catch (e) {
-        // Unique constraint error might happen if double click or previously rated but UI didn't update
-        if (e.code === '23505') {
-            toast.add({ severity: 'info', summary: 'Info', detail: 'Ya calificaste este ticket.', life: 3000 });
-            showRatingDialog.value = false;
-        } else {
-            toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo enviar la calificación', life: 3000 });
-            console.error(e);
-        }
+        toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo guardar la calificación', life: 3000 });
+        console.error(e);
     } finally {
         submittingReview.value = false;
     }

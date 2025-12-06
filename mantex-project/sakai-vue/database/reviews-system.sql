@@ -22,6 +22,11 @@ CREATE TABLE IF NOT EXISTS reviews (
 -- 2. POLÍTICAS RLS
 ALTER TABLE reviews ENABLE ROW LEVEL SECURITY;
 
+-- Limpiar políticas existentes
+DROP POLICY IF EXISTS "Users can view relevant reviews" ON reviews;
+DROP POLICY IF EXISTS "Clients can create reviews for their tickets" ON reviews;
+DROP POLICY IF EXISTS "Clients can update their own reviews" ON reviews;
+
 -- Ver reseñas:
 -- - Si eres el autor (cliente)
 -- - Si eres el proveedor reseñado
@@ -43,6 +48,14 @@ CREATE POLICY "Clients can create reviews for their tickets" ON reviews FOR INSE
         AND client_id IN (SELECT id FROM clients WHERE user_id = auth.uid())
         AND status IN ('completed', 'closed', 'paid') -- Solo tickets terminados
     )
+);
+
+-- Actualizar reseñas:
+-- Solo el cliente que creó la reseña puede modificarla
+CREATE POLICY "Clients can update their own reviews" ON reviews FOR UPDATE USING (
+    auth.uid() = reviewer_id
+) WITH CHECK (
+    auth.uid() = reviewer_id
 );
 
 -- 3. FUNCIONES Y TRIGGERS
@@ -77,6 +90,9 @@ BEGIN
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Limpiar trigger existente
+DROP TRIGGER IF EXISTS trg_update_supplier_rating ON reviews;
 
 -- Trigger
 CREATE TRIGGER trg_update_supplier_rating
