@@ -107,6 +107,20 @@ Breve descripción de los objetivos principales de la sesión.
 
 ---
 
+## Protocolo de Despliegue (Staging)
+
+El despliegue a `dev.mantex.mx` se realiza mediante carga manual a S3.
+
+**Comando Oficial:**
+```bash
+cd sakai-vue
+npm run build
+aws s3 sync dist/ s3://dev.mantex.mx
+```
+*Nota: JAMÁS usar la bandera `--delete` para evitar borrar archivos existentes que no estén en el build local.*
+
+---
+
 ## Checklist de Cierre de Día
 
 - [ ] `master_implementation_plan.md` actualizado
