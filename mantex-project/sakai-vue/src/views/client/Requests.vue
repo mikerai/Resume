@@ -54,6 +54,10 @@
                                     @click="router.push(`/client/requests/${slotProps.data.id}`)"
                                     v-tooltip.top="'Editar'"
                                     :disabled="['completed', 'cancelled', 'closed'].includes(slotProps.data.status)" />
+                                <!-- Rating Button -->
+                                <Button v-if="['completed', 'closed', 'paid'].includes(slotProps.data.status)"
+                                    icon="pi pi-star" severity="warning" text rounded
+                                    @click="openRatingDialog(slotProps.data)" v-tooltip.top="'Calificar Servicio'" />
                                 <Button icon="pi pi-ban" severity="danger" text rounded
                                     @click="cancelTicketQuick(slotProps.data)" v-tooltip.top="'Cancelar'"
                                     :disabled="['ready_for_payment', 'in_progress', 'cancelled', 'closed', 'completed'].includes(slotProps.data.status)" />
@@ -64,6 +68,27 @@
             </div>
         </div>
     </div>
+
+    <!-- Rating Dialog -->
+    <Dialog v-model:visible="showRatingDialog" modal header="Calificar Servicio" :style="{ width: '400px' }">
+        <div class="flex flex-col gap-4 text-center">
+            <p>¿Qué te pareció el servicio recibido?</p>
+            <div class="flex justify-center">
+                <Rating v-model="ratingValue" :cancel="false" />
+            </div>
+
+            <div class="field text-left">
+                <label for="review-comment">Comentarios (Opcional)</label>
+                <Textarea id="review-comment" v-model="ratingComment" rows="4" class="w-full"
+                    placeholder="Escribe tu opinión sobre el técnico/servicio..." />
+            </div>
+        </div>
+        <template #footer>
+            <Button label="Cancelar" icon="pi pi-times" text @click="showRatingDialog = false" />
+            <Button label="Enviar Calificación" icon="pi pi-check" severity="success" @click="submitReview"
+                :loading="submittingReview" :disabled="!ratingValue" />
+        </template>
+    </Dialog>
 
     <!-- Simple create dialog -->
     <Dialog v-model:visible="showCreateDialog" modal :style="{ width: '700px' }" header="Nueva Solicitud">
@@ -823,6 +848,59 @@ const uploadPhotosToS3 = async (ticketId) => {
     }
 
     return uploadedAttachments;
+};
+
+import Rating from 'primevue/rating';
+
+// State for Rating
+const showRatingDialog = ref(false);
+const ratingValue = ref(0);
+const ratingComment = ref('');
+const submittingReview = ref(false);
+const ticketToRate = ref(null);
+
+const openRatingDialog = (ticket) => {
+    ticketToRate.value = ticket;
+    ratingValue.value = 0;
+    ratingComment.value = '';
+    showRatingDialog.value = true;
+};
+
+const submitReview = async () => {
+    if (!ticketToRate.value || !ratingValue.value) return;
+
+    submittingReview.value = true;
+    try {
+        const { user } = useAuth();
+
+        // Insert review
+        const { error } = await supabase.from('reviews').insert({
+            ticket_id: ticketToRate.value.id,
+            reviewer_id: user.value.id,
+            reviewed_supplier_id: ticketToRate.value.supplier_id,
+            rating: ratingValue.value,
+            comment: ratingComment.value
+        });
+
+        if (error) throw error;
+
+        toast.add({ severity: 'success', summary: '¡Gracias!', detail: 'Tu calificación ha sido enviada.', life: 3000 });
+        showRatingDialog.value = false;
+
+        // Optional: refresh tickets to maybe disable button or show 'Rated'
+        // For now, simpler is better.
+    } catch (e) {
+        // Unique constraint error might happen if double click or previously rated but UI didn't update
+        if (e.code === '23505') {
+            toast.add({ severity: 'info', summary: 'Info', detail: 'Ya calificaste este ticket.', life: 3000 });
+            showRatingDialog.value = false;
+        } else {
+            toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo enviar la calificación', life: 3000 });
+            console.error(e);
+        }
+    } finally {
+        submittingReview.value = false;
+    }
 };
 
 onMounted(() => {
