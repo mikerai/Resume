@@ -36,10 +36,6 @@ cd sakai-vue
 
 # Build
 npm run build
-
-# Deploy
-npm install -g vercel
-vercel --prod
 ```
 
 #### 3. AWS S3 + CloudFront
