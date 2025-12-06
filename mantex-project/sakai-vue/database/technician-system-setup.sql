@@ -218,3 +218,111 @@ BEGIN
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
+
+
+-- 7. RPC PARA APROBAR/RECHAZAR VERIFICACIONES (ADMIN)
+CREATE OR REPLACE FUNCTION admin_approve_technician_verification(
+    p_verification_id UUID,
+    p_status TEXT, -- 'approved' or 'rejected'
+    p_notes TEXT DEFAULT NULL
+)
+RETURNS JSONB AS $$
+DECLARE
+    v_verification RECORD;
+    v_user_id UUID;
+    v_team_id UUID;
+BEGIN
+    -- Validar input
+    IF p_status NOT IN ('approved', 'rejected', 'correction_needed') THEN
+        RAISE EXCEPTION 'Invalid status. Must be approved, rejected or correction_needed';
+    END IF;
+
+    -- Obtener verificación
+    SELECT * INTO v_verification FROM technician_verifications WHERE id = p_verification_id;
+    
+    IF v_verification IS NULL THEN
+        RAISE EXCEPTION 'Verification not found';
+    END IF;
+    
+    v_user_id := v_verification.user_id;
+
+    -- Actualizar status de verificación
+    UPDATE technician_verifications
+    SET status = p_status,
+        rejection_reason = p_notes,
+        updated_at = NOW()
+    WHERE id = p_verification_id;
+
+    -- Si es aprobado, activar al usuario en el equipo
+    IF p_status = 'approved' THEN
+        -- Buscar entry en team members
+        SELECT id INTO v_team_id FROM supplier_team_members WHERE user_id = v_user_id;
+        
+        IF v_team_id IS NOT NULL THEN
+            UPDATE supplier_team_members
+            SET status = 'active'
+            WHERE id = v_team_id;
+        END IF;
+    END IF;
+
+    RETURN jsonb_build_object('success', true, 'status', p_status);
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+
+-- 8. VISTA PARA ADMIN (JOINED DATA)
+CREATE OR REPLACE VIEW admin_technician_verifications_view AS
+SELECT 
+    tv.id,
+    tv.user_id,
+    tv.status,
+    tv.face_match_score,
+    tv.created_at,
+    -- Technician Profile
+    p.first_name,
+    p.last_name,
+    p.email as technician_email,
+    p.phone as technician_phone,
+    -- Supplier Company
+    sp.company_name as supplier_company,
+    sp.contact_person as supplier_contact,
+    -- Docs (For convenience if needed, though usually fetched by ID)
+    tv.ine_front_url,
+    tv.ine_back_url,
+    tv.selfie_url,
+    tv.proof_of_address_url,
+    tv.ine_data,
+    tv.address_data
+FROM technician_verifications tv
+JOIN profiles p ON tv.user_id = p.id
+LEFT JOIN supplier_team_members stm ON tv.user_id = stm.user_id
+LEFT JOIN supplier_profiles sp ON stm.supplier_id = sp.id;
+
+-- Grant access
+GRANT SELECT ON admin_technician_verifications_view TO authenticated;
+
+
+-- 8. POLÍTICAS RLS PARA TICKETS (TÉCNICOS)
+-- Asegurar que los técnicos puedan ver sus tickets asignados o los libres de su proveedor
+
+-- Política para ver tickets asignados directamente
+CREATE POLICY "Technicians view assigned tickets" ON tickets
+    FOR SELECT
+    USING (
+        auth.role() = 'authenticated' 
+        AND technician_id = auth.uid()
+    );
+
+-- Política para ver tickets "open" de su propia empresa (pool de trabajo)
+CREATE POLICY "Technicians view unassigned company tickets" ON tickets
+    FOR SELECT
+    USING (
+        auth.role() = 'authenticated'
+        AND technician_id IS NULL
+        AND supplier_id IN (
+            SELECT supplier_id 
+            FROM supplier_team_members 
+            WHERE user_id = auth.uid() 
+            AND status = 'active'
+        )
+    );

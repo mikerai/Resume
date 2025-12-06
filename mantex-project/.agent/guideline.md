@@ -1,3 +1,14 @@
+## Daily Opening Routine
+
+Al iniciar una nueva sesión de trabajo, se debe revisar:
+
+1. La carpeta documentation para ver si hay archivos nuevos o modificados.
+2. El archivo `master_implementation_plan.md` para mantener la documentación del proyecto al día.
+2. El archivo `session-summary.md` para mantener la documentación del proyecto al día.
+3. El archivo `BUGS.md` para mantener la documentación del proyecto al día.
+4. El archivo `tasks.md` / `backlog.md` para mantener la documentación del proyecto al día.
+5. El archivo `walkthrough.md` para mantener la documentación del proyecto al día.
+
 # End-of-Day Guidelines
 
 ## Daily Closing Routine

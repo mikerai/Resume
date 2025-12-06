@@ -46,43 +46,65 @@ export function useTechnicianTickets() {
     const fetchTickets = async () => {
         loading.value = true;
         try {
-            // Get supplier profile with status
-            const profile = await fetchSupplierProfile();
-            const supplierProfileId = profile.id;
-            const isApproved = profile.status === 'approved';
+            const { profile } = useAuth();
+            const currentRole = profile.value?.sub_role;
+            const currentUserId = user.value.id;
 
-            console.log('Supplier:', supplierProfileId, 'Status:', profile.status);
+            console.log('Fetching tickets for role:', currentRole, 'User:', currentUserId);
 
-            let query;
+            let query = supabase
+                .from('tickets')
+                .select(`
+                    *,
+                    client:clients(*),
+                    branch:client_branches(*),
+                    asset:client_assets(*),
+                    supplier:supplier_profiles(*)
+                `)
+                .order('created_at', { ascending: false });
 
-            if (!isApproved) {
-                // Logic for NOT APPROVED suppliers (Limited view)
-                // Matches Desktop: if (!isSupplierApproved.value)
-                query = supabase
-                    .from('tickets')
-                    .select(`
-                        id, ticket_number, title, description, maintenance_type,
-                        priority, location_city, location_state, location_address,
-                        scheduled_date, status, created_at, category
-                    `)
-                    .in('status', ['pending', 'opened'])
-                    .order('created_at', { ascending: false });
+            if (currentRole === 'technician') {
+                // 1. Get my supplier ID
+                const { data: teamMember, error: teamError } = await supabase
+                    .from('supplier_team_members')
+                    .select('supplier_id')
+                    .eq('user_id', currentUserId)
+                    .single();
+
+                if (teamError || !teamMember) {
+                    console.error('Technician not linked to any supplier', teamError);
+                    throw new Error('Technician not linked to a supplier');
+                }
+
+                supplierId.value = teamMember.supplier_id;
+
+                // 2. Filter: Assigned to me OR (Unassigned AND My Supplier)
+                // Using explicit OR filter
+                query = query.or(`technician_id.eq.${currentUserId},and(supplier_id.eq.${teamMember.supplier_id},technician_id.is.null)`);
+
             } else {
-                // Logic for APPROVED suppliers (Full view)
-                // Matches Desktop: else { ... }
-                query = supabase
-                    .from('tickets')
-                    .select(`
-                        *,
-                        client:clients(*),
-                        branch:client_branches(*),
-                        asset:client_assets(*),
-                        supplier:supplier_profiles(*)
-                    `)
-                    .order('created_at', { ascending: false });
+                // Logic for Supplier OWNER/MANAGER
+                const myProfile = await fetchSupplierProfile();
+                const isApproved = myProfile.status === 'approved';
+                const supplierProfileId = myProfile.id;
 
-                // EXACT Desktop Filter
-                query = query.or(`supplier_id.eq.${supplierProfileId},supplier_id.is.null,status.eq.pending,status.eq.opened`);
+                if (!isApproved) {
+                    // Limited view for unapproved suppliers
+                    query = supabase
+                        .from('tickets')
+                        .select(`
+                            id, ticket_number, title, description, maintenance_type,
+                            priority, location_city, location_state, location_address,
+                            scheduled_date, status, created_at, category
+                        `)
+                        .in('status', ['pending', 'opened'])
+                        .order('created_at', { ascending: false });
+                } else {
+                    // Full view for Approved Owners: My Supplier ID OR Unassigned (Open Market)
+                    // Note: "Unassigned" generally means "Open Market" or "Assigned to my company but not specific tech yet"
+                    // The Desktop logic was: supplier_id.eq.MY_ID, supplier_id.is.null (Marketplace)
+                    query = query.or(`supplier_id.eq.${supplierProfileId},supplier_id.is.null,status.eq.pending,status.eq.opened`);
+                }
             }
 
             const { data, error: fetchError } = await query;

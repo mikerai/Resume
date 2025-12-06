@@ -30,9 +30,20 @@ const model = ref([
                 to: '/admin/users'
             },
             {
-                label: 'Aprobar Proveedores',
-                icon: 'pi pi-fw pi-verified',
-                to: '/admin/suppliers-approval'
+                label: 'Validaciones',
+                icon: 'pi pi-fw pi-check-circle',
+                items: [
+                    {
+                        label: 'Empresas',
+                        icon: 'pi pi-fw pi-building',
+                        to: '/admin/suppliers-approval'
+                    },
+                    {
+                        label: 'Técnicos',
+                        icon: 'pi pi-fw pi-user-edit',
+                        to: '/admin/verifications'
+                    }
+                ]
             },
             {
                 label: 'Activos',
