@@ -31,6 +31,10 @@ Al finalizar cada sesión de trabajo, se deben actualizar los siguientes archivo
    - Actualizar con nuevos flujos implementados.
    - Documentar cambios en la arquitectura.
 
+6. **Archivos Markdown (.md)**
+    - Todos los **nuevos** archivos de documentación (`.md`) que se generen en el proyecto DEBEN guardarse dentro de la carpeta `/documentation` en la raíz del proyecto.
+    - Excepción: Los archivos de configuración de agente que viven en `.agent/`.
+
 ---
 
 ## Formato del Session Summary

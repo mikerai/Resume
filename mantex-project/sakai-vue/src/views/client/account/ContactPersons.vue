@@ -192,7 +192,7 @@ onMounted(async () => {
 
 <template>
     <div class="card">
-        <div class="flex justify-content-between align-items-center mb-4">
+        <div class="flex justify-between items-center mb-4">
             <h5 class="m-0">Personas de Contacto</h5>
             <Button label="Agregar Persona" icon="pi pi-plus" @click="openNewPerson" />
         </div>

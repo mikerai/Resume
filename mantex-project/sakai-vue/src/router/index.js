@@ -11,30 +11,42 @@ import { useAuth } from '@/composables/useAuth';
  * @param {object} profile - Objeto de perfil { role, onboarding_complete }
  * @returns {string} La ruta de destino legítima.
  */
+// ... (imports)
+
 const getRedirectPath = (profile) => {
     // Si no hay perfil o rol asignado
     if (!profile || !profile.role) {
         return '/role-selection';
     }
 
-    // Si el onboarding no está completo, dirigir al paso de onboarding.
+    // Si el onboarding no está completo
     if (!profile.onboarding_complete) {
+        // Redirección especial para técnicos (sub-rol de supplier)
+        if (profile.role === 'supplier' && profile.sub_role === 'technician') {
+            return '/onboarding/technician';
+        }
         return `/onboarding/${profile.role}`;
     }
 
-    // Si el onboarding está completo, redirigir al dashboard
+    // Si el onboarding está completo
     switch (profile.role) {
         case 'admin':
             return '/admin/dashboard';
         case 'supplier':
+            if (profile.sub_role === 'technician') {
+                return '/technician/home'; // Ruta simple para técnicos
+            }
             return '/supplier/dashboard';
         case 'client':
             return '/client/dashboard';
         default:
-            // Rol desconocido pero autenticado
             return '/access';
     }
 };
+
+// ... (createRouter)
+
+
 
 // =======================================================
 // DEFINICIÓN DE RUTAS Y METADATOS
@@ -81,6 +93,27 @@ const router = createRouter({
             name: 'OnboardingSupplier',
             component: () => import('@/views/onboarding/OnboardingSupplier.vue'),
             meta: { requiresAuth: true, requiredRole: 'supplier' }
+        },
+        {
+            path: '/onboarding/technician',
+            name: 'OnboardingTechnician',
+            component: () => import('@/views/technician/Onboarding.vue'),
+            meta: { requiresAuth: true }
+        },
+
+        // --- Technician Portal ---
+        {
+            path: '/technician',
+            component: () => import('@/layout/AppLayout.vue'), // Usar AppLayout temporalmente
+            meta: { requiresAuth: true }, // Más adelante restringir
+            children: [
+                {
+                    path: 'home',
+                    name: 'TechnicianHome',
+                    // Por ahora un placeholder
+                    component: () => import('@/views/pages/Empty.vue')
+                }
+            ]
         },
 
         // --- Admin Layout Rutas ---

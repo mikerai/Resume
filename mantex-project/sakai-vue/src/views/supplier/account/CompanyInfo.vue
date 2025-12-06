@@ -6,19 +6,7 @@ import { supabase } from '@/lib/supabaseClient';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
-import Dropdown from 'primevue/dropdown';
-
-const fiscalRegimes = [
-    { label: '601 - General de Ley Personas Morales', value: '601' },
-    { label: '603 - Personas Morales con Fines no Lucrativos', value: '603' },
-    { label: '605 - Sueldos y Salarios e Ingresos Asimilados a Salarios', value: '605' },
-    { label: '606 - Arrendamiento', value: '606' },
-    { label: '608 - Demás ingresos', value: '608' },
-    { label: '612 - Personas Físicas con Actividades Empresariales y Profesionales', value: '612' },
-    { label: '621 - Incorporación Fiscal', value: '621' },
-    { label: '625 - Régimen de las Actividades Empresariales con ingresos a través de Plataformas Tecnológicas', value: '625' },
-    { label: '626 - Régimen Simplificado de Confianza', value: '626' }
-];
+import Textarea from 'primevue/textarea';
 
 const toast = useToast();
 const { user } = useAuth();
@@ -30,16 +18,18 @@ const saving = ref(false);
 
 const formData = ref({
     company_name: '',
-    legal_name: '',
-    tax_id: '',
-    fiscal_regime: ''
+    rfc: '',
+    contact_person: '',
+    phone_number: '',
+    email: '',
+    business_description: ''
 });
 
 const loadCompanyData = async () => {
     loading.value = true;
     try {
         const { data, error } = await supabase
-            .from('clients')
+            .from('supplier_profiles')
             .select('*')
             .eq('user_id', user.value.id)
             .single();
@@ -47,7 +37,7 @@ const loadCompanyData = async () => {
         if (error) throw error;
         company.value = data;
     } catch (error) {
-        console.error('Error loading company:', error);
+        console.error('Error loading supplier company:', error);
         toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo cargar información de la empresa', life: 3000 });
     } finally {
         loading.value = false;
@@ -57,9 +47,11 @@ const loadCompanyData = async () => {
 const openEditDialog = () => {
     formData.value = {
         company_name: company.value?.company_name || '',
-        legal_name: company.value?.legal_name || '',
-        tax_id: company.value?.tax_id || '',
-        fiscal_regime: company.value?.fiscal_regime || ''
+        rfc: company.value?.rfc || '',
+        contact_person: company.value?.contact_person || '',
+        phone_number: company.value?.phone_number || '',
+        email: company.value?.email || '',
+        business_description: company.value?.business_description || ''
     };
     editDialog.value = true;
 };
@@ -68,12 +60,14 @@ const saveCompany = async () => {
     saving.value = true;
     try {
         const { error } = await supabase
-            .from('clients')
+            .from('supplier_profiles')
             .update({
                 company_name: formData.value.company_name,
-                legal_name: formData.value.legal_name,
-                tax_id: formData.value.tax_id,
-                fiscal_regime: formData.value.fiscal_regime,
+                rfc: formData.value.rfc,
+                contact_person: formData.value.contact_person,
+                phone_number: formData.value.phone_number,
+                email: formData.value.email,
+                business_description: formData.value.business_description,
                 updated_at: new Date().toISOString()
             })
             .eq('user_id', user.value.id);
@@ -84,7 +78,7 @@ const saveCompany = async () => {
         await loadCompanyData();
         editDialog.value = false;
     } catch (error) {
-        console.error('Error saving company:', error);
+        console.error('Error saving supplier company:', error);
         toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo guardar la información', life: 3000 });
     } finally {
         saving.value = false;
@@ -116,26 +110,32 @@ onMounted(() => {
             </div>
             <div class="col-span-12 md:col-span-6">
                 <div class="field">
-                    <label class="font-medium text-sm text-500">Razón Social</label>
-                    <p class="m-0 mt-2">{{ company.legal_name || 'No especificado' }}</p>
-                </div>
-            </div>
-            <div class="col-span-12 md:col-span-6">
-                <div class="field">
                     <label class="font-medium text-sm text-500">RFC</label>
-                    <p class="m-0 mt-2">{{ company.tax_id || 'No especificado' }}</p>
+                    <p class="m-0 mt-2">{{ company.rfc || 'No especificado' }}</p>
                 </div>
             </div>
             <div class="col-span-12 md:col-span-6">
                 <div class="field">
-                    <label class="font-medium text-sm text-500">Régimen Fiscal</label>
-                    <p class="m-0 mt-2">{{ company.fiscal_regime || 'No especificado' }}</p>
+                    <label class="font-medium text-sm text-500">Persona de Contacto</label>
+                    <p class="m-0 mt-2">{{ company.contact_person || 'No especificado' }}</p>
+                </div>
+            </div>
+             <div class="col-span-12 md:col-span-6">
+                <div class="field">
+                    <label class="font-medium text-sm text-500">Teléfono</label>
+                    <p class="m-0 mt-2">{{ company.phone_number || 'No especificado' }}</p>
+                </div>
+            </div>
+            <div class="col-span-12">
+                <div class="field">
+                    <label class="font-medium text-sm text-500">Descripción</label>
+                    <p class="m-0 mt-2">{{ company.business_description || 'No especificada' }}</p>
                 </div>
             </div>
         </div>
 
         <Dialog v-model:visible="editDialog" modal header="Editar Información de Empresa" :style="{ width: '600px' }">
-            <div class="grid grid-cols-12 gap-4">
+            <div class="grid grid-cols-12 gap-2">
                 <div class="col-span-12">
                     <div class="field">
                         <label for="company_name" class="font-medium">Nombre Comercial *</label>
@@ -144,29 +144,26 @@ onMounted(() => {
                 </div>
                 <div class="col-span-12">
                     <div class="field">
-                        <label for="legal_name" class="font-medium">Razón Social</label>
-                        <InputText id="legal_name" v-model="formData.legal_name" class="w-full" />
+                        <label for="rfc" class="font-medium">RFC *</label>
+                        <InputText id="rfc" v-model="formData.rfc" class="w-full" maxlength="13" />
+                    </div>
+                </div>
+                <div class="col-span-12 md:col-span-6">
+                    <div class="field">
+                        <label for="contact_person" class="font-medium">Persona de Contacto</label>
+                        <InputText id="contact_person" v-model="formData.contact_person" class="w-full" />
+                    </div>
+                </div>
+                 <div class="col-span-12 md:col-span-6">
+                    <div class="field">
+                        <label for="phone_number" class="font-medium">Teléfono</label>
+                        <InputText id="phone_number" v-model="formData.phone_number" class="w-full" />
                     </div>
                 </div>
                 <div class="col-span-12">
                     <div class="field">
-                        <label for="tax_id" class="font-medium">RFC</label>
-                        <InputText id="tax_id" v-model="formData.tax_id" class="w-full" maxlength="13" />
-                    </div>
-                </div>
-                <div class="col-span-12">
-                    <div class="field">
-                        <label for="fiscal_regime" class="font-medium">Régimen Fiscal</label>
-                        <Dropdown
-                            id="fiscal_regime"
-                            v-model="formData.fiscal_regime"
-                            :options="fiscalRegimes"
-                            optionLabel="label"
-                            optionValue="value"
-                            placeholder="Seleccione un régimen"
-                            class="w-full"
-                            filter
-                        />
+                        <label for="business_description" class="font-medium">Descripción del Negocio</label>
+                        <Textarea id="business_description" v-model="formData.business_description" rows="3" class="w-full" />
                     </div>
                 </div>
             </div>

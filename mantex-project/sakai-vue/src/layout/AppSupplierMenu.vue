@@ -40,6 +40,11 @@ const model = ref([
         label: 'Mi Cuenta',
         items: [
             {
+                label: 'Mi Empresa',
+                icon: 'pi pi-fw pi-building',
+                to: '/supplier/account'
+            },
+            {
                 label: 'Configuración',
                 icon: 'pi pi-fw pi-cog',
                 to: '/supplier/settings'

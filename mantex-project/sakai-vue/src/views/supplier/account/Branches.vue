@@ -1,4 +1,3 @@
-```vue
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useToast } from 'primevue/usetoast';
@@ -9,10 +8,10 @@ import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
-import InputText from 'primevue/inputtext'; // Added back InputText
+import InputText from 'primevue/inputtext';
 import Dropdown from 'primevue/dropdown';
 import Tag from 'primevue/tag';
-import Checkbox from 'primevue/checkbox'; // Added Checkbox
+import Checkbox from 'primevue/checkbox';
 import AddressForm from './components/AddressForm.vue';
 
 const toast = useToast();
@@ -20,17 +19,19 @@ const { user } = useAuth();
 const { uploadFileToS3, isUploading } = useS3Upload();
 
 const branches = ref([]);
-const contactPersons = ref([]);
+const technicians = ref([]);
 const loading = ref(true);
 const branchDialog = ref(false);
 const saving = ref(false);
 const selectedBranch = ref(null);
-const clientId = ref(null);
+const supplierId = ref(null);
 
 const formData = ref({
     name: '',
     is_headquarters: false,
-    contact_person_id: null,
+    contact_person_name: '',
+    email: '',
+    phone: '',
     street: '',
     number: '',
     apt: '',
@@ -43,36 +44,35 @@ const formData = ref({
     layout: null
 });
 
-const loadClientId = async () => {
+const loadSupplierId = async () => {
     try {
         const { data, error } = await supabase
-            .from('clients')
+            .from('supplier_profiles')
             .select('id')
             .eq('user_id', user.value.id)
             .single();
 
         if (error) throw error;
-        clientId.value = data.id;
+        supplierId.value = data.id;
     } catch (error) {
-        console.error('Error loading client ID:', error);
+        console.error('Error loading supplier ID:', error);
     }
 };
 
-const loadContactPersons = async () => {
+const loadTechnicians = async () => {
     try {
         const { data, error } = await supabase
-            .from('contact_persons')
-            .select('id, first_name, last_name_paternal, last_name_maternal')
-            .eq('client_id', clientId.value)
-            .order('first_name');
+            .from('supplier_team_members')
+            .select('*')
+            .eq('supplier_id', supplierId.value);
 
         if (error) throw error;
-        contactPersons.value = data.map(p => ({
-            ...p,
-            fullName: `${p.first_name} ${p.last_name_paternal} ${p.last_name_maternal || ''}`.trim()
+        technicians.value = data.map(t => ({
+            ...t,
+            fullName: `${t.first_name || ''} ${t.last_name || ''} (${t.email})`.trim()
         }));
     } catch (error) {
-        console.error('Error loading contact persons:', error);
+        console.error('Error loading technicians:', error);
     }
 };
 
@@ -80,12 +80,9 @@ const loadBranches = async () => {
     loading.value = true;
     try {
         const { data, error } = await supabase
-            .from('client_branches')
-            .select(`
-                *,
-                contact_person:contact_persons!fk_contact_person(first_name, last_name_paternal)
-            `)
-            .eq('client_id', clientId.value)
+            .from('supplier_branches')
+            .select('*')
+            .eq('supplier_id', supplierId.value)
             .order('is_headquarters', { ascending: false })
             .order('name');
 
@@ -104,7 +101,9 @@ const openNewBranch = () => {
     formData.value = {
         name: '',
         is_headquarters: false,
-        contact_person_id: null,
+        contact_person_name: '',
+        email: '',
+        phone: '',
         street: '',
         number: '',
         apt: '',
@@ -124,7 +123,9 @@ const editBranch = (branch) => {
     formData.value = {
         name: branch.name,
         is_headquarters: branch.is_headquarters,
-        contact_person_id: branch.contact_person_id,
+        contact_person_name: branch.contact_person_name || '',
+        email: branch.email || '',
+        phone: branch.phone || '',
         street: branch.street,
         number: branch.number,
         apt: branch.apt || '',
@@ -132,7 +133,7 @@ const editBranch = (branch) => {
         municipality_city: branch.municipality_city,
         state: branch.state,
         postal_code: branch.postal_code,
-        picture: branch.picture, // Keep existing key
+        picture: branch.picture,
         additional_pictures: branch.additional_pictures || [],
         layout: branch.layout
     };
@@ -140,7 +141,7 @@ const editBranch = (branch) => {
 };
 
 const saveBranch = async () => {
-    if (!formData.value.name || !formData.value.street || !formData.value.contact_person_id) {
+    if (!formData.value.name || !formData.value.street || !formData.value.postal_code) {
         toast.add({ severity: 'warn', summary: 'Atención', detail: 'Complete los campos requeridos', life: 3000 });
         return;
     }
@@ -152,24 +153,19 @@ const saveBranch = async () => {
         let layoutKey = formData.value.layout;
         let additionalKeys = formData.value.additional_pictures || [];
 
-        // Upload Facade Picture
         if (formData.value.picture instanceof File) {
             const result = await uploadFileToS3(formData.value.picture, username, 'infrastructure/branches');
             pictureKey = result.s3_key;
         }
 
-        // Upload Layout
         if (formData.value.layout instanceof File) {
             const result = await uploadFileToS3(formData.value.layout, username, 'infrastructure/branches');
             layoutKey = result.s3_key;
         }
 
-        // Upload Additional Pictures
         if (formData.value.additional_pictures && formData.value.additional_pictures.length > 0) {
-             // Filter out strings (existing keys) and upload only Files
              const newFiles = formData.value.additional_pictures.filter(f => f instanceof File);
              const existingKeys = formData.value.additional_pictures.filter(f => typeof f === 'string');
-             
              additionalKeys = [...existingKeys];
 
              for (const file of newFiles) {
@@ -179,10 +175,12 @@ const saveBranch = async () => {
         }
 
         const branchData = {
-            client_id: clientId.value,
+            supplier_id: supplierId.value,
             name: formData.value.name,
             is_headquarters: formData.value.is_headquarters,
-            contact_person_id: formData.value.contact_person_id,
+            contact_person_name: formData.value.contact_person_name,
+            email: formData.value.email,
+            phone: formData.value.phone,
             street: formData.value.street,
             number: formData.value.number,
             apt: formData.value.apt || null,
@@ -198,15 +196,13 @@ const saveBranch = async () => {
 
         let error;
         if (selectedBranch.value) {
-            // Update
             ({ error } = await supabase
-                .from('client_branches')
+                .from('supplier_branches')
                 .update(branchData)
                 .eq('id', selectedBranch.value.id));
         } else {
-            // Insert
             ({ error } = await supabase
-                .from('client_branches')
+                .from('supplier_branches')
                 .insert(branchData));
         }
 
@@ -228,7 +224,7 @@ const deleteBranch = async (branch) => {
 
     try {
         const { error } = await supabase
-            .from('client_branches')
+            .from('supplier_branches')
             .delete()
             .eq('id', branch.id);
 
@@ -243,9 +239,9 @@ const deleteBranch = async (branch) => {
 };
 
 onMounted(async () => {
-    await loadClientId();
-    if (clientId.value) {
-        await Promise.all([loadBranches(), loadContactPersons()]);
+    await loadSupplierId();
+    if (supplierId.value) {
+        await Promise.all([loadBranches(), loadTechnicians()]);
     }
 });
 </script>
@@ -274,10 +270,10 @@ onMounted(async () => {
             </Column>
             <Column header="Contacto">
                 <template #body="slotProps">
-                    <div v-if="slotProps.data.contact_person">
-                        {{ slotProps.data.contact_person.first_name }} {{ slotProps.data.contact_person.last_name_paternal }}
+                    <div v-if="slotProps.data.contact_person_name">
+                        {{ slotProps.data.contact_person_name }}
                     </div>
-                    <span v-else class="text-500 font-italic">No asignado</span>
+                    <span v-else class="text-500 italic">No asignado</span>
                 </template>
             </Column>
             <Column :exportable="false" style="min-width: 8rem">
@@ -296,7 +292,7 @@ onMounted(async () => {
         </DataTable>
 
         <Dialog v-model:visible="branchDialog" modal header="Detalles de Sucursal" :style="{ width: '800px' }">
-            <div class="grid grid-cols-12 gap-4">
+            <div class="grid grid-cols-12 gap-2">
                 <div class="col-span-12 md:col-span-8">
                     <div class="field">
                         <label for="name" class="font-medium">Nombre de Sucursal *</label>
@@ -304,7 +300,7 @@ onMounted(async () => {
                     </div>
                 </div>
                 <div class="col-span-12 md:col-span-4">
-                    <div class="field-checkbox mt-4 flex items-center">
+                    <div class="field-checkbox mt-4">
                         <Checkbox id="is_headquarters" v-model="formData.is_headquarters" :binary="true" />
                         <label for="is_headquarters" class="ml-2">Es Oficina Central</label>
                     </div>
@@ -312,17 +308,20 @@ onMounted(async () => {
                 
                 <div class="col-span-12">
                     <div class="field">
-                        <label for="contact" class="font-medium">Persona de Contacto *</label>
-                        <Dropdown 
-                            id="contact" 
-                            v-model="formData.contact_person_id" 
-                            :options="contactPersons" 
-                            optionLabel="fullName" 
-                            optionValue="id" 
-                            placeholder="Seleccionar contacto" 
-                            class="w-full" 
-                            filter
-                        />
+                        <label for="contact" class="font-medium">Persona de Contacto</label>
+                        <InputText id="contact" v-model="formData.contact_person_name" class="w-full" placeholder="Nombre de contacto o técnico responsable" />
+                    </div>
+                </div>
+                 <div class="col-span-12 md:col-span-6">
+                    <div class="field">
+                        <label for="phone" class="font-medium">Teléfono</label>
+                        <InputText id="phone" v-model="formData.phone" class="w-full" />
+                    </div>
+                </div>
+                <div class="col-span-12 md:col-span-6">
+                    <div class="field">
+                        <label for="email" class="font-medium">Email</label>
+                        <InputText id="email" v-model="formData.email" class="w-full" />
                     </div>
                 </div>
 
@@ -338,4 +337,3 @@ onMounted(async () => {
         </Dialog>
     </div>
 </template>
-```

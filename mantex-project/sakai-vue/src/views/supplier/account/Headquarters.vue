@@ -17,7 +17,7 @@ const headquarters = ref(null);
 const loading = ref(true);
 const editDialog = ref(false);
 const saving = ref(false);
-const clientId = ref(null);
+const supplierId = ref(null);
 
 const formData = ref({
     street: '',
@@ -43,11 +43,8 @@ const galleriaResponsiveOptions = ref([
     { breakpoint: '560px', numVisible: 1 }
 ]);
 
-// Computed para crear el array de imágenes para Galleria
 const galleryImages = computed(() => {
     const images = [];
-    
-    // Agregar foto principal de fachada
     if (headquartersPictureUrl.value) {
         images.push({
             itemImageSrc: headquartersPictureUrl.value,
@@ -55,8 +52,6 @@ const galleryImages = computed(() => {
             alt: 'Fachada principal'
         });
     }
-    
-    // Agregar fotos adicionales
     additionalPicturesUrls.value.forEach((url, index) => {
         images.push({
             itemImageSrc: url,
@@ -64,38 +59,34 @@ const galleryImages = computed(() => {
             alt: `Foto adicional ${index + 1}`
         });
     });
-    
     return images;
 });
 
-// Generar URLs firmadas cuando se carga el headquarters
-watch(headquarters, async (newVal) => {
-    if (newVal?.hq_picture) {
-        headquartersPictureUrl.value = await getSignedUrl(newVal.hq_picture);
-    }
-    
-    if (newVal?.hq_additional_pictures?.length > 0) {
-        additionalPicturesUrls.value = await Promise.all(
-            newVal.hq_additional_pictures.map(key => getSignedUrl(key))
-        );
-    }
-    
-    if (newVal?.hq_layout) {
-        layoutUrl.value = await getSignedUrl(newVal.hq_layout);
-    }
-}, { immediate: true });
-
-const loadClientId = async () => {
+const loadData = async () => {
+    loading.value = true;
     try {
-        const { data, error } = await supabase
-            .from('clients')
-            .select('id, hq_street, hq_number, hq_apt, hq_neighborhood, hq_municipality_city, hq_state, hq_postal_code, hq_picture, hq_additional_pictures, hq_layout')
+        // 1. Get Supplier Profile ID
+        const { data: profileData, error: profileError } = await supabase
+            .from('supplier_profiles')
+            .select('id')
             .eq('user_id', user.value.id)
             .single();
 
-        if (error) throw error;
-        clientId.value = data.id;
-        headquarters.value = data;
+        if (profileError) throw profileError;
+        supplierId.value = profileData.id;
+
+        // 2. Get Headquarters Branch
+        const { data, error } = await supabase
+            .from('supplier_branches')
+            .select('*')
+            .eq('supplier_id', supplierId.value)
+            .eq('is_headquarters', true)
+            .single();
+
+        if (error && error.code !== 'PGRST116') throw error; // PGRST116 = no rows returned (OK)
+        
+        headquarters.value = data || null;
+
     } catch (error) {
         console.error('Error loading headquarters:', error);
     } finally {
@@ -103,16 +94,36 @@ const loadClientId = async () => {
     }
 };
 
+watch(headquarters, async (newVal) => {
+    headquartersPictureUrl.value = null;
+    additionalPicturesUrls.value = [];
+    layoutUrl.value = null;
+
+    if (newVal?.picture) {
+        headquartersPictureUrl.value = await getSignedUrl(newVal.picture);
+    }
+    
+    if (newVal?.additional_pictures?.length > 0) {
+        additionalPicturesUrls.value = await Promise.all(
+            newVal.additional_pictures.map(key => getSignedUrl(key))
+        );
+    }
+    
+    if (newVal?.layout) {
+        layoutUrl.value = await getSignedUrl(newVal.layout);
+    }
+}, { immediate: true });
+
 const openEditDialog = () => {
     formData.value = {
-        street: headquarters.value?.hq_street || '',
-        number: headquarters.value?.hq_number || '',
-        apt: headquarters.value?.hq_apt || '',
-        neighborhood: headquarters.value?.hq_neighborhood || '',
-        municipality_city: headquarters.value?.hq_municipality_city || '',
-        state: headquarters.value?.hq_state || '',
-        postal_code: headquarters.value?.hq_postal_code || '',
-        picture: null, // Reset file inputs
+        street: headquarters.value?.street || '',
+        number: headquarters.value?.number || '',
+        apt: headquarters.value?.apt || '',
+        neighborhood: headquarters.value?.neighborhood || '',
+        municipality_city: headquarters.value?.municipality_city || '',
+        state: headquarters.value?.state || '',
+        postal_code: headquarters.value?.postal_code || '',
+        picture: null,
         additional_pictures: [],
         layout: null
     };
@@ -122,26 +133,22 @@ const openEditDialog = () => {
 const saveHeadquarters = async () => {
     saving.value = true;
     try {
-        // 1. Upload files to S3 if present
-        let pictureKey = headquarters.value?.hq_picture;
-        let layoutKey = headquarters.value?.hq_layout;
-        let additionalKeys = headquarters.value?.hq_additional_pictures || [];
+        let pictureKey = headquarters.value?.picture;
+        let layoutKey = headquarters.value?.layout;
+        let additionalKeys = headquarters.value?.additional_pictures || [];
 
         const username = user.value.email.split('@')[0];
 
-        // Upload Facade Picture
         if (formData.value.picture instanceof File) {
             const result = await uploadFileToS3(formData.value.picture, username, 'infrastructure/headquarters');
             pictureKey = result.s3_key;
         }
 
-        // Upload Layout
         if (formData.value.layout instanceof File) {
             const result = await uploadFileToS3(formData.value.layout, username, 'infrastructure/headquarters');
             layoutKey = result.s3_key;
         }
 
-        // Upload Additional Pictures
         if (formData.value.additional_pictures && formData.value.additional_pictures.length > 0) {
             for (const file of formData.value.additional_pictures) {
                 if (file instanceof File) {
@@ -151,28 +158,39 @@ const saveHeadquarters = async () => {
             }
         }
 
-        // 2. Update Database
-        const { error } = await supabase
-            .from('clients')
-            .update({
-                hq_street: formData.value.street,
-                hq_number: formData.value.number,
-                hq_apt: formData.value.apt,
-                hq_neighborhood: formData.value.neighborhood,
-                hq_municipality_city: formData.value.municipality_city,
-                hq_state: formData.value.state,
-                hq_postal_code: formData.value.postal_code,
-                hq_picture: pictureKey,
-                hq_additional_pictures: additionalKeys,
-                hq_layout: layoutKey,
-                updated_at: new Date().toISOString()
-            })
-            .eq('user_id', user.value.id);
+        const branchData = {
+            supplier_id: supplierId.value,
+            name: 'Oficina Central',
+            is_headquarters: true,
+            street: formData.value.street,
+            number: formData.value.number,
+            apt: formData.value.apt,
+            neighborhood: formData.value.neighborhood,
+            municipality_city: formData.value.municipality_city,
+            state: formData.value.state,
+            postal_code: formData.value.postal_code,
+            picture: pictureKey,
+            additional_pictures: additionalKeys,
+            layout: layoutKey,
+            updated_at: new Date().toISOString()
+        };
+
+        let error;
+        if (headquarters.value?.id) {
+             ({ error } = await supabase
+                .from('supplier_branches')
+                .update(branchData)
+                .eq('id', headquarters.value.id));
+        } else {
+             ({ error } = await supabase
+                .from('supplier_branches')
+                .insert(branchData));
+        }
 
         if (error) throw error;
 
         toast.add({ severity: 'success', summary: 'Éxito', detail: 'Oficina central actualizada', life: 3000 });
-        await loadClientId();
+        await loadData();
         editDialog.value = false;
     } catch (error) {
         console.error('Error saving headquarters:', error);
@@ -182,12 +200,8 @@ const saveHeadquarters = async () => {
     }
 };
 
-const hasAddress = (hq) => {
-    return hq && hq.hq_street && hq.hq_number && hq.hq_neighborhood;
-};
-
 onMounted(() => {
-    loadClientId();
+    loadData();
 });
 </script>
 
@@ -202,22 +216,22 @@ onMounted(() => {
             <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
         </div>
 
-        <div v-else-if="hasAddress(headquarters)" class="grid grid-cols-12 gap-4">
+        <div v-else-if="headquarters" class="grid grid-cols-12 gap-2">
             <div class="col-span-12 md:col-span-6">
                 <div class="field">
                     <label class="font-medium text-sm text-500">Dirección</label>
                     <p class="m-0 mt-2">
-                        {{ headquarters.hq_street }} {{ headquarters.hq_number }}
-                        <span v-if="headquarters.hq_apt">, Int. {{ headquarters.hq_apt }}</span>
+                        {{ headquarters.street }} {{ headquarters.number }}
+                        <span v-if="headquarters.apt">, Int. {{ headquarters.apt }}</span>
                     </p>
-                    <p class="m-0 text-500">{{ headquarters.hq_neighborhood }}</p>
+                    <p class="m-0 text-500">{{ headquarters.neighborhood }}</p>
                 </div>
             </div>
             <div class="col-span-12 md:col-span-6">
                 <div class="field">
                     <label class="font-medium text-sm text-500">Ciudad y Estado</label>
-                    <p class="m-0 mt-2">{{ headquarters.hq_municipality_city }}, {{ headquarters.hq_state }}</p>
-                    <p class="m-0 text-500">CP: {{ headquarters.hq_postal_code }}</p>
+                    <p class="m-0 mt-2">{{ headquarters.municipality_city }}, {{ headquarters.state }}</p>
+                    <p class="m-0 text-500">CP: {{ headquarters.postal_code }}</p>
                 </div>
             </div>
             
@@ -281,4 +295,3 @@ onMounted(() => {
         </Dialog>
     </div>
 </template>
-
