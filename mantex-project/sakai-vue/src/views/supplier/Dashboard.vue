@@ -115,7 +115,7 @@
                         <p class="text-sm text-gray-600 italic m-0">"{{ review.comment }}"</p>
                         <span class="text-xs text-gray-400 text-right">{{ new
                             Date(review.created_at).toLocaleDateString()
-                        }}</span>
+                            }}</span>
                     </li>
                 </ul>
                 <div v-else class="text-gray-500 text-center py-4">No hay reseñas aún.</div>
