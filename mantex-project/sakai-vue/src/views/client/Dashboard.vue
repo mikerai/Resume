@@ -168,9 +168,9 @@ const fetchTickets = async () => {
             return;
         }
 
-        // Buscar client_id del usuario actual en la tabla clients
+        // Buscar client_id del usuario actual en la tabla client_profiles
         const { data: clientData, error: clientError } = await supabase
-            .from('clients')
+            .from('client_profiles')
             .select('id')
             .eq('user_id', user.value.id)
             .single();

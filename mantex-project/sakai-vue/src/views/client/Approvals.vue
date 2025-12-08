@@ -237,15 +237,7 @@ const getClientId = async () => {
         .eq('user_id', user.value.id)
         .single();
 
-    if (clientProfile) return clientProfile.id;
-
-    const { data: clientData } = await supabase
-        .from('clients')
-        .select('id')
-        .eq('user_id', user.value.id)
-        .single();
-
-    return clientData?.id || null;
+    return clientProfile?.id || null;
 };
 
 const loadStats = async (clientId) => {

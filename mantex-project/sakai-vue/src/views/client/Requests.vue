@@ -466,9 +466,9 @@ const loadMyTickets = async () => {
     try {
         console.log('Cargando tickets del usuario:', user.value?.id);
 
-        // Buscar client_id del usuario actual en la tabla clients
+        // Buscar client_id del usuario actual en la tabla client_profiles
         const { data: clientData, error: clientError } = await supabase
-            .from('clients')
+            .from('client_profiles')
             .select('id')
             .eq('user_id', user.value.id)
             .single();
@@ -745,7 +745,7 @@ const truncateText = (text, maxLength) => {
 // Helper to get client_id from user
 const getClientId = async () => {
     const { data: clientData } = await supabase
-        .from('clients')
+        .from('client_profiles')
         .select('id')
         .eq('user_id', user.value.id)
         .single();

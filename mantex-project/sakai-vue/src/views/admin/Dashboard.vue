@@ -499,10 +499,10 @@ const loadRealData = async () => {
             supplierStats.value.busy = supplierStats.value.pending;
         }
 
-        // Fetch clients with location data (from clients table)
+        // Fetch clients with location data (from client_profiles table)
         const { data: clientsData, error: clientsError } = await supabase
-            .from('clients')
-            .select('id, company_name, contact_person, full_address, latitude, longitude')
+            .from('client_profiles')
+            .select('id, company_name, contact_person, legal_address, latitude, longitude')
             .not('latitude', 'is', null)
             .not('longitude', 'is', null);
 
@@ -515,10 +515,10 @@ const loadRealData = async () => {
                 id: c.id,
                 name: c.company_name || c.contact_person,
                 company: c.company_name,
-                address: c.full_address,
+                address: c.legal_address, // client_profiles uses legal_address
                 location: {
-                    lat: c.latitude,
-                    lng: c.longitude
+                    lat: c.latitude, // Now exists in client_profiles
+                    lng: c.longitude // Now exists in client_profiles
                 }
             }));
 

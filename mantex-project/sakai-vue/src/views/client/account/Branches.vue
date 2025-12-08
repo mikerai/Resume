@@ -46,7 +46,7 @@ const formData = ref({
 const loadClientId = async () => {
     try {
         const { data, error } = await supabase
-            .from('clients')
+            .from('client_profiles')
             .select('id')
             .eq('user_id', user.value.id)
             .single();

@@ -3,7 +3,7 @@ import { supabase } from '@/lib/supabaseClient';
 export async function getClient(id) {
   // Fetch the client first
   const { data: client, error } = await supabase
-    .from('clients')
+    .from('client_profiles')
     .select('*')
     .eq('id', id)
     .single();
@@ -15,7 +15,12 @@ export async function getClient(id) {
 
   if (!client) return null;
 
-  const data = { ...client };
+  const data = {
+    ...client,
+    phone: client.phone_number, // Map
+    full_address: client.legal_address, // Map
+    logo_url: client.hq_picture // Map if needed
+  };
   console.log('🔍 Client base data:', client);
 
   // Fetch related data separately
@@ -87,7 +92,7 @@ export async function getClient(id) {
 export async function getClientByUserId(userId) {
   // Fetch the client first
   const { data: client, error } = await supabase
-    .from('clients')
+    .from('client_profiles')
     .select('*')
     .eq('user_id', userId)
     .single();

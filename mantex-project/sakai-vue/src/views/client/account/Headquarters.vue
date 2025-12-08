@@ -88,7 +88,7 @@ watch(headquarters, async (newVal) => {
 const loadClientId = async () => {
     try {
         const { data, error } = await supabase
-            .from('clients')
+            .from('client_profiles')
             .select('id, hq_street, hq_number, hq_apt, hq_neighborhood, hq_municipality_city, hq_state, hq_postal_code, hq_picture, hq_additional_pictures, hq_layout')
             .eq('user_id', user.value.id)
             .single();
@@ -153,7 +153,7 @@ const saveHeadquarters = async () => {
 
         // 2. Update Database
         const { error } = await supabase
-            .from('clients')
+            .from('client_profiles')
             .update({
                 hq_street: formData.value.street,
                 hq_number: formData.value.number,

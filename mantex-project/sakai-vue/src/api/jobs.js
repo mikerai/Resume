@@ -59,7 +59,7 @@ export async function getJobs(params = {}) {
     .from('tickets')
     .select(`
       *,
-      client:clients(company_name, contact_person),
+      client:client_profiles(company_name, contact_person),
       supplier:supplier_profiles(company_name, contact_person)
     `)
     .order('created_at', { ascending: false });
@@ -108,11 +108,17 @@ export async function getJob(id) {
   // Fetch client if exists
   if (ticket.client_id) {
     const { data: client } = await supabase
-      .from('clients')
-      .select('id, company_name, contact_person, email, phone, full_address')
+      .from('client_profiles')
+      .select('id, company_name, contact_person, email, phone_number, legal_address')
       .eq('id', ticket.client_id)
       .single();
-    data.client = client;
+    if (client) {
+      data.client = {
+        ...client,
+        phone: client.phone_number, // Map phone_number to phone
+        full_address: client.legal_address // Map legal_address to full_address
+      };
+    }
   }
 
   // Fetch branch if exists

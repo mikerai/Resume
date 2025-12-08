@@ -16,6 +16,8 @@ const user = ref(null);
 const profile = ref({
     username: null,
     role: null,
+    sub_role: null,
+    permissions: {},
     onboarding_complete: false,
     first_name: null,
     last_name: null,
@@ -42,7 +44,7 @@ async function getProfile(userId) {
         const { data, error } = await Promise.race([
             supabase
                 .from('profiles')
-                .select(`first_name, last_name, second_last_name, username, role, onboarding_complete, avatar_url`)
+                .select(`first_name, last_name, second_last_name, username, role, sub_role, permissions, onboarding_complete, avatar_url`)
                 .eq('id', userId)
                 .single(),
             new Promise((_, reject) =>
@@ -58,6 +60,8 @@ async function getProfile(userId) {
             profile.value = {
                 username: data.username,
                 role: data.role,
+                sub_role: data.sub_role,
+                permissions: data.permissions || {},
                 onboarding_complete: data.onboarding_complete,
                 first_name: data.first_name,
                 last_name: data.last_name,
@@ -67,14 +71,14 @@ async function getProfile(userId) {
             console.log('✅ Perfil obtenido:', profile.value);
         } else if (error && error.code !== 'PGRST116') {
             console.error('Error al obtener perfil:', error.message, error);
-            profile.value = { username: null, role: null, onboarding_complete: false };
+            profile.value = { username: null, role: null, sub_role: null, permissions: {}, onboarding_complete: false };
         } else {
             console.log('ℹ️ Perfil no encontrado, usando predeterminado');
-            profile.value = { username: null, role: null, onboarding_complete: false };
+            profile.value = { username: null, role: null, sub_role: null, permissions: {}, onboarding_complete: false };
         }
     } catch (e) {
         console.error('💥 Error crítico al obtener perfil:', e.message);
-        profile.value = { username: null, role: null, onboarding_complete: false };
+        profile.value = { username: null, role: null, sub_role: null, permissions: {}, onboarding_complete: false };
     }
 }
 
@@ -183,7 +187,7 @@ async function logout() {
 
         // Limpiar estado inmediatamente (no esperar al listener)
         user.value = null;
-        profile.value = { username: null, role: null, onboarding_complete: false };
+        profile.value = { username: null, role: null, sub_role: null, permissions: {}, onboarding_complete: false };
         isLoading.value = false;
 
         // Redirección inmediata
@@ -194,7 +198,7 @@ async function logout() {
         console.error('Error crítico en logout:', error);
         // Logout forzado en caso de error
         user.value = null;
-        profile.value = { username: null, role: null, onboarding_complete: false };
+        profile.value = { username: null, role: null, sub_role: null, permissions: {}, onboarding_complete: false };
         isLoading.value = false;
 
         if (typeof window !== 'undefined') {
@@ -329,7 +333,7 @@ supabase.auth.onAuthStateChange(async (event, session) => {
             }
         } else if (event === 'SIGNED_OUT') {
             user.value = null;
-            profile.value = { username: null, role: null, onboarding_complete: false };
+            profile.value = { username: null, role: null, sub_role: null, permissions: {}, onboarding_complete: false };
         }
     } catch (e) {
         console.error("Error durante el cambio de estado de Auth:", e);

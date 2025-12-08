@@ -84,7 +84,7 @@ const loadData = async () => {
     try {
         // 1. Get Client ID
         const { data: clientData, error: clientError } = await supabase
-            .from('clients')
+            .from('client_profiles')
             .select('id')
             .eq('user_id', user.value.id)
             .single();

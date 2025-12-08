@@ -39,13 +39,17 @@ const loadCompanyData = async () => {
     loading.value = true;
     try {
         const { data, error } = await supabase
-            .from('clients')
+            .from('client_profiles')
             .select('*')
             .eq('user_id', user.value.id)
             .single();
 
         if (error) throw error;
-        company.value = data;
+        // Map rfc to tax_id for internal component usage or update component to use rfc
+        company.value = {
+            ...data,
+            tax_id: data.rfc // Map rfc to tax_id
+        };
     } catch (error) {
         console.error('Error loading company:', error);
         toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo cargar información de la empresa', life: 3000 });
@@ -58,7 +62,7 @@ const openEditDialog = () => {
     formData.value = {
         company_name: company.value?.company_name || '',
         legal_name: company.value?.legal_name || '',
-        tax_id: company.value?.tax_id || '',
+        tax_id: company.value?.tax_id || '', // This is mapped from rfc
         fiscal_regime: company.value?.fiscal_regime || ''
     };
     editDialog.value = true;
@@ -68,11 +72,11 @@ const saveCompany = async () => {
     saving.value = true;
     try {
         const { error } = await supabase
-            .from('clients')
+            .from('client_profiles')
             .update({
                 company_name: formData.value.company_name,
                 legal_name: formData.value.legal_name,
-                tax_id: formData.value.tax_id,
+                rfc: formData.value.tax_id, // Map back to rfc
                 fiscal_regime: formData.value.fiscal_regime,
                 updated_at: new Date().toISOString()
             })

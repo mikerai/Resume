@@ -832,55 +832,15 @@ const saveClientData = async () => {
         const ineFrontUrl = documents?.find(d => d.document_type === 'ine_front')?.file_url || null;
         const selfieUrl = documents?.find(d => d.document_type === 'selfie')?.file_url || null;
 
-        // 3. GUARDAR EN TABLA CLIENTS (con TODOS los campos)
-        const clientData = {
-            user_id: user.value.id,
-            company_name: companyName,
-            contact_person: contactPerson,
-            phone: formData.value.phoneNumber,
-            email: user.value.email,
-            street: formData.value.address.street || null,
-            number: formData.value.address.exteriorNumber || null,
-            apt: formData.value.address.interiorNumber || null,
-            neighborhood: formData.value.address.neighborhood || null,
-            municipality_city: formData.value.address.city || null,
-            state: formData.value.address.state || null,
-            postal_code: formData.value.address.postalCode || null,
-            full_address: fullAddress, // ✅ AGREGADO
-            latitude: latitude,
-            longitude: longitude,
-            rfc: satData?.rfc || null,
-            ciec_validated: satData?.ciec ? true : false,
-            ine_front_url: ineFrontUrl,
-            selfie_url: selfieUrl,
-            status: 'active',
-            auto_assign_preventive: true,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-        };
-
-        const { data: clientRecord, error: clientError } = await supabase
-            .from('clients')
-            .upsert(clientData, {
-                onConflict: 'user_id',
-                ignoreDuplicates: false
-            })
-            .select()
-            .single();
-
-        if (clientError) {
-            console.error('Error al guardar en tabla clients:', clientError);
-            // No lanzar error, la tabla client_profiles ya se guardó
-        } else {
-            console.log('✅ Cliente guardado en tabla clients exitosamente');
-        }
+        // 3. (REMOVED) Guardar en tabla clients - Tabla deprecada
+        console.log('✅ Guarda en client_profiles (nueva fuente de verdad)');
 
         // Guardar activos si hay alguno
         const validAssets = formData.value.assets.filter(asset => asset.name.trim() !== '');
 
         if (validAssets.length > 0) {
             const assetsData = validAssets.map(asset => ({
-                client_profile_id: profileData.id,
+                client_id: profileData.id,
                 name: asset.name,
                 asset_type: asset.type,
                 location: asset.location || null,

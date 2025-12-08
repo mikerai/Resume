@@ -385,6 +385,7 @@ import Galleria from 'primevue/galleria';
 
 const toast = useToast();
 const { user, profile } = useAuth();
+const { can, hasSubRole } = usePermissions();
 
 // Reactive data
 const tickets = ref([]);
@@ -476,11 +477,14 @@ const loadCurrentSupplier = async () => {
 const loadTickets = async () => {
     loading.value = true;
     try {
+const loadTickets = async () => {
+    loading.value = true;
+    try {
         let query = supabase
             .from('tickets')
             .select(`
                 *,
-                client:clients(*),
+                client:client_profiles(*),
                 branch:client_branches(*),
                 asset:client_assets(*),
                 supplier:supplier_profiles(*),
@@ -499,7 +503,14 @@ const loadTickets = async () => {
                 .in('status', ['pending', 'opened'])
                 .order('created_at', { ascending: false });
         } else {
-            query = query.or(`supplier_id.eq.${currentSupplierId.value},supplier_id.is.null,status.eq.pending,status.eq.opened`);
+            // Logic based on Permissions
+            if (hasSubRole('technician')) {
+                // Technicians only see assigned tickets
+                query = query.eq('supplier_id', currentSupplierId.value);
+            } else {
+                // Owners/Managers see assigned OR available (null supplier)
+                query = query.or(`supplier_id.eq.${currentSupplierId.value},supplier_id.is.null,status.eq.pending,status.eq.opened`);
+            }
         }
 
         const { data, error } = await query;
@@ -549,11 +560,17 @@ const viewTicket = async (ticket) => {
 };
 
 const canAcceptTicket = (ticket) => {
+    // Permission check: Only managers/owners can accept new tickets
+    if (!can('manage', 'tickets')) return false;
+
     return ['pending', 'opened'].includes(ticket.status) &&
         (ticket.maintenance_type === 'corrective' || !ticket.supplier_id);
 };
 
 const canRejectTicket = (ticket) => {
+    // Permission check: Only managers/owners can reject tickets
+    if (!can('manage', 'tickets')) return false;
+
     return ['pending', 'opened'].includes(ticket.status) &&
         (ticket.maintenance_type === 'corrective' || !ticket.supplier_id);
 };

@@ -17,7 +17,7 @@
                 <span class="text-muted-color">&ensp;nuevos esta semana</span>
             </div>
         </div>
-        <div class="col-span-12 lg:col-span-6 xl:col-span-3">
+        <div class="col-span-12 lg:col-span-6 xl:col-span-3" v-if="can('read', 'payments')">
             <div class="card mb-0">
                 <div class="flex justify-between mb-4">
                     <div>
@@ -126,12 +126,14 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useAuth } from '@/composables/useAuth.js';
+import { usePermissions } from '@/composables/usePermissions.js';
 import Chart from 'primevue/chart';
 import Button from 'primevue/button';
 import Tag from 'primevue/tag';
 import Rating from 'primevue/rating';
 
 const { user, profile } = useAuth();
+const { can } = usePermissions();
 
 // Reactive data
 const companyName = profile.value?.username || user.value?.email?.split('@')[0] || 'Proveedor';

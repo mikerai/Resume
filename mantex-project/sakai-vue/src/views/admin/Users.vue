@@ -421,12 +421,7 @@ const loadUsers = async () => {
 
         if (clientError) console.warn('Error loading client_profiles:', clientError);
 
-        // Get all clients for email and phone
-        const { data: clients, error: clientsError } = await supabase
-            .from('clients')
-            .select('user_id, email, phone');
 
-        if (clientsError) console.warn('Error loading clients:', clientsError);
 
         // Get all supplier_profiles for enrichment (Source of truth for supplier data)
         const { data: supplierProfiles, error: supplierError } = await supabase
@@ -451,7 +446,7 @@ const loadUsers = async () => {
 
         // Create lookup maps for quick access
         const clientProfileMap = new Map((clientProfiles || []).map(c => [c.user_id, c]));
-        const clientEmailMap = new Map((clients || []).map(c => [c.user_id, c]));
+        // clientEmailMap removed as we use client_profiles now
         const supplierMap = new Map((supplierProfiles || []).map(s => [s.user_id, s]));
         const supplierPhoneMap = new Map((suppliers || []).map(s => [s.user_id, s]));
         const adminMap = new Map((adminProfiles || []).map(a => [a.user_id, a]));
@@ -487,12 +482,8 @@ const loadUsers = async () => {
                     user.profile_status = clientData.status || 'unknown';
                     if (clientData.phone_number) user.phone = clientData.phone_number;
                 }
-                // Get email and phone from clients table
-                if (clientEmailMap.has(userId)) {
-                    const clientData = clientEmailMap.get(userId);
-                    if (clientData.email) user.email = clientData.email;
-                    if (clientData.phone) user.phone = clientData.phone;
-                }
+                if (clientData.phone_number) user.phone = clientData.phone_number;
+                if (clientData.email) user.email = clientData.email;
             } else if (role === 'supplier' && supplierMap.has(userId)) {
                 const supplierData = supplierMap.get(userId);
                 user.company_name = supplierData.company_name;
@@ -550,7 +541,7 @@ async function viewUser(userData) {
             // Fallback: try to fetch client by user_id
             try {
                 const { data, error } = await supabase
-                    .from('clients')
+                    .from('client_profiles')
                     .select('id')
                     .eq('user_id', userData.id)
                     .single();

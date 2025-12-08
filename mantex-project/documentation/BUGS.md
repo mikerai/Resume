@@ -117,6 +117,20 @@
 **Location:** Ticket cancellation handler  
 **Fix Required:** Add calendar event deletion on ticket cancel
 
+## RESOLVED BUGS
+
+### [FIXED] Database: Cannot Drop Deprecated Tables
+**Priority:** HIGH
+**Status:** RESOLVED (Dec 7, 2025)
+**Description:** `clients` and `suppliers` tables couldn't be dropped due to lingering Foreign Key and RLS Policy dependencies.
+**Fix:** Created and executed `clean_and_fix_dependencies.sql` to drop old policies and constraints before removing tables.
+
+### [FIXED] Missing Geo Fields in Client Profiles
+**Priority:** MEDIUM
+**Status:** RESOLVED (Dec 7, 2025)
+**Description:** `client_profiles` table lacked `latitude` and `longitude`, breaking the Admin Dashboard map.
+**Fix:** Added columns via migration script.
+
 ## UI/UX ISSUES (Not Bugs, But Need Fixing)
 
 ### 14. Client Desktop Needs Redesign
@@ -174,5 +188,6 @@
 **High:** 6  
 **Medium:** 4  
 **Low:** 3  
+**Fixed:** 2
 **UI/UX Issues:** 3  
 **Feature Gaps:** 4
