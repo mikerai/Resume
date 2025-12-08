@@ -22,91 +22,157 @@
                 </div>
             </div>
 
-            <!-- Diferentes tipos de evidencia según el estado -->
-            <div v-if="canUploadBeforePhotos" class="mb-5">
-                <FileUpload
-                    title="Fotos del Estado Inicial"
-                    :max-files="10"
-                    :max-size-m-b="5"
-                    accepted-types="image/*"
-                    :upload-function="(file, onProgress) => uploadEvidence(file, 'before', onProgress)"
-                    @files-uploaded="onBeforePhotosUploaded"
-                />
-                <small class="text-500 mt-2 block">
-                    Documenta el estado inicial antes de comenzar el trabajo. Incluye fotos del problema o área a trabajar.
-                </small>
+            <!-- Panel de Progreso de Evidencias Requeridas -->
+            <div class="mb-4 p-4 border-1 surface-border border-round bg-blue-50">
+                <div class="flex align-items-center justify-content-between mb-3">
+                    <h6 class="m-0 text-blue-900">Evidencias Requeridas</h6>
+                    <Tag :value="`${evidenceProgress}% Completo`"
+                        :severity="evidenceProgress === 100 ? 'success' : 'warning'" />
+                </div>
+
+                <div class="grid">
+                    <div class="col-12 md:col-6">
+                        <div class="flex align-items-center gap-2 mb-2">
+                            <i :class="hasBeforePhotos ? 'pi pi-check-circle text-green-500' : 'pi pi-circle text-gray-400'"
+                                class="text-xl"></i>
+                            <span :class="hasBeforePhotos ? 'font-semibold' : 'text-600'">Fotos del Estado
+                                Inicial</span>
+                            <Tag v-if="beforePhotosCount > 0" :value="`${beforePhotosCount}`" severity="info"
+                                size="small" />
+                        </div>
+                        <small class="text-500 ml-4 block">Documenta el problema o área antes de iniciar</small>
+                    </div>
+
+                    <div class="col-12 md:col-6">
+                        <div class="flex align-items-center gap-2 mb-2">
+                            <i :class="hasAfterPhotos ? 'pi pi-check-circle text-green-500' : 'pi pi-circle text-gray-400'"
+                                class="text-xl"></i>
+                            <span :class="hasAfterPhotos ? 'font-semibold' : 'text-600'">Fotos del Resultado
+                                Final</span>
+                            <Tag v-if="afterPhotosCount > 0" :value="`${afterPhotosCount}`" severity="info"
+                                size="small" />
+                        </div>
+                        <small class="text-500 ml-4 block">Muestra el trabajo completado</small>
+                    </div>
+                </div>
+
+                <div class="mt-3 pt-3 border-top-1 border-blue-200">
+                    <div class="text-sm text-600 mb-2">Evidencias Opcionales:</div>
+                    <div class="flex flex-wrap gap-2">
+                        <Tag v-if="progressPhotosCount > 0" :value="`Proceso: ${progressPhotosCount}`"
+                            severity="secondary" size="small" />
+                        <Tag v-if="documentsCount > 0" :value="`Documentos: ${documentsCount}`" severity="secondary"
+                            size="small" />
+                    </div>
+                </div>
+
+                <!-- Mensaje de estado -->
+                <div v-if="showActionButtons" class="mt-3 pt-3 border-top-1 border-blue-200">
+                    <div class="flex align-items-center gap-2 text-sm"
+                        :class="hasRequiredEvidence ? 'text-green-700' : 'text-orange-700'">
+                        <i :class="hasRequiredEvidence ? 'pi pi-check-circle' : 'pi pi-exclamation-triangle'"></i>
+                        <span class="font-semibold">{{ getActionMessage() }}</span>
+                    </div>
+                </div>
             </div>
 
-            <div v-if="canUploadProgressPhotos" class="mb-5">
-                <FileUpload
-                    title="Fotos del Proceso de Trabajo"
-                    :max-files="15"
-                    :max-size-m-b="5"
-                    accepted-types="image/*"
-                    :upload-function="(file, onProgress) => uploadEvidence(file, 'progress', onProgress)"
-                    @files-uploaded="onProgressPhotosUploaded"
-                />
-                <small class="text-500 mt-2 block">
-                    Documenta el proceso de trabajo: herramientas utilizadas, pasos del proceso, materiales, etc.
-                </small>
-            </div>
+            <!-- Tabs para tipos de evidencia -->
+            <Tabs value="before">
+                <TabList>
+                    <Tab value="before">
+                        <i class="pi pi-camera mr-2"></i>
+                        Estado Inicial
+                        <Tag value="REQUERIDO" severity="danger" size="small" class="ml-2" />
+                        <Tag v-if="beforePhotosCount > 0" :value="`${beforePhotosCount}`" severity="info" size="small"
+                            class="ml-2" />
+                    </Tab>
+                    <Tab value="after">
+                        <i class="pi pi-check-circle mr-2"></i>
+                        Resultado Final
+                        <Tag value="REQUERIDO" severity="danger" size="small" class="ml-2" />
+                        <Tag v-if="afterPhotosCount > 0" :value="`${afterPhotosCount}`" severity="info" size="small"
+                            class="ml-2" />
+                    </Tab>
+                    <Tab value="progress">
+                        <i class="pi pi-images mr-2"></i>
+                        Proceso
+                        <Tag v-if="progressPhotosCount > 0" :value="`${progressPhotosCount}`" severity="info"
+                            size="small" class="ml-2" />
+                    </Tab>
+                    <Tab value="documents">
+                        <i class="pi pi-file-pdf mr-2"></i>
+                        Documentos
+                        <Tag v-if="documentsCount > 0" :value="`${documentsCount}`" severity="info" size="small"
+                            class="ml-2" />
+                    </Tab>
+                </TabList>
 
-            <div v-if="canUploadAfterPhotos" class="mb-5">
-                <FileUpload
-                    title="Fotos del Resultado Final"
-                    :max-files="10"
-                    :max-size-m-b="5"
-                    accepted-types="image/*"
-                    :upload-function="(file, onProgress) => uploadEvidence(file, 'after', onProgress)"
-                    @files-uploaded="onAfterPhotosUploaded"
-                />
-                <small class="text-500 mt-2 block">
-                    Documenta el resultado final del trabajo completado. Estas fotos serán revisadas por el cliente.
-                </small>
-            </div>
+                <TabPanels>
+                    <TabPanel value="before">
+                        <FileUpload title="Fotos del Estado Inicial" :max-files="10" :max-size-m-b="5"
+                            accepted-types="image/*"
+                            :upload-function="(file, onProgress) => uploadEvidence(file, 'before', onProgress)"
+                            @files-uploaded="onBeforePhotosUploaded" />
+                        <small class="text-500 mt-2 block">
+                            Documenta el estado inicial antes de comenzar el trabajo. Incluye fotos del problema o área
+                            a trabajar.
+                        </small>
+                    </TabPanel>
 
-            <div v-if="canUploadDocuments" class="mb-5">
-                <FileUpload
-                    title="Documentos y Reportes"
-                    :max-files="5"
-                    :max-size-m-b="10"
-                    accepted-types=".pdf,.doc,.docx"
-                    :upload-function="(file, onProgress) => uploadEvidence(file, 'document', onProgress)"
-                    @files-uploaded="onDocumentsUploaded"
-                />
-                <small class="text-500 mt-2 block">
-                    Reportes de trabajo, facturas, garantías, manuales, checklist completo, etc.
-                </small>
-            </div>
+                    <TabPanel value="after">
+                        <FileUpload title="Fotos del Resultado Final" :max-files="10" :max-size-m-b="5"
+                            accepted-types="image/*"
+                            :upload-function="(file, onProgress) => uploadEvidence(file, 'after', onProgress)"
+                            @files-uploaded="onAfterPhotosUploaded" />
+                        <small class="text-500 mt-2 block">
+                            Documenta el resultado final del trabajo completado. Estas fotos serán revisadas por el
+                            cliente.
+                        </small>
+                    </TabPanel>
+
+                    <TabPanel value="progress">
+                        <FileUpload title="Fotos del Proceso" :max-files="15" :max-size-m-b="5" accepted-types="image/*"
+                            :upload-function="(file, onProgress) => uploadEvidence(file, 'progress', onProgress)"
+                            @files-uploaded="onProgressPhotosUploaded" />
+                        <small class="text-500 mt-2 block">
+                            Documenta el proceso de trabajo: herramientas utilizadas, pasos del proceso, materiales,
+                            etc.
+                        </small>
+                    </TabPanel>
+
+                    <TabPanel value="documents">
+                        <FileUpload title="Documentos" :max-files="5" :max-size-m-b="10"
+                            accepted-types=".pdf,.doc,.docx"
+                            :upload-function="(file, onProgress) => uploadEvidence(file, 'document', onProgress)"
+                            @files-uploaded="onDocumentsUploaded" />
+                        <small class="text-500 mt-2 block">
+                            Reportes de trabajo, facturas, garantías, manuales, checklist completo, etc.
+                        </small>
+                    </TabPanel>
+                </TabPanels>
+            </Tabs>
 
             <!-- Galería de evidencias existentes -->
             <div v-if="existingEvidence.length > 0" class="mt-6">
                 <h6>Evidencias Subidas</h6>
                 <div class="grid">
-                    <div
-                        v-for="(evidence, index) in existingEvidence"
-                        :key="evidence.id"
-                        class="col-12 sm:col-6 md:col-4 lg:col-3"
-                    >
+                    <div v-for="(evidence, index) in existingEvidence" :key="evidence.id"
+                        class="col-12 sm:col-6 md:col-4 lg:col-3">
                         <div class="evidence-item border-1 surface-border border-round overflow-hidden">
                             <!-- Preview para imágenes -->
-                            <div
-                                v-if="evidence.file_type === 'image'"
+                            <div v-if="evidence.file_type === 'image'"
                                 class="evidence-preview h-8rem bg-cover bg-center relative cursor-pointer"
                                 :style="{ backgroundImage: `url(${evidence.url})` }"
-                                @click="openImagePreview(evidence)"
-                            >
+                                @click="openImagePreview(evidence)">
                                 <div class="absolute top-0 right-0 p-2">
                                     <Tag :value="getEvidenceTypeLabel(evidence.evidence_type)" size="small" />
                                 </div>
                             </div>
 
                             <!-- Preview para documentos -->
-                            <div
-                                v-else
+                            <div v-else
                                 class="evidence-preview h-8rem flex align-items-center justify-content-center cursor-pointer hover:bg-surface-100"
-                                @click="openDocument(evidence)"
-                            >
+                                @click="openDocument(evidence)">
                                 <div class="text-center">
                                     <i class="pi pi-file-pdf text-4xl text-red-500 mb-2"></i>
                                     <div class="text-sm font-medium">{{ evidence.file_name }}</div>
@@ -118,13 +184,9 @@
                                 <div class="text-xs text-600">{{ formatFileSize(evidence.file_size) }}</div>
 
                                 <!-- Botón de eliminar (solo si el ticket no está cerrado) -->
-                                <Button
-                                    v-if="canDeleteEvidence"
-                                    icon="pi pi-trash"
+                                <Button v-if="canDeleteEvidence" icon="pi pi-trash"
                                     class="p-button-rounded p-button-text p-button-sm p-button-danger mt-2"
-                                    @click="confirmDeleteEvidence(evidence)"
-                                    v-tooltip="'Eliminar evidencia'"
-                                />
+                                    @click="confirmDeleteEvidence(evidence)" v-tooltip="'Eliminar evidencia'" />
                             </div>
                         </div>
                     </div>
@@ -132,51 +194,26 @@
             </div>
 
             <!-- Botones de acción -->
-            <div v-if="showActionButtons" class="flex justify-content-between align-items-center mt-6 pt-4 border-top-1 surface-border">
-                <div class="flex align-items-center gap-2 text-sm text-500">
-                    <i class="pi pi-info-circle"></i>
-                    <span>{{ getActionMessage() }}</span>
-                </div>
-
+            <div v-if="showActionButtons" class="flex justify-content-between mt-6 pt-4 border-top-1 surface-border">
+                <Button label="Cerrar" icon="pi pi-times" severity="danger" outlined @click="$emit('close')" />
                 <div class="flex gap-2">
-                    <Button
-                        v-if="canMarkAsCompleted"
-                        label="Marcar como Completado"
-                        icon="pi pi-check"
-                        class="p-button-success"
-                        @click="markAsCompleted"
-                        :disabled="!hasRequiredEvidence"
-                    />
-
-                    <Button
-                        v-if="canRequestApproval"
-                        label="Solicitar Aprobación"
-                        icon="pi pi-send"
-                        @click="requestApproval"
-                        :disabled="!hasRequiredEvidence"
-                    />
+                    <Button v-if="canMarkAsCompleted" label="Marcar como Completado" icon="pi pi-check"
+                        severity="success" @click="markAsCompleted" :disabled="!hasRequiredEvidence" />
+                    <Button v-if="canRequestApproval" label="Solicitar Aprobación" icon="pi pi-send" severity="success"
+                        @click="requestApproval" :disabled="!hasRequiredEvidence" />
                 </div>
             </div>
         </div>
-
-        <!-- Modal de vista previa de imágenes -->
-        <Dialog
-            v-model:visible="previewVisible"
-            modal
-            :header="previewEvidence?.file_name"
-            class="w-full md:w-8"
-        >
-            <img
-                v-if="previewEvidence"
-                :src="previewEvidence.url"
-                :alt="previewEvidence.file_name"
-                class="w-full h-auto max-h-30rem object-contain"
-            />
-        </Dialog>
-
-        <!-- Confirmación de eliminación -->
-        <ConfirmDialog />
     </div>
+
+    <!-- Modal de vista previa de imágenes -->
+    <Dialog v-model:visible="previewVisible" modal :header="previewEvidence?.file_name" class="w-full md:w-8">
+        <img v-if="previewEvidence" :src="previewEvidence.url" :alt="previewEvidence.file_name"
+            class="w-full h-auto max-h-30rem object-contain" />
+    </Dialog>
+
+    <!-- Confirmación de eliminación -->
+    <ConfirmDialog />
 </template>
 
 <script setup>
@@ -204,6 +241,7 @@ const existingEvidence = ref([]);
 const loading = ref(false);
 const previewVisible = ref(false);
 const previewEvidence = ref(null);
+const activeAccordion = ref(['before', 'after']);
 
 // Computadas para permisos de carga según el estado del ticket
 const canUploadBeforePhotos = computed(() => {
@@ -244,13 +282,28 @@ const hasRequiredEvidence = computed(() => {
     return beforePhotos.length > 0 && afterPhotos.length > 0;
 });
 
+const beforePhotosCount = computed(() => existingEvidence.value.filter(e => e.evidence_type === 'before').length);
+const afterPhotosCount = computed(() => existingEvidence.value.filter(e => e.evidence_type === 'after').length);
+const progressPhotosCount = computed(() => existingEvidence.value.filter(e => e.evidence_type === 'progress').length);
+const documentsCount = computed(() => existingEvidence.value.filter(e => e.evidence_type === 'document').length);
+
+const hasBeforePhotos = computed(() => beforePhotosCount.value > 0);
+const hasAfterPhotos = computed(() => afterPhotosCount.value > 0);
+
+const evidenceProgress = computed(() => {
+    let progress = 0;
+    if (hasBeforePhotos.value) progress += 50;
+    if (hasAfterPhotos.value) progress += 50;
+    return progress;
+});
+
 // Métodos de carga de evidencias
 const uploadEvidence = async (file, evidenceType, onProgress) => {
     try {
         // Import del storage service
         const { storageService } = await import('@/lib/storageService.js');
         const { data: { user } } = await supabase.auth.getUser();
-        
+
         if (!user) throw new Error('Usuario no autenticado');
 
         // Obtener username del profile
@@ -586,6 +639,11 @@ onMounted(() => {
     position: absolute;
 }
 
-.top-0 { top: 0; }
-.right-0 { right: 0; }
+.top-0 {
+    top: 0;
+}
+
+.right-0 {
+    right: 0;
+}
 </style>

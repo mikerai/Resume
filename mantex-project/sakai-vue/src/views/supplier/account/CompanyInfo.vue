@@ -67,7 +67,6 @@ const saveCompany = async () => {
                 contact_person: formData.value.contact_person,
                 phone_number: formData.value.phone_number,
                 email: formData.value.email,
-                business_description: formData.value.business_description,
                 updated_at: new Date().toISOString()
             })
             .eq('user_id', user.value.id);
@@ -120,7 +119,7 @@ onMounted(() => {
                     <p class="m-0 mt-2">{{ company.contact_person || 'No especificado' }}</p>
                 </div>
             </div>
-             <div class="col-span-12 md:col-span-6">
+            <div class="col-span-12 md:col-span-6">
                 <div class="field">
                     <label class="font-medium text-sm text-500">Teléfono</label>
                     <p class="m-0 mt-2">{{ company.phone_number || 'No especificado' }}</p>
@@ -154,16 +153,20 @@ onMounted(() => {
                         <InputText id="contact_person" v-model="formData.contact_person" class="w-full" />
                     </div>
                 </div>
-                 <div class="col-span-12 md:col-span-6">
-                    <div class="field">
+                <div class="col-span-12 md:col-span-6">
+                    <div class="field col-12 md:col-6">
+                        <label for="rfc" class="font-medium">RFC</label>
+                        <InputText id="rfc" v-model="formData.rfc" class="w-full" readonly disabled />
+                    </div>
+                    <div class="field col-12 md:col-6">
                         <label for="phone_number" class="font-medium">Teléfono</label>
                         <InputText id="phone_number" v-model="formData.phone_number" class="w-full" />
                     </div>
                 </div>
                 <div class="col-span-12">
                     <div class="field">
-                        <label for="business_description" class="font-medium">Descripción del Negocio</label>
-                        <Textarea id="business_description" v-model="formData.business_description" rows="3" class="w-full" />
+                        <label for="description" class="font-medium">Descripción del Negocio</label>
+                        <Textarea id="description" v-model="formData.business_description" rows="3" class="w-full" />
                     </div>
                 </div>
             </div>

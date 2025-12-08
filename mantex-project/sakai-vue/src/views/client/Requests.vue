@@ -84,9 +84,12 @@
             </div>
         </div>
         <template #footer>
-            <Button label="Cancelar" icon="pi pi-times" text @click="showRatingDialog = false" />
-            <Button label="Enviar Calificación" icon="pi pi-check" severity="success" @click="submitReview"
-                :loading="submittingReview" :disabled="!ratingValue" />
+            <div class="flex justify-content-end gap-2 w-full">
+                <Button label="Cancelar" icon="pi pi-times" severity="danger" outlined
+                    @click="showRatingDialog = false" />
+                <Button label="Enviar Calificación" icon="pi pi-check" severity="success" @click="submitReview"
+                    :loading="submittingReview" :disabled="!ratingValue" />
+            </div>
         </template>
     </Dialog>
 
@@ -695,7 +698,7 @@ const cancelTicketQuick = async (ticket) => {
         if (error) throw error;
 
         // Refresh data
-        await loadTickets();
+        await loadMyTickets();
         toast.add({ severity: 'success', summary: 'Ticket cancelado', detail: 'El ticket ha sido cancelado exitosamente', life: 3000 });
     } catch (error) {
         console.error('Error cancelling ticket:', error);
@@ -716,7 +719,7 @@ const cancelTicket = async () => {
         if (error) throw error;
 
         // Refresh data
-        await loadTickets();
+        await loadMyTickets();
         showDetailsDialog.value = false;
         selectedTicket.value = null;
         toast.add({ severity: 'success', summary: 'Ticket cancelado', detail: 'El ticket ha sido cancelado exitosamente', life: 3000 });
@@ -890,15 +893,26 @@ const submitReview = async () => {
     try {
         const { user } = useAuth();
 
-        // Upsert review (insert o update si ya existe)
+        // Obtener supplier_profile_id del ticket (no supplier_id directo)
+        const { data: ticketData } = await supabase
+            .from('tickets')
+            .select('supplier_id')
+            .eq('id', ticketToRate.value.id)
+            .single();
+
+        if (!ticketData?.supplier_id) {
+            throw new Error('No se encontró el proveedor del ticket');
+        }
+
+        // Upsert review
         const { error } = await supabase.from('reviews').upsert({
             ticket_id: ticketToRate.value.id,
             reviewer_id: user.value.id,
-            reviewed_supplier_id: ticketToRate.value.supplier_id,
+            reviewed_supplier_id: ticketData.supplier_id,
             rating: ratingValue.value,
             comment: ratingComment.value
         }, {
-            onConflict: 'ticket_id' // Unique constraint
+            onConflict: 'ticket_id'
         });
 
         if (error) throw error;
@@ -906,7 +920,7 @@ const submitReview = async () => {
         toast.add({ severity: 'success', summary: '¡Gracias!', detail: 'Tu calificación ha sido guardada.', life: 3000 });
         showRatingDialog.value = false;
     } catch (e) {
-        toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo guardar la calificación', life: 3000 });
+        toast.add({ severity: 'error', summary: 'Error', detail: e.message || 'No se pudo guardar la calificación', life: 3000 });
         console.error(e);
     } finally {
         submittingReview.value = false;
@@ -919,6 +933,16 @@ onMounted(() => {
     loadBranches();
 });
 </script>
+
+<style scoped>
+:deep(.p-rating .p-rating-icon.pi-star-fill) {
+    color: #fbbf24 !important;
+}
+
+:deep(.p-rating .p-rating-icon.pi-star) {
+    color: #d1d5db !important;
+}
+</style>
 
 <style scoped>
 .field {

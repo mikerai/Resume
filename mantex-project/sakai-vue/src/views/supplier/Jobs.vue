@@ -7,7 +7,8 @@
                     <i class="pi pi-clock mr-2"></i>
                     <div>
                         <strong>Cuenta en revisión</strong><br>
-                        Su cuenta está siendo revisada por nuestro equipo. Una vez aprobada, tendrá acceso completo a todos los tickets con información detallada y precios.
+                        Su cuenta está siendo revisada por nuestro equipo. Una vez aprobada, tendrá acceso completo a
+                        todos los tickets con información detallada y precios.
                     </div>
                 </div>
             </Message>
@@ -16,36 +17,20 @@
         <div class="col-12">
             <div class="card">
                 <div class="flex justify-content-between align-items-center mb-4">
-                    <h5 class="m-0">{{ isSupplierApproved ? 'Mis Trabajos' : 'Tickets Disponibles (Vista Limitada)' }}</h5>
+                    <h5 class="m-0">{{ isSupplierApproved ? 'Mis Trabajos' : 'Tickets Disponibles (Vista Limitada)' }}
+                    </h5>
                     <div class="flex align-items-center gap-2">
                         <span class="p-input-icon-left">
                             <i class="pi pi-search"></i>
-                            <InputText
-                                v-model="searchTerm"
-                                placeholder="Buscar tickets..."
-                                class="w-full md:w-20rem"
-                            />
+                            <InputText v-model="searchTerm" placeholder="Buscar tickets..." class="w-full md:w-20rem" />
                         </span>
-                        <Dropdown
-                            v-model="selectedStatus"
-                            :options="statusOptions"
-                            option-label="label"
-                            option-value="value"
-                            placeholder="Filtrar por estado"
-                            class="w-full md:w-12rem"
-                        />
+                        <Dropdown v-model="selectedStatus" :options="statusOptions" option-label="label"
+                            option-value="value" placeholder="Filtrar por estado" class="w-full md:w-12rem" />
                     </div>
                 </div>
 
-                <DataTable
-                    :value="filteredTickets"
-                    :paginator="true"
-                    :rows="10"
-                    :loading="loading"
-                    responsiveLayout="scroll"
-                    :rowHover="true"
-                    dataKey="id"
-                >
+                <DataTable :value="filteredTickets" :paginator="true" :rows="10" :loading="loading"
+                    responsiveLayout="scroll" :rowHover="true" dataKey="id">
                     <Column field="ticket_number" header="Ticket" sortable>
                         <template #body="slotProps">
                             <div class="font-medium">{{ slotProps.data.ticket_number }}</div>
@@ -56,26 +41,23 @@
                         <template #body="slotProps">
                             <div>
                                 <div class="font-medium">{{ slotProps.data.title }}</div>
-                                <div class="text-sm text-500 mt-1">{{ truncateText(slotProps.data.description, 60) }}</div>
+                                <div class="text-sm text-500 mt-1">{{ truncateText(slotProps.data.description, 60) }}
+                                </div>
                             </div>
                         </template>
                     </Column>
 
                     <Column field="maintenance_type" header="Tipo" sortable>
                         <template #body="slotProps">
-                            <Tag
-                                :value="getMaintenanceTypeLabel(slotProps.data.maintenance_type)"
-                                :severity="getMaintenanceTypeSeverity(slotProps.data.maintenance_type)"
-                            />
+                            <Tag :value="getMaintenanceTypeLabel(slotProps.data.maintenance_type)"
+                                :severity="getMaintenanceTypeSeverity(slotProps.data.maintenance_type)" />
                         </template>
                     </Column>
 
                     <Column field="priority" header="Prioridad" sortable>
                         <template #body="slotProps">
-                            <Tag
-                                :value="getPriorityLabel(slotProps.data.priority)"
-                                :severity="getPrioritySeverity(slotProps.data.priority)"
-                            />
+                            <Tag :value="getPriorityLabel(slotProps.data.priority)"
+                                :severity="getPrioritySeverity(slotProps.data.priority)" />
                         </template>
                     </Column>
 
@@ -126,50 +108,30 @@
 
                     <Column field="status" header="Estado" sortable>
                         <template #body="slotProps">
-                            <Tag
-                                :value="getStatusLabel(slotProps.data.status)"
-                                :severity="getStatusSeverity(slotProps.data.status)"
-                            />
+                            <Tag :value="getStatusLabel(slotProps.data.status)"
+                                :severity="getStatusSeverity(slotProps.data.status)" />
                         </template>
                     </Column>
 
                     <Column header="Acciones" class="text-center" style="width: 200px">
                         <template #body="slotProps">
                             <div class="flex gap-1 justify-content-center">
-                                <Button
-                                    icon="pi pi-eye"
-                                    class="p-button-rounded p-button-text p-button-sm"
-                                    @click="viewTicket(slotProps.data)"
-                                    v-tooltip="'Ver detalles'"
-                                />
-                                <Button
-                                    v-if="isSupplierApproved && canAcceptTicket(slotProps.data)"
-                                    icon="pi pi-check"
+                                <Button icon="pi pi-eye" class="p-button-rounded p-button-text p-button-sm"
+                                    @click="viewTicket(slotProps.data)" v-tooltip="'Ver detalles'" />
+                                <Button v-if="isSupplierApproved && canAcceptTicket(slotProps.data)" icon="pi pi-check"
                                     class="p-button-rounded p-button-success p-button-sm"
-                                    @click="acceptTicket(slotProps.data)"
-                                    v-tooltip="'Aceptar trabajo'"
-                                />
-                                <Button
-                                    v-if="isSupplierApproved && canRejectTicket(slotProps.data)"
-                                    icon="pi pi-times"
+                                    @click="acceptTicket(slotProps.data)" v-tooltip="'Aceptar trabajo'" />
+                                <Button v-if="isSupplierApproved && canRejectTicket(slotProps.data)" icon="pi pi-times"
                                     class="p-button-rounded p-button-danger p-button-sm"
-                                    @click="rejectTicket(slotProps.data)"
-                                    v-tooltip="'Rechazar trabajo'"
-                                />
+                                    @click="rejectTicket(slotProps.data)" v-tooltip="'Rechazar trabajo'" />
                                 <Button
                                     v-if="isSupplierApproved && slotProps.data.status === 'opened' && slotProps.data.supplier_id === currentSupplierId"
-                                    icon="pi pi-play"
-                                    class="p-button-rounded p-button-info p-button-sm"
-                                    @click="startWork(slotProps.data)"
-                                    v-tooltip="'Iniciar trabajo'"
-                                />
+                                    icon="pi pi-play" class="p-button-rounded p-button-info p-button-sm"
+                                    @click="startWork(slotProps.data)" v-tooltip="'Iniciar trabajo'" />
                                 <Button
-                                    v-if="isSupplierApproved && slotProps.data.status === 'in_progress' && slotProps.data.supplier_id === currentSupplierId"
-                                    icon="pi pi-upload"
-                                    class="p-button-rounded p-button-warning p-button-sm"
-                                    @click="uploadEvidence(slotProps.data)"
-                                    v-tooltip="'Subir evidencias'"
-                                />
+                                    v-if="isSupplierApproved && ['in_progress', 'completed'].includes(slotProps.data.status) && slotProps.data.supplier_id === currentSupplierId"
+                                    icon="pi pi-upload" class="p-button-rounded p-button-warning p-button-sm"
+                                    @click="uploadEvidence(slotProps.data)" v-tooltip="'Subir evidencias'" />
                             </div>
                         </template>
                     </Column>
@@ -179,20 +141,15 @@
     </div>
 
     <!-- Dialog para ver detalles del ticket -->
-    <Dialog v-model:visible="showTicketDialog" modal :style="{ width: '90vw', maxWidth: '1200px' }" header="Detalles del Ticket">
+    <Dialog v-model:visible="showTicketDialog" modal :style="{ width: '90vw', maxWidth: '1200px' }"
+        header="Detalles del Ticket">
         <div v-if="selectedTicket">
             <Splitter style="height: 600px">
                 <!-- Panel 1: Mapa (30%) -->
                 <SplitterPanel :size="30" :minSize="20">
                     <div class="h-full flex items-center justify-content-center">
-                        <iframe
-                            v-if="selectedTicket.location_address"
-                            width="100%"
-                            height="100%"
-                            class="border-none"
-                            loading="lazy"
-                            :src="mapSrc"
-                        ></iframe>
+                        <iframe v-if="selectedTicket.location_address" width="100%" height="100%" class="border-none"
+                            loading="lazy" :src="mapSrc"></iframe>
                         <div v-else class="flex flex-column align-items-center justify-content-center h-full text-500">
                             <i class="pi pi-map-marker text-4xl mb-2"></i>
                             <span>Sin ubicación</span>
@@ -212,15 +169,19 @@
                                 </h6>
 
                                 <!-- Revision Comments Alert -->
-                                <Message v-if="selectedTicket.status === 'revision_requested' && selectedTicket.revision_comments" severity="warn" :closable="false" class="mb-3">
+                                <Message
+                                    v-if="selectedTicket.status === 'revision_requested' && selectedTicket.revision_comments"
+                                    severity="warn" :closable="false" class="mb-3">
                                     <strong>Cambios solicitados:</strong>
                                     <p class="mt-2 mb-0">{{ selectedTicket.revision_comments }}</p>
                                 </Message>
 
-                                <div class="flex align-items-center gap-2 mb-3" v-if="isSupplierApproved && selectedTicket.client">
+                                <div class="flex align-items-center gap-2 mb-3"
+                                    v-if="isSupplierApproved && selectedTicket.client">
                                     <Avatar :label="selectedTicket.client.company_name[0]" shape="circle" />
                                     <div>
-                                        <div class="font-semibold text-sm">{{ selectedTicket.client.company_name }}</div>
+                                        <div class="font-semibold text-sm">{{ selectedTicket.client.company_name }}
+                                        </div>
                                         <div class="text-xs text-500">{{ selectedTicket.client.contact_person }}</div>
                                     </div>
                                 </div>
@@ -229,21 +190,16 @@
 
                                 <!-- Indicadores (Status movido aquí) -->
                                 <div class="flex flex-wrap gap-2">
-                                    <Tag 
-                                        :value="getStatusLabel(selectedTicket.status)" 
-                                        :severity="selectedTicket.status === 'revision_requested' ? 'warning' : getStatusSeverity(selectedTicket.status)" 
-                                    />
-                                    <Tag 
-                                        :value="getMaintenanceTypeLabel(selectedTicket.maintenance_type)" 
+                                    <Tag :value="getStatusLabel(selectedTicket.status)"
+                                        :severity="selectedTicket.status === 'revision_requested' ? 'warning' : getStatusSeverity(selectedTicket.status)" />
+                                    <Tag :value="getMaintenanceTypeLabel(selectedTicket.maintenance_type)"
                                         icon="pi pi-wrench"
-                                        :severity="getMaintenanceTypeSeverity(selectedTicket.maintenance_type)"
-                                    />
-                                    <Tag 
-                                        :value="getPriorityLabel(selectedTicket.priority)" 
+                                        :severity="getMaintenanceTypeSeverity(selectedTicket.maintenance_type)" />
+                                    <Tag :value="getPriorityLabel(selectedTicket.priority)"
                                         icon="pi pi-exclamation-circle"
-                                        :severity="getPrioritySeverity(selectedTicket.priority)"
-                                    />
-                                    <Chip v-if="selectedTicket.location_city" :label="selectedTicket.location_city" icon="pi pi-map-marker" />
+                                        :severity="getPrioritySeverity(selectedTicket.priority)" />
+                                    <Chip v-if="selectedTicket.location_city" :label="selectedTicket.location_city"
+                                        icon="pi pi-map-marker" />
                                 </div>
                             </div>
                         </SplitterPanel>
@@ -265,33 +221,41 @@
                                             <i class="pi pi-comments mr-2"></i>
                                             Chat
                                         </Tab>
+                                        <Tab value="3">
+                                            <i class="pi pi-star mr-2"></i>
+                                            Reseñas
+                                        </Tab>
                                     </TabList>
                                     <TabPanels class="h-full overflow-y-auto">
                                         <!-- Tab 1: Galería de Imágenes -->
                                         <TabPanel value="0">
-                                            <div v-if="selectedTicket.attachments && selectedTicket.attachments.length > 0">
-                                                <Galleria 
-                                                    :value="selectedTicket.attachments" 
-                                                    :responsiveOptions="galleriaResponsiveOptions" 
-                                                    :numVisible="5"
-                                                    :circular="true"
-                                                    containerStyle="max-width: 100%"
-                                                >
+                                            <div
+                                                v-if="selectedTicket.attachments && selectedTicket.attachments.length > 0">
+                                                <Galleria :value="selectedTicket.attachments"
+                                                    :responsiveOptions="galleriaResponsiveOptions" :numVisible="5"
+                                                    :circular="true" containerStyle="max-width: 100%">
                                                     <template #item="slotProps">
-                                                        <img :src="slotProps.item.url" :alt="slotProps.item.description || 'Imagen adjunta'" style="width: 100%; display: block;" />
+                                                        <img :src="slotProps.item.url"
+                                                            :alt="slotProps.item.description || 'Imagen adjunta'"
+                                                            style="width: 100%; display: block;" />
                                                     </template>
                                                     <template #thumbnail="slotProps">
-                                                        <img :src="slotProps.item.url" :alt="slotProps.item.description || 'Imagen adjunta'" style="display: block;" />
+                                                        <img :src="slotProps.item.url"
+                                                            :alt="slotProps.item.description || 'Imagen adjunta'"
+                                                            style="display: block;" />
                                                     </template>
                                                     <template #caption="slotProps">
                                                         <div class="text-center p-3">
-                                                            <h4 class="mb-2">{{ getAttachmentTypeLabel(slotProps.item.type) }}</h4>
-                                                            <p v-if="slotProps.item.description">{{ slotProps.item.description }}</p>
+                                                            <h4 class="mb-2">{{
+                                                                getAttachmentTypeLabel(slotProps.item.type) }}</h4>
+                                                            <p v-if="slotProps.item.description">{{
+                                                                slotProps.item.description }}</p>
                                                         </div>
                                                     </template>
                                                 </Galleria>
                                             </div>
-                                            <div v-else class="flex flex-column align-items-center justify-content-center p-5 text-500">
+                                            <div v-else
+                                                class="flex flex-column align-items-center justify-content-center p-5 text-500">
                                                 <i class="pi pi-images text-4xl mb-3"></i>
                                                 <p>No hay imágenes adjuntas</p>
                                             </div>
@@ -302,7 +266,8 @@
                                             <div v-if="isSupplierApproved">
                                                 <QuoteForm :ticketId="selectedTicket.id" />
                                             </div>
-                                            <div v-else class="flex align-items-center justify-content-center text-500 p-5">
+                                            <div v-else
+                                                class="flex align-items-center justify-content-center text-500 p-5">
                                                 <i class="pi pi-lock mr-2"></i> Cotizaciones disponibles al aprobarse
                                             </div>
                                         </TabPanel>
@@ -312,8 +277,32 @@
                                             <div v-if="isSupplierApproved">
                                                 <TicketChat :ticketId="selectedTicket.id" />
                                             </div>
-                                            <div v-else class="flex align-items-center justify-content-center text-500 p-5">
+                                            <div v-else
+                                                class="flex align-items-center justify-content-center text-500 p-5">
                                                 <i class="pi pi-lock mr-2"></i> Chat disponible al aprobarse
+                                            </div>
+                                        </TabPanel>
+
+                                        <!-- Tab 4: Reseñas -->
+                                        <TabPanel value="3">
+                                            <div v-if="selectedTicket.review" class="p-4">
+                                                <div class="flex align-items-center gap-3 mb-3">
+                                                    <Rating :modelValue="selectedTicket.review.rating" readonly
+                                                        :cancel="false" />
+                                                    <span class="text-xl font-semibold">{{ selectedTicket.review.rating
+                                                        }}/5</span>
+                                                </div>
+                                                <div v-if="selectedTicket.review.comment"
+                                                    class="p-3 surface-100 border-round">
+                                                    <p class="m-0">{{ selectedTicket.review.comment }}</p>
+                                                </div>
+                                                <small class="text-500 mt-2 block">Calificado el {{
+                                                    formatDate(selectedTicket.review.created_at) }}</small>
+                                            </div>
+                                            <div v-else
+                                                class="flex flex-column align-items-center justify-content-center p-5 text-500">
+                                                <i class="pi pi-star text-4xl mb-3"></i>
+                                                <p>Este ticket aún no ha sido calificado</p>
                                             </div>
                                         </TabPanel>
                                     </TabPanels>
@@ -328,34 +317,15 @@
         <template #footer>
             <div class="flex justify-content-between">
                 <div class="flex gap-2">
-                    <Button
-                        v-if="isSupplierApproved && canAcceptTicket(selectedTicket)"
-                        label="Aceptar Trabajo"
-                        icon="pi pi-check"
-                        class="p-button-success"
-                        @click="acceptTicket(selectedTicket)"
-                    />
-                    <Button
-                        v-if="isSupplierApproved && canRejectTicket(selectedTicket)"
-                        label="Rechazar"
-                        icon="pi pi-times"
-                        class="p-button-danger"
-                        @click="rejectTicket(selectedTicket)"
-                    />
-                    <Button
-                        v-if="isSupplierApproved && selectedTicket.status === 'opened'"
-                        label="Solicitar Revisión"
-                        icon="pi pi-search"
-                        class="p-button-info"
-                        @click="requestReview(selectedTicket)"
-                    />
-                    <Button
-                v-if="isSupplierApproved && selectedTicket.status === 'revision_requested'"
-                label="Reabrir para Correcciones"
-                icon="pi pi-refresh"
-                class="p-button-warning"
-                @click="sendCorrections(selectedTicket)"
-            />
+                    <Button v-if="isSupplierApproved && canAcceptTicket(selectedTicket)" label="Aceptar Trabajo"
+                        icon="pi pi-check" class="p-button-success" @click="acceptTicket(selectedTicket)" />
+                    <Button v-if="isSupplierApproved && canRejectTicket(selectedTicket)" label="Rechazar"
+                        icon="pi pi-times" class="p-button-danger" @click="rejectTicket(selectedTicket)" />
+                    <Button v-if="isSupplierApproved && selectedTicket.status === 'opened'" label="Solicitar Revisión"
+                        icon="pi pi-search" class="p-button-info" @click="requestReview(selectedTicket)" />
+                    <Button v-if="isSupplierApproved && selectedTicket.status === 'revision_requested'"
+                        label="Reabrir para Correcciones" icon="pi pi-refresh" class="p-button-warning"
+                        @click="sendCorrections(selectedTicket)" />
 
                 </div>
                 <Button label="Cerrar" icon="pi pi-times" class="p-button-text" @click="showTicketDialog = false" />
@@ -363,7 +333,7 @@
         </template>
 
 
-            <!-- Botones de Acción -->
+        <!-- Botones de Acción -->
 
 
 
@@ -374,13 +344,8 @@
     <Dialog v-model:visible="showRejectDialog" modal :style="{ width: '450px' }" header="Rechazar Ticket">
         <div class="field">
             <label for="rejection-reason">Motivo del rechazo:</label>
-            <Textarea
-                id="rejection-reason"
-                v-model="rejectionReason"
-                rows="4"
-                class="w-full"
-                placeholder="Explica por qué no puedes realizar este trabajo..."
-            />
+            <Textarea id="rejection-reason" v-model="rejectionReason" rows="4" class="w-full"
+                placeholder="Explica por qué no puedes realizar este trabajo..." />
         </div>
         <template #footer>
             <Button label="Cancelar" icon="pi pi-times" class="p-button-text" @click="showRejectDialog = false" />
@@ -389,27 +354,13 @@
     </Dialog>
 
     <!-- Dialog para subir evidencias -->
-    <Dialog
-        v-model:visible="showEvidenceDialog"
-        modal
-        :style="{ width: '90vw', maxWidth: '1200px' }"
-        header="Subir Evidencias del Trabajo"
-        class="p-dialog-maximized"
-    >
-        <EvidenceUpload
-            v-if="evidenceTicket"
-            :ticket="evidenceTicket"
-            @evidence-uploaded="onEvidenceUploaded"
-            @status-changed="onTicketStatusChanged"
-        />
+    <Dialog v-model:visible="showEvidenceDialog" modal :style="{ width: '90vw', maxWidth: '1200px' }"
+        header="Subir Evidencias del Trabajo" class="p-dialog-maximized">
+        <EvidenceUpload v-if="evidenceTicket" :ticket="evidenceTicket" @evidence-uploaded="onEvidenceUploaded"
+            @status-changed="onTicketStatusChanged" />
 
         <template #footer>
-            <Button
-                label="Cerrar"
-                icon="pi pi-times"
-                class="p-button-text"
-                @click="showEvidenceDialog = false"
-            />
+            <Button label="Cerrar" icon="pi pi-times" class="p-button-text" @click="showEvidenceDialog = false" />
         </template>
     </Dialog>
 </template>
@@ -491,9 +442,9 @@ const filteredTickets = computed(() => {
 });
 
 const mapSrc = computed(() => {
-  if (!selectedTicket.value) return '';
-  const address = `${selectedTicket.value.location_address}, ${selectedTicket.value.location_city}, ${selectedTicket.value.location_state}`;
-  return `https://www.google.com/maps/embed/v1/place?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}&q=${encodeURIComponent(address)}`;
+    if (!selectedTicket.value) return '';
+    const address = `${selectedTicket.value.location_address}, ${selectedTicket.value.location_city}, ${selectedTicket.value.location_state}`;
+    return `https://www.google.com/maps/embed/v1/place?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}&q=${encodeURIComponent(address)}`;
 });
 
 // Options
@@ -532,7 +483,8 @@ const loadTickets = async () => {
                 client:clients(*),
                 branch:client_branches(*),
                 asset:client_assets(*),
-                supplier:supplier_profiles(*)
+                supplier:supplier_profiles(*),
+                review:reviews(*)
             `)
             .order('created_at', { ascending: false });
 
@@ -553,10 +505,10 @@ const loadTickets = async () => {
         const { data, error } = await query;
 
         if (error) throw error;
-        
+
         console.log('📦 Raw tickets data from Supabase:', data);
         console.log('📦 First ticket attachments (JSONB):', data?.[0]?.attachments);
-        
+
         // Attachments are already in JSONB format, no transformation needed
         tickets.value = data || [];
     } catch (error) {
@@ -577,118 +529,118 @@ import { useS3Upload } from '@/composables/useS3Upload';
 const { getSignedUrl } = useS3Upload();
 
 const viewTicket = async (ticket) => {
-  selectedTicket.value = ticket;
-  showTicketDialog.value = true;
-  
-  // Refresh signed URLs for attachments if needed
-  if (ticket.attachments && ticket.attachments.length > 0) {
-      const refreshedAttachments = await Promise.all(
-          ticket.attachments.map(async (att) => ({
-              ...att,
-              url: att.key ? await getSignedUrl(att.key) : att.url
-          }))
-      );
-      selectedTicket.value = { ...ticket, attachments: refreshedAttachments };
-  }
+    selectedTicket.value = ticket;
+    showTicketDialog.value = true;
 
-  // TODO: Initialize chat for this ticket when Firebase chat is implemented
-  // const { messages, isTyping, sendMessage, markAsRead, setTypingStatus } = useFirebaseChat(ticket.id);
-  // chatData.value = { messages, isTyping, sendMessage, markAsRead, setTypingStatus };
+    // Refresh signed URLs for attachments if needed
+    if (ticket.attachments && ticket.attachments.length > 0) {
+        const refreshedAttachments = await Promise.all(
+            ticket.attachments.map(async (att) => ({
+                ...att,
+                url: att.key ? await getSignedUrl(att.key) : att.url
+            }))
+        );
+        selectedTicket.value = { ...ticket, attachments: refreshedAttachments };
+    }
+
+    // TODO: Initialize chat for this ticket when Firebase chat is implemented
+    // const { messages, isTyping, sendMessage, markAsRead, setTypingStatus } = useFirebaseChat(ticket.id);
+    // chatData.value = { messages, isTyping, sendMessage, markAsRead, setTypingStatus };
 };
 
 const canAcceptTicket = (ticket) => {
     return ['pending', 'opened'].includes(ticket.status) &&
-           (ticket.maintenance_type === 'corrective' || !ticket.supplier_id);
+        (ticket.maintenance_type === 'corrective' || !ticket.supplier_id);
 };
 
 const canRejectTicket = (ticket) => {
     return ['pending', 'opened'].includes(ticket.status) &&
-           (ticket.maintenance_type === 'corrective' || !ticket.supplier_id);
+        (ticket.maintenance_type === 'corrective' || !ticket.supplier_id);
 };
 
 const acceptTicket = async (ticket) => {
-  if (!isSupplierApproved.value) {
-    toast.add({
-      severity: 'warn',
-      summary: 'Acceso Restringido',
-      detail: 'Debe ser aprobado antes de aceptar trabajos',
-      life: 3000
-    });
-    return;
-  }
-
-  try {
-    const { error } = await supabase
-      .from('tickets')
-      .update({
-        supplier_id: currentSupplierId.value,
-        status: 'opened',
-        updated_at: new Date().toISOString()
-      })
-      .eq('id', ticket.id);
-
-    if (error) throw error;
-
-    // Create Google Calendar event if scheduled_date exists
-    if (ticket.scheduled_date) {
-      try {
-        const { useGoogleCalendar } = await import('@/composables/useGoogleCalendar.js');
-        const calendar = useGoogleCalendar();
-        
-        // Initialize if not already done
-        if (!calendar.isGapiLoaded.value) {
-          await calendar.initializeGoogleCalendar();
-        }
-        
-        // Authorize if needed
-        if (!calendar.isAuthorized.value) {
-          const authorized = await calendar.authorizeUser();
-          if (!authorized) {
-            console.warn('Google Calendar authorization failed, skipping event creation');
-          }
-        }
-        
-        // Create event if authorized
-        if (calendar.isAuthorized.value) {
-          const scheduledDate = new Date(ticket.scheduled_date);
-          const endDate = new Date(scheduledDate);
-          endDate.setHours(scheduledDate.getHours() + 2); // Default 2 hour duration
-          
-          await calendar.createEvent({
-            title: `Mantex: ${ticket.title}`,
-            description: `Ticket #${ticket.ticket_number}\n\n${ticket.description}\n\nCliente: ${ticket.client?.company_name || 'N/A'}\nCategoría: ${ticket.category}`,
-            location: ticket.location_address ? `${ticket.location_address}, ${ticket.location_city}, ${ticket.location_state}` : '',
-            startDateTime: scheduledDate.toISOString(),
-            endDateTime: endDate.toISOString(),
-            attendees: ticket.client?.email ? [{ email: ticket.client.email }] : []
-          });
-          
-          console.log('✅ Google Calendar event created for ticket:', ticket.ticket_number);
-        }
-      } catch (calendarError) {
-        // Don't fail ticket acceptance if calendar fails
-        console.error('Error creating calendar event:', calendarError);
-      }
+    if (!isSupplierApproved.value) {
+        toast.add({
+            severity: 'warn',
+            summary: 'Acceso Restringido',
+            detail: 'Debe ser aprobado antes de aceptar trabajos',
+            life: 3000
+        });
+        return;
     }
 
-    toast.add({
-      severity: 'success',
-      summary: 'Trabajo Aceptado',
-      detail: `Has aceptado el trabajo ${ticket.ticket_number}`,
-      life: 3000
-    });
+    try {
+        const { error } = await supabase
+            .from('tickets')
+            .update({
+                supplier_id: currentSupplierId.value,
+                status: 'opened',
+                updated_at: new Date().toISOString()
+            })
+            .eq('id', ticket.id);
 
-    await loadTickets();
-    showTicketDialog.value = false;
-  } catch (error) {
-    console.error('Error accepting ticket:', error);
-    toast.add({
-      severity: 'error',
-      summary: 'Error',
-      detail: 'Error al aceptar el trabajo',
-      life: 3000
-    });
-  }
+        if (error) throw error;
+
+        // Create Google Calendar event if scheduled_date exists
+        if (ticket.scheduled_date) {
+            try {
+                const { useGoogleCalendar } = await import('@/composables/useGoogleCalendar.js');
+                const calendar = useGoogleCalendar();
+
+                // Initialize if not already done
+                if (!calendar.isGapiLoaded.value) {
+                    await calendar.initializeGoogleCalendar();
+                }
+
+                // Authorize if needed
+                if (!calendar.isAuthorized.value) {
+                    const authorized = await calendar.authorizeUser();
+                    if (!authorized) {
+                        console.warn('Google Calendar authorization failed, skipping event creation');
+                    }
+                }
+
+                // Create event if authorized
+                if (calendar.isAuthorized.value) {
+                    const scheduledDate = new Date(ticket.scheduled_date);
+                    const endDate = new Date(scheduledDate);
+                    endDate.setHours(scheduledDate.getHours() + 2); // Default 2 hour duration
+
+                    await calendar.createEvent({
+                        title: `Mantex: ${ticket.title}`,
+                        description: `Ticket #${ticket.ticket_number}\n\n${ticket.description}\n\nCliente: ${ticket.client?.company_name || 'N/A'}\nCategoría: ${ticket.category}`,
+                        location: ticket.location_address ? `${ticket.location_address}, ${ticket.location_city}, ${ticket.location_state}` : '',
+                        startDateTime: scheduledDate.toISOString(),
+                        endDateTime: endDate.toISOString(),
+                        attendees: ticket.client?.email ? [{ email: ticket.client.email }] : []
+                    });
+
+                    console.log('✅ Google Calendar event created for ticket:', ticket.ticket_number);
+                }
+            } catch (calendarError) {
+                // Don't fail ticket acceptance if calendar fails
+                console.error('Error creating calendar event:', calendarError);
+            }
+        }
+
+        toast.add({
+            severity: 'success',
+            summary: 'Trabajo Aceptado',
+            detail: `Has aceptado el trabajo ${ticket.ticket_number}`,
+            life: 3000
+        });
+
+        await loadTickets();
+        showTicketDialog.value = false;
+    } catch (error) {
+        console.error('Error accepting ticket:', error);
+        toast.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Error al aceptar el trabajo',
+            life: 3000
+        });
+    }
 };
 
 const rejectTicket = (ticket) => {
@@ -774,43 +726,43 @@ const startWork = async (ticket) => {
     }
 };
 
-    const sendCorrections = async (ticket) => {
-        try {
-            // Change status to in_progress and clear revision comments
-            const { error } = await supabase
-                .from('tickets')
-                .update({
-                    status: 'in_progress',
-                    revision_comments: null,
-                    updated_at: new Date().toISOString()
-                })
-                .eq('id', ticket.id);
+const sendCorrections = async (ticket) => {
+    try {
+        // Change status to in_progress and clear revision comments
+        const { error } = await supabase
+            .from('tickets')
+            .update({
+                status: 'in_progress',
+                revision_comments: null,
+                updated_at: new Date().toISOString()
+            })
+            .eq('id', ticket.id);
 
-            if (error) throw error;
+        if (error) throw error;
 
-            // Open evidence upload dialog for the ticket
-            evidenceTicket.value = ticket;
-            showEvidenceDialog.value = true;
+        // Open evidence upload dialog for the ticket
+        evidenceTicket.value = ticket;
+        showEvidenceDialog.value = true;
 
-            toast.add({
-                severity: 'success',
-                summary: 'Ticket Reabierto',
-                detail: `El ticket ${ticket.ticket_number} ha sido reabierto para subir evidencias`,
-                life: 3000
-            });
+        toast.add({
+            severity: 'success',
+            summary: 'Ticket Reabierto',
+            detail: `El ticket ${ticket.ticket_number} ha sido reabierto para subir evidencias`,
+            life: 3000
+        });
 
-            await loadTickets();
-            showTicketDialog.value = false;
-        } catch (error) {
-            console.error('Error reopening ticket:', error);
-            toast.add({
-                severity: 'error',
-                summary: 'Error',
-                detail: 'Error al reabrir el ticket',
-                life: 3000
-            });
-        }
-    };
+        await loadTickets();
+        showTicketDialog.value = false;
+    } catch (error) {
+        console.error('Error reopening ticket:', error);
+        toast.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Error al reabrir el ticket',
+            life: 3000
+        });
+    }
+};
 
 const uploadEvidence = (ticket) => {
     evidenceTicket.value = ticket;

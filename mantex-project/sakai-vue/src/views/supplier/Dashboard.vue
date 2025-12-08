@@ -128,7 +128,6 @@ import { ref, onMounted } from 'vue';
 import { useAuth } from '@/composables/useAuth.js';
 import Chart from 'primevue/chart';
 import Button from 'primevue/button';
-import Button from 'primevue/button';
 import Tag from 'primevue/tag';
 import Rating from 'primevue/rating';
 
@@ -155,8 +154,8 @@ const loadDashboardData = async () => {
 
         // Get supplier ID, Rating and Total Jobs directly from source
         const { data: supplierData, error: supplierError } = await supabase
-            .from('suppliers')
-            .select('id, rating, total_jobs')
+            .from('supplier_profiles')
+            .select('id')
             .eq('user_id', user.value.id)
             .single();
 
@@ -223,6 +222,12 @@ const loadDashboardData = async () => {
                     ...r,
                     ticket_number: r.ticket?.ticket_number || 'N/A'
                 }));
+
+                // Calculate average rating from reviews
+                if (reviewsData.length > 0) {
+                    const sum = reviewsData.reduce((acc, r) => acc + r.rating, 0);
+                    averageRating.value = Number((sum / reviewsData.length).toFixed(2));
+                }
             }
 
             // Calculate average rating -> Moved to Authoritative Source (supplierData.rating)

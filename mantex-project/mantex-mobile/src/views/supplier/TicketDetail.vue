@@ -247,9 +247,24 @@
             </swiper>
         </div>
         <div v-else class="empty-state-small">
-            <p>No has subido evidencias aún.</p>
+            <p>No has subido evidencias aun.</p>
         </div>
       </div>
+
+      <!-- Client Review Section -->
+      <ion-card v-if="review">
+        <ion-card-header>
+          <ion-card-title>Calificacion del Cliente</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="review-rating">
+            <ion-icon v-for="star in 5" :key="star" :icon="star <= review.rating ? starIcon : starOutlineIcon" :class="['star-icon', { 'star-filled': star <= review.rating }]"></ion-icon>
+            <span class="rating-value">{{ review.rating }}/5</span>
+          </div>
+          <p v-if="review.comment" class="review-comment">{{ review.comment }}</p>
+          <p class="review-date">Calificado el {{ formatDate(review.created_at) }}</p>
+        </ion-card-content>
+      </ion-card>
 
     </ion-content>
 
@@ -299,7 +314,8 @@ import {
 import {
   businessOutline, calendarOutline, personOutline,
   checkmarkCircleOutline, timeOutline, alertCircleOutline, closeCircleOutline,
-  hourglassOutline, sendOutline, playOutline, cashOutline, mapOutline, locationOutline, callOutline
+  hourglassOutline, sendOutline, playOutline, cashOutline, mapOutline, locationOutline, callOutline,
+  star as starIcon, starOutline as starOutlineIcon
 } from 'ionicons/icons';
 import { Swiper, SwiperSlide } from 'swiper/vue';
 import { Pagination } from 'swiper/modules';
@@ -323,6 +339,7 @@ const ticketId = route.params.id;
 const ticket = ref(null);
 const photos = ref([]);
 const evidence = ref([]);
+const review = ref(null);
 const messages = ref([]);
 const loading = ref(true);
 const showPhotoModal = ref(false);
@@ -348,7 +365,8 @@ const loadTicket = async () => {
     await Promise.all([
         loadPhotos(),
         loadEvidence(),
-        loadMessages()
+        loadMessages(),
+        loadReview()
     ]);
 
     // Initialize map
@@ -404,6 +422,21 @@ const loadEvidence = async () => {
     );
   } catch (error) {
     console.error('Error loading evidence:', error);
+  }
+};
+
+const loadReview = async () => {
+  try {
+    const { data, error } = await supabase
+      .from('reviews')
+      .select('*')
+      .eq('ticket_id', ticketId)
+      .single();
+
+    if (error && error.code !== 'PGRST116') throw error;
+    review.value = data || null;
+  } catch (error) {
+    console.error('Error loading review:', error);
   }
 };
 
@@ -771,5 +804,39 @@ onUnmounted(() => {
     padding: 1rem;
     border: 1px dashed var(--ion-color-medium);
     border-radius: 8px;
+}
+
+.review-rating {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-bottom: 1rem;
+}
+
+.star-icon {
+  font-size: 1.5rem;
+  color: var(--ion-color-medium);
+}
+
+.star-icon.star-filled {
+  color: var(--ion-color-warning);
+}
+
+.rating-value {
+  margin-left: 0.5rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.review-comment {
+  background: var(--ion-color-light);
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+}
+
+.review-date {
+  color: var(--ion-color-medium);
+  font-size: 0.85rem;
 }
 </style>

@@ -61,6 +61,18 @@
             </div>
           </ion-card-content>
         </ion-card>
+
+        <ion-card>
+          <ion-card-content>
+            <div class="stat-item">
+              <ion-icon :icon="starOutline" class="stat-icon rating"></ion-icon>
+              <div class="stat-text">
+                <h3>{{ averageRating.toFixed(1) }}</h3>
+                <p>Calificacion</p>
+              </div>
+            </div>
+          </ion-card-content>
+        </ion-card>
       </div>
 
       <!-- Next Jobs -->
@@ -117,7 +129,7 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import {
   IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonCard, IonCardContent,
   IonIcon, IonButton, IonButtons, IonChip, IonSpinner, IonBadge
@@ -125,17 +137,47 @@ import {
 import {
   constructOutline, checkmarkCircleOutline, timeOutline, locationOutline,
   refreshOutline, warningOutline, cameraOutline, businessOutline, calendarOutline,
-  qrCodeOutline, briefcaseOutline
+  qrCodeOutline, briefcaseOutline, starOutline
 } from 'ionicons/icons';
 import { useTechnicianTickets } from '@/composables/useTechnicianTickets.js';
 import { useRouter } from 'vue-router';
 import { translateStatus, translatePriority, getPriorityColor, getStatusColor, formatDate } from '@/utils/status-utils.js';
+import { supabase } from '@/lib/supabaseClient';
 
 const router = useRouter();
 const { fetchTickets, stats, nextJobs, loading } = useTechnicianTickets();
+const averageRating = ref(0);
 
 const refreshData = async () => {
   await fetchTickets();
+  await loadRating();
+};
+
+const loadRating = async () => {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    
+    const { data: supplierProfile } = await supabase
+      .from('supplier_profiles')
+      .select('id')
+      .eq('user_id', user.id)
+      .single();
+    
+    if (!supplierProfile) return;
+    
+    const { data: reviews } = await supabase
+      .from('reviews')
+      .select('rating')
+      .eq('reviewed_supplier_id', supplierProfile.id);
+    
+    if (reviews && reviews.length > 0) {
+      const sum = reviews.reduce((acc, r) => acc + r.rating, 0);
+      averageRating.value = sum / reviews.length;
+    }
+  } catch (e) {
+    console.error('Error loading rating:', e);
+  }
 };
 
 // Translation functions now imported from @/utils/status-utils.js
@@ -190,6 +232,10 @@ onMounted(() => {
 
 .stat-icon.scheduled {
   color: var(--ion-color-tertiary);
+}
+
+.stat-icon.rating {
+  color: var(--ion-color-warning);
 }
 
 .stat-text h3 {
