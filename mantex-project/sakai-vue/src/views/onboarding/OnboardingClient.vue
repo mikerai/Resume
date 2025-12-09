@@ -487,15 +487,36 @@ const saveINEValidationToDB = async (ineValidation, frontFile, backFile, selfieF
 
 const processSATValidation = async () => {
     loading.value = true;
+    
     toast.add({
         severity: 'info',
-        summary: 'Validando SAT',
-        detail: 'Verificando RFC...',
-        life: 3000
+        summary: 'Validacion en Progreso',
+        detail: 'Procesando datos fiscales... Puedes continuar',
+        life: 5000
     });
 
+    // Disparar validacion asincrona en background
+    processSATValidationAsync();
+
+    // Datos temporales para permitir continuar
+    formData.value.satValidationResults = {
+        validacion: 'procesando',
+        mensaje: 'Validacion fiscal en progreso...'
+    };
+
+    loading.value = false;
+    return true; // Siempre retorna true para no bloquear
+};
+
+/**
+ * Procesar validacion SAT de forma asincrona en background
+ * El usuario puede continuar mientras esto se ejecuta
+ */
+const processSATValidationAsync = async () => {
     try {
-        // Paso 1: Obtener nombre/razón social del RFC
+        console.log('Iniciando validacion asincrona SAT...');
+
+        // Paso 1: Obtener nombre/razon social del RFC
         const rfcNameResult = await nubariumService.getRFCName(formData.value.rfc);
 
         if (rfcNameResult.success && rfcNameResult.normalized.tieneNombre) {
@@ -507,80 +528,128 @@ const processSATValidation = async () => {
             });
         }
 
-        // Paso 2: For clients, we only validate RFC, CIEC is optional
+        // Paso 2: Validacion RFC
         const rfcValidation = await nubariumService.validateClientRFC(formData.value.rfc);
-
-        if (!rfcValidation.success) {
-            throw new Error(rfcValidation.error || 'Error en validación de RFC');
-        }
-
-        // Combinar resultados de nombre y validación RFC
-        formData.value.satValidationResults = {
-            ...rfcValidation.normalized,
-            nombreRazonSocial: rfcNameResult.success ? rfcNameResult.normalized : null
-        };
 
         // Paso 3: Optional CIEC validation
         let ciecValidation = null;
         if (formData.value.ciecPassword && formData.value.ciecPassword.length >= 8) {
-            toast.add({
-                severity: 'info',
-                summary: 'Validando CIEC',
-                detail: 'Verificando contraseña CIEC...',
-                life: 3000
-            });
-
             ciecValidation = await nubariumService.validateClientCIEC({
                 rfc: formData.value.rfc,
                 password: formData.value.ciecPassword
             });
-
-            if (ciecValidation && ciecValidation.success) {
-                formData.value.satValidationResults.ciec = ciecValidation.normalized;
-            }
         }
 
-        // Guardar inmediatamente en base de datos
-        await saveSATValidationToDB(rfcNameResult, rfcValidation, ciecValidation);
+        // Guardar en base de datos (exito o fallo)
+        try {
+            await saveSATValidationToDB(rfcNameResult, rfcValidation, ciecValidation);
+            console.log('Validacion SAT guardada exitosamente');
+        } catch (saveError) {
+            console.error('Error guardando validacion SAT:', saveError);
+        }
 
-        toast.add({
-            severity: 'success',
-            summary: 'SAT Validado',
-            detail: 'RFC verificado correctamente y guardado',
-            life: 3000
-        });
+        if (rfcValidation.success) {
+            // Actualizar resultados en formData
+            formData.value.satValidationResults = {
+                ...rfcValidation.normalized,
+                nombreRazonSocial: rfcNameResult.success ? rfcNameResult.normalized : null,
+                ciec: ciecValidation?.success ? ciecValidation.normalized : null
+            };
 
-        return true;
+            toast.add({
+                severity: 'success',
+                summary: 'SAT Validado',
+                detail: 'RFC verificado correctamente',
+                life: 4000
+            });
+        } else {
+            formData.value.satValidationResults = {
+                validacion: 'error',
+                mensaje: rfcValidation.error || 'Error en validacion SAT'
+            };
 
+            toast.add({
+                severity: 'error',
+                summary: 'Validacion SAT Fallo',
+                detail: rfcValidation.error || 'Error en la validacion',
+                life: 6000
+            });
+        }
     } catch (error) {
-        console.error('Error en validación SAT:', error);
+        console.error('Error en validacion asincrona SAT:', error);
+
+        formData.value.satValidationResults = {
+            validacion: 'error',
+            mensaje: 'Error de conexion'
+        };
+
         toast.add({
-            severity: 'error',
-            summary: 'Error de Validación SAT',
-            detail: `Error al validar RFC: ${error.message}`,
+            severity: 'warn',
+            summary: 'Validacion SAT Pendiente',
+            detail: 'La validacion se completara en segundo plano',
             life: 5000
         });
-        return false;
-    } finally {
-        loading.value = false;
     }
 };
 
 const processINEValidation = async () => {
     loading.value = true;
-    toast.add({
-        severity: 'info',
-        summary: 'Validando INE',
-        detail: 'Procesando documentos con Nubarium...',
-        life: 3000
-    });
 
     try {
-        // Convert files to base64 without compression
-        console.log('[CONVERSION] Convirtiendo imágenes INE a base64...');
+        // Convertir archivos a base64
+        console.log('[CONVERSION] Convirtiendo imagenes INE a base64...');
         const frontBase64 = await fileToBase64(formData.value.ineFrontFile);
         const backBase64 = await fileToBase64(formData.value.ineBackFile);
         const selfieBase64 = await fileToBase64(formData.value.selfieFile);
+
+        // Mostrar progreso y permitir continuar
+        toast.add({
+            severity: 'info',
+            summary: 'Validacion en Progreso',
+            detail: 'Procesando INE... Puedes continuar con el siguiente paso',
+            life: 5000
+        });
+
+        // Disparar validacion asincrona en background
+        processINEValidationAsync(
+            frontBase64,
+            backBase64,
+            selfieBase64,
+            formData.value.ineFrontFile,
+            formData.value.ineBackFile,
+            formData.value.selfieFile
+        );
+
+        // Datos temporales para permitir continuar
+        formData.value.biometryResults = {
+            validacion: 'procesando',
+            mensaje: 'Validacion en progreso...'
+        };
+
+        return true; // Siempre retorna true para no bloquear
+
+    } catch (error) {
+        console.error('Error al preparar validacion de INE:', error);
+        // Incluso en error, permitir continuar
+        toast.add({
+            severity: 'warn',
+            summary: 'Validacion Pendiente',
+            detail: 'La validacion se completara en segundo plano',
+            life: 5000
+        });
+        return true;
+    } finally {
+        loading.value = false;
+    }
+};
+
+/**
+ * Procesar validacion INE de forma asincrona en background
+ * El usuario puede continuar mientras esto se ejecuta
+ */
+const processINEValidationAsync = async (frontBase64, backBase64, selfieBase64, frontFile, backFile, selfieFile) => {
+    try {
+        console.log('Iniciando validacion asincrona de INE...');
 
         // Client INE validation (OCR + Lista Nominal + Face Comparison, NO blacklist check)
         const ineValidation = await nubariumService.validateClientINE(
@@ -590,41 +659,56 @@ const processINEValidation = async () => {
             80 // 80% similarity threshold
         );
 
-        if (!ineValidation.success) {
-            throw new Error(ineValidation.error || 'Error en validación de INE');
+        // Guardar en base de datos y subir a S3 (exito o fallo)
+        try {
+            await saveINEValidationToDB(
+                ineValidation,
+                frontFile,
+                backFile,
+                selfieFile
+            );
+            console.log('Validacion INE guardada exitosamente');
+        } catch (saveError) {
+            console.error('Error guardando validacion INE:', saveError);
         }
 
-        formData.value.ineData = ineValidation.data;
-        formData.value.biometryResults = ineValidation.normalized;
+        if (ineValidation.success) {
+            formData.value.ineData = ineValidation.data;
+            formData.value.biometryResults = ineValidation.normalized;
 
-        // Guardar inmediatamente en base de datos y subir imagenes a S3
-        await saveINEValidationToDB(
-            ineValidation,
-            formData.value.ineFrontFile,
-            formData.value.ineBackFile,
-            formData.value.selfieFile
-        );
+            toast.add({
+                severity: 'success',
+                summary: 'INE Validado',
+                detail: 'Identidad verificada exitosamente',
+                life: 4000
+            });
+        } else {
+            formData.value.biometryResults = {
+                validacion: 'error',
+                mensaje: ineValidation.error || 'Error en validacion INE'
+            };
 
-        toast.add({
-            severity: 'success',
-            summary: 'INE Validado',
-            detail: 'Identidad verificada exitosamente y guardada',
-            life: 3000
-        });
-
-        return true;
-
+            toast.add({
+                severity: 'error',
+                summary: 'Validacion INE Fallo',
+                detail: ineValidation.error || 'Error en la validacion',
+                life: 6000
+            });
+        }
     } catch (error) {
-        console.error('Error en validación de INE:', error);
+        console.error('Error en validacion asincrona INE:', error);
+
+        formData.value.biometryResults = {
+            validacion: 'error',
+            mensaje: 'Error de conexion'
+        };
+
         toast.add({
-            severity: 'error',
-            summary: 'Error de Validación',
-            detail: `Error al validar INE: ${error.message}`,
+            severity: 'warn',
+            summary: 'Validacion INE Pendiente',
+            detail: 'La validacion se completara en segundo plano',
             life: 5000
         });
-        return false;
-    } finally {
-        loading.value = false;
     }
 };
 

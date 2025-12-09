@@ -382,10 +382,13 @@ import Tab from 'primevue/tab';
 import TabPanels from 'primevue/tabpanels';
 import TabPanel from 'primevue/tabpanel';
 import Galleria from 'primevue/galleria';
+import { usePermissions } from '@/composables/usePermissions';
+import { useS3Upload } from '@/composables/useS3Upload';
 
 const toast = useToast();
 const { user, profile } = useAuth();
 const { can, hasSubRole } = usePermissions();
+const { getSignedUrl } = useS3Upload();
 
 // Reactive data
 const tickets = ref([]);
@@ -477,9 +480,6 @@ const loadCurrentSupplier = async () => {
 const loadTickets = async () => {
     loading.value = true;
     try {
-const loadTickets = async () => {
-    loading.value = true;
-    try {
         let query = supabase
             .from('tickets')
             .select(`
@@ -517,8 +517,8 @@ const loadTickets = async () => {
 
         if (error) throw error;
 
-        console.log('📦 Raw tickets data from Supabase:', data);
-        console.log('📦 First ticket attachments (JSONB):', data?.[0]?.attachments);
+        console.log('[Jobs] Raw tickets data from Supabase:', data);
+        console.log('[Jobs] First ticket attachments (JSONB):', data?.[0]?.attachments);
 
         // Attachments are already in JSONB format, no transformation needed
         tickets.value = data || [];
@@ -535,9 +535,7 @@ const loadTickets = async () => {
     }
 };
 
-import { useS3Upload } from '@/composables/useS3Upload';
 
-const { getSignedUrl } = useS3Upload();
 
 const viewTicket = async (ticket) => {
     selectedTicket.value = ticket;
@@ -632,7 +630,7 @@ const acceptTicket = async (ticket) => {
                         attendees: ticket.client?.email ? [{ email: ticket.client.email }] : []
                     });
 
-                    console.log('✅ Google Calendar event created for ticket:', ticket.ticket_number);
+                    console.log('[Calendar] Google Calendar event created for ticket:', ticket.ticket_number);
                 }
             } catch (calendarError) {
                 // Don't fail ticket acceptance if calendar fails

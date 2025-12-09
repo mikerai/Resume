@@ -1,41 +1,37 @@
-# Session Summary - 2025-12-07
+# Session Summary - 2025-12-08
 
 ## Overview
-This session focused on **finalizing Phase 4 (Roles & Homologation)**. We successfully refactored the entire Client-side frontend to use the new `client_profiles` table, unified ticket queries via database views, and cleaned up the database by dropping deprecated tables. Additionally, we initiated the planning for **V2 Architecture** (Clean Architecture + AWS Serverless).
+Esta sesion se enfoco en analizar y documentar una estrategia de **resiliencia para el flujo de Onboarding** ante fallos de la API de Nubarium. El objetivo es que los usuarios (Clients y Suppliers) puedan completar su registro independientemente de si Nubarium responde o no.
 
 ## Objetivos Completados
-- **Refactor Frontend (Client)**: Updated all Client Vue components (`MaintenanceHistory`, `Assets`, `Settings`, `Branches`, `Headquarters`, `OnboardingClient`, `CompanyInfo`) to query `client_profiles` instead of `clients`.
-- **Database Cleanup**: Created scripts to safely drop `clients` and `clients_deprecated_backup` tables after migrating all dependencies (Foreign Keys & RLS).
-- **Homologation**: Created `unified_tickets_view` SQL view to standardize ticket fetching across Web and Mobile.
-- **Architecture**: Created `CLEAN_ARCHITECTURE_PROPOSAL.md` outlining the V2 migration strategy (Hexagonal Architecture on AWS).
-- **Bug Fixes**: Resolved DB errors preventing table deletion by finding and dropping obsolete policies.
+- **Analisis de Onboarding**: Revision exhaustiva de `OnboardingClient.vue` y `OnboardingSupplier.vue` para identificar puntos de bloqueo.
+- **Diagnostico**: Identificado que `OnboardingClient.vue` usa un flujo **sincrono bloqueante** (si Nubarium falla, el usuario no puede avanzar). `OnboardingSupplier.vue` ya tiene implementacion async.
+- **Documentacion**: Creado `ONBOARDING_RESILIENCE_PLAN.md` con plan detallado de 4 fases para hacer el onboarding resiliente.
 
 ## Bugs Resueltos
-- **Error dropping `clients_deprecated_backup`**: The table couldn't be dropped due to lingering RLS policies on `ticket_attachments`, `quotes`, etc.
-    - *Solution*: Created `clean_and_fix_dependencies.sql` to systematically drop specific policies and constraints before dropping the table.
-- **Missing Geo Fields**: `client_profiles` lacked `latitude`/`longitude`.
-    - *Solution*: Added columns via migration script.
-- **Missing `clients` table during migration**: Script tried to read from `clients` after it was renamed.
-    - *Solution*: Updated script to read from `clients_deprecated_backup`.
+- **Jobs.vue: Build error por funcion duplicada** - La funcion `loadTickets` estaba duplicada/corrupta (lineas 480-485), causando un error de sintaxis "Unexpected token". Se elimino la duplicacion.
+- **Jobs.vue: Import fuera de lugar** - Un `import { useS3Upload }` estaba en medio del archivo (linea 538) en lugar de con los otros imports. Se movio al inicio del script.
+- **Jobs.vue: Emojis en console.log** - Se removieron emojis de mensajes de console.log para cumplir con las guidelines del proyecto.
 
-## Decisiones Técnicas
-- **Single Source of Truth**: `client_profiles` and `supplier_profiles` are now the ONLY authority for user profile data. The generic `clients` and `suppliers` tables are removed.
-- **Database Views**: Adopted SQL Views (`unified_tickets_view`) to encapuslate complex join logic (Client+Supplier+Branch+Asset) at the database layer, simplifying frontend code.
-- **Move to AWS/Clean Arch**: confirmed as the strategic direction for V2.
+## Decisiones Tecnicas
+- **Principio "Never Block the User"**: Guardar datos localmente primero, validar con API en background.
+- **Patron Async**: Replicar la implementacion de `OnboardingSupplier.vue` (`processINEValidationAsync`) en `OnboardingClient.vue`.
+- **UI de Retry**: Propuesta de crear `VerificationStatus.vue` en las secciones de Account para mostrar estado y permitir reintentos.
 
 ## Aprendizajes
-- **Database Dependencies**: When renaming tables (`ALTER TABLE RENAME`), RLS policies follow the rename, but still conceptually link to the "old" table object. Explicitly dropping policies is safer than assuming they disappear.
-- **Documentation**: It's crucial to check existing documentation maps (`task.md`) before assuming docs exist.
+- `OnboardingSupplier.vue` ya tiene la logica correcta (`processINEValidationAsync`, `processSATValidationAsync`). Solo falta replicarla en el Cliente.
+- Los archivos son extensos (~1400 lineas Client, ~1900 lineas Supplier), requieren cuidado al refactorizar.
 
 ## Tareas Pendientes
-- **Execute V2 Plan**: Begin POC for AWS Lambda + Clean Architecture based on the proposal.
-- **Google Calendar**: Phase 5 is next in the original plan (unless superseded by V2 work).
+1. **Fase 1 (Critica)**: Refactorizar `OnboardingClient.vue` para usar patron async.
+2. **Fase 2 (Alta)**: Crear componentes `VerificationStatus.vue` en Account de Client y Supplier.
+3. **Fase 3 (Media)**: Agregar boton de "Solicitar Re-verificacion" en Admin.
+4. **Fase 4 (Baja)**: Lambda de retry automatico.
 
-## Estadísticas
-- **Archivos Modificados**: ~15 (Vue components, SQL scripts, API files).
-- **Tablas Eliminadas**: 2 (`clients`, `suppliers`).
-- **Tablas Migradas**: 1 (`client_profiles`).
+## Estadisticas
+- **Archivos Analizados**: 2 (`OnboardingClient.vue`, `OnboardingSupplier.vue`)
+- **Documentos Creados**: 1 (`ONBOARDING_RESILIENCE_PLAN.md`)
 
-## Próximos Pasos
-- Revisar y refinar `CLEAN_ARCHITECTURE_PROPOSAL.md`.
-- Comenzar la migración de un módulo piloto a la nueva arquitectura (ej. Reviews).
+## Proximos Pasos
+- Implementar Fase 1: Refactorizar `OnboardingClient.vue` siguiendo el patron de `OnboardingSupplier.vue`.
+- Respetar guidelines de Sakai para cualquier nuevo componente UI.
